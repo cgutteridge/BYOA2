@@ -38,12 +38,13 @@ const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
 const pubMarkers = ref<L.Marker[]>([])
 const showQuitDialog = ref<boolean>(false)
-const selectedPub = ref<Pub | null>(null)
 const isInitializing = ref<boolean>(false)
 
 // Computed properties
 const playerLocation = computed(() => appStore.playerLocation)
 const pubs = computed(() => pubStore.pubs)
+const mapPosition = computed(() => appStore.mapPosition)
+const mapZoom = computed(() => appStore.mapZoom)
 
 function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
   if (!mapInstance) {
@@ -113,16 +114,37 @@ function initializeMap(): void {
       document.querySelector('.map-container')?.appendChild(mapContainer)
     }
 
-    // Get player location or use default
-    const location = playerLocation.value || { lat: 51.505, lng: -0.09 }
-    console.log('Using location for map:', location)
+    // Use stored map position, fall back to player location or default
+    let location: Location
+    let zoom: number
 
-    const zoom = playerLocation.value ? 16 : 13
+    if (mapPosition.value) {
+      location = mapPosition.value
+      zoom = mapZoom.value || 16
+    } else if (playerLocation.value) {
+      location = playerLocation.value
+      zoom = 16
+    } else {
+      location = { lat: 51.505, lng: -0.09 }
+      zoom = 13
+    }
+    
+    console.log('Using location for map:', location, 'zoom:', zoom)
 
     const mapInstance = L.map('map', {
       preferCanvas: true,
       zoomControl: false
     }).setView([location.lat, location.lng], zoom)
+
+    // Add event listeners for map movement and zoom
+    mapInstance.on('moveend', () => {
+      const center = mapInstance.getCenter()
+      appStore.setMapPosition({ lat: center.lat, lng: center.lng })
+    })
+
+    mapInstance.on('zoomend', () => {
+      appStore.setMapZoom(mapInstance.getZoom())
+    })
 
     L.tileLayer('https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey=090957d4bae841118cdb982b96895428', {
       attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -204,15 +226,6 @@ watch(() => appStore.screen, (newMode) => {
     cleanupMap()
   }
 }, { immediate: true })
-
-// Watch for selected pub changes
-watch(() => selectedPub.value, (newPub) => {
-  if (!newPub || !map.value) return
-  nextTick(() => {
-    map.value?.setView([newPub.lat, newPub.lng], 18)
-  })
-})
-
 
 function generatePubMarkers(): void {
   if (!map.value) return;

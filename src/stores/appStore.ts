@@ -9,6 +9,8 @@ export const useAppStore = defineStore('app', () => {
   const gpsStatus = ref<GPSStatus>('initializing')
   const playerLocation = ref<Location | null>(null)
   const focusPubId = ref< PubId | undefined>(undefined)
+  const mapPosition = ref<Location | null>(null)
+  const mapZoom = ref<number | null>(null)
   const pubStore = usePubStore()
 
   const setScreen = (newScreen: ScreenId) => {
@@ -31,6 +33,14 @@ export const useAppStore = defineStore('app', () => {
     focusPubId.value = undefined
   }
 
+  const setMapPosition = (position: Location): void => {
+    mapPosition.value = position
+  }
+
+  const setMapZoom = (zoom: number): void => {
+    mapZoom.value = zoom
+  }
+
   const focusPub = computed(() => {
     if (focusPubId.value === undefined) {
       return undefined
@@ -44,11 +54,15 @@ export const useAppStore = defineStore('app', () => {
     screen,
     gpsStatus,
     playerLocation,
+    mapPosition,
+    mapZoom,
     focusPub,
     setFocusPub,
     unsetFocusPub,
     setScreen,
     setGPSStatus,
-    setPlayerLocation
+    setPlayerLocation,
+    setMapPosition,
+    setMapZoom
   }
 }) 
