@@ -1,0 +1,26 @@
+* Ensure that if currentPub is set when page is loaded then the screen is set to pub not map.
+* Add monster generation
+* Add monster fighing UI
+* Add whitelist & blacklist for locations
+* Better UI when scouting
+* Load main quest description
+* Add monster fighting
+* Force pubs to reload on new quest
+* Upate GPS for user
+* Better Pin
+* More descriptions for locations to give the AI. 
+* Quest Log
+* Rules and Guidelines
+* GPS Debug mode
+* Game balance?
+* Adjust difficulty
+
+Inventory
+* Add items
+* Inventory Store
+* Initial Inventory
+* Add passive effects
+
+Endgame
+* Create end of game description
+* End screen
