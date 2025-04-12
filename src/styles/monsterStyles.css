@@ -107,12 +107,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: transform 0.2s ease;
   margin: 1rem 0;
-}
-
-.monster-card:hover {
-  transform: translateY(-5px);
 }
 
 .monster-title {

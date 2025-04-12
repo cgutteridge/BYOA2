@@ -372,10 +372,6 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background: #45a049;
-}
-
 :deep(.player-marker) {
   font-size: 24px;
   text-align: center;
@@ -398,7 +394,7 @@ button:hover {
   position: absolute;
   bottom: 100px;
   right: 10px;
-  padding: 8px 12px;
+  padding: 10px 15px;
   border-radius: 20px;
   background: white;
   display: flex;
@@ -406,7 +402,8 @@ button:hover {
   justify-content: center;
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   z-index: 1000;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
 }
 </style> 

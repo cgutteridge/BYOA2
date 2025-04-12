@@ -180,11 +180,6 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button:hover:not(:disabled) {
-  background: #45a049;
 }
 
 button:disabled {

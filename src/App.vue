@@ -224,8 +224,4 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
-
-button:hover {
-  background-color: #45a049;
-}
 </style>
