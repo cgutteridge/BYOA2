@@ -18,6 +18,7 @@
           <h3>{{ getMonsterTitle(monster.type) }}</h3>
           <p>Count: {{ monster.count }}</p>
           <p class="drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</p>
+          <p class="xp"><strong>XP:</strong> {{ getMonsterXP(monster.type) }}</p>
         </div>
         <div class="monster-actions">
           <button @click="attackMonster(index)" :disabled="monster.count <= 0">
@@ -58,6 +59,11 @@ function getMonsterTitle(monsterId: string): string {
 function getMonsterDrink(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   return monster?.drink || "Unknown"
+}
+
+function getMonsterXP(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  return monster?.xp ? monster.xp.toFixed(1) : "Unknown"
 }
 
 function getMonsterClasses(monsterId: string): Record<string, boolean> {

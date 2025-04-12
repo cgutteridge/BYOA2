@@ -115,8 +115,18 @@
   font-size: 1.1rem;
 }
 
+.monster-details {
+  margin-top: 0.5rem;
+}
+
 .drink {
   margin-top: 0.5rem;
   color: inherit;
   opacity: 0.85;
+}
+
+.xp {
+  margin-top: 0.3rem;
+  font-weight: bold;
+  color: #ffcc00;
 } 

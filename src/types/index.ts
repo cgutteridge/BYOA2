@@ -53,6 +53,7 @@ export interface MonsterType {
   level: MonsterLevel
   species: Species
   flags: MonsterFlag[]
+  xp: number  // Experience points (based on alcohol units)
 }
 
 export interface Unit {

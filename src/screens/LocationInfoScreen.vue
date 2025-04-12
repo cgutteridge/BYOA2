@@ -21,8 +21,13 @@
             class="monster-card"
             :class="getMonsterClasses(monster.type)"
           >
-            <div class="monster-title">{{ getMonsterTitle(monster.type) }} (x{{ monster.count }})</div>
-            <div class="drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
+            <div>
+              <div class="monster-title">{{ getMonsterTitle(monster.type) }} (x{{ monster.count }})</div>
+              <div class="monster-details">
+                <div class="drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
+                <div class="xp"><strong>XP:</strong> {{ getMonsterXP(monster.type) }}</div>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -87,6 +92,11 @@ function getMonsterTitle(monsterId: string): string {
 function getMonsterDrink(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   return monster?.drink || "Unknown"
+}
+
+function getMonsterXP(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  return monster?.xp ? monster.xp.toFixed(1) : "Unknown"
 }
 
 function getMonsterClasses(monsterId: string): Record<string, boolean> {

@@ -8,7 +8,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Bottle of Red Wine',
     level: 'boss',
     species: 'vampire',
-    flags: ['undead','magic-user']
+    flags: ['undead','magic-user'],
+    xp: 10.0 // ~750ml bottle, 13% ABV
   },
   {
     id: 'elf_queen',
@@ -16,7 +17,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Bottle of White Wine',
     level: 'boss',
     species: 'elf',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 9.0 // ~750ml bottle, 12% ABV
   },
   
   // Elite monsters
@@ -26,7 +28,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Large Red Wine',
     level: 'elite',
     species: 'vampire',
-    flags: ["undead","magic-user"]
+    flags: ["undead","magic-user"],
+    xp: 3.5 // 250ml, 14% ABV
   },
   {
     id: 'dark_knight',
@@ -34,7 +37,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Pint of 6%+ Ale',
     level: 'elite',
     species: 'human',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 3.4 // Pint (568ml) at 6% ABV
   },
   {
     id: 'highland_wraith',
@@ -42,7 +46,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Double Fancy Whisky',
     level: 'elite',
     species: 'ghost',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 2.8 // Double (50ml) at 40% ABV
   },
   {
     id: 'necromancer',
@@ -50,7 +55,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Bloody Mary',
     level: 'elite',
     species: 'human',
-    flags: ['mortal','magic-user']
+    flags: ['mortal','magic-user'],
+    xp: 2.0 // Mixed cocktail, ~40ml vodka at 40% ABV
   },
   {
     id: 'bog_witch',
@@ -59,7 +65,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Bailys',
     level: 'elite',
     species: 'human',
-    flags: ['mortal','magic-user']
+    flags: ['mortal','magic-user'],
+    xp: 1.5 // 50ml at ~17% ABV
   },
   {
     id: 'mage_and_familiar',
@@ -68,7 +75,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Whisky and a Beer',
     level: 'elite',
     species: 'human',
-    flags: ['mortal','magic-user']
+    flags: ['mortal','magic-user'],
+    xp: 3.0 // 25ml whisky + half pint beer
   },
   {
     id: 'high_elf',
@@ -76,7 +84,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Large White Wine',
     level: 'elite',
     species: 'elf',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 3.0 // 250ml at 12% ABV
   },
 
   // Grunt monsters
@@ -86,7 +95,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Pint of Cider',
     level: 'grunt',
     species: 'goblinoid',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 2.8 // Pint (568ml) at ~5% ABV
   },
   {
     id: 'human_fighter',
@@ -94,7 +104,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Pint of Non-Lager',
     level: 'grunt',
     species: 'human',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 2.3 // Pint (568ml) at ~4% ABV
   },
   {
     id: 'mounted_knight',
@@ -102,7 +113,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Pint of Strong Lager',
     level: 'grunt',
     species: 'human',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 3.0 // Pint (568ml) at ~5.2% ABV
   },
   {
     id: 'dwarf_miner',
@@ -110,7 +122,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Half Pint Pale Ale',
     level: 'minion',
     species: 'dwarf',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 1.1 // Half pint (284ml) at ~4% ABV
   },
   {
     id: 'dwarf_warrior',
@@ -118,7 +131,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Ale',
     level: 'grunt',
     species: 'dwarf',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 2.2 // Pint (568ml) at ~4% ABV
   },
   {
     id: 'dryad',
@@ -126,7 +140,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Double Gin',
     level: 'grunt',
     species: 'fey',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 2.0 // Double (50ml) at 40% ABV
   },
   {
     id: 'ghostly_warrior',
@@ -134,7 +149,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Double House Whisky',
     level: 'grunt',
     species: 'ghost',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 2.0 // Double (50ml) at 40% ABV
   },
   {
     id: 'ancient_spirit',
@@ -142,7 +158,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Fancy Whisky',
     level: 'grunt',
     species: 'ghost',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 1.0 // Standard (25ml) at 40% ABV
   },
   {
     id: 'wrathful_revenant',
@@ -150,7 +167,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Double Bourbon',
     level: 'grunt',
     species: 'ghost',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 2.0 // Double (50ml) at 40% ABV
   },
   {
     id: 'wrathful_wraith',
@@ -158,7 +176,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Bourbon',
     level: 'minion',
     species: 'ghost',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 1.0 // Standard (25ml) at 40% ABV
   },
   {
     id: 'dark_knight_grunt',
@@ -166,7 +185,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Guiness',
     level: 'grunt',
     species: 'human',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 2.3 // Pint (568ml) at ~4.2% ABV
   },
   {
     id: 'ghostly_buccaneer',
@@ -174,7 +194,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Double Light Rum',
     level: 'grunt',
     species: 'ghost',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 2.0 // Double (50ml) at 40% ABV
   },
   {
     id: 'demon',
@@ -182,7 +203,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Double Dark Rum',
     level: 'grunt',
     species: 'demonoid',
-    flags: ['magic-user']
+    flags: ['magic-user'],
+    xp: 2.0 // Double (50ml) at 40% ABV
   },
   {
     id: 'metamorph',
@@ -190,7 +212,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Drink of your choice',
     level: 'grunt',
     species: 'chameleonoid',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 2.0 // Average value
   },
   {
     id: 'zombie_horde',
@@ -198,7 +221,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Zombie cocktail',
     level: 'grunt',
     species: 'human',
-    flags: ['group','undead']
+    flags: ['group','undead'],
+    xp: 3.5 // Strong cocktail with several spirits
   },
   {
     id: 'djinn',
@@ -207,7 +231,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Anything in a bottle',
     level: 'grunt',
     species: 'demonoid',
-    flags: ['magic-user']
+    flags: ['magic-user'],
+    xp: 2.5 // Average bottled beverage
   },
   {
     id: 'changeling',
@@ -215,7 +240,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Any pint',
     level: 'grunt',
     species: 'fey',
-    flags: ['group']
+    flags: ['group'],
+    xp: 2.3 // Average pint
   },
   {
     id: 'army',
@@ -224,7 +250,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Any kind of pint but all the same',
     level: 'grunt',
     species: 'special',
-    flags: ['group']
+    flags: ['group'],
+    xp: 2.3 // Average pint
   },
   {
     id: 'plains_elf',
@@ -232,7 +259,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Medium White Wine',
     level: 'grunt',
     species: 'elf',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 2.1 // 175ml at 12% ABV
   },
   {
     id: 'trickster',
@@ -240,7 +268,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Bartender\'s Choice',
     level: 'grunt',
     species: 'chameleonoid',
-    flags: []
+    flags: [],
+    xp: 2.0 // Average value
   },
   // Minion monsters
   {
@@ -249,7 +278,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Half Pint Cider',
     level: 'minion',
     species: 'goblinoid',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 1.4 // Half pint (284ml) at ~5% ABV
   },
   {
     id: 'thrall_vampire',
@@ -257,7 +287,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Small Red Wine',
     level: 'minion',
     species: 'vampire',
-    flags: ['undead']
+    flags: ['undead'],
+    xp: 1.8 // 125ml at 14% ABV
   },
   {
     id: 'peasant',
@@ -265,7 +296,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Half Pint Lager',
     level: 'minion',
     species: 'human',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 1.1 // Half pint (284ml) at ~4% ABV
   },
   {
     id: 'knight',
@@ -273,7 +305,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Half Pint of Strong Lager',
     level: 'minion',
     species: 'human',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 1.5 // Half pint (284ml) at ~5.2% ABV
   },
   {
     id: 'hedge_spirit',
@@ -281,7 +314,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Gin',
     level: 'minion',
     species: 'fey',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 1.0 // Single (25ml) at 40% ABV
   },
   {
     id: 'spectral_soldier',
@@ -289,7 +323,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'House Whisky',
     level: 'minion',
     species: 'ghost',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 1.0 // Single (25ml) at 40% ABV
   },
   {
     id: 'desert_wisp',
@@ -297,7 +332,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Light Rum',
     level: 'minion',
     species: 'fey',
-    flags: ['spirit']
+    flags: ['spirit'],
+    xp: 1.0 // Single (25ml) at 40% ABV
   },
   {
     id: 'imp',
@@ -305,7 +341,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Dark Rum',
     level: 'minion',
     species: 'demonoid',
-    flags: ['magic-user']
+    flags: ['magic-user'],
+    xp: 1.0 // Single (25ml) at 40% ABV
   },
   {
     id: 'mimic',
@@ -313,7 +350,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Half pint of your choice',
     level: 'minion',
     species: 'chameleonoid',
-    flags: []
+    flags: [],
+    xp: 1.2 // Average half pint
   },
  
   {
@@ -322,7 +360,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Any kind of half pint of',
     level: 'minion',
     species: 'special',
-    flags: ['group']
+    flags: ['group'],
+    xp: 1.2 // Average half pint
   },
   {
     id: 'forest_elf',
@@ -330,7 +369,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Small White Wine',
     level: 'minion',
     species: 'elf',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 1.5 // 125ml at 12% ABV
   },
   {
     id: 'sugar_sprite',
@@ -338,7 +378,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Alchopop',
     level: 'minion',
     species: 'fey',
-    flags: ['magic-user']
+    flags: ['magic-user'],
+    xp: 1.5 // Bottle (275ml) at ~5% ABV
   },
   {
     id: 'dwarf',
@@ -346,7 +387,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Half pint of Ale',
     level: 'minion',
     species: 'dwarf',
-    flags: ['mortal']
+    flags: ['mortal'],
+    xp: 1.1 // Half pint (284ml) at ~4% ABV
   }
   
 ]
