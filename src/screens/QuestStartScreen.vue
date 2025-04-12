@@ -65,11 +65,66 @@
             placeholder="Quest Title" 
             class="quest-input"
           />
+          
+          <div class="difficulty-selector">
+            <h3>Difficulty Level</h3>
+            <div class="difficulty-options">
+              <button 
+                class="difficulty-button" 
+                :class="{ selected: selectedDifficulty === 'easy' }"
+                @click="selectDifficulty('easy')"
+              >
+                Easy
+              </button>
+              <button 
+                class="difficulty-button" 
+                :class="{ selected: selectedDifficulty === 'medium' }"
+                @click="selectDifficulty('medium')"
+              >
+                Medium
+              </button>
+              <button 
+                class="difficulty-button" 
+                :class="{ selected: selectedDifficulty === 'hard' }"
+                @click="selectDifficulty('hard')"
+              >
+                Hard
+              </button>
+            </div>
+          </div>
+          
+          <div class="player-count-selector">
+            <h3>Number of Players</h3>
+            <div class="player-count-control">
+              <button 
+                class="control-button" 
+                @click="decrementPlayerCount" 
+                :disabled="playerCount <= 1"
+              >
+                -
+              </button>
+              <span class="player-count">{{ playerCount }}</span>
+              <button 
+                class="control-button" 
+                @click="incrementPlayerCount"
+                :disabled="playerCount >= 6"
+              >
+                +
+              </button>
+            </div>
+            <div class="player-count-info">
+              Monsters scale with player count:<br>
+              • Minions: 2× player count<br>
+              • Grunts: 1× player count<br>
+              • Elites: Fixed (1) or scaled on hard difficulty<br>
+              • Bosses: Always 1
+            </div>
+          </div>
         </div>
         
         <button 
           class="start-quest-button" 
-          @click="startQuest" 
+          @click="callStartQuest"
           :disabled="!canStartQuest"
         >
           Start Quest
@@ -83,12 +138,11 @@
 import {computed, onMounted, ref, watch} from 'vue'
 import {usePubStore} from '../stores/pubStore'
 import {useAppStore} from '../stores/appStore'
-import {useQuestStore} from "../stores/questStore";
 import {Pub} from "../types";
+import {startQuest} from "@/helpers/startQuest.ts";
 
 const pubStore = usePubStore()
 const appStore = useAppStore()
-const questStore = useQuestStore()
 
 const selectedStartPub = ref<Pub | null>(null)
 const selectedEndPub = ref<Pub | null>(null)
@@ -98,6 +152,8 @@ const showStartPubList = ref(false)
 const showEndPubList = ref(false)
 const questTitle = ref('')
 const isLoading = ref(true)
+const selectedDifficulty = ref('medium')
+const playerCount = ref(3)
 
 // Watch for pubs to be loaded
 watch(() => pubStore.pubs, (newPubs) => {
@@ -147,14 +203,32 @@ function selectEndPub(pub: Pub) {
   showEndPubList.value = false
 }
 
-async function startQuest() {
+function selectDifficulty(difficulty: string) {
+  selectedDifficulty.value = difficulty
+}
+
+function decrementPlayerCount() {
+  playerCount.value--
+}
+
+function incrementPlayerCount() {
+  playerCount.value++
+}
+
+async function callStartQuest() {
   if (canStartQuest.value) {
     console.log('Starting quest...')
     appStore.setScreen('intro')
-    await questStore.startQuest(
+    let difficulty = 1
+    if( selectedDifficulty.value === 'hard' ) { difficulty = 1.5 }
+    if( selectedDifficulty.value === 'easy' ) { difficulty = 0.66 }
+
+    await startQuest(
         questTitle.value,
         selectedStartPub.value as Pub,
-        selectedEndPub.value as Pub
+        selectedEndPub.value as Pub,
+        difficulty,
+        playerCount.value
     );
     appStore.setScreen('info')
   }
@@ -259,6 +333,95 @@ onMounted( () => {
   border-radius: 8px;
   color: white;
   font-size: 1.2rem;
+}
+
+.difficulty-selector {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.difficulty-options {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.difficulty-button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  max-width: 120px;
+}
+
+.difficulty-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.difficulty-button.selected {
+  background: #4CAF50;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.player-count-selector {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.player-count-control {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.control-button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  max-width: 120px;
+}
+
+.control-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.control-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+
+.player-count {
+  font-size: 1.2rem;
+  flex: 1;
+  text-align: center;
+}
+
+.player-count-info {
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.8rem;
+  border-radius: 8px;
 }
 
 .start-quest-button {

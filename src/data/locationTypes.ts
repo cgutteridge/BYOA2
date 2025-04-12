@@ -1,4 +1,4 @@
-import type { LocationType } from '../types'
+import type {LocationType, LocationTypeId} from '../types'
 
 export const locationTypes: LocationType[] = [
   {
@@ -131,4 +131,11 @@ export const locationTypes: LocationType[] = [
     title: 'Battlefield',
     filename: 'battlefield.png'
   }
-] 
+]
+
+export const locationTypesList : LocationTypeId[] = locationTypes.map(locationType => locationType.id)
+
+export const locationTypesById: Record<LocationTypeId, LocationType> = locationTypes.reduce((acc, locationType) => {
+  acc[locationType.id] = locationType;
+  return acc;
+}, {} as Record<LocationTypeId, LocationType>);

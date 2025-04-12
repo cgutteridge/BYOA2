@@ -4,6 +4,9 @@
     <div class="location-info">
       <h2>{{ pub.name }}</h2>
       <h3>{{ locationType.title }}</h3>
+      <div class="difficulty-badge" :class="difficultyClass">
+        {{ difficultyName }}
+      </div>
 
       <div class="pub-details">
 
@@ -19,8 +22,7 @@
         <div v-else class="scout-options">
           <p>No information available about this pub.</p>
           <div class="action-buttons">
-            <button @click="scoutPub" :disabled="!canScout">Scout</button>
-            <button @click="spyPub">Spy</button>
+            <button @click="callScoutPub" :disabled="!canScout">Scout</button>
           </div>
         </div>
       </div>
@@ -38,18 +40,18 @@
 import {computed} from 'vue'
 import calculateDistance from "../helpers/calculateDistance";
 import {useAppStore} from "../stores/appStore";
-import {usePubStore} from "../stores/pubStore";
 import {useQuestStore} from "../stores/questStore";
-import {LocationType, Pub} from "../types";
+import {locationTypesById} from "@/data/locationTypes.ts";
+import {LocationType, Pub} from "@/types";
+import {scoutPub} from "@/helpers/scoutPub.ts";
 
 const appStore = useAppStore()
-const pubStore = usePubStore()
 const questStore = useQuestStore()
 const pub = computed(() => {
       return appStore.focusPub as Pub
     }
 )
-const locationType = computed(():LocationType => pubStore.getLocationTypeData(pub.value.locationType))
+const locationType = computed((): LocationType => locationTypesById[pub.value.locationType])
 
 const canScout = computed(() => {
   if (!appStore.playerLocation || !appStore.focusPub) return false
@@ -64,14 +66,9 @@ const canScout = computed(() => {
   return distance <= 50
 })
 
-function scoutPub() {
+function callScoutPub() {
   if (!appStore.focusPub) return
-  pubStore.scoutPub(appStore.focusPub.id)
-}
-
-function spyPub() {
-  if (!appStore.focusPub) return
-  pubStore.scoutPub(appStore.focusPub.id)
+  scoutPub(appStore.focusPub)
 }
 
 function enterPub() {
@@ -83,6 +80,22 @@ function enterPub() {
 function returnToMap() {
   appStore.setScreen('map')
 }
+
+// Get the difficulty name for display
+const difficultyName = computed(() => {
+  if (!pub.value || !pub.value.difficulty) {
+    return 'MEDIUM'
+  }
+  return pub.value.difficulty.toUpperCase()
+})
+
+// Determine CSS class based on difficulty
+const difficultyClass = computed(() => {
+  if (!pub.value || !pub.value.difficulty) {
+    return 'medium'
+  }
+  return pub.value.difficulty
+})
 </script>
 
 <style scoped>
@@ -148,5 +161,39 @@ button:hover:not(:disabled) {
 button:disabled {
   background: #666;
   cursor: not-allowed;
+}
+
+.difficulty-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.start {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.easy {
+  background-color: #8BC34A;
+  color: black;
+}
+
+.medium {
+  background-color: #FFC107;
+  color: black;
+}
+
+.hard {
+  background-color: #FF5722;
+  color: white;
+}
+
+.end {
+  background-color: #F44336;
+  color: white;
 }
 </style> 

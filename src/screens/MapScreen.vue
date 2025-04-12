@@ -29,6 +29,7 @@ import type {Location, Pub} from '../types'
 import {useQuestStore} from "../stores/questStore";
 import {usePubStore} from "../stores/pubStore";
 import {useAppStore} from "../stores/appStore";
+import {locationTypesById} from "@/data/locationTypes.ts";
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
@@ -51,7 +52,7 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
     throw new Error('No map instance provided for marker creation')
   }
 
-  const locationType = pubStore.getLocationTypeData(pub.locationType ?? "default")
+  const locationType = locationTypesById[pub.locationType]
   const iconPath = `./icons/${locationType.filename}`
   console.log(`Creating marker for ${pub.name} with icon:`, iconPath)
 

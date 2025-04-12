@@ -1,5 +1,4 @@
-import type {LocationTypeId, Pub} from '@/types'
-import { locationTypes } from '../data/locationTypes'
+import {Pub} from "@/types";
 
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
@@ -12,7 +11,6 @@ export default async function fetchNearbyPubs(lat: number, lng: number, radius: 
     nwr["amenity"~"^(pub|bar)$"]["name"](around:${radius},${lat},${lng});
     out center;
   `
-
   let lastError: Error | null = null
   for (const endpoint of OVERPASS_ENDPOINTS) {
     try {
@@ -33,14 +31,9 @@ export default async function fetchNearbyPubs(lat: number, lng: number, radius: 
           name: element.tags.name,
           lat: element.lat ?? element.center.lat,
           lng: element.lon ?? element.center.lon,
-          locationType: 'pub' // Default type, will be randomized later
+          locationType: 'pub', // Default type, will be randomized later
+          scouted: false,
         }))
-
-      // Randomly assign location types to pubs
-      const types = locationTypes.map(type => type.id)
-      pubs.forEach(pub => {
-        pub.locationType = types[Math.floor(Math.random() * types.length)] as LocationTypeId
-      })
 
       return pubs
     } catch (error) {

@@ -3,6 +3,7 @@ Startup
 * Ensure that if currentPub is set when page is loaded then the screen is set to pub not map.
 * Load main quest description
 * Force pubs to reload on new quest
+* set location type based on difficulty
 
 Pubs
 * Add monster generation

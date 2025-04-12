@@ -7,6 +7,7 @@ export type PubId = string
 
 export type LocationTypeId = string
 
+
 export interface Pub {
   id: PubId
   name: string
@@ -14,7 +15,8 @@ export interface Pub {
   lat: number
   lng: number
   locationType: LocationTypeId
-  monsters?: Monster[]
+  difficulty?: LocationDifficulty
+  monsters?: Unit[]
   scouted: boolean
   prizeName?: string
   prizeDescription?: string
@@ -27,9 +29,21 @@ export interface LocationType {
   description?: string
 }
 
+export type WeightedList<T> = {
+  weight: number
+  value: T
+}[]
+
+export type Encounter = {
+  level: MonsterLevel;
+  count: number;
+}[]
+
+
 export type Species = "vampire"|"ghost"|"human"|"chameleonoid"|"goblinoid"|"elf"|"demonoid"|"dwarf"|"special"|"fey"
 export type MonsterLevel  = "minion"|"grunt"|"elite"|"boss"
 export type MonsterFlag = "spirit"|"undead"|"mortal"|"magic-user"|"group"
+export type LocationDifficulty = "start" | "easy" | "medium" | "hard" | "end"
 
 export interface MonsterType {
   id: string
@@ -41,7 +55,7 @@ export interface MonsterType {
   flags: MonsterFlag[]
 }
 
-export interface Monster {
+export interface Unit {
   type: string
   count: number
 }

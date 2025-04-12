@@ -61,11 +61,5 @@ describe('pubStore', () => {
     expect(() => store.pub('nonexistent')).toThrow('Pub with ID nonexistent not found')
   })
 
-  it('should scout pub', () => {
-    const store = usePubStore()
-    const result = store.scoutPub('1')
-    expect(result).toBe(true)
-  })
-
 
 }) 

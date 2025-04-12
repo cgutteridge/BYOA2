@@ -1,10 +1,10 @@
 import {defineStore} from 'pinia'
 import {ref} from 'vue'
-import type {LocationType, Pub, PubId} from '../types'
+import type {LocationTypeId, Pub, PubId} from '../types'
+import {LocationDifficulty} from '../types'
 import {useAppStore} from './appStore'
-import {locationTypes} from '../data/locationTypes'
-import fetchNearbyPubs from "../helpers/overpass";
-import {ChatGPTAPI} from "../api/chatGPT";
+import fetchNearbyPubs from "../helpers/overpass"
+import {scoutPub} from '../helpers/scoutPub.ts'
 
 export const usePubStore = defineStore('pub', () => {
   const appStore = useAppStore()
@@ -16,8 +16,16 @@ export const usePubStore = defineStore('pub', () => {
     pubs.value = newPubs
   }
 
-  const getLocationTypeData = (typeId: string) : LocationType => {
-    return locationTypes.find(type => type.id === typeId) as LocationType
+  // Set difficulty for a specific pub
+  const setPubDifficulty = (pubId: PubId, difficulty: LocationDifficulty) => {
+    const targetPub = pub(pubId)
+    targetPub.difficulty = difficulty
+  }
+
+  // Set difficulty for a specific pub
+  const setPubType = (pubId: PubId, type: LocationTypeId) => {
+    const targetPub = pub(pubId)
+    targetPub.locationType = type
   }
 
   const fetchNearbyPubsFromAPI = async () => {
@@ -45,35 +53,14 @@ export const usePubStore = defineStore('pub', () => {
     return foundPub
   }
 
-  const scoutPub = async (pubId: PubId) => {
-    const chatGPT = new ChatGPTAPI()
-
-    const pubToScout = pub(pubId)
-    pubToScout.scouted = true
-    const locationType = getLocationTypeData(pubToScout.locationType)
-
-    const {
-      name,
-      description,
-      prizeName,
-      prizeDescription
-    } = await chatGPT.generatePubDescription(pubToScout.name, locationType.title, "3 Orks", "an item that lets you defeat any single enemy. Single use..")
-    pubToScout.name = name
-    pubToScout.prizeName = prizeName
-    pubToScout.prizeDescription = prizeDescription
-    pubToScout.description = description
-
-    return true
-  }
-
-
   return {
     pubs,
     setPubs,
-    getLocationTypeData,
     fetchNearbyPubs: fetchNearbyPubsFromAPI,
     scoutPub,
     pub,
+    setPubDifficulty,
+    setPubType,
     persist
   }
 }) 
