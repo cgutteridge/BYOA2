@@ -2,6 +2,7 @@ import type {Pub, Unit} from '../types'
 import {ChatGPTAPI} from '../api/chatGPT'
 import generateMonsters from './generateMonsters.ts'
 import {locationTypesById} from "@/data/locationTypes.ts";
+import {monsterTypes} from "@/data/monsterTypes.ts";
 
 /**
  * Scout a location, generating its description, monsters, and prize
@@ -52,10 +53,15 @@ export async function scoutPub(
 /**
  * Format the monsters as a string description
  * @param monsters Array of monsters
- * @returns A string description like "3 Orcs, 3 Goblins"
+ * @returns A string description including monster count, type and drink
  */
 export function formatMonstersDescription(monsters: Unit[]): string {
     if (!monsters.length) return "no monsters"
 
-    return monsters.map(monster => `${monster.count} ${monster.type}`).join(', ')
+    return monsters.map(monster => {
+        const monsterType = monsterTypes.find(m => m.id === monster.type);
+        const title = monsterType?.title || monster.type;
+        const drink = monsterType?.drink || "unknown drink";
+        return `${monster.count} ${title} (drinks: ${drink})`;
+    }).join(', ');
 }

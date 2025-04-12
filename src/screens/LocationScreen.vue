@@ -7,13 +7,12 @@
       <button class="leave-button" @click="leavePub">Leave Pub</button>
     </div>
 
-    <!--
-    <div class="monster-list">
-      <div v-for="(monster, index) in gameStore.currentPub?.monsters" :key="index" class="monster-card">
+    <div class="monster-list" v-if="questStore.currentPub?.monsters">
+      <div v-for="(monster, index) in questStore.currentPub.monsters" :key="index" class="monster-card">
         <div class="monster-info">
-          <h3>{{ monster.type }}</h3>
+          <h3>{{ getMonsterTitle(monster.type) }}</h3>
           <p>Count: {{ monster.count }}</p>
-          <p class="description">{{ monster.description }}</p>
+          <p class="drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</p>
         </div>
         <div class="monster-actions">
           <button @click="attackMonster(index)" :disabled="monster.count <= 0">
@@ -27,7 +26,6 @@
       <h3>All monsters defeated!</h3>
       <button @click="leavePub">Leave Pub</button>
     </div>
-    -->
 
   </div>
 </template>
@@ -35,26 +33,36 @@
 <script setup lang="ts">
 import {useAppStore} from "../stores/appStore.js";
 import {useQuestStore} from "../stores/questStore.js";
+import {monsterTypes} from "../data/monsterTypes";
+import {computed} from "vue";
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
 
-/*
 const allMonstersDefeated = computed(() => {
-  if (!gameStore.currentPub?.monsters) return false
-  return gameStore.currentPub.monsters.every(monster => monster.count <= 0)
+  if (!questStore.currentPub?.monsters) return false
+  return questStore.currentPub.monsters.every(monster => monster.count <= 0)
 })
 
-function attackMonster(index) {
-  if (gameStore.currentPub?.monsters) {
-    const monsters = [...gameStore.currentPub.monsters]
+function getMonsterTitle(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  return monster?.title || monsterId
+}
+
+function getMonsterDrink(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  return monster?.drink || "Unknown"
+}
+
+function attackMonster(index: number) {
+  if (questStore.currentPub?.monsters) {
+    const monsters = [...questStore.currentPub.monsters]
     if (monsters[index].count > 0) {
       monsters[index].count--
-      gameStore.currentPub.monsters = monsters
+      questStore.currentPub.monsters = monsters
     }
   }
 }
-*/
 
 function leavePub() {
   appStore.setScreen('map')
@@ -113,6 +121,11 @@ function leavePub() {
 
 .monster-actions {
   margin-left: 1rem;
+}
+
+.drink {
+  color: #ffcc00;
+  margin-top: 0.5rem;
 }
 
 button {

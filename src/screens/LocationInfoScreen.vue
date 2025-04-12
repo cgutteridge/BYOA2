@@ -16,7 +16,8 @@
           </div>
           <h3>Monsters Present:</h3>
           <div v-for="(monster, index) in appStore.focusPub?.monsters" :key="index" class="monster">
-            <p>{{ monster.type }} (x{{ monster.count }})</p>
+            <div class="monster-title">{{ getMonsterTitle(monster.type) }} (x{{ monster.count }})</div>
+            <div class="drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
           </div>
         </div>
         
@@ -49,6 +50,7 @@ import {useQuestStore} from "../stores/questStore";
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {LocationType, Pub} from "@/types";
 import {scoutPub} from "@/helpers/scoutPub.ts";
+import {monsterTypes} from "../data/monsterTypes";
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
@@ -70,6 +72,16 @@ const canScout = computed(() => {
   
   return distance <= 50
 })
+
+function getMonsterTitle(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  return monster?.title || monsterId
+}
+
+function getMonsterDrink(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  return monster?.drink || "Unknown"
+}
 
 function callScoutPub() {
   if (!appStore.focusPub) return
@@ -137,6 +149,16 @@ const difficultyClass = computed(() => {
   padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
+}
+
+.monster-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.drink {
+  color: #ffcc00;
+  margin-top: 0.5rem;
 }
 
 .description {
