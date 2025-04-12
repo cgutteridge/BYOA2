@@ -8,6 +8,10 @@
       <button @click="showQuitDialog = true">Quit Quest</button>
     </div>
 
+    <button class="center-button" @click="centerOnPlayer" v-if="playerLocation">
+      <span>Center</span>
+    </button>
+
     <div v-if="showQuitDialog" class="dialog-overlay">
       <div class="dialog">
         <h3>Quit Quest?</h3>
@@ -54,7 +58,6 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
 
   const locationType = locationTypesById[pub.locationType]
   const iconPath = `./icons/${locationType.filename}`
-  console.log(`Creating marker for ${pub.name} with icon:`, iconPath)
 
   const marker = L.marker([pub.lat, pub.lng], {
     icon: L.icon({
@@ -160,15 +163,10 @@ function initializeMap(): void {
     map.value = mapInstance
     console.log('Map initialized successfully with location:', location)
 
+
     // Add player marker if location is available
     if (playerLocation.value) {
-      playerMarker.value = L.marker([playerLocation.value.lat, playerLocation.value.lng], {
-        icon: L.divIcon({
-          className: 'player-marker',
-          html: '📍',
-          iconSize: [30, 30]
-        })
-      }).addTo(mapInstance)
+      updatePlayerMarker(playerLocation.value)
     }
 
     // Generate pub markers
@@ -253,14 +251,25 @@ function updatePlayerMarker(location: Location): void {
     playerMarker.value.remove()
   }
 
-  // Create new marker
+  // Create new marker with a clear icon
   playerMarker.value = L.marker([location.lat, location.lng], {
     icon: L.divIcon({
       className: 'player-marker',
-      html: '<div class="player-marker-inner"></div>',
-      iconSize: [20, 20]
+      html: '<div class="player-dot"></div>',
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
     })
   }).addTo(theMap)
+}
+
+function centerOnPlayer(): void {
+  if (!map.value || !playerLocation.value) return
+  
+  map.value.setView(
+    [playerLocation.value.lat, playerLocation.value.lng],
+    16,
+    { animate: true }
+  )
 }
 </script>
 
@@ -372,7 +381,32 @@ button:hover {
   text-align: center;
 }
 
+:deep(.player-dot) {
+  width: 20px;
+  height: 20px;
+  background-color: #4285F4;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
 :deep(.pub-marker) {
+  cursor: pointer;
+}
+
+.center-button {
+  position: absolute;
+  bottom: 100px;
+  right: 10px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  z-index: 1000;
+  font-size: 14px;
   cursor: pointer;
 }
 </style> 

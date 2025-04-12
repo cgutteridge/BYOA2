@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 import { useAppStore } from './stores/appStore'
 
 import MapScreen from './screens/MapScreen.vue'
@@ -13,6 +13,7 @@ import LocationInfoScreen from "./screens/LocationInfoScreen.vue";
 
 const appStore = useAppStore()
 const isDebugMode = ref(false)
+const watchId = ref<number | null>(null)
 
 // Check if debug mode is enabled via URL fragment
 function checkDebugMode() {
@@ -20,6 +21,7 @@ function checkDebugMode() {
   console.log('Debug mode:', isDebugMode.value ? 'ENABLED' : 'disabled')
 }
 
+// Initialize the GPS once
 async function initializeGPS() {
   try {
     // Check for debug mode
@@ -45,31 +47,59 @@ async function initializeGPS() {
 
     appStore.setGPSStatus('loading')
     
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      })
-    })
-
-    const location = {
-      lat: position.coords.latitude,
-      lng: position.coords.longitude
-    }
-
-    console.log('GPS location:', location)
-    const locationSet = appStore.setPlayerLocation(location)
-    
-    if (locationSet) {
-      appStore.setGPSStatus('success')
-    } else {
-      console.error('Failed to set location')
-      appStore.setGPSStatus('error')
-    }
+    // Set up continuous watching of location
+    startContinuousTracking()
   } catch (error) {
     console.error('GPS error:', error)
     appStore.setGPSStatus('error')
+  }
+}
+
+// Start continuous GPS tracking
+function startContinuousTracking() {
+  console.log('Starting continuous GPS tracking')
+  if (!navigator.geolocation) {
+    appStore.setGPSStatus('error')
+    return
+  }
+  
+  // Debug mode doesn't need continuous tracking - it's handled in initializeGPS
+  if (isDebugMode.value) {
+    return
+  }
+ 
+  // In normal mode, use geolocation.watchPosition
+  watchId.value = navigator.geolocation.watchPosition(
+    (position) => {
+      const location = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      }
+      
+      console.log('GPS update:', location)
+      appStore.setPlayerLocation(location)
+      appStore.setGPSStatus('success')
+    },
+    (error) => {
+      console.error('GPS tracking error:', error)
+      if (appStore.gpsStatus !== 'success') {
+        appStore.setGPSStatus('error')
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    }
+  )
+}
+
+// Stop GPS tracking
+function stopContinuousTracking() {
+  console.log('Stopping GPS tracking')
+  if (!isDebugMode.value && watchId.value !== null) {
+    navigator.geolocation.clearWatch(watchId.value)
+    watchId.value = null
   }
 }
 
@@ -79,9 +109,15 @@ onMounted(() => {
   
   // Listen for hash changes to toggle debug mode
   window.addEventListener('hashchange', () => {
+    stopContinuousTracking()
     checkDebugMode()
     initializeGPS() // Re-initialize GPS when debug mode changes
   })
+})
+
+onUnmounted(() => {
+  // Clean up the continuous tracking when the component is unmounted
+  stopContinuousTracking()
 })
 </script>
 

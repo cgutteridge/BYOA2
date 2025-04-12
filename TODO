@@ -14,9 +14,9 @@ DONE  Add monster generation
 DONE Better UI when scouting
 
 Map
-* Upate GPS for user
-* Better icon for player
-* GPS Debug mode
+DONE Upate GPS for user
+DONE Better icon for player
+DONE GPS Debug mode
 * Add centre map button
 DONE Keep map location after viewing location
 
