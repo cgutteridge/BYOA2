@@ -14,7 +14,6 @@ export async function scoutPub(
 ): Promise<boolean> {
     const chatGPT = new ChatGPTAPI()
     const questStore = useQuestStore()
-    const quest = 
 
     // Mark the pub as scouted
     pub.scouted = true
@@ -74,7 +73,6 @@ export function formatMonstersDescription(monsters: Unit[]): string {
     return monsters.map(monster => {
         const monsterType = monsterTypes.find(m => m.id === monster.type);
         const title = monsterType?.title || monster.type;
-        const drink = monsterType?.drink || "unknown drink";
         return `${monster.count} ${title}`;
     }).join(', ');
 }
