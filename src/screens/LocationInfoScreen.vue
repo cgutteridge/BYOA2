@@ -3,9 +3,6 @@
     <div class="location-info">
       <h2>{{ pub.name }}</h2>
       <h3>{{ locationType.title }}</h3>
-      <div class="difficulty-badge" :class="difficultyClass">
-        {{ difficultyName }}
-      </div>
 
       <div class="pub-details">
         <div v-if="pub.scouted && pub.description">
@@ -14,18 +11,21 @@
             <h3>Reward:</h3>
             <div>{{ pub.prizeName }}</div>
           </div>
-          <h3>Monsters Present:</h3>
+          <h3 class="monsters-heading">Monsters Present:</h3>
           <div 
             v-for="(monster, index) in appStore.focusPub?.monsters" 
             :key="index" 
             class="monster-card"
             :class="getMonsterClasses(monster.type)"
           >
-            <div>
-              <div class="monster-title">{{ getMonsterTitle(monster.type) }} (x{{ monster.count }})</div>
+            <div class="monster-count">
+              <span>{{ monster.count }}x</span>
+            </div>
+            <div class="monster-info">
+              <div class="monster-title">{{ getMonsterTitle(monster.type) }}</div>
+              <div class="monster-xp">{{ getMonsterXP(monster.type) }} XP</div>
               <div class="monster-details">
-                <div class="drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
-                <div class="xp"><strong>XP:</strong> {{ getMonsterXP(monster.type) }}</div>
+                <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
               </div>
             </div>
           </div>
@@ -123,22 +123,6 @@ function enterPub() {
 function returnToMap() {
   appStore.setScreen('map')
 }
-
-// Get the difficulty name for display
-const difficultyName = computed(() => {
-  if (!pub.value || !pub.value.difficulty) {
-    return 'MEDIUM'
-  }
-  return pub.value.difficulty.toUpperCase()
-})
-
-// Determine CSS class based on difficulty
-const difficultyClass = computed(() => {
-  if (!pub.value || !pub.value.difficulty) {
-    return 'medium'
-  }
-  return pub.value.difficulty
-})
 </script>
 
 <style scoped>
@@ -163,11 +147,7 @@ const difficultyClass = computed(() => {
 }
 
 .pub-details {
-  margin: 2rem 0;
-}
-
-.monster-info {
-  margin-top: 2rem;
+  margin: 1.5rem 0;
 }
 
 .description {
@@ -197,50 +177,16 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.difficulty-badge {
-  display: inline-block;
-  padding: 0.4rem 0.8rem;
-  border-radius: 1rem;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  font-weight: bold;
-}
-
-.start {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.easy {
-  background-color: #8BC34A;
-  color: black;
-}
-
-.medium {
-  background-color: #FFC107;
-  color: black;
-}
-
-.hard {
-  background-color: #FF5722;
-  color: white;
-}
-
-.end {
-  background-color: #F44336;
-  color: white;
-}
-
 .location-description {
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .prize-info {
-  margin: 2rem 0;
+  margin: 1.25rem 0;
 }
 
 .prize-info h3 {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .loading-state {
@@ -265,5 +211,73 @@ button:disabled {
   to {
     transform: rotate(360deg);
   }
+}
+
+.monster-card {
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  margin: 0.5rem 0;
+}
+
+.monster-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  font-size: 2rem;
+  font-weight: 900;
+  background: rgba(0, 0, 0, 0.3);
+  min-width: 80px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.monster-info {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.monster-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+  padding-right: 60px; /* Make room for XP */
+}
+
+.monster-xp {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.monster-details {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.monster-stat {
+  font-size: 0.95rem;
+}
+
+.location-info h2 {
+  margin-bottom: 0.25rem;
+}
+
+.location-info h3 {
+  margin-bottom: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.monsters-heading {
+  margin-bottom: 0.5rem !important;
+  margin-top: 0.75rem !important;
 }
 </style> 

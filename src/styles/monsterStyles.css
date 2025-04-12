@@ -96,18 +96,55 @@
 }
 
 .monster-minion {
-  border-width: 1px;
+  border-width: 2px;
   border-style: solid;
 }
 
 /* Common monster card styles */
 .monster-card {
   border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin: 1rem 0;
+}
+
+/* Make monster count box darker for better contrast */
+.monster-vampire .monster-count {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.monster-ghost .monster-count {
+  background-color: rgba(0, 0, 51, 0.3); /* Darker blue */
+}
+
+.monster-human .monster-count {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.monster-chameleonoid .monster-count {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.monster-goblinoid .monster-count {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.monster-elf .monster-count {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.monster-demonoid .monster-count {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.monster-dwarf .monster-count {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.monster-special .monster-count {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.monster-fey .monster-count {
+  background-color: rgba(0, 40, 40, 0.3);
 }
 
 .monster-title {
@@ -128,5 +165,5 @@
 .xp {
   margin-top: 0.3rem;
   font-weight: bold;
-  color: #ffcc00;
+  color: inherit;
 } 
