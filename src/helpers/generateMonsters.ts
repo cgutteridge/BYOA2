@@ -10,7 +10,7 @@ import {encounterTable} from "@/data/encounterTable.ts";
 export default function generateMonsters(pub: Pub): Unit[] {
     // step one is to pick a pattern
     const encounter: Encounter = pickWeightedOne(encounterTable[pub.difficulty ?? 'medium'])
-
+console.log("encounter", encounter)
     const monsters: Unit[] = []
     encounter.forEach((unitSpec) => {
         // pick a monster
@@ -19,8 +19,12 @@ export default function generateMonsters(pub: Pub): Unit[] {
 
         // decide unit size
         const unitSize = calculateUnitSize(unitSpec.level, pub.difficulty ?? 'medium')
+        console.log("unitSize", unitSize)
+        console.log("unit leve", unitSpec.level)
+        console.log("pub difficulty",pub.difficulty)
         monsters.push({count: unitSize, type: monsterType.id})
     })
+    console.log(monsters)
     return monsters
 }
 
@@ -28,6 +32,9 @@ export default function generateMonsters(pub: Pub): Unit[] {
 function calculateUnitSize(monsterLevel: MonsterLevel, pubLevel: LocationDifficulty) {
     const questStore = useQuestStore()
     const players = questStore.playerCount
+    console.log({players})
+    console.log(monsterLevel)
+
     if (monsterLevel === 'boss') {
         return 1
     }
@@ -47,5 +54,5 @@ function calculateUnitSize(monsterLevel: MonsterLevel, pubLevel: LocationDifficu
 // modify the unit size based on difficulty
 function diffMod(monsterCount: number) {
     const questStore = useQuestStore()
-    return Math.min(1, Math.round(monsterCount * questStore.difficulty))
+    return Math.max(1, Math.round(monsterCount * questStore.difficulty))
 }
