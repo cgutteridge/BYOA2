@@ -1,9 +1,8 @@
 <template>
   <div class="location-info-screen screen-container">
     <div class="location-info">
-      <h2>{{ pub.name }}</h2>
-      <h3>{{ locationType.title }}</h3>
-
+      <h2>{{ pub.name }}<template v-if="!pub.scouted"> ({{ locationType.title }})</template></h2>
+ 
       <div class="pub-details">
         <div v-if="pub.scouted && pub.description">
           <div class="location-description">{{ pub.description }}</div>
