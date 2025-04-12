@@ -11,8 +11,11 @@
       <div class="pub-details">
 
         <div v-if="pub.scouted">
-          <div>{{ pub.description }}</div>
-          <div>Reward: {{ pub.prizeName }}</div>
+          <div class="location-description">{{ pub.description }}</div>
+          <div class="prize-info">
+            <h3>Reward:</h3>
+            <div>{{ pub.prizeName }}</div>
+          </div>
           <h3>Monsters Present:</h3>
           <div v-for="(monster, index) in appStore.focusPub?.monsters" :key="index" class="monster">
             <p>{{ monster.type }} (x{{ monster.count }})</p>
@@ -195,5 +198,17 @@ button:disabled {
 .end {
   background-color: #F44336;
   color: white;
+}
+
+.location-description {
+  margin-bottom: 2rem;
+}
+
+.prize-info {
+  margin: 2rem 0;
+}
+
+.prize-info h3 {
+  margin-bottom: 0.5rem;
 }
 </style> 
