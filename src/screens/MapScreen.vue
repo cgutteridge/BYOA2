@@ -150,6 +150,28 @@ function initializeMap(): void {
       appStore.setMapZoom(mapInstance.getZoom())
     })
 
+    // Prevent back/forward navigation triggered by horizontal swipes on the map
+    const mapElement = document.getElementById('map')
+    if (mapElement) {
+      mapElement.addEventListener('touchstart', (e) => {
+        // Store initial touch position
+        (window as any).touchStartX = e.touches[0].clientX
+      }, { passive: false })
+      
+      mapElement.addEventListener('touchmove', (e) => {
+        // Calculate horizontal swipe distance
+        if ((window as any).touchStartX) {
+          const touchEndX = e.touches[0].clientX
+          const deltaX = (window as any).touchStartX - touchEndX
+          
+          // If significant horizontal swipe detected, prevent default to block browser navigation
+          if (Math.abs(deltaX) > 30) {
+            e.preventDefault()
+          }
+        }
+      }, { passive: false })
+    }
+
     L.tileLayer('https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey=090957d4bae841118cdb982b96895428', {
       attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 22
