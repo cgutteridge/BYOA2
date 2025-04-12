@@ -8,10 +8,6 @@
       <button @click="showQuitDialog = true">Quit Quest</button>
     </div>
 
-    <button class="center-button" @click="centerOnPlayer" v-if="playerLocation">
-      <span>Center</span>
-    </button>
-
     <div v-if="showQuitDialog" class="dialog-overlay">
       <div class="dialog">
         <h3>Quit Quest?</h3>
@@ -150,28 +146,6 @@ function initializeMap(): void {
       appStore.setMapZoom(mapInstance.getZoom())
     })
 
-    // Prevent back/forward navigation triggered by horizontal swipes on the map
-    const mapElement = document.getElementById('map')
-    if (mapElement) {
-      mapElement.addEventListener('touchstart', (e) => {
-        // Store initial touch position
-        (window as any).touchStartX = e.touches[0].clientX
-      }, { passive: false })
-      
-      mapElement.addEventListener('touchmove', (e) => {
-        // Calculate horizontal swipe distance
-        if ((window as any).touchStartX) {
-          const touchEndX = e.touches[0].clientX
-          const deltaX = (window as any).touchStartX - touchEndX
-          
-          // If significant horizontal swipe detected, prevent default to block browser navigation
-          if (Math.abs(deltaX) > 30) {
-            e.preventDefault()
-          }
-        }
-      }, { passive: false })
-    }
-
     L.tileLayer('https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey=090957d4bae841118cdb982b96895428', {
       attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 22
@@ -181,6 +155,30 @@ function initializeMap(): void {
     L.control.zoom({
       position: 'bottomright'
     }).addTo(mapInstance)
+
+    // Add custom center control
+    const CenterControl = L.Control.extend({
+      options: {
+        position: 'bottomright'
+      },
+
+      onAdd: function() {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        const link = L.DomUtil.create('a', 'leaflet-control-center', container);
+        link.innerHTML = '⊕';
+        link.href = '#';
+        link.title = 'Center on player';
+
+        L.DomEvent
+          .on(link, 'click', L.DomEvent.preventDefault)
+          .on(link, 'click', () => centerOnPlayer());
+
+        return container;
+      }
+    });
+
+    // Add the custom control to the map
+    new CenterControl().addTo(mapInstance);
 
     map.value = mapInstance
     console.log('Map initialized successfully with location:', location)
@@ -412,20 +410,8 @@ button {
   cursor: pointer;
 }
 
-.center-button {
-  position: absolute;
-  bottom: 100px;
-  right: 10px;
-  padding: 10px 15px;
-  border-radius: 20px;
-  background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  z-index: 1000;
-  font-size: 16px;
+:deep(.leaflet-control-center) {
+  font-size: 18px;
   font-weight: bold;
-  cursor: pointer;
 }
 </style> 

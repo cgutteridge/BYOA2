@@ -55,13 +55,4 @@ if (questStore.status === 'active') {
     appStore.setScreen('start_quest')
 }
 
-// Prevent accidental browser back navigation
-// This adds an extra history entry and then blocks navigating backward
-window.addEventListener('load', () => {
-  window.history.pushState(null, '', window.location.href)
-  window.addEventListener('popstate', () => {
-    window.history.pushState(null, '', window.location.href)
-  })
-})
-
 app.mount('#app') 
