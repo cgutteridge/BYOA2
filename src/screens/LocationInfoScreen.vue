@@ -1,6 +1,5 @@
 <template>
-  <div class="location-info-screen">
-
+  <div class="location-info-screen screen-container">
     <div class="location-info">
       <h2>{{ pub.name }}</h2>
       <h3>{{ locationType.title }}</h3>
@@ -9,7 +8,6 @@
       </div>
 
       <div class="pub-details">
-
         <div v-if="pub.scouted && pub.description">
           <div class="location-description">{{ pub.description }}</div>
           <div class="prize-info">
@@ -40,7 +38,6 @@
         <button @click="returnToMap">Return to Map</button>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -108,20 +105,23 @@ const difficultyClass = computed(() => {
 
 <style scoped>
 .location-info-screen {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   color: white;
+  padding: 2rem 0;
 }
 
 .location-info {
   max-width: 800px;
+  width: 90%;
   padding: 2rem;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   text-align: center;
+  margin: auto;
 }
 
 .pub-details {

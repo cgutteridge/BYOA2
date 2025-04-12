@@ -1,5 +1,5 @@
 <template>
-  <div class="info-screen">
+  <div class="info-screen screen-container">
     <QuestInfo />
     <button class="continue-button" @click="continueToMap">Continue to Map</button>
   </div>
@@ -17,7 +17,7 @@ function continueToMap() {
 
 <style scoped>
 .info-screen {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,6 +25,7 @@ function continueToMap() {
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   color: white;
   gap: 2rem;
+  padding: 2rem 0;
 }
 
 .continue-button {

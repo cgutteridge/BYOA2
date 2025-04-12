@@ -1,5 +1,5 @@
 <template>
-  <div class="quest-start-screen">
+  <div class="quest-start-screen screen-container">
 
     <div class="quest-start-content">
       <h2>Start Your Quest</h2>
@@ -254,12 +254,13 @@ onMounted( () => {
 
 <style scoped>
 .quest-start-screen {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   color: white;
+  padding: 2rem 0;
 }
 
 .quest-start-content {
@@ -269,6 +270,7 @@ onMounted( () => {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   text-align: center;
+  margin: auto;
 }
 
 .pub-selection {
