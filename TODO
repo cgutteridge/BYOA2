@@ -6,11 +6,12 @@ Startup
 * set location type based on difficulty
 
 Pubs
-* Add monster generation
 * Add monster fighing UI
-* Add whitelist & blacklist for locations
-* Better UI when scouting
-* More descriptions for locations to give the AI. 
+* Add monster whitelist & blacklist for locations
+* colours for monesters
+* More descriptions for locations to give the AI more ideas.
+DONE  Add monster generation
+DONE Better UI when scouting
 
 Map
 * Upate GPS for user
@@ -23,14 +24,13 @@ Other
 * Quest Log
 * Rules and Guidelines
 * Game balance?
-* Adjust difficulty setting
-* 
+DONE Adjust difficulty setting
 
 Inventory
 * Add items
 * Inventory Store
 * Initial Inventory
-* Add passive effects
+* Add passive effects from item
 
 Endgame
 * Create end of game description

@@ -10,7 +10,7 @@
 
       <div class="pub-details">
 
-        <div v-if="pub.scouted">
+        <div v-if="pub.scouted && pub.description">
           <div class="location-description">{{ pub.description }}</div>
           <div class="prize-info">
             <h3>Reward:</h3>
@@ -22,6 +22,11 @@
           </div>
         </div>
         
+        <div v-else-if="pub.scouted && !pub.description" class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>Gathering information...</p>
+        </div>
+        
         <div v-else class="scout-options">
           <p>No information available about this pub.</p>
           <div class="action-buttons">
@@ -31,7 +36,7 @@
       </div>
       
       <div class="action-buttons">
-        <button v-if="pub.scouted" @click="enterPub">Enter Pub</button>
+        <button v-if="pub.scouted && pub.description" @click="enterPub">Enter Pub</button>
         <button @click="returnToMap">Return to Map</button>
       </div>
     </div>
@@ -210,5 +215,29 @@ button:disabled {
 
 .prize-info h3 {
   margin-bottom: 0.5rem;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: #4CAF50;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style> 
