@@ -8,7 +8,7 @@ Startup
 Pubs
 * Add monster fighing UI
 * Add monster whitelist & blacklist for locations
-* colours for monesters
+DONE colours for monesters
 * More descriptions for locations to give the AI more ideas.
 DONE  Add monster generation
 DONE Better UI when scouting
@@ -30,6 +30,7 @@ Inventory
 * Add items
 * Inventory Store
 * Initial Inventory
+* Use item
 * Add passive effects from item
 
 Endgame

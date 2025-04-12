@@ -40,29 +40,29 @@ export class ChatGPTAPI {
     }
   }
 
-  async generatePubDescription(pubName: string, pubType: string, enemies: string, prize: string): Promise<{
+  async generatePubDescription(pubName: string, pubType: string, enemies: string, prize: string,extraInstructions:string=''): Promise<{
     name: string,
     description: string,
     prizeName: string,
-    prizeDescription: string
+    prizeDescription: string,
+
   }> {
     const messages: Message[] = [
       {
         role: 'system',
         content: 'You are a creative quest generator for a pub-crawling game. Generate engaging ' +
-            'and humorous quest descriptions. Give me the JSON as plain text, no triple backticks, ' +
-            'no code formatting. To defeat each enemy a player must drink a specific drink. Make it lightly ribbing to the players like you want them to fail.'
+            'and humorous task descriptions. Give me the JSON as plain text, no triple backticks, ' +
+            'no code formatting. Make it lightly ribbing to the players like you want them to fail. Be sassy and bawdy. Think Monty Python and Dungeon Crawler Carl'
       },
       {
         role: 'user',
-        content: `Generate a quest description for a pub called "${pubName}". 
-        In the game the location is a ${pubType} and this quest involve defeating ${enemies}. 
+        content: `Generate a task description for a location represented in the player's world by a pub called "${pubName}". 
+        In the game the location is a ${pubType} and this task involve defeating ${enemies}. 
         The prize for success is ${prize}. 
-        If there are multiple enemies come up with how they are connected to the location and quest.
-        Feel free to invent a backstory for the enemies and location.
-        Make it sound like an epic adventure. 
-        Explain the quest in detail. Do not promise additional rewards. 
+       Explain a story of how they are connected to the location and test and the reward..
+        Do not promise additional rewards. 
         You may retitle the pub in an amusing way maybe combining the real name with the fantasy theme. 
+        ${extraInstructions}
         Respond in JSON format with the following fields: 
         "name", "description", "prizeName", "prizeDescription"`
       }

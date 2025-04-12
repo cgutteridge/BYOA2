@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAppStore } from './stores/appStore'
 
 import MapScreen from './screens/MapScreen.vue'
@@ -12,9 +12,32 @@ import VictoryScreen from './screens/VictoryScreen.vue'
 import LocationInfoScreen from "./screens/LocationInfoScreen.vue";
 
 const appStore = useAppStore()
+const isDebugMode = ref(false)
+
+// Check if debug mode is enabled via URL fragment
+function checkDebugMode() {
+  isDebugMode.value = window.location.hash === '#DEBUG'
+  console.log('Debug mode:', isDebugMode.value ? 'ENABLED' : 'disabled')
+}
 
 async function initializeGPS() {
   try {
+    // Check for debug mode
+    checkDebugMode()
+    
+    // If in debug mode, use fixed coordinates for Southampton
+    if (isDebugMode.value) {
+      const debugLocation = {
+        lat: 50.91018,
+        lng: -1.40419
+      }
+      console.log('DEBUG MODE: Using fixed GPS location:', debugLocation)
+      appStore.setPlayerLocation(debugLocation)
+      appStore.setGPSStatus('success')
+      return
+    }
+    
+    // Normal GPS initialization
     if (!navigator.geolocation) {
       appStore.setGPSStatus('error')
       return
@@ -53,11 +76,19 @@ async function initializeGPS() {
 onMounted(() => {
   console.log('App mounted, initializing GPS...')
   initializeGPS()
+  
+  // Listen for hash changes to toggle debug mode
+  window.addEventListener('hashchange', () => {
+    checkDebugMode()
+    initializeGPS() // Re-initialize GPS when debug mode changes
+  })
 })
 </script>
 
 <template>
   <div class="app">
+    <div v-if="isDebugMode" class="debug-banner">DEBUG MODE</div>
+    
     <div v-if="appStore.gpsStatus === 'initializing'" class="gps-status">
       <div class="loading-spinner"></div>
       <p>Awaiting GPS...</p>
@@ -68,6 +99,7 @@ onMounted(() => {
     </div>
     <div v-else-if="appStore.gpsStatus === 'error'" class="gps-error">
       <p>Unable to get your location. Please enable GPS and refresh the page.</p>
+      <p><a href="#DEBUG">Enable Debug Mode</a></p>
     </div>
     <template v-else>
       <QuestStartScreen v-if="appStore.screen === 'start_quest'" />
@@ -128,6 +160,19 @@ body {
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s ease-in-out infinite;
+}
+
+.debug-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #f00;
+  color: white;
+  text-align: center;
+  padding: 5px;
+  font-weight: bold;
+  z-index: 9999;
 }
 
 @keyframes spin {

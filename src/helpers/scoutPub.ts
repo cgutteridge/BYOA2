@@ -3,7 +3,7 @@ import {ChatGPTAPI} from '../api/chatGPT'
 import generateMonsters from './generateMonsters.ts'
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {monsterTypes} from "@/data/monsterTypes.ts";
-
+import { useQuestStore } from '@/stores/questStore.ts';
 /**
  * Scout a location, generating its description, monsters, and prize
  * @param pub The pub to scout
@@ -13,6 +13,8 @@ export async function scoutPub(
     pub: Pub,
 ): Promise<boolean> {
     const chatGPT = new ChatGPTAPI()
+    const questStore = useQuestStore()
+    const quest = 
 
     // Mark the pub as scouted
     pub.scouted = true
@@ -28,6 +30,16 @@ export async function scoutPub(
 
     const locationType = locationTypesById[pub.locationType]
 
+    let extraInstructions = ''
+    if(pub.difficulty === 'start') {
+        extraInstructions = `this is the first pub in the quest, where the quest begins.
+         Please describe how this location triggers the whole quest. The quest is "${questStore.title}: ${questStore.description}"`
+    }
+    if(pub.difficulty === 'end') {
+        extraInstructions = `this is the last pub in the quest, where the quest ends. The quest was "${questStore.title}: ${questStore.description}"`
+    }
+   
+    console.log(pub,extraInstructions)
     // Generate pub description, name, and prize from AI
     const {
         name,
@@ -38,7 +50,8 @@ export async function scoutPub(
         pub.name,
         locationType.title,
         monstersDescription,
-        "an item that lets you defeat any single enemy. Single use.."
+        "an item that lets you defeat any single enemy. Single use..",
+        extraInstructions
     )
 
     // Update the pub with the new information
@@ -62,6 +75,6 @@ export function formatMonstersDescription(monsters: Unit[]): string {
         const monsterType = monsterTypes.find(m => m.id === monster.type);
         const title = monsterType?.title || monster.type;
         const drink = monsterType?.drink || "unknown drink";
-        return `${monster.count} ${title} (drinks: ${drink})`;
+        return `${monster.count} ${title}`;
     }).join(', ');
 }
