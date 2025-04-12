@@ -15,7 +15,12 @@
             <div>{{ pub.prizeName }}</div>
           </div>
           <h3>Monsters Present:</h3>
-          <div v-for="(monster, index) in appStore.focusPub?.monsters" :key="index" class="monster">
+          <div 
+            v-for="(monster, index) in appStore.focusPub?.monsters" 
+            :key="index" 
+            class="monster-card"
+            :class="getMonsterClasses(monster.type)"
+          >
             <div class="monster-title">{{ getMonsterTitle(monster.type) }} (x{{ monster.count }})</div>
             <div class="drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
           </div>
@@ -51,6 +56,7 @@ import {locationTypesById} from "@/data/locationTypes.ts";
 import {LocationType, Pub} from "@/types";
 import {scoutPub} from "@/helpers/scoutPub.ts";
 import {monsterTypes} from "../data/monsterTypes";
+import '../styles/monsterStyles.css';
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
@@ -81,6 +87,16 @@ function getMonsterTitle(monsterId: string): string {
 function getMonsterDrink(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   return monster?.drink || "Unknown"
+}
+
+function getMonsterClasses(monsterId: string): Record<string, boolean> {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return {}
+  
+  return {
+    [`monster-${monster.species}`]: true,
+    [`monster-${monster.level}`]: true
+  }
 }
 
 function callScoutPub() {
@@ -142,23 +158,6 @@ const difficultyClass = computed(() => {
 
 .monster-info {
   margin-top: 2rem;
-}
-
-.monster {
-  margin: 1rem 0;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-}
-
-.monster-title {
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-.drink {
-  color: #ffcc00;
-  margin-top: 0.5rem;
 }
 
 .description {

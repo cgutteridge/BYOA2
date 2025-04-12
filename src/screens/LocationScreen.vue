@@ -8,7 +8,12 @@
     </div>
 
     <div class="monster-list" v-if="questStore.currentPub?.monsters">
-      <div v-for="(monster, index) in questStore.currentPub.monsters" :key="index" class="monster-card">
+      <div 
+        v-for="(monster, index) in questStore.currentPub.monsters" 
+        :key="index" 
+        class="monster-card"
+        :class="getMonsterClasses(monster.type)"
+      >
         <div class="monster-info">
           <h3>{{ getMonsterTitle(monster.type) }}</h3>
           <p>Count: {{ monster.count }}</p>
@@ -35,6 +40,7 @@ import {useAppStore} from "../stores/appStore.js";
 import {useQuestStore} from "../stores/questStore.js";
 import {monsterTypes} from "../data/monsterTypes";
 import {computed} from "vue";
+import '../styles/monsterStyles.css';
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
@@ -52,6 +58,16 @@ function getMonsterTitle(monsterId: string): string {
 function getMonsterDrink(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   return monster?.drink || "Unknown"
+}
+
+function getMonsterClasses(monsterId: string): Record<string, boolean> {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return {}
+  
+  return {
+    [`monster-${monster.species}`]: true,
+    [`monster-${monster.level}`]: true
+  }
 }
 
 function attackMonster(index: number) {
@@ -104,15 +120,6 @@ function leavePub() {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
-}
-
-.monster-card {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .monster-info {

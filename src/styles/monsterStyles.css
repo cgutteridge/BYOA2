@@ -1,0 +1,127 @@
+/* Monster species-based styles */
+.monster-vampire {
+  background-color: #8B0000;  /* Dark blood red */
+  color: #FFFFFF;             /* White */
+  border-color: #FF0000;      /* Bright red */
+}
+.monster-vampire.monster-boss { box-shadow: 0 0 10px #FF0000; }
+.monster-vampire.monster-elite { box-shadow: 0 0 5px #FF0000; }
+
+.monster-ghost {
+  background-color: #E6F2FF;  /* Pale blue */
+  color: #000033;             /* Dark navy */
+  border-color: #A6C9E2;      /* Light blue */
+}
+.monster-ghost.monster-boss { box-shadow: 0 0 10px #A6C9E2; }
+.monster-ghost.monster-elite { box-shadow: 0 0 5px #A6C9E2; }
+
+.monster-human {
+  background-color: #8B4513;  /* Saddle brown */
+  color: #F5F5DC;             /* Beige */
+  border-color: #A0522D;      /* Sienna */
+}
+.monster-human.monster-boss { box-shadow: 0 0 10px #A0522D; }
+.monster-human.monster-elite { box-shadow: 0 0 5px #A0522D; }
+
+.monster-chameleonoid {
+  background-color: #9370DB;  /* Medium purple */
+  color: #FFFFFF;             /* White */
+  border-color: #4B0082;      /* Indigo */
+}
+.monster-chameleonoid.monster-boss { box-shadow: 0 0 10px #4B0082; }
+.monster-chameleonoid.monster-elite { box-shadow: 0 0 5px #4B0082; }
+
+.monster-goblinoid {
+  background-color: #2F4F4F;  /* Dark slate gray */
+  color: #8FBC8F;             /* Dark sea green */
+  border-color: #006400;      /* Dark green */
+}
+.monster-goblinoid.monster-boss { box-shadow: 0 0 10px #006400; }
+.monster-goblinoid.monster-elite { box-shadow: 0 0 5px #006400; }
+
+.monster-elf {
+  background-color: #228B22;  /* Forest green */
+  color: #F0FFF0;             /* Honeydew (very light green) */
+  border-color: #7CFC00;      /* Lawn green */
+}
+.monster-elf.monster-boss { box-shadow: 0 0 10px #7CFC00; }
+.monster-elf.monster-elite { box-shadow: 0 0 5px #7CFC00; }
+
+.monster-demonoid {
+  background-color: #B22222;  /* Firebrick */
+  color: #FFD700;             /* Gold */
+  border-color: #FF4500;      /* Orange red */
+}
+.monster-demonoid.monster-boss { box-shadow: 0 0 10px #FF4500; }
+.monster-demonoid.monster-elite { box-shadow: 0 0 5px #FF4500; }
+
+.monster-dwarf {
+  background-color: #696969;  /* Dim gray */
+  color: #F5F5F5;             /* White smoke */
+  border-color: #A9A9A9;      /* Dark gray */
+}
+.monster-dwarf.monster-boss { box-shadow: 0 0 10px #A9A9A9; }
+.monster-dwarf.monster-elite { box-shadow: 0 0 5px #A9A9A9; }
+
+.monster-special {
+  background-color: #4B0082;  /* Indigo */
+  color: #E6E6FA;             /* Lavender */
+  border-color: #9932CC;      /* Dark orchid */
+}
+.monster-special.monster-boss { box-shadow: 0 0 10px #9932CC; }
+.monster-special.monster-elite { box-shadow: 0 0 5px #9932CC; }
+
+.monster-fey {
+  background-color: #00FA9A;  /* Medium spring green */
+  color: #191970;             /* Midnight blue */
+  border-color: #00FFFF;      /* Cyan */
+}
+.monster-fey.monster-boss { box-shadow: 0 0 10px #00FFFF; }
+.monster-fey.monster-elite { box-shadow: 0 0 5px #00FFFF; }
+
+/* Monster level-based styles */
+.monster-boss {
+  border-width: 4px;
+  border-style: double;
+}
+
+.monster-elite {
+  border-width: 3px;
+  border-style: solid;
+}
+
+.monster-grunt {
+  border-width: 2px;
+  border-style: solid;
+}
+
+.monster-minion {
+  border-width: 1px;
+  border-style: solid;
+}
+
+/* Common monster card styles */
+.monster-card {
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease;
+  margin: 1rem 0;
+}
+
+.monster-card:hover {
+  transform: translateY(-5px);
+}
+
+.monster-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.drink {
+  margin-top: 0.5rem;
+  color: inherit;
+  opacity: 0.85;
+} 
