@@ -125,6 +125,10 @@ onUnmounted(() => {
   <div class="app">
     <div v-if="isDebugMode" class="debug-banner">DEBUG MODE</div>
     
+    <div class="debug-overlay" v-if="appStore.playerLocation">
+      <div>{{ appStore.playerLocation.lat.toFixed(5) }}, {{ appStore.playerLocation.lng.toFixed(5) }}</div>
+    </div>
+    
     <div v-if="appStore.gpsStatus === 'initializing'" class="gps-status">
       <div class="loading-spinner"></div>
       <p>Awaiting GPS...</p>
@@ -196,6 +200,20 @@ body {
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s ease-in-out infinite;
+}
+
+.debug-overlay {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 50%;
+  z-index: 9999;
+  pointer-events: none; /* Pass through clicks */
+  font-family: monospace;
 }
 
 .debug-banner {

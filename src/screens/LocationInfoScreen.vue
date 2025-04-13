@@ -86,6 +86,7 @@ const playerDistance = computed(() => {
 
 const canScout = computed(() => {
   if (!playerDistance.value) return false;
+  // 50 meters is the scouting distance
   return playerDistance.value <= 50;
 });
 
