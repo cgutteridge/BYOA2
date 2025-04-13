@@ -2,7 +2,10 @@
   <div class="location-info-screen screen-container">
     <div class="location-info">
       <h2>{{ pub.name }}<template v-if="!pub.scouted"> ({{ locationType.title }})</template></h2>
- 
+      <div class="distance-info" v-if="playerDistance !== null">
+        <span>{{ Math.round(playerDistance) }}m away</span>
+      </div>
+      
       <div class="pub-details">
         <div v-if="pub.scouted && pub.description">
           <div class="location-description">{{ pub.description }}</div>
@@ -70,18 +73,21 @@ const pub = computed(() => {
 )
 const locationType = computed((): LocationType => locationTypesById[pub.value.locationType])
 
-const canScout = computed(() => {
-  if (!appStore.playerLocation || !appStore.focusPub) return false
-
-  const distance = calculateDistance(
-      appStore.playerLocation.lat,
-      appStore.playerLocation.lng,
-      appStore.focusPub.lat,
-      appStore.focusPub.lng
-  )
+const playerDistance = computed(() => {
+  if (!appStore.playerLocation || !appStore.focusPub) return null;
   
-  return distance <= 50
-})
+  return calculateDistance(
+    appStore.playerLocation.lat,
+    appStore.playerLocation.lng,
+    appStore.focusPub.lat,
+    appStore.focusPub.lng
+  );
+});
+
+const canScout = computed(() => {
+  if (!playerDistance.value) return false;
+  return playerDistance.value <= 50;
+});
 
 function getMonsterTitle(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
@@ -268,6 +274,13 @@ button:disabled {
 
 .location-info h2 {
   margin-bottom: 0.25rem;
+}
+
+.distance-info {
+  display: inline-block;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .location-info h3 {
