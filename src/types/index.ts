@@ -18,8 +18,6 @@ export interface Pub {
   difficulty?: LocationDifficulty
   monsters?: Unit[]
   scouted: boolean
-  prizeName?: string
-  prizeDescription?: string
   giftItem?: Item
   prizeItem?: Item
 }

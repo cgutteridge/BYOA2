@@ -56,25 +56,43 @@ export async function scoutPub(
     }
    
     console.log(pub,extraInstructions)
-    // Generate pub description, name, and prize from AI
+    
+    // Get prize and gift item powers to pass to ChatGPT
+    const prizeItemPower = pub.prizeItem?.power || "an item that lets you defeat any single enemy";
+    const giftItemPower = pub.giftItem?.power;
+    
+    // Generate pub description, name, and item details from AI
     const {
         name,
         description,
-        prizeName,
-        prizeDescription
+        prizeItemName,
+        prizeItemDescription,
+        giftItemName,
+        giftItemDescription
     } = await chatGPT.generatePubDescription(
         pub.name,
         locationType.title,
         monstersDescription,
-        "an item that lets you defeat any single enemy. Single use..",
-        extraInstructions
+        prizeItemPower,
+        extraInstructions,
+        giftItemPower
     )
 
     // Update the pub with the new information
-    pub.name = name
-    pub.prizeName = prizeName
-    pub.prizeDescription = prizeDescription
-    pub.description = description
+    pub.name = name;
+    pub.description = description;
+    
+    // Update prize item with AI-generated name and description
+    if (pub.prizeItem) {
+        pub.prizeItem.name = prizeItemName;
+        pub.prizeItem.description = prizeItemDescription;
+    }
+    
+    // Update gift item with AI-generated name and description (if available)
+    if (pub.giftItem && giftItemName && giftItemDescription) {
+        pub.giftItem.name = giftItemName;
+        pub.giftItem.description = giftItemDescription;
+    }
 
     return true
 }

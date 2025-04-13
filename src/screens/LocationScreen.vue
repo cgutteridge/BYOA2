@@ -118,7 +118,7 @@
       </div>
     </div>
   </div>
-  {{ questStore.currentPub }}
+  <pre>{{ questStore.currentPub }}</pre>
 </template>
 
 <script setup lang="ts">

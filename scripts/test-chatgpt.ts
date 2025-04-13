@@ -10,7 +10,8 @@ async function testChatGPT() {
       pubName: 'The Red Lion',
       pubType: 'Castle',
       enemies: '3 orks, 1 goblin',
-      prize: 'a healing item with 3 uses. NOT wearable'
+      prizeItemPower: 'Restores health to all allies',
+      giftItemPower: 'Transforms a simple object into another form'
     }
 
     console.log('\nGenerating quest description with:')
@@ -20,7 +21,9 @@ async function testChatGPT() {
       testData.pubName,
       testData.pubType,
       testData.enemies,
-      testData.prize
+      testData.prizeItemPower,
+      '',
+      testData.giftItemPower
     )
 
     console.log('\nResult:')

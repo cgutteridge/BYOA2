@@ -9,9 +9,16 @@
       <div class="pub-details">
         <div v-if="pub.scouted && pub.description">
           <div class="location-description">{{ pub.description }}</div>
-          <div class="prize-info">
+          <div v-if="pub.prizeItem" class="prize-info">
             <h3>Reward:</h3>
-            <div>{{ pub.prizeName }}</div>
+            <div class="prize-name">{{ pub.prizeItem.name }}</div>
+            <div class="prize-details">
+              <span class="prize-label">Power:</span> {{ pub.prizeItem.power }}
+            </div>
+            <div v-if="pub.prizeItem.description" class="prize-story">
+              <div class="story-label">Story:</div>
+              <div class="story-text">{{ pub.prizeItem.description }}</div>
+            </div>
           </div>
           <h3 class="monsters-heading">Monsters Present:</h3>
           <div 
@@ -209,10 +216,52 @@ button:disabled {
 
 .prize-info {
   margin: 1.25rem 0;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: left;
 }
 
 .prize-info h3 {
+  margin-bottom: 0.5rem;
+  text-align: center;
+  color: #ffeb3b;
+}
+
+.prize-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  text-align: center;
+}
+
+.prize-details {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.prize-label {
+  font-weight: bold;
+  color: #8bc34a;
+}
+
+.prize-story {
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.story-label {
+  font-weight: bold;
+  color: #ffeb3b;
   margin-bottom: 0.25rem;
+  font-style: normal;
+}
+
+.story-text {
+  font-style: italic;
 }
 
 .loading-state {
