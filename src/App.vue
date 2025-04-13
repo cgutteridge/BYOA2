@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, onUnmounted } from 'vue'
 import { useAppStore } from './stores/appStore'
+import { useQuestStore } from './stores/questStore'
 
 import MapScreen from './screens/MapScreen.vue'
 import QuestStartScreen from './screens/QuestStartScreen.vue'
@@ -12,6 +13,7 @@ import VictoryScreen from './screens/VictoryScreen.vue'
 import LocationInfoScreen from "./screens/LocationInfoScreen.vue";
 
 const appStore = useAppStore()
+const questStore = useQuestStore()
 const isDebugMode = ref(false)
 const watchId = ref<number | null>(null)
 
@@ -126,7 +128,8 @@ onUnmounted(() => {
     <div v-if="isDebugMode" class="debug-banner">DEBUG MODE</div>
     
     <div class="debug-overlay" v-if="appStore.playerLocation">
-      <div>{{ appStore.playerLocation.lat.toFixed(5) }}, {{ appStore.playerLocation.lng.toFixed(5) }}</div>
+      <div>COORDS: {{ appStore.playerLocation.lat.toFixed(5) }}, {{ appStore.playerLocation.lng.toFixed(5) }}</div>
+      <div>XP: {{ questStore.xp }}</div>
     </div>
     
     <div v-if="appStore.gpsStatus === 'initializing'" class="gps-status">

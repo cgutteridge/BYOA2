@@ -25,7 +25,7 @@
             :key="enemyIndex"
             class="enemy-card"
             :class="[getMonsterClasses(unit.type), { 'defeated': !enemy.alive }]"
-            @click="toggleEnemyStatus(unitIndex, enemyIndex)"
+            @click="handleToggleEnemy(unitIndex, enemyIndex)"
           >
             <div class="enemy-info">
               <div class="enemy-name">{{ enemy.name }}</div>
@@ -42,23 +42,17 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {Unit} from "../types";
+import {isUnitDefeated, toggleEnemyStatus} from "../helpers/combatHelper";
 import '../styles/monsterStyles.css';
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
 
-function isUnitDefeated(unit: Unit): boolean {
-  return unit.members.every(enemy => !enemy.alive)
-}
-
-function toggleEnemyStatus(unitIndex: number, enemyIndex: number): void {
+function handleToggleEnemy(unitIndex: number, enemyIndex: number): void {
   if (!questStore.currentPub?.monsters) return
   
   const unit = questStore.currentPub.monsters[unitIndex]
-  const enemy = unit.members[enemyIndex]
-  
-  // Toggle the alive status
-  enemy.alive = !enemy.alive
+  toggleEnemyStatus(unit, enemyIndex)
 }
 
 function getMonsterTitle(monsterId: string): string {
