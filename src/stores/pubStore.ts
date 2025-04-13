@@ -5,6 +5,7 @@ import {LocationDifficulty} from '../types'
 import {useAppStore} from './appStore'
 import fetchNearbyPubs from "../helpers/overpass"
 import {scoutPub} from '../helpers/scoutPub.ts'
+import calculateDistance from '../helpers/calculateDistance'
 
 export const usePubStore = defineStore('pub', () => {
   const appStore = useAppStore()
@@ -26,6 +27,27 @@ export const usePubStore = defineStore('pub', () => {
   const setPubType = (pubId: PubId, type: LocationTypeId) => {
     const targetPub = pub(pubId)
     targetPub.locationType = type
+  }
+
+  // Check if a pub can be scouted based on player's distance to it (within 50 meters)
+  const canScout = (pubId: PubId): boolean => {
+    if (!appStore.playerLocation) return false
+    
+    try {
+      const targetPub = pub(pubId)
+      const distance = calculateDistance(
+        appStore.playerLocation.lat,
+        appStore.playerLocation.lng,
+        targetPub.lat,
+        targetPub.lng
+      )
+      
+      // 50 meters is the scouting distance
+      return distance <= 50
+    } catch (error) {
+      console.error(`Error checking if pub can be scouted: ${error}`)
+      return false
+    }
   }
 
   const fetchNearbyPubsFromAPI = async () => {
@@ -59,6 +81,7 @@ export const usePubStore = defineStore('pub', () => {
     fetchNearbyPubs: fetchNearbyPubsFromAPI,
     scoutPub,
     pub,
+    canScout,
     setPubDifficulty,
     setPubType,
     persist

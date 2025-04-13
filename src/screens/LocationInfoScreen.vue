@@ -41,7 +41,7 @@
         <div v-else class="scout-options">
           <p>No information available about this pub.</p>
           <div class="action-buttons">
-            <button @click="callScoutPub" :disabled="!canScout">Scout</button>
+            <button @click="callScoutPub" :disabled="!pubStore.canScout(pub.id)">Scout</button>
           </div>
         </div>
       </div>
@@ -59,6 +59,7 @@ import {computed} from 'vue'
 import calculateDistance from "../helpers/calculateDistance";
 import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
+import {usePubStore} from "../stores/pubStore";
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {LocationType, Pub} from "@/types";
 import {scoutPub} from "@/helpers/scoutPub.ts";
@@ -67,6 +68,7 @@ import '../styles/monsterStyles.css';
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
+const pubStore = usePubStore()
 const pub = computed(() => {
       return appStore.focusPub as Pub
     }
@@ -82,12 +84,6 @@ const playerDistance = computed(() => {
     appStore.focusPub.lat,
     appStore.focusPub.lng
   );
-});
-
-const canScout = computed(() => {
-  if (!playerDistance.value) return false;
-  // 50 meters is the scouting distance
-  return playerDistance.value <= 50;
 });
 
 function getMonsterTitle(monsterId: string): string {
