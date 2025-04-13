@@ -125,6 +125,11 @@ export async function scoutPub(
                 unit.members.forEach((member, memberIndex) => {
                     if (unitNamesData[unitIndex].memberNames[memberIndex]) {
                         member.name = unitNamesData[unitIndex].memberNames[memberIndex];
+                        
+                        // If this is a single-member unit, set the unit name to match the member name
+                        if (unit.members.length === 1 && memberIndex === 0) {
+                            unit.name = member.name;
+                        }
                     }
                 });
             }

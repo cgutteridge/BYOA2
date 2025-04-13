@@ -51,7 +51,7 @@
           <div class="unit-title">{{ unit.name }}</div>
           <div class="unit-subinfo">{{ getMonsterTitle(unit.type) }}, {{ getMonsterSpecies(unit.type) }} {{ getMonsterLevel(unit.type) }}{{ getMonsterTraits(unit.type) }}</div>
           <div class="unit-drink"><strong>Drink:</strong> {{ getMonsterDrink(unit.type) }}</div>
-          <div class="unit-xp"><strong>XP:</strong> {{ getMonsterXP(unit.type) }}</div>
+          <div class="unit-xp">{{ getMonsterXP(unit.type) }} XP</div>
         </div>
         
         <div class="enemies-container location-enemies">
@@ -414,6 +414,7 @@ function leavePub() {
 .unit-header {
   margin-bottom: 1.5rem;
   text-align: left;
+  position: relative;
 }
 
 .unit-title {
@@ -422,6 +423,7 @@ function leavePub() {
   margin-bottom: 0.25rem;
   color: #ffeb3b;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  padding-right: 70px; /* Make room for XP */
 }
 
 .unit-subinfo {
@@ -433,6 +435,17 @@ function leavePub() {
 .unit-drink, .unit-xp {
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
+}
+
+.unit-xp {
+  position: absolute;
+  top: 0.25rem;
+  right: 0;
+  font-size: 0.95rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  font-weight: bold;
 }
 
 .unit-item-section {
@@ -460,11 +473,21 @@ function leavePub() {
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .enemy-card.defeated {
   opacity: 0.5;
   filter: grayscale(1);
+}
+
+.enemy-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
 }
 
 .enemy-name {
