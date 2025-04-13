@@ -48,8 +48,8 @@
         :class="{ 'defeated': isUnitDefeated(unit) }"
       >
         <div class="unit-header">
-          <div class="unit-title">{{ getMonsterTitle(unit.type) }}</div>
-          <div class="unit-subinfo">{{ getMonsterSpecies(unit.type) }} {{ getMonsterLevel(unit.type) }}{{ getMonsterTraits(unit.type) }}</div>
+          <div class="unit-title">{{ unit.name }}</div>
+          <div class="unit-subinfo">{{ getMonsterTitle(unit.type) }} ({{ getMonsterSpecies(unit.type) }} {{ getMonsterLevel(unit.type) }}{{ getMonsterTraits(unit.type) }})</div>
           <div class="unit-drink"><strong>Drink:</strong> {{ getMonsterDrink(unit.type) }}</div>
           <div class="unit-xp"><strong>XP:</strong> {{ getMonsterXP(unit.type) }}</div>
         </div>
@@ -417,15 +417,18 @@ function leavePub() {
 }
 
 .unit-title {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 0.25rem;
+  color: #ffeb3b;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .unit-subinfo {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-style: italic;
 }
 
 .unit-drink, .unit-xp {

@@ -31,8 +31,8 @@
               <span>{{ monster.members.length }}x</span>
             </div>
             <div class="monster-info">
-              <div class="monster-title">{{ getMonsterTitle(monster.type) }}</div>
-              <div class="monster-subinfo">{{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }}</div>
+              <div class="monster-title">{{ monster.name }}</div>
+              <div class="monster-subinfo">{{ getMonsterTitle(monster.type) }} ({{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }})</div>
               <div class="monster-xp">{{ getMonsterXP(monster.type) }} XP</div>
               <div class="monster-details">
                 <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
@@ -320,15 +320,18 @@ button:disabled {
 
 .monster-title {
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   margin-bottom: 0.25rem;
   padding-right: 60px; /* Make room for XP */
+  color: #ffeb3b;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .monster-subinfo {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   margin-bottom: 0.25rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
+  font-style: italic;
 }
 
 .monster-xp {
