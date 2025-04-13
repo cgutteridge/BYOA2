@@ -20,7 +20,12 @@
               <div class="story-text">{{ pub.prizeItem.description }}</div>
             </div>
           </div>
-          <h3 class="monsters-heading">Monsters Present:</h3>
+          <h3 class="monsters-heading">Active Monsters:</h3>
+          
+          <!-- Show a message when all monsters are defeated -->
+          <div v-if="allMonstersDefeated" class="all-defeated-message">
+            All monsters have been defeated!
+          </div>
           
           <!-- Group monsters by type and display -->
           <div v-for="(group, index) in groupedMonsters" :key="index" class="monster-type-group">
@@ -96,19 +101,23 @@ const playerDistance = computed(() => {
   );
 });
 
-// Group monsters by type for display
+// Group undefeated monsters by type for display
 const groupedMonsters = computed(() => {
   if (!appStore.focusPub?.monsters || !appStore.focusPub.monsters.length) {
     return [];
   }
   
-  // Group monsters by type
+  // Group undefeated monsters by type
   const monstersByType = new Map<string, {
     type: string,
     monsters: Monster[]
   }>();
   
+  // Only include monsters that are still alive
   appStore.focusPub.monsters.forEach(monster => {
+    // Skip defeated monsters
+    if (!monster.alive) return;
+    
     if (!monstersByType.has(monster.type)) {
       monstersByType.set(monster.type, {
         type: monster.type,
@@ -120,8 +129,20 @@ const groupedMonsters = computed(() => {
     group.monsters.push(monster);
   });
   
-  // Convert Map to array for v-for
-  return Array.from(monstersByType.values());
+  // Filter out empty groups
+  const nonEmptyGroups = Array.from(monstersByType.values())
+    .filter(group => group.monsters.length > 0);
+  
+  return nonEmptyGroups;
+});
+
+// Check if all monsters are defeated
+const allMonstersDefeated = computed(() => {
+  if (!appStore.focusPub?.monsters || appStore.focusPub.monsters.length === 0) {
+    return false;
+  }
+  
+  return appStore.focusPub.monsters.every(monster => !monster.alive);
 });
 
 function getMonsterTitle(monsterId: string): string {
@@ -403,5 +424,17 @@ button:disabled {
 
 .monster-type-group {
   margin-bottom: 1rem;
+}
+
+.all-defeated-message {
+  margin: 1rem 0 2rem;
+  padding: 1rem;
+  font-style: italic;
+  color: #4CAF50;
+  font-weight: bold;
+  text-align: center;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 </style> 
