@@ -43,35 +43,50 @@
     <div class="combat-container" v-if="questStore.currentPub?.monsters">
       <h3>Monsters:</h3>
       
-      <!-- All monsters in a single list with active ones first -->
+      <!-- All monsters in a 3-column flex layout with active ones first -->
       <div class="monsters-container">
         <div 
           v-for="monster in sortedMonsters" 
           :key="monster.type + monster.name"
           class="monster-card"
           :class="[getMonsterClasses(monster.type), { 'defeated': !monster.alive }]"
-          @click="toggleMonsterStatus(monster)"
         >
-          <div class="monster-info">
+          <!-- Monster header with name and status controls -->
+          <div class="monster-header">
             <div class="monster-name">{{ monster.name }}</div>
-            <div class="monster-details">
-              <div class="monster-type">{{ getMonsterTitle(monster.type) }}</div>
-              <div class="monster-race">{{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }}</div>
-              <div class="monster-drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
-              <div class="monster-xp"><strong>XP:</strong> {{ getMonsterXP(monster.type) }}</div>
+            <div class="monster-controls">
+              <button 
+                class="monster-toggle-btn" 
+                :class="{ 'kill-btn': monster.alive, 'unkill-btn': !monster.alive }"
+                @click="toggleMonsterStatus(monster)"
+              >
+                <span class="toggle-icon">{{ monster.alive ? '☠️' : '🔄' }}</span>
+                {{ monster.alive ? 'Defeat' : 'Revive' }}
+                <span class="xp-text">{{ getMonsterXP(monster.type) }} XP</span>
+              </button>
             </div>
-            
-            <!-- Monster item (if any) -->
-            <div v-if="monster.item" class="monster-item">
-              <div class="item-info">
-                <div class="item-name" :class="{'item-name-level4': monster.item.level === 4, 'item-name-level5': monster.item.level === 5}">
-                  {{ monster.item.name }}
-                </div>
-                <div class="item-power">{{ monster.item.power }}</div>
-                <button class="take-item-btn" :class="{'take-item-btn-level4': monster.item.level === 4, 'take-item-btn-level5': monster.item.level === 5}" :disabled="monster.alive">
-                  {{ !monster.alive ? 'Claim Item' : 'Defeat to claim' }}
-                </button>
+          </div>
+          
+          <!-- Monster type info row -->
+          <div class="monster-subinfo">
+            {{ getMonsterTitle(monster.type) }} - {{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }}
+          </div>
+          
+          <!-- Monster drink bottom bar -->
+          <div class="monster-drink-bar">
+            {{ getMonsterDrink(monster.type) }}
+          </div>
+          
+          <!-- Monster item (if any) -->
+          <div v-if="monster.item" class="monster-item">
+            <div class="item-info">
+              <div class="item-name" :class="{'item-name-level4': monster.item.level === 4, 'item-name-level5': monster.item.level === 5}">
+                {{ monster.item.name }}
               </div>
+              <div class="item-power">{{ monster.item.power }}</div>
+              <button class="take-item-btn" :class="{'take-item-btn-level4': monster.item.level === 4, 'take-item-btn-level5': monster.item.level === 5}" :disabled="monster.alive">
+                {{ !monster.alive ? 'Claim Item' : 'Defeat to claim' }}
+              </button>
             </div>
           </div>
         </div>
@@ -370,58 +385,158 @@ function leavePub() {
 }
 
 .monsters-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1rem;
 }
 
 .monster-card {
-  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  padding: 1rem;
-  cursor: pointer;
+  padding: 0;
   transition: all 0.3s ease;
   text-align: left;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Colored backgrounds based on monster species */
+.monster-vampire {
+  background: linear-gradient(135deg, #480708 0%, #710b0d 100%);
+}
+
+.monster-ghost {
+  background: linear-gradient(135deg, #2d3a4a 0%, #3f51b5 100%);
+}
+
+.monster-human {
+  background: linear-gradient(135deg, #4a3932 0%, #795548 100%);
+}
+
+.monster-chameleonoid {
+  background: linear-gradient(135deg, #1b5e20 0%, #4caf50 100%);
+}
+
+.monster-goblinoid {
+  background: linear-gradient(135deg, #424242 0%, #757575 100%);
+}
+
+.monster-elf {
+  background: linear-gradient(135deg, #0d47a1 0%, #2196f3 100%);
+}
+
+.monster-demonoid {
+  background: linear-gradient(135deg, #bf360c 0%, #ff5722 100%);
+}
+
+.monster-dwarf {
+  background: linear-gradient(135deg, #52433a 0%, #8d6e63 100%);
+}
+
+.monster-special {
+  background: linear-gradient(135deg, #311b92 0%, #673ab7 100%);
+}
+
+.monster-fey {
+  background: linear-gradient(135deg, #00695c 0%, #009688 100%);
+}
+
+/* Darker backgrounds for boss and elite monsters */
+.monster-boss {
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.monster-elite {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .monster-card.defeated {
-  opacity: 0.7;
-  filter: grayscale(0.7);
+  opacity: 0.6;
+  filter: grayscale(0.8);
 }
 
-.monster-info {
+.monster-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem 0.5rem;
+}
+
+.monster-controls {
+  display: flex;
+  align-items: center;
+}
+
+.monster-toggle-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  align-items: center;
+  min-width: 90px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.toggle-icon {
+  font-size: 1.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.xp-text {
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+  opacity: 0.9;
+}
+
+.kill-btn {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(244, 67, 54, 0.7);
+}
+
+.unkill-btn {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(76, 175, 80, 0.7);
 }
 
 .monster-name {
   font-weight: bold;
   font-size: 1.3rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
+  padding-right: 0.5rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  color: white;
 }
 
-.monster-details {
+.monster-subinfo {
+  padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  margin-bottom: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
   color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.monster-type, .monster-race, .monster-drink, .monster-xp {
-  padding: 0.3rem 0.6rem;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-  display: inline-block;
+.monster-drink-bar {
+  background: rgba(0, 0, 0, 0.4);
+  text-align: center;
+  padding: 0.8rem;
+  margin-top: auto;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: white;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .monster-item {
-  margin-top: 1rem;
+  margin-top: 0;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 1rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .item-info {
@@ -434,12 +549,15 @@ function leavePub() {
   font-size: 1.1rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .item-power {
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
   color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 button {
