@@ -25,6 +25,7 @@
             </div>
             <div class="monster-info">
               <div class="monster-title">{{ getMonsterTitle(monster.type) }}</div>
+              <div class="monster-subinfo">{{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }}</div>
               <div class="monster-xp">{{ getMonsterXP(monster.type) }} XP</div>
               <div class="monster-details">
                 <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
@@ -109,6 +110,29 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
     [`monster-${monster.species}`]: true,
     [`monster-${monster.level}`]: true
   }
+}
+
+function getMonsterSpecies(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return ""
+  
+  // Capitalize first letter of species
+  return monster.species.charAt(0).toUpperCase() + monster.species.slice(1)
+}
+
+function getMonsterLevel(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return ""
+  
+  // Capitalize first letter of level
+  return monster.level.charAt(0).toUpperCase() + monster.level.slice(1)
+}
+
+function getMonsterTraits(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster || !monster.flags || monster.flags.length === 0) return ""
+  
+  return ` (${monster.flags.join(', ')})`
 }
 
 function callScoutPub() {
@@ -250,6 +274,12 @@ button:disabled {
   font-size: 1.2rem;
   margin-bottom: 0.25rem;
   padding-right: 60px; /* Make room for XP */
+}
+
+.monster-subinfo {
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .monster-xp {
