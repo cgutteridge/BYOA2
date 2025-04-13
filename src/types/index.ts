@@ -16,7 +16,7 @@ export interface Pub {
   lng: number
   locationType: LocationTypeId
   difficulty?: LocationDifficulty
-  monsters?: Unit[]
+  monsters?: Monster[]
   scouted: boolean
   giftItem?: Item
   prizeItem?: Item
@@ -56,16 +56,11 @@ export interface MonsterType {
   xp: number  // Experience points (based on alcohol units)
 }
 
-export interface Unit {
+export interface Monster {
   type: string
   name: string
-  members: Enemy[]
-  item?: Item
-}
-
-export interface Enemy {
-  name: string
   alive: boolean
+  item?: Item
 }
 
 export type ScreenId =

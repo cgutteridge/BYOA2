@@ -41,61 +41,59 @@
     </div>
 
     <div class="combat-container" v-if="questStore.currentPub?.monsters">
-      <div 
-        v-for="(unit, unitIndex) in questStore.currentPub.monsters" 
-        :key="unitIndex" 
-        class="monster-unit"
-        :class="{ 'defeated': isUnitDefeated(unit) }"
-      >
-        <div class="unit-header">
-          <div class="unit-title">{{ unit.name }}</div>
-          <div class="unit-subinfo">{{ getMonsterTitle(unit.type) }}, {{ getMonsterSpecies(unit.type) }} {{ getMonsterLevel(unit.type) }}{{ getMonsterTraits(unit.type) }}</div>
-          <div class="unit-drink"><strong>Drink:</strong> {{ getMonsterDrink(unit.type) }}</div>
-          <div class="unit-xp">{{ getMonsterXP(unit.type) }} XP</div>
+      <!-- Group monsters by type for display -->
+      <div v-for="(monsterGroup, groupIndex) in groupedMonsters" :key="groupIndex" class="monster-group">
+        <div class="group-header">
+          <div class="group-title">{{ getMonsterTitle(monsterGroup.type) }}</div>
+          <div class="group-subinfo">{{ getMonsterSpecies(monsterGroup.type) }} {{ getMonsterLevel(monsterGroup.type) }}{{ getMonsterTraits(monsterGroup.type) }}</div>
+          <div class="group-drink"><strong>Drink:</strong> {{ getMonsterDrink(monsterGroup.type) }}</div>
+          <div class="group-xp">{{ getMonsterXP(monsterGroup.type) }} XP</div>
         </div>
         
-        <div class="enemies-container location-enemies">
+        <div class="monsters-container location-monsters">
           <div 
-            v-for="(enemy, enemyIndex) in unit.members" 
-            :key="enemyIndex"
-            class="enemy-card"
-            :class="[getMonsterClasses(unit.type), { 'defeated': !enemy.alive }]"
-            @click="handleToggleEnemy(unitIndex, enemyIndex)"
+            v-for="(monster, monsterIndex) in monsterGroup.monsters" 
+            :key="monsterIndex"
+            class="monster-card"
+            :class="[getMonsterClasses(monster.type), { 'defeated': !monster.alive }]"
+            @click="toggleMonsterStatus(monster)"
           >
-            <div class="enemy-info">
-              <div class="enemy-name">{{ enemy.name }}</div>
+            <div class="monster-info">
+              <div class="monster-name">{{ monster.name }}</div>
             </div>
           </div>
         </div>
 
-        <div v-if="unit.item" class="unit-item-section">
-          <h4>Monster Item</h4>
-          <div class="item-card" :class="{'item-card-level4': unit.item.level === 4, 'item-card-level5': unit.item.level === 5}">
-            <div class="item-name" :class="{'item-name-level4': unit.item.level === 4, 'item-name-level5': unit.item.level === 5}">
-              {{ unit.item.name }}
+        <div v-if="monsterGroup.items.length > 0" class="monster-items-section">
+          <h4>Monster Items</h4>
+          <div v-for="(monster, monsterIndex) in monsterGroup.items" :key="monsterIndex">
+            <div v-if="monster.item" class="item-card" :class="{'item-card-level4': monster.item.level === 4, 'item-card-level5': monster.item.level === 5}">
+              <div class="item-name" :class="{'item-name-level4': monster.item.level === 4, 'item-name-level5': monster.item.level === 5}">
+                {{ monster.item.name }}
+              </div>
+              <div class="item-power">{{ monster.item.power }}</div>
+              <div v-if="monster.item.description" class="item-description">
+                <span class="description-label">Story:</span> {{ monster.item.description }}
+              </div>
+              <div class="item-details">
+                <span class="item-type">Type: {{ getItemTypeName(monster.item.type, monster.item.level) }}</span>
+                <span class="item-level" :class="{'item-level-4': monster.item.level === 4, 'item-level-5': monster.item.level === 5}">
+                  Level: {{ monster.item.level }}
+                </span>
+                <span class="item-uses">Uses: {{ monster.item.uses }}</span>
+                <span class="item-target" v-if="monster.item.target">
+                  Target: {{ monster.item.target }}
+                </span>
+              </div>
+              <button class="take-item-btn" :class="{'take-item-btn-level4': monster.item.level === 4, 'take-item-btn-level5': monster.item.level === 5}" :disabled="monster.alive">
+                {{ !monster.alive ? 'Claim Item' : 'Defeat monster to claim' }}
+              </button>
             </div>
-            <div class="item-power">{{ unit.item.power }}</div>
-            <div v-if="unit.item.description" class="item-description">
-              <span class="description-label">Story:</span> {{ unit.item.description }}
-            </div>
-            <div class="item-details">
-              <span class="item-type">Type: {{ getItemTypeName(unit.item.type, unit.item.level) }}</span>
-              <span class="item-level" :class="{'item-level-4': unit.item.level === 4, 'item-level-5': unit.item.level === 5}">
-                Level: {{ unit.item.level }}
-              </span>
-              <span class="item-uses">Uses: {{ unit.item.uses }}</span>
-              <span class="item-target" v-if="unit.item.target">
-                Target: {{ unit.item.target }}
-              </span>
-            </div>
-            <button class="take-item-btn" :class="{'take-item-btn-level4': unit.item.level === 4, 'take-item-btn-level5': unit.item.level === 5}" :disabled="!isUnitDefeated(unit)">
-              {{ isUnitDefeated(unit) ? 'Claim Item' : 'Defeat unit to claim' }}
-            </button>
           </div>
         </div>
       </div>
       
-      <!-- Modified prize item section - removed areAllUnitsDefeated condition -->
+      <!-- Prize item section - shown when all monsters are defeated -->
       <div v-if="questStore.currentPub.prizeItem" class="prize-item-section">
         <div class="prize-item-container">
           <h3>Quest Prize:</h3>
@@ -117,8 +115,8 @@
                 Target: {{ questStore.currentPub.prizeItem.target }}
               </span>
             </div>
-            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}" :disabled="!areAllUnitsDefeated">
-              {{ areAllUnitsDefeated ? 'Claim Prize' : 'Defeat all enemies to claim' }}
+            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}" :disabled="!areAllMonstersDefeated">
+              {{ areAllMonstersDefeated ? 'Claim Prize' : 'Defeat all monsters to claim' }}
             </button>
           </div>
         </div>
@@ -133,29 +131,57 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {itemTypesById, getItemTypesByLevel} from "../data/itemTypes";
-import {Unit, ItemTypeId} from "../types";
-import {isUnitDefeated, toggleEnemyStatus} from "../helpers/combatHelper";
+import {Monster, ItemTypeId} from "../types";
+import {areAllMonstersDefeated, toggleMonsterStatus} from "../helpers/combatHelper";
 import '../styles/monsterStyles.css';
 import { computed } from 'vue';
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
 
-// Check if all units are defeated
-const areAllUnitsDefeated = computed(() => {
+// Group monsters by type for display
+const groupedMonsters = computed(() => {
+  if (!questStore.currentPub?.monsters || !questStore.currentPub.monsters.length) {
+    return [];
+  }
+  
+  // Group monsters by type
+  const monstersByType = new Map<string, {
+    type: string,
+    monsters: Monster[],
+    items: Monster[]
+  }>();
+  
+  questStore.currentPub.monsters.forEach(monster => {
+    if (!monstersByType.has(monster.type)) {
+      monstersByType.set(monster.type, {
+        type: monster.type,
+        monsters: [],
+        items: []
+      });
+    }
+    
+    const group = monstersByType.get(monster.type)!;
+    group.monsters.push(monster);
+    
+    // If monster has an item, add it to the items list
+    if (monster.item) {
+      group.items.push(monster);
+    }
+  });
+  
+  // Convert Map to array for v-for
+  return Array.from(monstersByType.values());
+});
+
+// Check if all monsters are defeated
+const areAllMonstersDefeated = computed(() => {
   if (!questStore.currentPub?.monsters || questStore.currentPub.monsters.length === 0) {
     return false;
   }
   
-  return questStore.currentPub.monsters.every(unit => isUnitDefeated(unit));
+  return questStore.currentPub.monsters.every(monster => !monster.alive);
 });
-
-function handleToggleEnemy(unitIndex: number, enemyIndex: number): void {
-  if (!questStore.currentPub?.monsters) return
-  
-  const unit = questStore.currentPub.monsters[unitIndex]
-  toggleEnemyStatus(unit, enemyIndex)
-}
 
 function getMonsterTitle(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
@@ -398,7 +424,7 @@ function leavePub() {
   margin: 0 auto;
 }
 
-.monster-unit {
+.monster-group {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 1.5rem;
@@ -406,18 +432,18 @@ function leavePub() {
   transition: all 0.3s ease;
 }
 
-.monster-unit.defeated {
+.monster-group.defeated {
   opacity: 0.6;
   background: rgba(100, 100, 100, 0.1);
 }
 
-.unit-header {
+.group-header {
   margin-bottom: 1.5rem;
   text-align: left;
   position: relative;
 }
 
-.unit-title {
+.group-title {
   font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 0.25rem;
@@ -426,18 +452,18 @@ function leavePub() {
   padding-right: 70px; /* Make room for XP */
 }
 
-.unit-subinfo {
+.group-subinfo {
   font-size: 1rem;
   margin-bottom: 0.75rem;
   font-style: italic;
 }
 
-.unit-drink, .unit-xp {
+.group-drink, .group-xp {
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
 }
 
-.unit-xp {
+.group-xp {
   position: absolute;
   top: 0.25rem;
   right: 0;
@@ -448,26 +474,13 @@ function leavePub() {
   font-weight: bold;
 }
 
-.unit-item-section {
-  margin-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 1.5rem;
-}
-
-.unit-item-section h4 {
-  color: #ffeb3b;
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-
-.enemies-container {
+.monsters-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
 }
 
-.enemy-card {
+.monster-card {
   border-radius: 8px;
   padding: 1rem;
   cursor: pointer;
@@ -478,36 +491,35 @@ function leavePub() {
   justify-content: center;
 }
 
-.enemy-card.defeated {
+.monster-card.defeated {
   opacity: 0.5;
   filter: grayscale(1);
 }
 
-.enemy-info {
+.monster-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 100%;
 }
 
-.enemy-name {
+.monster-name {
   font-weight: bold;
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
 }
 
-button {
-  padding: 0.8rem 1.5rem;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+.monster-items-section {
+  margin-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1.5rem;
 }
 
-button:disabled {
-  background: #666;
-  cursor: not-allowed;
+.monster-items-section h4 {
+  color: #ffeb3b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
 }
 
 .prize-item-section {
@@ -552,13 +564,27 @@ button:disabled {
   font-style: italic;
 }
 
-.location-enemies .enemy-card {
+.location-monsters .monster-card {
   /* Allow monster type colors to show through */
 }
 
-.location-enemies .enemy-name {
+.location-monsters .monster-name {
   font-weight: bold;
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
+}
+
+button {
+  padding: 0.8rem 1.5rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #666;
+  cursor: not-allowed;
 }
 </style> 

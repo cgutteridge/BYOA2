@@ -21,21 +21,23 @@
             </div>
           </div>
           <h3 class="monsters-heading">Monsters Present:</h3>
-          <div 
-            v-for="(monster, index) in appStore.focusPub?.monsters" 
-            :key="index" 
-            class="monster-card"
-            :class="getMonsterClasses(monster.type)"
-          >
-            <div class="monster-count">
-              <span>{{ monster.members.length }}x</span>
-            </div>
-            <div class="monster-info">
-              <div class="monster-title">{{ monster.name }}</div>
-              <div class="monster-subinfo">{{ getMonsterTitle(monster.type) }}, {{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }}</div>
-              <div class="monster-xp">{{ getMonsterXP(monster.type) }} XP</div>
-              <div class="monster-details">
-                <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
+          
+          <!-- Group monsters by type and display -->
+          <div v-for="(group, index) in groupedMonsters" :key="index" class="monster-type-group">
+            <div 
+              class="monster-card"
+              :class="getMonsterClasses(group.type)"
+            >
+              <div class="monster-count">
+                <span>{{ group.monsters.length }}x</span>
+              </div>
+              <div class="monster-info">
+                <div class="monster-title">{{ getMonsterTitle(group.type) }}</div>
+                <div class="monster-subinfo">{{ getMonsterSpecies(group.type) }} {{ getMonsterLevel(group.type) }}{{ getMonsterTraits(group.type) }}</div>
+                <div class="monster-xp">{{ getMonsterXP(group.type) }} XP</div>
+                <div class="monster-details">
+                  <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(group.type) }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -69,7 +71,7 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {usePubStore} from "../stores/pubStore";
 import {locationTypesById} from "@/data/locationTypes.ts";
-import {LocationType, Pub} from "@/types";
+import {LocationType, Monster, Pub} from "@/types";
 import {scoutPub} from "@/helpers/scoutPub.ts";
 import {monsterTypes} from "../data/monsterTypes";
 import '../styles/monsterStyles.css';
@@ -92,6 +94,34 @@ const playerDistance = computed(() => {
     appStore.focusPub.lat,
     appStore.focusPub.lng
   );
+});
+
+// Group monsters by type for display
+const groupedMonsters = computed(() => {
+  if (!appStore.focusPub?.monsters || !appStore.focusPub.monsters.length) {
+    return [];
+  }
+  
+  // Group monsters by type
+  const monstersByType = new Map<string, {
+    type: string,
+    monsters: Monster[]
+  }>();
+  
+  appStore.focusPub.monsters.forEach(monster => {
+    if (!monstersByType.has(monster.type)) {
+      monstersByType.set(monster.type, {
+        type: monster.type,
+        monsters: []
+      });
+    }
+    
+    const group = monstersByType.get(monster.type)!;
+    group.monsters.push(monster);
+  });
+  
+  // Convert Map to array for v-for
+  return Array.from(monstersByType.values());
 });
 
 function getMonsterTitle(monsterId: string): string {
@@ -369,5 +399,9 @@ button:disabled {
 .monsters-heading {
   margin-bottom: 0.5rem !important;
   margin-top: 0.75rem !important;
+}
+
+.monster-type-group {
+  margin-bottom: 1rem;
 }
 </style> 

@@ -89,20 +89,17 @@ export class ChatGPTAPI {
     return JSON.parse(json)
   }
 
-  async generateUnitNames(
+  async generateMonsterNames(
     pubName: string,
     pubDescription: string,
-    units: Array<{
+    monsterGroups: Array<{
       type: string,
       title: string,
-      memberCount: number,
+      count: number,
       level: string,
       species: string
     }>
-  ): Promise<Array<{
-    unitName: string,
-    memberNames: string[]
-  }>> {
+  ): Promise<Array<string[]>> {
     const messages: Message[] = [
       {
         role: 'system',
@@ -114,35 +111,30 @@ export class ChatGPTAPI {
           Generate names for monsters at the location "${pubName}".
           Location description: "${pubDescription}"
           
-          I need you to name each unit group and each individual member within that group.
+          I need unique names for each monster.
           
-          Here are the units you need to name:
-          ${units.map((unit, index) => `
-            Unit ${index + 1}: ${unit.memberCount}x ${unit.title} (${unit.species} ${unit.level})
+          Here are the monster groups you need to name:
+          ${monsterGroups.map((group, index) => `
+            Group ${index + 1}: ${group.count}x ${group.title} (${group.species} ${group.level})
           `).join('')}
           
-          For each unit, give it a creative group name (e.g. "The Whispering Shadows", "Bob's Cleaning Crew", etc.)
-          that fits the monster type and the location. Then provide unique individual names for each member.
+          For each group, provide unique individual names for each monster.
           
           The names should be creative, funny, and fit the monster's species and the pub's atmosphere. 
-          Do not add the type of monster to the member name. Do not write "Lord Vlad the Vampire" just "Lord Vlad".
-          It is OK to add other qualifiers to the member name to make it more interesting or funny.
-          If a unit has a single member, it's member and unit name should be the same.
+          Do not add the type of monster to the name. Do not write "Lord Vlad the Vampire" just "Lord Vlad".
+          It is OK to add other qualifiers to the name to make it more interesting or funny.
           
-         
-          
-          Respond in JSON format as an array with the following structure:
+          Respond in JSON format as an array with arrays of names for each group:
           [
-            {
-              "unitName": "Clever unit group name",
-              "memberNames": ["Member 1 name", "Member 2 name", ...etc for each member]
-            },
-            {...repeat for each unit...}
+            ["Monster 1 name", "Monster 2 name", ...etc for group 1],
+            ["Monster 1 name", "Monster 2 name", ...etc for group 2],
+            ...etc for each monster group
           ]
         `
       }
     ]
 
+    console.log(messages)
     const json = await this.sendMessage(messages)
     console.log(json)
     return JSON.parse(json)

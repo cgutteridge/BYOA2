@@ -1,4 +1,4 @@
-import type {Pub, Unit} from '../types'
+import type {Monster, Pub} from '../types'
 import {ChatGPTAPI} from '../api/chatGPT'
 import generateMonsters from './generateMonsters.ts'
 import {locationTypesById} from "@/data/locationTypes.ts";
@@ -23,9 +23,16 @@ export async function scoutPub(
     // Generate monsters for this location
     const monsters = generateMonsters(pub)
 
-    // Generate items for each unit based on their level
-    monsters.forEach(unit => {
-        unit.item = generateUnitItem(unit);
+    // Generate items for elite and boss monsters
+    monsters.forEach(monster => {
+        if (monster.item !== undefined) {
+            const monsterType = monsterTypes.find(m => m.id === monster.type);
+            if (monsterType && (monsterType.level === 'elite' || monsterType.level === 'boss')) {
+                monster.item = generateUnitItem({ type: monster.type } as any);
+            } else {
+                monster.item = undefined;
+            }
+        }
     });
 
     // Assign the monsters to the pub
@@ -94,45 +101,48 @@ export async function scoutPub(
         pub.giftItem.description = giftItemDescription;
     }
 
-    // Now generate names for each unit and their members
+    // Now generate names for each monster
     if (pub.monsters && pub.monsters.length > 0) {
-        // Prepare the units data for the AI call
-        const unitsData = pub.monsters.map(unit => {
-            const monsterType = monsterTypes.find(m => m.id === unit.type);
+        // Group monsters by type for the API call
+        const monstersByType = new Map<string, Monster[]>();
+        
+        pub.monsters.forEach(monster => {
+            if (!monstersByType.has(monster.type)) {
+                monstersByType.set(monster.type, []);
+            }
+            monstersByType.get(monster.type)!.push(monster);
+        });
+        
+        // Prepare the monster data for the AI call
+        const monsterGroups = Array.from(monstersByType.entries()).map(([type, monsters]) => {
+            const monsterType = monsterTypes.find(m => m.id === type);
             return {
-                type: unit.type,
-                title: monsterType?.title || unit.type,
-                memberCount: unit.members.length,
+                type: type,
+                title: monsterType?.title || type,
+                count: monsters.length,
                 level: monsterType?.level || 'unknown',
                 species: monsterType?.species || 'unknown'
             };
         });
 
         // Call the AI to generate names
-        const unitNamesData = await chatGPT.generateUnitNames(
+        const namesData = await chatGPT.generateMonsterNames(
             pub.name,
             pub.description,
-            unitsData
+            monsterGroups
         );
-
-        // Update the unit and member names with the AI-generated names
-        pub.monsters.forEach((unit, unitIndex) => {
-            if (unitNamesData[unitIndex]) {
-                // Update the unit name
-                unit.name = unitNamesData[unitIndex].unitName;
-                
-                // Update the member names
-                unit.members.forEach((member, memberIndex) => {
-                    if (unitNamesData[unitIndex].memberNames[memberIndex]) {
-                        member.name = unitNamesData[unitIndex].memberNames[memberIndex];
-                        
-                        // If this is a single-member unit, set the unit name to match the member name
-                        if (unit.members.length === 1 && memberIndex === 0) {
-                            unit.name = member.name;
-                        }
-                    }
-                });
-            }
+        
+        // Update monster names with AI-generated names
+        const typeKeys = Array.from(monstersByType.keys());
+        namesData.forEach((names, groupIndex) => {
+            const type = typeKeys[groupIndex];
+            const monsters = monstersByType.get(type) || [];
+            
+            monsters.forEach((monster, index) => {
+                if (names && names[index]) {
+                    monster.name = names[index];
+                }
+            });
         });
     }
 
@@ -144,12 +154,20 @@ export async function scoutPub(
  * @param monsters Array of monsters
  * @returns A string description including monster count, type and drink
  */
-export function formatMonstersDescription(monsters: Unit[]): string {
-    if (!monsters.length) return "no monsters"
+export function formatMonstersDescription(monsters: Monster[]): string {
+    if (!monsters.length) return "no monsters";
 
-    return monsters.map(monster => {
-        const monsterType = monsterTypes.find(m => m.id === monster.type);
-        const title = monsterType?.title || monster.type;
-        return `${monster.members.length} ${title}`;
+    // Group monsters by type
+    const monsterCounts = new Map<string, number>();
+    
+    monsters.forEach(monster => {
+        const count = monsterCounts.get(monster.type) || 0;
+        monsterCounts.set(monster.type, count + 1);
+    });
+    
+    return Array.from(monsterCounts.entries()).map(([type, count]) => {
+        const monsterType = monsterTypes.find(m => m.id === type);
+        const title = monsterType?.title || type;
+        return `${count} ${title}`;
     }).join(', ');
 }
