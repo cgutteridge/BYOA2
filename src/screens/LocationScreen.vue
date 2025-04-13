@@ -5,6 +5,13 @@
       <button class="leave-button" @click="leavePub">Leave Pub</button>
     </div>
 
+    <!-- Added location description section -->
+    <div class="location-description-section" v-if="questStore.currentPub?.description">
+      <div class="location-description">
+        {{ questStore.currentPub.description }}
+      </div>
+    </div>
+
     <div class="gift-item-section" v-if="questStore.currentPub?.giftItem">
       <div class="gift-item-container">
         <h3>Gift Item Available!</h3>
@@ -88,10 +95,10 @@
         </div>
       </div>
       
-      <!-- Prize item section - only shown when all monsters are defeated -->
-      <div v-if="areAllUnitsDefeated && questStore.currentPub.prizeItem" class="prize-item-section">
+      <!-- Modified prize item section - removed areAllUnitsDefeated condition -->
+      <div v-if="questStore.currentPub.prizeItem" class="prize-item-section">
         <div class="prize-item-container">
-          <h3>Quest Prize Unlocked!</h3>
+          <h3>Quest Prize:</h3>
           <div class="item-card" :class="{'item-card-level4': questStore.currentPub.prizeItem.level === 4, 'item-card-level5': questStore.currentPub.prizeItem.level === 5}">
             <div class="item-name" :class="{'item-name-level4': questStore.currentPub.prizeItem.level === 4, 'item-name-level5': questStore.currentPub.prizeItem.level === 5}">
               {{ questStore.currentPub.prizeItem.name }}
@@ -110,8 +117,8 @@
                 Target: {{ questStore.currentPub.prizeItem.target }}
               </span>
             </div>
-            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}">
-              Claim Prize
+            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}" :disabled="!areAllUnitsDefeated">
+              {{ areAllUnitsDefeated ? 'Claim Prize' : 'Defeat all enemies to claim' }}
             </button>
           </div>
         </div>
@@ -500,5 +507,23 @@ button:disabled {
   margin-top: 0;
   margin-bottom: 1rem;
   font-size: 1.3rem;
+}
+
+/* Styles for the location description */
+.location-description-section {
+  max-width: 800px;
+  margin: 1rem auto 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.location-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #f0f0f0;
+  text-align: left;
+  font-style: italic;
 }
 </style> 
