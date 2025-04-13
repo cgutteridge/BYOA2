@@ -73,6 +73,6 @@ export function formatMonstersDescription(monsters: Unit[]): string {
     return monsters.map(monster => {
         const monsterType = monsterTypes.find(m => m.id === monster.type);
         const title = monsterType?.title || monster.type;
-        return `${monster.count} ${title}`;
+        return `${monster.members.length} ${title}`;
     }).join(', ');
 }

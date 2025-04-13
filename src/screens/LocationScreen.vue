@@ -1,55 +1,65 @@
 <template>
   <div class="location-screen">
-
     <div class="location-header">
       <h2>{{ questStore.currentPub?.name }}</h2>
-      <div> CURRENT LOCATION</div>
       <button class="leave-button" @click="leavePub">Leave Pub</button>
     </div>
 
-    <div class="monster-list" v-if="questStore.currentPub?.monsters">
+    <div class="combat-container" v-if="questStore.currentPub?.monsters">
       <div 
-        v-for="(monster, index) in questStore.currentPub.monsters" 
-        :key="index" 
-        class="monster-card"
-        :class="getMonsterClasses(monster.type)"
+        v-for="(unit, unitIndex) in questStore.currentPub.monsters" 
+        :key="unitIndex" 
+        class="monster-unit"
+        :class="{ 'defeated': isUnitDefeated(unit) }"
       >
-        <div class="monster-info">
-          <h3>{{ getMonsterTitle(monster.type) }}</h3>
-          <p>Count: {{ monster.count }}</p>
-          <p class="drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</p>
-          <p class="xp"><strong>XP:</strong> {{ getMonsterXP(monster.type) }}</p>
+        <div class="unit-header">
+          <div class="unit-title">{{ getMonsterTitle(unit.type) }}</div>
+          <div class="unit-subinfo">{{ getMonsterSpecies(unit.type) }} {{ getMonsterLevel(unit.type) }}{{ getMonsterTraits(unit.type) }}</div>
+          <div class="unit-drink"><strong>Drink:</strong> {{ getMonsterDrink(unit.type) }}</div>
+          <div class="unit-xp"><strong>XP:</strong> {{ getMonsterXP(unit.type) }}</div>
         </div>
-        <div class="monster-actions">
-          <button @click="attackMonster(index)" :disabled="monster.count <= 0">
-            Attack
-          </button>
+        
+        <div class="enemies-container">
+          <div 
+            v-for="(enemy, enemyIndex) in unit.members" 
+            :key="enemyIndex"
+            class="enemy-card"
+            :class="[getMonsterClasses(unit.type), { 'defeated': !enemy.alive }]"
+            @click="toggleEnemyStatus(unitIndex, enemyIndex)"
+          >
+            <div class="enemy-info">
+              <div class="enemy-name">{{ enemy.name }}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    
-    <div v-if="allMonstersDefeated" class="victory-message">
-      <h3>All monsters defeated!</h3>
-      <button @click="leavePub">Leave Pub</button>
-    </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import {useAppStore} from "../stores/appStore.js";
-import {useQuestStore} from "../stores/questStore.js";
+import {useAppStore} from "../stores/appStore";
+import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
-import {computed} from "vue";
+import {Unit} from "../types";
 import '../styles/monsterStyles.css';
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
 
-const allMonstersDefeated = computed(() => {
-  if (!questStore.currentPub?.monsters) return false
-  return questStore.currentPub.monsters.every(monster => monster.count <= 0)
-})
+function isUnitDefeated(unit: Unit): boolean {
+  return unit.members.every(enemy => !enemy.alive)
+}
+
+function toggleEnemyStatus(unitIndex: number, enemyIndex: number): void {
+  if (!questStore.currentPub?.monsters) return
+  
+  const unit = questStore.currentPub.monsters[unitIndex]
+  const enemy = unit.members[enemyIndex]
+  
+  // Toggle the alive status
+  enemy.alive = !enemy.alive
+}
 
 function getMonsterTitle(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
@@ -76,14 +86,27 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
   }
 }
 
-function attackMonster(index: number) {
-  if (questStore.currentPub?.monsters) {
-    const monsters = [...questStore.currentPub.monsters]
-    if (monsters[index].count > 0) {
-      monsters[index].count--
-      questStore.currentPub.monsters = monsters
-    }
-  }
+function getMonsterSpecies(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return ""
+  
+  // Capitalize first letter of species
+  return monster.species.charAt(0).toUpperCase() + monster.species.slice(1)
+}
+
+function getMonsterLevel(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return ""
+  
+  // Capitalize first letter of level
+  return monster.level.charAt(0).toUpperCase() + monster.level.slice(1)
+}
+
+function getMonsterTraits(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster || !monster.flags || monster.flags.length === 0) return ""
+  
+  return ` (${monster.flags.join(', ')})`
 }
 
 function leavePub() {
@@ -94,10 +117,11 @@ function leavePub() {
 
 <style scoped>
 .location-screen {
-  height: 100vh;
+  min-height: 100vh;
   padding: 2rem;
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   color: white;
+  overflow-y: auto;
 }
 
 .location-header {
@@ -116,24 +140,69 @@ function leavePub() {
   cursor: pointer;
 }
 
-.monster-list {
+.combat-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.monster-unit {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.monster-unit.defeated {
+  opacity: 0.6;
+  background: rgba(100, 100, 100, 0.1);
+}
+
+.unit-header {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.unit-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.unit-subinfo {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.unit-drink, .unit-xp {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.enemies-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
-.monster-info {
-  flex: 1;
+.enemy-card {
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
 }
 
-.monster-actions {
-  margin-left: 1rem;
+.enemy-card.defeated {
+  opacity: 0.5;
+  filter: grayscale(1);
 }
 
-.drink {
-  color: #ffcc00;
-  margin-top: 0.5rem;
+.enemy-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
 }
 
 button {
@@ -148,22 +217,5 @@ button {
 button:disabled {
   background: #666;
   cursor: not-allowed;
-}
-
-.victory-message {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.9);
-  padding: 2rem;
-  border-radius: 12px;
-  text-align: center;
-  z-index: 1000;
-}
-
-.victory-message h3 {
-  margin-bottom: 1rem;
-  color: #4CAF50;
 }
 </style> 

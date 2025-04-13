@@ -1,7 +1,7 @@
 // generate the monsters for a location based on it's attributes.
 import pickWeightedOne from "@/helpers/pickWeightedOne.ts";
 import {monsterTypes} from "@/data/monsterTypes.ts";
-import {Encounter, LocationDifficulty, MonsterLevel, Pub, Unit} from "@/types";
+import {Encounter, Enemy, LocationDifficulty, MonsterLevel, Pub, Unit} from "@/types";
 import pickOne from "@/helpers/pickOne.ts";
 import {useQuestStore} from "@/stores/questStore.ts";
 import {encounterTable} from "@/data/encounterTable.ts";
@@ -10,7 +10,8 @@ import {encounterTable} from "@/data/encounterTable.ts";
 export default function generateMonsters(pub: Pub): Unit[] {
     // step one is to pick a pattern
     const encounter: Encounter = pickWeightedOne(encounterTable[pub.difficulty ?? 'medium'])
-console.log("encounter", encounter)
+    console.log("encounter", encounter)
+    
     const monsters: Unit[] = []
     encounter.forEach((unitSpec) => {
         // pick a monster
@@ -20,10 +21,30 @@ console.log("encounter", encounter)
         // decide unit size
         const unitSize = calculateUnitSize(unitSpec.level, pub.difficulty ?? 'medium')
         console.log("unitSize", unitSize)
-        console.log("unit leve", unitSpec.level)
-        console.log("pub difficulty",pub.difficulty)
-        monsters.push({count: unitSize, type: monsterType.id})
+        console.log("unit level", unitSpec.level)
+        console.log("pub difficulty", pub.difficulty)
+        
+        // Create enemies for the unit
+        const enemies: Enemy[] = []
+        for (let i = 0; i < unitSize; i++) {
+            const enemyName = unitSize > 1 
+                ? `${monsterType.title} ${i + 1}` 
+                : monsterType.title
+                
+            enemies.push({
+                name: enemyName,
+                alive: true
+            })
+        }
+        
+        // Create the unit with the new structure
+        monsters.push({
+            type: monsterType.id,
+            name: monsterType.title,
+            members: enemies
+        })
     })
+    
     console.log(monsters)
     return monsters
 }

@@ -58,7 +58,13 @@ export interface MonsterType {
 
 export interface Unit {
   type: string
-  count: number
+  name: string
+  members: Enemy[]
+}
+
+export interface Enemy {
+  name: string
+  alive: boolean
 }
 
 export type ScreenId =

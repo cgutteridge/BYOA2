@@ -21,7 +21,7 @@
             :class="getMonsterClasses(monster.type)"
           >
             <div class="monster-count">
-              <span>{{ monster.count }}x</span>
+              <span>{{ monster.members.length }}x</span>
             </div>
             <div class="monster-info">
               <div class="monster-title">{{ getMonsterTitle(monster.type) }}</div>
