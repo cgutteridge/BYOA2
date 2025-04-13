@@ -14,7 +14,8 @@ export const useQuestStore = defineStore('quest', () => {
   const currentPubId = ref<PubId | undefined>()
   const playerCount = ref<number>(3)
   const difficulty = ref<number>(1)
-  const persist = ref(['title', 'description', 'status', 'startPubId', 'endPubId', 'currentPubId', 'playerCount'])
+  const xp = ref<number>(0)
+  const persist = ref(['title', 'description', 'status', 'startPubId', 'endPubId', 'currentPubId', 'playerCount', 'xp'])
 
   const setTitle = (newTitle: string) => {
     title.value = newTitle
@@ -42,6 +43,14 @@ export const useQuestStore = defineStore('quest', () => {
   }
   const setEndPubId = (id: PubId) => {
     endPubId.value = id
+  }
+  
+  const setXP = (newXP: number) => {
+    xp.value = newXP
+  }
+  
+  const addXP = (amount: number) => {
+    xp.value += amount
   }
   
   const endQuest = () => {
@@ -76,6 +85,7 @@ export const useQuestStore = defineStore('quest', () => {
     currentPub,
     playerCount,
     difficulty,
+    xp,
     setStartPubId,
     setEndPubId,
     setCurrentPub,
@@ -86,6 +96,8 @@ export const useQuestStore = defineStore('quest', () => {
     setDescription,
     setPlayerCount,
     setDifficulty,
+    setXP,
+    addXP,
     persist
   }
 }) 

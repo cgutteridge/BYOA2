@@ -14,10 +14,12 @@ DONE  Add monster generation
 DONE Better UI when scouting
 * Better layout for units
 * Split monsters into individuals
+* Show monster race & traits
 
 Pub View
 DONE Add distance from players
 DONE Better layout for units
+* Show monster race & traits
 
 Map
 DONE Upate GPS for user
