@@ -4,6 +4,8 @@ import generateMonsters from './generateMonsters.ts'
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {monsterTypes} from "@/data/monsterTypes.ts";
 import { useQuestStore } from '@/stores/questStore.ts';
+import { generateGiftItem, generatePrizeItem, generateUnitItem } from './generateItems.ts';
+
 /**
  * Scout a location, generating its description, monsters, and prize
  * @param pub The pub to scout
@@ -21,8 +23,23 @@ export async function scoutPub(
     // Generate monsters for this location
     const monsters = generateMonsters(pub)
 
+    // Generate items for each unit based on their level
+    monsters.forEach(unit => {
+        unit.item = generateUnitItem(unit);
+    });
+
     // Assign the monsters to the pub
     pub.monsters = monsters
+
+    // Generate a gift item based on location difficulty
+    if (pub.difficulty) {
+        pub.giftItem = generateGiftItem(pub.difficulty);
+        
+        // Also generate a prize item to be awarded for completing the location
+        const prizeItem = generatePrizeItem(pub.difficulty);
+        // We'll store this as metadata, but not display it until the player defeats all monsters
+        pub.prizeItem = prizeItem;
+    }
 
     // Create a string description of the monsters for the API
     const monstersDescription = formatMonstersDescription(monsters)

@@ -21,6 +21,7 @@ export interface Pub {
   prizeName?: string
   prizeDescription?: string
   giftItem?: Item
+  prizeItem?: Item
 }
 
 export interface LocationType {

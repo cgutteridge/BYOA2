@@ -87,8 +87,38 @@
           </div>
         </div>
       </div>
+      
+      <!-- Prize item section - only shown when all monsters are defeated -->
+      <div v-if="areAllUnitsDefeated && questStore.currentPub.prizeItem" class="prize-item-section">
+        <div class="prize-item-container">
+          <h3>Quest Prize Unlocked!</h3>
+          <div class="item-card" :class="{'item-card-level4': questStore.currentPub.prizeItem.level === 4, 'item-card-level5': questStore.currentPub.prizeItem.level === 5}">
+            <div class="item-name" :class="{'item-name-level4': questStore.currentPub.prizeItem.level === 4, 'item-name-level5': questStore.currentPub.prizeItem.level === 5}">
+              {{ questStore.currentPub.prizeItem.name }}
+            </div>
+            <div class="item-power">{{ questStore.currentPub.prizeItem.power }}</div>
+            <div v-if="questStore.currentPub.prizeItem.description" class="item-description">
+              <span class="description-label">Story:</span> {{ questStore.currentPub.prizeItem.description }}
+            </div>
+            <div class="item-details">
+              <span class="item-type">Type: {{ getItemTypeName(questStore.currentPub.prizeItem.type, questStore.currentPub.prizeItem.level) }}</span>
+              <span class="item-level" :class="{'item-level-4': questStore.currentPub.prizeItem.level === 4, 'item-level-5': questStore.currentPub.prizeItem.level === 5}">
+                Level: {{ questStore.currentPub.prizeItem.level }}
+              </span>
+              <span class="item-uses">Uses: {{ questStore.currentPub.prizeItem.uses }}</span>
+              <span class="item-target" v-if="questStore.currentPub.prizeItem.target">
+                Target: {{ questStore.currentPub.prizeItem.target }}
+              </span>
+            </div>
+            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}">
+              Claim Prize
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+  {{ questStore.currentPub }}
 </template>
 
 <script setup lang="ts">
@@ -99,9 +129,19 @@ import {itemTypesById, getItemTypesByLevel} from "../data/itemTypes";
 import {Unit, ItemTypeId} from "../types";
 import {isUnitDefeated, toggleEnemyStatus} from "../helpers/combatHelper";
 import '../styles/monsterStyles.css';
+import { computed } from 'vue';
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
+
+// Check if all units are defeated
+const areAllUnitsDefeated = computed(() => {
+  if (!questStore.currentPub?.monsters || questStore.currentPub.monsters.length === 0) {
+    return false;
+  }
+  
+  return questStore.currentPub.monsters.every(unit => isUnitDefeated(unit));
+});
 
 function handleToggleEnemy(unitIndex: number, enemyIndex: number): void {
   if (!questStore.currentPub?.monsters) return
@@ -436,5 +476,29 @@ button {
 button:disabled {
   background: #666;
   cursor: not-allowed;
+}
+
+.prize-item-section {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.prize-item-container {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.prize-item-container h3 {
+  color: #ffeb3b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
 }
 </style> 
