@@ -41,8 +41,6 @@
     </div>
 
     <div class="combat-container" v-if="questStore.currentPub?.monsters">
-      <h3>Monsters:</h3>
-      
       <!-- All monsters in a 3-column flex layout with active ones first -->
       <div class="monsters-container">
         <div 
@@ -51,9 +49,14 @@
           class="monster-card"
           :class="[getMonsterClasses(monster.type), { 'defeated': !monster.alive }]"
         >
-          <!-- Monster header with name and status controls -->
+          <!-- Monster header with name and attributes on one line -->
           <div class="monster-header">
-            <div class="monster-name">{{ monster.name }}</div>
+            <div class="monster-name-container">
+              <div class="monster-name">{{ monster.name }}</div>
+              <div class="monster-subinfo">
+                {{ getMonsterTitle(monster.type) }} - {{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }}
+              </div>
+            </div>
             <div class="monster-controls">
               <button 
                 class="monster-toggle-btn" 
@@ -65,11 +68,6 @@
                 <span class="xp-text">{{ getMonsterXP(monster.type) }} XP</span>
               </button>
             </div>
-          </div>
-          
-          <!-- Monster type info row -->
-          <div class="monster-subinfo">
-            {{ getMonsterTitle(monster.type) }} - {{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }}
           </div>
           
           <!-- Monster drink bottom bar -->
@@ -461,7 +459,7 @@ function leavePub() {
 .monster-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 1rem 1rem 0.5rem;
 }
 
@@ -505,20 +503,27 @@ function leavePub() {
   border: 1px solid rgba(76, 175, 80, 0.7);
 }
 
+.monster-name-container {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100% - 110px);
+}
+
 .monster-name {
   font-weight: bold;
   font-size: 1.3rem;
-  margin-bottom: 0;
-  padding-right: 0.5rem;
+  margin-bottom: 0.2rem;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   color: white;
 }
 
 .monster-subinfo {
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .monster-drink-bar {
