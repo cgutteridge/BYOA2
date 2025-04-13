@@ -49,12 +49,12 @@
       >
         <div class="unit-header">
           <div class="unit-title">{{ unit.name }}</div>
-          <div class="unit-subinfo">{{ getMonsterTitle(unit.type) }} ({{ getMonsterSpecies(unit.type) }} {{ getMonsterLevel(unit.type) }}{{ getMonsterTraits(unit.type) }})</div>
+          <div class="unit-subinfo">{{ getMonsterTitle(unit.type) }}, {{ getMonsterSpecies(unit.type) }} {{ getMonsterLevel(unit.type) }}{{ getMonsterTraits(unit.type) }}</div>
           <div class="unit-drink"><strong>Drink:</strong> {{ getMonsterDrink(unit.type) }}</div>
           <div class="unit-xp"><strong>XP:</strong> {{ getMonsterXP(unit.type) }}</div>
         </div>
         
-        <div class="enemies-container">
+        <div class="enemies-container location-enemies">
           <div 
             v-for="(enemy, enemyIndex) in unit.members" 
             :key="enemyIndex"
@@ -202,7 +202,7 @@ function getMonsterTraits(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   if (!monster || !monster.flags || monster.flags.length === 0) return ""
   
-  return ` (${monster.flags.join(', ')})`
+  return `, ${monster.flags.join(', ')}`
 }
 
 function getItemTypeName(itemTypeId: string, level: number = 1): string {
@@ -427,7 +427,6 @@ function leavePub() {
 .unit-subinfo {
   font-size: 1rem;
   margin-bottom: 0.75rem;
-  color: rgba(255, 255, 255, 0.9);
   font-style: italic;
 }
 
@@ -528,5 +527,15 @@ button:disabled {
   color: #f0f0f0;
   text-align: left;
   font-style: italic;
+}
+
+.location-enemies .enemy-card {
+  /* Allow monster type colors to show through */
+}
+
+.location-enemies .enemy-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
 }
 </style> 
