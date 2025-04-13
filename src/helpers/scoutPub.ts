@@ -94,7 +94,44 @@ export async function scoutPub(
         pub.giftItem.description = giftItemDescription;
     }
 
-    return true
+    // Now generate names for each unit and their members
+    if (pub.monsters && pub.monsters.length > 0) {
+        // Prepare the units data for the AI call
+        const unitsData = pub.monsters.map(unit => {
+            const monsterType = monsterTypes.find(m => m.id === unit.type);
+            return {
+                type: unit.type,
+                title: monsterType?.title || unit.type,
+                memberCount: unit.members.length,
+                level: monsterType?.level || 'unknown',
+                species: monsterType?.species || 'unknown'
+            };
+        });
+
+        // Call the AI to generate names
+        const unitNamesData = await chatGPT.generateUnitNames(
+            pub.name,
+            pub.description,
+            unitsData
+        );
+
+        // Update the unit and member names with the AI-generated names
+        pub.monsters.forEach((unit, unitIndex) => {
+            if (unitNamesData[unitIndex]) {
+                // Update the unit name
+                unit.name = unitNamesData[unitIndex].unitName;
+                
+                // Update the member names
+                unit.members.forEach((member, memberIndex) => {
+                    if (unitNamesData[unitIndex].memberNames[memberIndex]) {
+                        member.name = unitNamesData[unitIndex].memberNames[memberIndex];
+                    }
+                });
+            }
+        });
+    }
+
+    return true;
 }
 
 /**

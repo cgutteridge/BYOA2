@@ -24,7 +24,7 @@ export default function generateMonsters(pub: Pub): Unit[] {
         console.log("unit level", unitSpec.level)
         console.log("pub difficulty", pub.difficulty)
         
-        // Create enemies for the unit
+        // Create enemies for the unit with placeholder names that will be replaced by AI
         const enemies: Enemy[] = []
         for (let i = 0; i < unitSize; i++) {
             const enemyName = unitSize > 1 
@@ -32,15 +32,15 @@ export default function generateMonsters(pub: Pub): Unit[] {
                 : monsterType.title
                 
             enemies.push({
-                name: enemyName,
+                name: enemyName, // This will be replaced with AI-generated name
                 alive: true
             })
         }
         
-        // Create the unit with the new structure
+        // Create the unit with placeholder name that will be replaced by AI
         monsters.push({
             type: monsterType.id,
-            name: monsterType.title,
+            name: `${monsterType.title} Group`, // This will be replaced with AI-generated unit name
             members: enemies
         })
     })

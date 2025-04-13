@@ -89,4 +89,62 @@ export class ChatGPTAPI {
     return JSON.parse(json)
   }
 
+  async generateUnitNames(
+    pubName: string,
+    pubDescription: string,
+    units: Array<{
+      type: string,
+      title: string,
+      memberCount: number,
+      level: string,
+      species: string
+    }>
+  ): Promise<Array<{
+    unitName: string,
+    memberNames: string[]
+  }>> {
+    const messages: Message[] = [
+      {
+        role: 'system',
+        content: 'You are a chaotic, sarcastic dungeon master naming creatures in a ridiculous adventure. Be wild, cheeky, and creative with the names. Output JSON only. Do not include backticks in the JSON response.'
+      },
+      {
+        role: 'user',
+        content: `
+          Generate names for monsters at the location "${pubName}".
+          Location description: "${pubDescription}"
+          
+          I need you to name each unit group and each individual member within that group.
+          
+          Here are the units you need to name:
+          ${units.map((unit, index) => `
+            Unit ${index + 1}: ${unit.memberCount}x ${unit.title} (${unit.species} ${unit.level})
+          `).join('')}
+          
+          For each unit, give it a creative group name (e.g. "The Whispering Shadows", "Bob's Cleaning Crew", etc.)
+          that fits the monster type and the location. Then provide unique individual names for each member.
+          
+          The names should be creative, funny, and fit the monster's species and the pub's atmosphere. 
+          Do not add the type of monster to the member name. Do not write "Lord Vlad the Vampire" just "Lord Vlad".
+          It is OK to add other qualifiers to the member name to make it more interesting or funny.
+          If a unit has a single member, it's member and unit name should be the same.
+          
+         
+          
+          Respond in JSON format as an array with the following structure:
+          [
+            {
+              "unitName": "Clever unit group name",
+              "memberNames": ["Member 1 name", "Member 2 name", ...etc for each member]
+            },
+            {...repeat for each unit...}
+          ]
+        `
+      }
+    ]
+
+    const json = await this.sendMessage(messages)
+    console.log(json)
+    return JSON.parse(json)
+  }
 }
