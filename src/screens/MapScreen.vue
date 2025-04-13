@@ -411,7 +411,7 @@ button {
 }
 
 :deep(.leaflet-control-center) {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: bold;
 }
 </style> 
