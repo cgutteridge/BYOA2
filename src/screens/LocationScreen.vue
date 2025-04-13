@@ -5,7 +5,7 @@
       <button class="leave-button" @click="leavePub">Leave Pub</button>
     </div>
 
-    <!-- Added location description section -->
+    <!-- Location description section -->
     <div class="location-description-section" v-if="questStore.currentPub?.description">
       <div class="location-description">
         {{ questStore.currentPub.description }}
@@ -41,59 +41,43 @@
     </div>
 
     <div class="combat-container" v-if="questStore.currentPub?.monsters">
-      <!-- Group monsters by type for display -->
-      <div v-for="(monsterGroup, groupIndex) in groupedMonsters" :key="groupIndex" class="monster-group">
-        <div class="group-header">
-          <div class="group-title">{{ getMonsterTitle(monsterGroup.type) }}</div>
-          <div class="group-subinfo">{{ getMonsterSpecies(monsterGroup.type) }} {{ getMonsterLevel(monsterGroup.type) }}{{ getMonsterTraits(monsterGroup.type) }}</div>
-          <div class="group-drink"><strong>Drink:</strong> {{ getMonsterDrink(monsterGroup.type) }}</div>
-          <div class="group-xp">{{ getMonsterXP(monsterGroup.type) }} XP</div>
-        </div>
-        
-        <div class="monsters-container location-monsters">
-          <div 
-            v-for="(monster, monsterIndex) in monsterGroup.monsters" 
-            :key="monsterIndex"
-            class="monster-card"
-            :class="[getMonsterClasses(monster.type), { 'defeated': !monster.alive }]"
-            @click="toggleMonsterStatus(monster)"
-          >
-            <div class="monster-info">
-              <div class="monster-name">{{ monster.name }}</div>
+      <h3>Monsters:</h3>
+      
+      <!-- All monsters in a single list with active ones first -->
+      <div class="monsters-container">
+        <div 
+          v-for="monster in sortedMonsters" 
+          :key="monster.type + monster.name"
+          class="monster-card"
+          :class="[getMonsterClasses(monster.type), { 'defeated': !monster.alive }]"
+          @click="toggleMonsterStatus(monster)"
+        >
+          <div class="monster-info">
+            <div class="monster-name">{{ monster.name }}</div>
+            <div class="monster-details">
+              <div class="monster-type">{{ getMonsterTitle(monster.type) }}</div>
+              <div class="monster-race">{{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }}</div>
+              <div class="monster-drink"><strong>Drink:</strong> {{ getMonsterDrink(monster.type) }}</div>
+              <div class="monster-xp"><strong>XP:</strong> {{ getMonsterXP(monster.type) }}</div>
             </div>
-          </div>
-        </div>
-
-        <div v-if="monsterGroup.items.length > 0" class="monster-items-section">
-          <h4>Monster Items</h4>
-          <div v-for="(monster, monsterIndex) in monsterGroup.items" :key="monsterIndex">
-            <div v-if="monster.item" class="item-card" :class="{'item-card-level4': monster.item.level === 4, 'item-card-level5': monster.item.level === 5}">
-              <div class="item-name" :class="{'item-name-level4': monster.item.level === 4, 'item-name-level5': monster.item.level === 5}">
-                {{ monster.item.name }}
+            
+            <!-- Monster item (if any) -->
+            <div v-if="monster.item" class="monster-item">
+              <div class="item-info">
+                <div class="item-name" :class="{'item-name-level4': monster.item.level === 4, 'item-name-level5': monster.item.level === 5}">
+                  {{ monster.item.name }}
+                </div>
+                <div class="item-power">{{ monster.item.power }}</div>
+                <button class="take-item-btn" :class="{'take-item-btn-level4': monster.item.level === 4, 'take-item-btn-level5': monster.item.level === 5}" :disabled="monster.alive">
+                  {{ !monster.alive ? 'Claim Item' : 'Defeat to claim' }}
+                </button>
               </div>
-              <div class="item-power">{{ monster.item.power }}</div>
-              <div v-if="monster.item.description" class="item-description">
-                <span class="description-label">Story:</span> {{ monster.item.description }}
-              </div>
-              <div class="item-details">
-                <span class="item-type">Type: {{ getItemTypeName(monster.item.type, monster.item.level) }}</span>
-                <span class="item-level" :class="{'item-level-4': monster.item.level === 4, 'item-level-5': monster.item.level === 5}">
-                  Level: {{ monster.item.level }}
-                </span>
-                <span class="item-uses">Uses: {{ monster.item.uses }}</span>
-                <span class="item-target" v-if="monster.item.target">
-                  Target: {{ monster.item.target }}
-                </span>
-              </div>
-              <button class="take-item-btn" :class="{'take-item-btn-level4': monster.item.level === 4, 'take-item-btn-level5': monster.item.level === 5}" :disabled="monster.alive">
-                {{ !monster.alive ? 'Claim Item' : 'Defeat monster to claim' }}
-              </button>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Prize item section - shown when all monsters are defeated -->
+      <!-- Prize item section -->
       <div v-if="questStore.currentPub.prizeItem" class="prize-item-section">
         <div class="prize-item-container">
           <h3>Quest Prize:</h3>
@@ -139,39 +123,21 @@ import { computed } from 'vue';
 const questStore = useQuestStore()
 const appStore = useAppStore()
 
-// Group monsters by type for display
-const groupedMonsters = computed(() => {
+// Sort monsters with active ones first, then defeated ones
+const sortedMonsters = computed(() => {
   if (!questStore.currentPub?.monsters || !questStore.currentPub.monsters.length) {
     return [];
   }
   
-  // Group monsters by type
-  const monstersByType = new Map<string, {
-    type: string,
-    monsters: Monster[],
-    items: Monster[]
-  }>();
-  
-  questStore.currentPub.monsters.forEach(monster => {
-    if (!monstersByType.has(monster.type)) {
-      monstersByType.set(monster.type, {
-        type: monster.type,
-        monsters: [],
-        items: []
-      });
-    }
+  // Create a copy of the monsters array to avoid modifying the original
+  return [...questStore.currentPub.monsters].sort((a, b) => {
+    // Sort alive monsters first
+    if (a.alive && !b.alive) return -1;
+    if (!a.alive && b.alive) return 1;
     
-    const group = monstersByType.get(monster.type)!;
-    group.monsters.push(monster);
-    
-    // If monster has an item, add it to the items list
-    if (monster.item) {
-      group.items.push(monster);
-    }
+    // If both are alive or both are defeated, sort by type/name
+    return a.name.localeCompare(b.name);
   });
-  
-  // Convert Map to array for v-for
-  return Array.from(monstersByType.values());
 });
 
 // Check if all monsters are defeated
@@ -258,31 +224,57 @@ function leavePub() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.location-header h2 {
+  margin: 0;
+  font-size: 2rem;
 }
 
 .leave-button {
-  padding: 0.8rem 1.5rem;
+  padding: 0.5rem 1rem;
   background: #f44336;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-.gift-item-section {
-  margin-bottom: 2rem;
+.location-description-section {
   max-width: 800px;
-  margin: 0 auto 2rem auto;
-}
-
-.gift-item-container {
+  margin: 1rem auto 2rem;
+  padding: 1.5rem;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.gift-item-container h3 {
+.location-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #f0f0f0;
+  text-align: left;
+  font-style: italic;
+}
+
+.gift-item-section, .prize-item-section {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.gift-item-container, .prize-item-container {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.gift-item-container h3, .prize-item-container h3 {
   color: #ffeb3b;
   margin-top: 0;
   margin-bottom: 1rem;
@@ -290,88 +282,34 @@ function leavePub() {
 }
 
 .item-card {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  padding: 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.item-name {
-  font-size: 1.3rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #fff;
-}
-
-.item-power {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.item-description {
-  font-size: 0.95rem;
-  margin-bottom: 1rem;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.4;
-  font-style: italic;
-}
-
-.description-label {
-  font-weight: bold;
-  color: #ffeb3b;
-  font-style: normal;
-}
-
-.item-details {
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.item-type, .item-uses, .item-target, .item-level {
-  padding: 0.3rem 0.6rem;
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-.item-level {
-  color: #ffeb3b;
-  position: relative;
-}
-
-.item-level-4 {
-  color: #ba68c8;
-  font-weight: bold;
-}
-
-.item-level-5 {
-  color: #ff9800;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 152, 0, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.3s ease;
 }
 
 .item-card-level4 {
-  border: 1px solid #ba68c8;
-  box-shadow: 0 0 15px rgba(186, 104, 200, 0.4);
+  box-shadow: 0 0 10px rgba(186, 104, 200, 0.3);
+  animation: glow-purple 2s infinite alternate;
 }
 
 .item-card-level5 {
-  border: 1px solid #ff9800;
-  box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
-  animation: pulse 2s infinite;
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+  animation: glow-orange 2s infinite alternate;
 }
 
-@keyframes pulse {
+@keyframes glow-purple {
   0% {
-    box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+    box-shadow: 0 0 10px rgba(186, 104, 200, 0.3);
   }
-  50% {
-    box-shadow: 0 0 30px rgba(255, 152, 0, 0.8);
+  100% {
+    box-shadow: 0 0 20px rgba(186, 104, 200, 0.5);
+  }
+}
+
+@keyframes glow-orange {
+  0% {
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.3);
   }
   100% {
     box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
@@ -424,154 +362,84 @@ function leavePub() {
   margin: 0 auto;
 }
 
-.monster-group {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  transition: all 0.3s ease;
-}
-
-.monster-group.defeated {
-  opacity: 0.6;
-  background: rgba(100, 100, 100, 0.1);
-}
-
-.group-header {
-  margin-bottom: 1.5rem;
-  text-align: left;
-  position: relative;
-}
-
-.group-title {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 0.25rem;
+.combat-container h3 {
+  font-size: 1.5rem;
+  margin: 1.5rem 0 1rem;
   color: #ffeb3b;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  padding-right: 70px; /* Make room for XP */
-}
-
-.group-subinfo {
-  font-size: 1rem;
-  margin-bottom: 0.75rem;
-  font-style: italic;
-}
-
-.group-drink, .group-xp {
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-}
-
-.group-xp {
-  position: absolute;
-  top: 0.25rem;
-  right: 0;
-  font-size: 0.95rem;
-  padding: 0.2rem 0.5rem;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-  font-weight: bold;
+  text-align: center;
 }
 
 .monsters-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
 .monster-card {
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: left;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .monster-card.defeated {
-  opacity: 0.5;
-  filter: grayscale(1);
+  opacity: 0.7;
+  filter: grayscale(0.7);
 }
 
 .monster-info {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   width: 100%;
 }
 
 .monster-name {
   font-weight: bold;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
-.monster-items-section {
-  margin-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 1.5rem;
-}
-
-.monster-items-section h4 {
-  color: #ffeb3b;
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-
-.prize-item-section {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.prize-item-container {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  padding: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.prize-item-container h3 {
-  color: #ffeb3b;
-  margin-top: 0;
-  margin-bottom: 1rem;
   font-size: 1.3rem;
-}
-
-/* Styles for the location description */
-.location-description-section {
-  max-width: 800px;
-  margin: 1rem auto 2rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.location-description {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #f0f0f0;
-  text-align: left;
-  font-style: italic;
-}
-
-.location-monsters .monster-card {
-  /* Allow monster type colors to show through */
-}
-
-.location-monsters .monster-name {
-  font-weight: bold;
-  font-size: 1.1rem;
   margin-bottom: 0.5rem;
+}
+
+.monster-details {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.monster-type, .monster-race, .monster-drink, .monster-xp {
+  padding: 0.3rem 0.6rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.monster-item {
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1rem;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.item-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.item-power {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 button {
@@ -586,5 +454,50 @@ button {
 button:disabled {
   background: #666;
   cursor: not-allowed;
+}
+
+.item-description {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.description-label {
+  font-weight: bold;
+  color: #ffeb3b;
+  font-style: normal;
+}
+
+.item-details {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.item-type, .item-uses, .item-target, .item-level {
+  padding: 0.3rem 0.6rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.item-level {
+  color: #ffeb3b;
+  position: relative;
+}
+
+.item-level-4 {
+  color: #ba68c8;
+  font-weight: bold;
+}
+
+.item-level-5 {
+  color: #ff9800;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255, 152, 0, 0.5);
 }
 </style> 
