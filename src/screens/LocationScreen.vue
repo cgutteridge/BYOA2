@@ -82,7 +82,7 @@
                 {{ monster.item.name }}
               </div>
               <div class="item-power">{{ monster.item.power }}</div>
-              <button class="take-item-btn" :class="{'take-item-btn-level4': monster.item.level === 4, 'take-item-btn-level5': monster.item.level === 5}" :disabled="monster.alive">
+              <button class="take-item-btn compact-btn" :class="{'take-item-btn-level4': monster.item.level === 4, 'take-item-btn-level5': monster.item.level === 5}" :disabled="monster.alive">
                 {{ !monster.alive ? 'Claim Item' : 'Defeat to claim' }}
               </button>
             </div>
@@ -120,7 +120,6 @@
       </div>
     </div>
   </div>
-  <pre>{{ questStore.currentPub }}</pre>
 </template>
 
 <script setup lang="ts">
@@ -385,12 +384,15 @@ function leavePub() {
 .monsters-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
+  column-gap: 0.75rem;
+  row-gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .monster-card {
   border-radius: 8px;
   padding: 0;
+  margin: 0;
   transition: all 0.3s ease;
   text-align: left;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
@@ -460,7 +462,7 @@ function leavePub() {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 1rem 1rem 0.5rem;
+  padding: 0.75rem 0.75rem 0.4rem;
 }
 
 .monster-controls {
@@ -469,13 +471,13 @@ function leavePub() {
 }
 
 .monster-toggle-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.75rem;
   font-size: 0.9rem;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 90px;
+  min-width: 80px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
@@ -529,9 +531,9 @@ function leavePub() {
 .monster-drink-bar {
   background: rgba(0, 0, 0, 0.4);
   text-align: center;
-  padding: 0.8rem;
+  padding: 0.6rem;
   margin-top: auto;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   color: white;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -541,7 +543,7 @@ function leavePub() {
 .monster-item {
   margin-top: 0;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 1rem;
+  padding: 0.75rem;
   background: rgba(0, 0, 0, 0.3);
 }
 
@@ -552,16 +554,16 @@ function leavePub() {
 }
 
 .item-name {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
   color: white;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .item-power {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
@@ -623,5 +625,11 @@ button:disabled {
   color: #ff9800;
   font-weight: bold;
   text-shadow: 0 0 5px rgba(255, 152, 0, 0.5);
+}
+
+.compact-btn {
+  padding: 0.5rem 1rem;
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
 }
 </style> 
