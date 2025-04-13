@@ -8,18 +8,27 @@
     <div class="gift-item-section" v-if="questStore.currentPub?.giftItem">
       <div class="gift-item-container">
         <h3>Gift Item Available!</h3>
-        <div class="item-card">
-          <div class="item-name">{{ questStore.currentPub.giftItem.name }}</div>
-          <div class="item-description">{{ questStore.currentPub.giftItem.description }}</div>
+        <div class="item-card" :class="{'item-card-level4': questStore.currentPub.giftItem.level === 4, 'item-card-level5': questStore.currentPub.giftItem.level === 5}">
+          <div class="item-name" :class="{'item-name-level4': questStore.currentPub.giftItem.level === 4, 'item-name-level5': questStore.currentPub.giftItem.level === 5}">
+            {{ questStore.currentPub.giftItem.name }}
+          </div>
+          <div class="item-power">{{ questStore.currentPub.giftItem.power }}</div>
+          <div v-if="questStore.currentPub.giftItem.description" class="item-description">
+            <span class="description-label">Story:</span> {{ questStore.currentPub.giftItem.description }}
+          </div>
           <div class="item-details">
             <span class="item-type">Type: {{ getItemTypeName(questStore.currentPub.giftItem.type, questStore.currentPub.giftItem.level) }}</span>
-            <span class="item-level">Level: {{ questStore.currentPub.giftItem.level }}</span>
+            <span class="item-level" :class="{'item-level-4': questStore.currentPub.giftItem.level === 4, 'item-level-5': questStore.currentPub.giftItem.level === 5}">
+              Level: {{ questStore.currentPub.giftItem.level }}
+            </span>
             <span class="item-uses">Uses: {{ questStore.currentPub.giftItem.uses }}</span>
             <span class="item-target" v-if="questStore.currentPub.giftItem.target">
               Target: {{ questStore.currentPub.giftItem.target }}
             </span>
           </div>
-          <button class="take-item-btn">Take Gift</button>
+          <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.giftItem.level === 4, 'take-item-btn-level5': questStore.currentPub.giftItem.level === 5}">
+            Take Gift
+          </button>
         </div>
       </div>
     </div>
@@ -54,18 +63,25 @@
 
         <div v-if="unit.item" class="unit-item-section">
           <h4>Monster Item</h4>
-          <div class="item-card">
-            <div class="item-name">{{ unit.item.name }}</div>
-            <div class="item-description">{{ unit.item.description }}</div>
+          <div class="item-card" :class="{'item-card-level4': unit.item.level === 4, 'item-card-level5': unit.item.level === 5}">
+            <div class="item-name" :class="{'item-name-level4': unit.item.level === 4, 'item-name-level5': unit.item.level === 5}">
+              {{ unit.item.name }}
+            </div>
+            <div class="item-power">{{ unit.item.power }}</div>
+            <div v-if="unit.item.description" class="item-description">
+              <span class="description-label">Story:</span> {{ unit.item.description }}
+            </div>
             <div class="item-details">
               <span class="item-type">Type: {{ getItemTypeName(unit.item.type, unit.item.level) }}</span>
-              <span class="item-level">Level: {{ unit.item.level }}</span>
+              <span class="item-level" :class="{'item-level-4': unit.item.level === 4, 'item-level-5': unit.item.level === 5}">
+                Level: {{ unit.item.level }}
+              </span>
               <span class="item-uses">Uses: {{ unit.item.uses }}</span>
               <span class="item-target" v-if="unit.item.target">
                 Target: {{ unit.item.target }}
               </span>
             </div>
-            <button class="take-item-btn" :disabled="!isUnitDefeated(unit)">
+            <button class="take-item-btn" :class="{'take-item-btn-level4': unit.item.level === 4, 'take-item-btn-level5': unit.item.level === 5}" :disabled="!isUnitDefeated(unit)">
               {{ isUnitDefeated(unit) ? 'Claim Item' : 'Defeat unit to claim' }}
             </button>
           </div>
@@ -215,11 +231,24 @@ function leavePub() {
   color: #fff;
 }
 
+.item-power {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .item-description {
   font-size: 0.95rem;
   margin-bottom: 1rem;
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.4;
+  font-style: italic;
+}
+
+.description-label {
+  font-weight: bold;
+  color: #ffeb3b;
+  font-style: normal;
 }
 
 .item-details {
@@ -239,6 +268,65 @@ function leavePub() {
 
 .item-level {
   color: #ffeb3b;
+  position: relative;
+}
+
+.item-level-4 {
+  color: #ba68c8;
+  font-weight: bold;
+}
+
+.item-level-5 {
+  color: #ff9800;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255, 152, 0, 0.5);
+}
+
+.item-card-level4 {
+  border: 1px solid #ba68c8;
+  box-shadow: 0 0 15px rgba(186, 104, 200, 0.4);
+}
+
+.item-card-level5 {
+  border: 1px solid #ff9800;
+  box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 152, 0, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+  }
+}
+
+.item-name-level4 {
+  color: #ba68c8;
+  text-shadow: 0 0 5px rgba(186, 104, 200, 0.3);
+}
+
+.item-name-level5 {
+  color: #ffc107;
+  text-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.take-item-btn-level4 {
+  background: linear-gradient(135deg, #7b1fa2 0%, #ba68c8 100%) !important;
+  color: white !important;
+}
+
+.take-item-btn-level5 {
+  background: linear-gradient(135deg, #ff9800 0%, #ffeb3b 100%) !important;
+  color: #333 !important;
+  text-transform: uppercase;
+  font-weight: 800;
 }
 
 .take-item-btn {

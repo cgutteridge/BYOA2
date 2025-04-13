@@ -89,7 +89,8 @@ export interface Item {
   type: ItemTypeId
   target?: string
   name: string
-  description: string
+  power: string
+  description?: string
   uses: number
   level: number
 }
@@ -97,6 +98,6 @@ export interface Item {
 export interface ItemType {
   id: ItemTypeId
   title: string
-  description: string
+  power: string
   level: number
 } 
