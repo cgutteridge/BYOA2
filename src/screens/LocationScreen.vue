@@ -420,7 +420,7 @@ function leavePub() {
 }
 
 .monster-goblinoid {
-  background: linear-gradient(135deg, #424242 0%, #757575 100%);
+  background: linear-gradient(135deg, #1b4d1b 0%, #388e3c 100%);
 }
 
 .monster-elf {
@@ -453,8 +453,9 @@ function leavePub() {
 }
 
 .monster-card.defeated {
-  opacity: 0.6;
-  filter: grayscale(0.8);
+  opacity: 0.5;
+  filter: grayscale(0.9);
+  background: linear-gradient(135deg, #111111 0%, #333333 100%) !important;
 }
 
 .monster-header {
