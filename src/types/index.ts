@@ -20,6 +20,7 @@ export interface Pub {
   scouted: boolean
   prizeName?: string
   prizeDescription?: string
+  giftItem?: Item
 }
 
 export interface LocationType {
@@ -60,6 +61,7 @@ export interface Unit {
   type: string
   name: string
   members: Enemy[]
+  item?: Item
 }
 
 export interface Enemy {
@@ -80,3 +82,21 @@ export type ScreenId =
 export type QuestState = 'no_quest' | 'active' | 'completed'
 
 export type GPSStatus = 'initializing' | 'loading' | 'success' | 'error' 
+
+export type ItemTypeId = 'healing' | 'transmute' | 'kill'
+
+export interface Item {
+  type: ItemTypeId
+  target?: string
+  name: string
+  description: string
+  uses: number
+  level: number
+}
+
+export interface ItemType {
+  id: ItemTypeId
+  title: string
+  description: string
+  level: number
+} 

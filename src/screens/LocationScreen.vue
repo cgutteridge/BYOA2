@@ -5,6 +5,25 @@
       <button class="leave-button" @click="leavePub">Leave Pub</button>
     </div>
 
+    <div class="gift-item-section" v-if="questStore.currentPub?.giftItem">
+      <div class="gift-item-container">
+        <h3>Gift Item Available!</h3>
+        <div class="item-card">
+          <div class="item-name">{{ questStore.currentPub.giftItem.name }}</div>
+          <div class="item-description">{{ questStore.currentPub.giftItem.description }}</div>
+          <div class="item-details">
+            <span class="item-type">Type: {{ getItemTypeName(questStore.currentPub.giftItem.type, questStore.currentPub.giftItem.level) }}</span>
+            <span class="item-level">Level: {{ questStore.currentPub.giftItem.level }}</span>
+            <span class="item-uses">Uses: {{ questStore.currentPub.giftItem.uses }}</span>
+            <span class="item-target" v-if="questStore.currentPub.giftItem.target">
+              Target: {{ questStore.currentPub.giftItem.target }}
+            </span>
+          </div>
+          <button class="take-item-btn">Take Gift</button>
+        </div>
+      </div>
+    </div>
+
     <div class="combat-container" v-if="questStore.currentPub?.monsters">
       <div 
         v-for="(unit, unitIndex) in questStore.currentPub.monsters" 
@@ -32,6 +51,25 @@
             </div>
           </div>
         </div>
+
+        <div v-if="unit.item" class="unit-item-section">
+          <h4>Monster Item</h4>
+          <div class="item-card">
+            <div class="item-name">{{ unit.item.name }}</div>
+            <div class="item-description">{{ unit.item.description }}</div>
+            <div class="item-details">
+              <span class="item-type">Type: {{ getItemTypeName(unit.item.type, unit.item.level) }}</span>
+              <span class="item-level">Level: {{ unit.item.level }}</span>
+              <span class="item-uses">Uses: {{ unit.item.uses }}</span>
+              <span class="item-target" v-if="unit.item.target">
+                Target: {{ unit.item.target }}
+              </span>
+            </div>
+            <button class="take-item-btn" :disabled="!isUnitDefeated(unit)">
+              {{ isUnitDefeated(unit) ? 'Claim Item' : 'Defeat unit to claim' }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -41,7 +79,8 @@
 import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
-import {Unit} from "../types";
+import {itemTypesById, getItemTypesByLevel} from "../data/itemTypes";
+import {Unit, ItemTypeId} from "../types";
 import {isUnitDefeated, toggleEnemyStatus} from "../helpers/combatHelper";
 import '../styles/monsterStyles.css';
 
@@ -103,6 +142,14 @@ function getMonsterTraits(monsterId: string): string {
   return ` (${monster.flags.join(', ')})`
 }
 
+function getItemTypeName(itemTypeId: string, level: number = 1): string {
+  const itemTypes = getItemTypesByLevel(level, itemTypeId as ItemTypeId);
+  if (itemTypes.length > 0) {
+    return itemTypes[0].title;
+  }
+  return itemTypesById[itemTypeId as ItemTypeId]?.title || itemTypeId;
+}
+
 function leavePub() {
   appStore.setScreen('map')
   questStore.unsetCurrentPub()
@@ -132,6 +179,83 @@ function leavePub() {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.gift-item-section {
+  margin-bottom: 2rem;
+  max-width: 800px;
+  margin: 0 auto 2rem auto;
+}
+
+.gift-item-container {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.gift-item-container h3 {
+  color: #ffeb3b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.item-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.item-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.item-description {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+.item-details {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.item-type, .item-uses, .item-target, .item-level {
+  padding: 0.3rem 0.6rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.item-level {
+  color: #ffeb3b;
+}
+
+.take-item-btn {
+  padding: 0.8rem 1.5rem;
+  background: #8bc34a;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.take-item-btn:hover {
+  background: #9ccc65;
+  transform: translateY(-2px);
 }
 
 .combat-container {
@@ -172,6 +296,19 @@ function leavePub() {
 .unit-drink, .unit-xp {
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
+}
+
+.unit-item-section {
+  margin-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1.5rem;
+}
+
+.unit-item-section h4 {
+  color: #ffeb3b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
 }
 
 .enemies-container {
