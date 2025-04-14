@@ -1,59 +1,32 @@
 <template>
-  <div class="inventory-test-screen">
-    <h2>Inventory Test Harness</h2>
-    <p class="note">This is a development-only screen for testing inventory components.</p>
-    
-    <div class="inventory-content">
-      <h3>Inventory Items</h3>
-      <div v-if="!inventoryStore.hasItems" class="inventory-empty">
-        <p>Your inventory is empty.</p>
-        <button class="add-test-item" @click="addTestItem">
-          Add Test Item
-        </button>
-      </div>
-      <div v-else class="inventory-grid">
-        <div 
-          v-for="item in sortedItems" 
-          :key="item.id"
-          class="inventory-grid__item"
-        >
-          <ItemCard 
-            :item="item"
-            :show-use-button="true"
-            :show-inspect-button="true"
-            :show-quantity="true"
-            @use="useItem(item)"
-            @inspect="inspectItem(item)"
-          />
-        </div>
-        
-        <div class="inventory-grid__add">
-          <button class="add-test-item" @click="addTestItem">
-            Add Test Item
-          </button>
-          <button class="clear-items" @click="clearItems">
-            Clear All Items
-          </button>
-          <button class="test-item-generation" @click="testItemGeneration">
-            Test Item Generation
-          </button>
-        </div>
-      </div>
-      
-      <div class="test-controls">
-        <h3>Test Controls</h3>
-        <button @click="toggleModal">Toggle Inventory Modal</button>
-        <button @click="continueToMap">Return to Map</button>
+  <div class="inventory-container">
+    <div class="inventory-header">
+      <h1>Inventory</h1>
+      <div class="inventory-controls">
+        <button @click="addTestItem" class="test-button">+ Add Test Item</button>
+        <button @click="clearInventory" class="clear-button">Clear Items</button>
       </div>
     </div>
     
-    <!-- Item Inspection Modal -->
-    <InventoryModal
-      :is-open="showModal"
-      :item="selectedItem"
-      context="inventory"
-      @close="closeModal"
-      @use="useItem"
+    <div v-if="inventoryStore.hasItems" class="inventory-items">
+      <ItemCard 
+        v-for="item in sortedItems" 
+        :key="item.id" 
+        :item="item" 
+        @use="handleUseItem" 
+        @inspect="openItemInspectModal" 
+      />
+    </div>
+    <div v-else class="inventory-empty">
+      <p>Your inventory is empty.</p>
+    </div>
+    
+    <ItemInspectModal 
+      :is-open="isInspectModalOpen" 
+      :item="selectedItem" 
+      context="inventory" 
+      @close="closeItemInspectModal" 
+      @use="handleUseItem"  
     />
   </div>
 </template>
@@ -64,7 +37,7 @@ import { useAppStore } from "../stores/appStore"
 import { useInventoryStore } from "../stores/inventoryStore"
 import { getRandomSampleItem } from "../data/sampleItems"
 import ItemCard from "../components/ItemCard.vue"
-import InventoryModal from "../components/InventoryModal.vue"
+import ItemInspectModal from "../components/ItemInspectModal.vue"
 import type { Item } from '../types/item'
 import { generateTestItems, logItemDetails } from '../helpers/generateRandomItem'
 
@@ -72,21 +45,22 @@ const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
 
 // State for item inspection modal
-const showModal = ref(false)
+const isInspectModalOpen = ref(false)
 const selectedItem = ref<Item | null>(null)
 
-const inspectItem = (item: Item) => {
-  selectedItem.value = item
-  showModal.value = true
-}
-
-const closeModal = () => {
-  showModal.value = false
-  selectedItem.value = null
-}
-
-const useItem = (item: Item) => {
+const handleUseItem = (item: Item) => {
+  console.log('Using item:', item.name)
   inventoryStore.useItem(item.id)
+  // Additional logic for using an item would go here
+}
+
+function openItemInspectModal(item: Item) {
+  selectedItem.value = item
+  isInspectModalOpen.value = true
+}
+
+function closeItemInspectModal() {
+  isInspectModalOpen.value = false
 }
 
 // Sort items by level and then by name
@@ -110,11 +84,11 @@ function addTestItem() {
   inventoryStore.addItem(randomItem)
 }
 
-function clearItems() {
-  // Remove all items from inventory
-  inventoryStore.items.forEach(item => {
-    inventoryStore.removeItem(item.id, item.quantity)
-  })
+function clearInventory() {
+  // Clear all items from inventory
+  while (inventoryStore.items.length > 0) {
+    inventoryStore.removeItem(inventoryStore.items[0].id)
+  }
 }
 
 function toggleModal() {
@@ -140,106 +114,56 @@ function testItemGeneration() {
 </script>
 
 <style scoped>
-.inventory-test-screen {
-  min-height: 100vh;
+.inventory-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.inventory-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-  color: white;
-  padding: 2rem;
+  margin-bottom: 20px;
 }
 
-h2 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  text-align: center;
+.inventory-controls {
+  display: flex;
+  gap: 10px;
 }
 
-.note {
-  color: #ff9;
-  margin-bottom: 2rem;
-  font-style: italic;
-}
-
-h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-.inventory-content {
-  flex-grow: 1;
-  width: 100%;
-  max-width: 1000px;
-  margin-bottom: 2rem;
+.inventory-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
 }
 
 .inventory-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  background-color: rgba(0, 0, 0, 0.2);
+  text-align: center;
+  padding: 50px;
+  background-color: #f9f9f9;
   border-radius: 8px;
-  margin-bottom: 2rem;
 }
 
-.inventory-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
-  padding: 1.5rem;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  margin-bottom: 2rem;
-}
-
-.inventory-grid__item {
-  min-height: 200px;
-}
-
-.inventory-grid__add {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  gap: 1rem;
-}
-
-.add-test-item,
-.clear-items,
-.test-item-generation {
-  padding: 0.75rem 1rem;
-  margin: 0.5rem 0;
-  background-color: #2196f3;
+.test-button {
+  background-color: #4CAF50;
   color: white;
+  padding: 8px 16px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-weight: bold;
-  width: 100%;
 }
 
-.clear-items {
+.clear-button {
   background-color: #f44336;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.test-item-generation {
-  background-color: #9c27b0;
-}
-
-.test-controls {
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  gap: 1rem;
-}
-
-.test-controls button {
-  margin-bottom: 0.5rem;
+.test-button:hover, .clear-button:hover {
+  opacity: 0.9;
 }
 </style> 
