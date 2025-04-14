@@ -13,52 +13,33 @@
         v-for="item in sortedItems" 
         :key="item.id" 
         :item="item" 
-        @use="handleUseItem" 
-        @inspect="openItemInspectModal" 
+        @click="openItemInspectModal" 
       />
     </div>
     <div v-else class="inventory-empty">
       <p>Your inventory is empty.</p>
     </div>
-    
-    <ItemInspectModal 
-      v-if="selectedItem"
-      :is-open="isInspectModalOpen" 
-      :item="selectedItem" 
-      context="inventory" 
-      @close="closeItemInspectModal" 
-      @use="handleUseItem"  
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useInventoryStore } from "../stores/inventoryStore"
+import { useAppStore } from "../stores/appStore"
 import { getRandomSampleItem } from "../data/sampleItems"
 import ItemCard from "../components/ItemCard.vue"
-import ItemInspectModal from "../components/ItemInspectModal.vue"
 import type { Item } from '../types/item'
 
 const inventoryStore = useInventoryStore()
-
-// State for item inspection modal
-const isInspectModalOpen = ref(false)
-const selectedItem = ref<Item | null>(null)
+const appStore = useAppStore()
 
 const handleUseItem = (item: Item) => {
   console.log('Using item:', item.name)
   inventoryStore.useItem(item.id)
-  // Additional logic for using an item would go here
 }
 
 function openItemInspectModal(item: Item) {
-  selectedItem.value = item
-  isInspectModalOpen.value = true
-}
-
-function closeItemInspectModal() {
-  isInspectModalOpen.value = false
+  appStore.openItemInspectModal(item)
 }
 
 // Sort items by timestamp (newest first), then by level and name
@@ -116,8 +97,8 @@ function clearInventory() {
 
 .inventory-items {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
 }
 
 .inventory-empty {
@@ -125,6 +106,8 @@ function clearInventory() {
   padding: 50px;
   background-color: #f9f9f9;
   border-radius: 8px;
+  font-size: 1.1rem;
+  color: #666;
 }
 
 .test-button {

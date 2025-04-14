@@ -37,10 +37,7 @@
               >
                 <ItemCard 
                   :item="item"
-                  :show-use-button="true"
-                  :show-inspect-button="true"
-                  @use="handleUseItem(item)"
-                  @inspect="handleInspectItem(item)"
+                  @click="handleInspectItem(item)"
                 />
               </div>
             </div>
@@ -136,15 +133,9 @@ function close() {
   emit('close')
 }
 
-function handleUseItem(item: Item) {
-  // This will be implemented in later stages
-  console.log('Use item:', item.name)
-  inventoryStore.useItem(item.id)
-}
-
 function handleInspectItem(item: Item) {
-  // This will be implemented in later stages
   console.log('Inspect item:', item.name)
+  appStore.openItemInspectModal(item)
 }
 
 function handleQuit() {

@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
 import type {GPSStatus, Location, PubId, ScreenId} from '../types'
+import type { Item } from '../types/item'
 import {usePubStore} from "../stores/pubStore";
 
 // Notification interface
@@ -25,6 +26,9 @@ export const useAppStore = defineStore('app', () => {
   const isInventoryOpen = ref(false)
   const inventoryTab = ref('items') // 'items', 'quest', 'log', 'options'
   
+  // Item inspection state
+  const inspectedItem = ref<Item | null>(null)
+
   // Notifications
   const notifications = ref<Notification[]>([])
 
@@ -96,6 +100,18 @@ export const useAppStore = defineStore('app', () => {
     }
   }
 
+  // Item inspection actions
+  const openItemInspectModal = (item: Item): void => {
+    inspectedItem.value = item
+  }
+  
+  const closeItemInspectModal = (): void => {
+    // Reset inspected item after a short delay to allow for transition animations
+    setTimeout(() => {
+      inspectedItem.value = null
+    }, 300)
+  }
+
   const focusPub = computed(() => {
     if (focusPubId.value === undefined) {
       return undefined
@@ -114,6 +130,7 @@ export const useAppStore = defineStore('app', () => {
     focusPub,
     isInventoryOpen,
     inventoryTab,
+    inspectedItem,
     notifications,
     setFocusPub,
     unsetFocusPub,
@@ -127,6 +144,8 @@ export const useAppStore = defineStore('app', () => {
     closeInventory,
     setInventoryTab,
     addNotification,
-    removeNotification
+    removeNotification,
+    openItemInspectModal,
+    closeItemInspectModal
   }
 }) 

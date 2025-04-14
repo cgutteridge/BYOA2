@@ -2,6 +2,7 @@
 import { onMounted, ref, onUnmounted } from 'vue'
 import { useAppStore } from './stores/appStore'
 import { useQuestStore } from './stores/questStore'
+import { useInventoryStore } from './stores/inventoryStore'
 
 import MapScreen from './screens/MapScreen.vue'
 import QuestStartScreen from './screens/QuestStartScreen.vue'
@@ -11,12 +12,14 @@ import LocationScreen from './screens/LocationScreen.vue'
 import VictoryScreen from './screens/VictoryScreen.vue'
 import LocationInfoScreen from "./screens/LocationInfoScreen.vue"
 import InventoryModal from './components/InventoryModal.vue'
+import ItemInspectModal from './components/ItemInspectModal.vue'
 import NotificationSystem from './components/NotificationSystem.vue'
 // Import test screen for development
 import InventoryTestScreen from './screens/InventoryScreen.vue'
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
+const inventoryStore = useInventoryStore()
 const isDebugMode = ref(false)
 const watchId = ref<number | null>(null)
 const isTestMode = ref(false)
@@ -124,6 +127,30 @@ function handleQuit() {
   appStore.closeInventory()
 }
 
+function getInspectionContext() {
+  // If we're in a location screen, the item is from the location
+  if (appStore.screen === 'location') {
+    return 'location'
+  }
+  // If inventory is open, it's from inventory
+  else if (appStore.isInventoryOpen) {
+    return 'inventory'
+  }
+  // Default to inventory context
+  return 'inventory'
+}
+
+function handleUseItem(item) {
+  if (!appStore.inspectedItem) return
+  
+  inventoryStore.useItem(item.id)
+  
+  // Close after a delay to allow the result message to be displayed
+  setTimeout(() => {
+    appStore.closeItemInspectModal()
+  }, 3000)
+}
+
 onMounted(() => {
   console.log('App mounted, initializing GPS...')
   initializeGPS()
@@ -220,6 +247,16 @@ onUnmounted(() => {
         :is-open="appStore.isInventoryOpen"
         @close="closeInventory"
         @quit="handleQuit"
+      />
+      
+      <!-- Global ItemInspectModal -->
+      <ItemInspectModal 
+        v-if="appStore.inspectedItem"
+        :is-open="!!appStore.inspectedItem" 
+        :item="appStore.inspectedItem" 
+        :context="getInspectionContext()" 
+        @close="appStore.closeItemInspectModal" 
+        @use="handleUseItem"  
       />
     </template>
   </div>
