@@ -94,7 +94,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, computed } from 'vue'
 import type { Item } from '../types/item'
-import { getTargetDescription } from '../powers'
+import { getTargetDescription } from '../helpers/generateEffectDescription'
 
 // Define props
 const props = defineProps<{

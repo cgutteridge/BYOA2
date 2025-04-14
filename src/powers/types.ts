@@ -6,7 +6,6 @@ export interface PowerFunction {
   execute: (item: Item, target?: Monster | string | any) => void
   canTarget: (item: Item, target?: Monster | string | any) => boolean
   getValidTargets?: (item: Item) => Monster[] | string[] | any[]
-  getTargetDescription: (item: Item) => string
 }
 
 // Result type for power executions

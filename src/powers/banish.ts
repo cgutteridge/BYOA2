@@ -77,28 +77,6 @@ export const banish: PowerFunction = {
     return questStore.currentPub.monsters.filter(monster => 
       monster.alive && canTargetFunc(item, monster)
     )
-  },
-  
-  getTargetDescription: (item: Item): string => {
-    const filters = []
-    
-    if (item.targetFilters?.flags?.length) {
-      filters.push(`${item.targetFilters.flags.join('/')} creatures`)
-    }
-    
-    if (item.targetFilters?.levels?.length) {
-      filters.push(`${item.targetFilters.levels.join('/')} monsters`)
-    }
-    
-    if (item.targetFilters?.species?.length) {
-      filters.push(`${item.targetFilters.species.join('/')} species`)
-    }
-    
-    if (filters.length) {
-      return `Can banish ${filters.join(' and ')}.`
-    }
-    
-    return 'Can banish any monster, but they leave no loot behind.'
   }
 }
 

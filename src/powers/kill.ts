@@ -66,28 +66,6 @@ export const killOne: PowerFunction = {
   getValidTargets: (_item: Item): Monster[] => {
     // This will be implemented to return all valid monsters in the current location
     return []
-  },
-  
-  getTargetDescription: (item: Item): string => {
-    const filters = []
-    
-    if (item.targetFilters?.flags?.length) {
-      filters.push(`${item.targetFilters.flags.join('/')} creatures`)
-    }
-    
-    if (item.targetFilters?.levels?.length) {
-      filters.push(`${item.targetFilters.levels.join('/')} monsters`)
-    }
-    
-    if (item.targetFilters?.species?.length) {
-      filters.push(`${item.targetFilters.species.join('/')} species`)
-    }
-    
-    if (filters.length) {
-      return `Can target ${filters.join(' and ')}.`
-    }
-    
-    return 'Can target any monster.'
   }
 }
 
@@ -117,10 +95,6 @@ export const killAll: PowerFunction = {
   getValidTargets: (_item: Item): string[] => {
     // This will return unique monster types in the current location
     return []
-  },
-  
-  getTargetDescription: (_item: Item): string => {
-    return 'Can target all monsters of a specific type.'
   }
 }
 

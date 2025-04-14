@@ -93,20 +93,6 @@ export function getValidTargets(
   return []
 }
 
-/**
- * Get a description of what targets an item can affect
- */
-export function getTargetDescription(item: Item): string {
-  if (!item.power) return 'This item has no power.'
-  
-  const powerFunction = powerFunctions[item.power]
-  if (powerFunction) {
-    return powerFunction.getTargetDescription(item)
-  }
-  
-  return 'Unknown targeting capabilities.'
-}
-
 // Export an empty register function to be filled in later stages
 export function registerPowers() {
   // This will register all power functions in later stages
