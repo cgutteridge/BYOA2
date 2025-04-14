@@ -135,21 +135,14 @@ import { computed } from 'vue';
 const questStore = useQuestStore()
 const appStore = useAppStore()
 
-// Sort monsters with active ones first, then defeated ones
+// Keep monsters in their original order rather than sorting based on alive status
 const sortedMonsters = computed(() => {
   if (!questStore.currentPub?.monsters || !questStore.currentPub.monsters.length) {
     return [];
   }
   
-  // Create a copy of the monsters array to avoid modifying the original
-  return [...questStore.currentPub.monsters].sort((a, b) => {
-    // Sort alive monsters first
-    if (a.alive && !b.alive) return -1;
-    if (!a.alive && b.alive) return 1;
-    
-    // If both are alive or both are defeated, sort by type/name
-    return a.name.localeCompare(b.name);
-  });
+  // Simply return the monsters array without reordering
+  return [...questStore.currentPub.monsters];
 });
 
 // Check if all monsters are defeated
