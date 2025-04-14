@@ -42,7 +42,6 @@ export const usePubStore = defineStore('pub', () => {
         targetPub.lng
       )
       
-      // 50 meters is the scouting distance
       return distance <= 20000
     } catch (error) {
       console.error(`Error checking if pub can be scouted: ${error}`)

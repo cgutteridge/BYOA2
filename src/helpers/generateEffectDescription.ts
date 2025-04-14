@@ -98,13 +98,13 @@ export function generateEffectDescription(item: Item): string {
   // Base effect by power type
   switch (item.power) {
     case 'kill':
-      effect = `This ${qualityTerm} item instantly defeats`;
+      effect = `This ${qualityTerm} item instantly defeats `;
       effect += getTargetDescription(item);
       effect += ".";
       break;
       
     case 'transmute':
-      effect = `This ${qualityTerm} item transforms`;
+      effect = `This ${qualityTerm} item transforms `;
       effect += getTargetDescription(item);
       effect += " into ";
       effect += getResultDescription(item);
@@ -112,25 +112,25 @@ export function generateEffectDescription(item: Item): string {
       break;
       
     case 'shrink':
-      effect = `This ${qualityTerm} item reduces the power of`;
+      effect = `This ${qualityTerm} item reduces the power of `;
       effect += getTargetDescription(item);
       effect += ".";
       break;
       
     case 'split':
-      effect = `This ${qualityTerm} item splits`;
+      effect = `This ${qualityTerm} item splits `;
       effect += getTargetDescription(item);
       effect += ".";
       break;
       
     case 'pickpocket':
-      effect = `This ${qualityTerm} item steals from`;
+      effect = `This ${qualityTerm} item steals from `;
       effect += getTargetDescription(item);
       effect += ".";
       break;
       
     case 'banish':
-      effect = `This ${qualityTerm} item banishes`;
+      effect = `This ${qualityTerm} item banishes `;
       effect += getTargetDescription(item);
       effect += ".";
       break;
