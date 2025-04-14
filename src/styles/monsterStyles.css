@@ -199,8 +199,8 @@
   }
 }
 
-/* Special styling for flame/ice elementals */
-.monster-card[class*="flame"], .monster-card[class*="frost"] {
+/* Special styling for flame/fire elementals */
+.monster-card[class*="flame"], .monster-card[class*="fire"] {
   animation: elemental-pulse 4s infinite;
   position: relative;
   overflow: hidden;
@@ -208,10 +208,10 @@
 
 @keyframes elemental-pulse {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(0, 0, 255, 0.4);
+    box-shadow: 0 0 15px rgba(255, 64, 0, 0.5);
   }
   50% {
-    box-shadow: 0 0 5px rgba(0, 0, 255, 0.1);
+    box-shadow: 0 0 5px rgba(255, 64, 0, 0.2);
   }
 }
 

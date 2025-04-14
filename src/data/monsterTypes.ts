@@ -411,8 +411,8 @@ export const monsterTypes: MonsterType[] = [
     xp: 2.0 // Double shot (50ml) at 40% ABV
   },
   {
-    id: 'frost_phantom',
-    title: 'Frost Phantom',
+    id: 'fire_phantom',
+    title: 'Fire Phantom',
     drink: 'Single Sambuca',
     level: 'grunt',
     species: 'elemental',

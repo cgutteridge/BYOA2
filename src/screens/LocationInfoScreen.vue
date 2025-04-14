@@ -176,10 +176,8 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
   // Add special classes for themed monsters
   if (monster.id.includes('desert') || monster.id.includes('sand')) {
     classes['desert-monster'] = true
-  } else if (monster.id.includes('flame')) {
+  } else if (monster.id.includes('flame') || monster.id.includes('fire')) {
     classes['flame-monster'] = true
-  } else if (monster.id.includes('frost')) {
-    classes['frost-monster'] = true
   } else if (monster.id.includes('earth') || monster.id.includes('mountain')) {
     classes['earth-monster'] = true
   } else if (monster.id.includes('water') || monster.id.includes('tidal')) {
