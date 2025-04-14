@@ -2,10 +2,8 @@ import { MonsterFlag, MonsterLevel, Species } from '.'
 
 // Item power types
 export type ItemPower = 
-  | 'kill_one' 
-  | 'kill_all' 
-  | 'transmute_one' 
-  | 'transmute_all' 
+  | 'kill' 
+  | 'transmute' 
   | 'scout_500' 
   | 'scout_1000' 
   | 'scout_any' 
@@ -13,8 +11,13 @@ export type ItemPower =
   | 'split' 
   | 'pickpocket';
 
-// Target and result modes
+// Target modes - how the target is selected
 export type TargetMode = 'pick' | 'random' | undefined;
+
+// Target scopes - what is targeted
+export type TargetScope = 'one' | 'type' | 'race' | 'all' | undefined;
+
+// Result modes
 export type ResultMode = 'random' | 'pick' | 'level' | 'species' | undefined;
 
 // Enhanced Item interface
@@ -26,6 +29,7 @@ export interface EnhancedItem {
   uses?: number
   power?: ItemPower
   target?: TargetMode
+  targetScope?: TargetScope
   targetFilters?: {
     species?: Species[]
     levels?: MonsterLevel[]

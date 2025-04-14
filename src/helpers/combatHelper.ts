@@ -1,9 +1,9 @@
 import { useQuestStore } from '@/stores/questStore';
 import { useInventoryStore } from '@/stores/inventoryStore';
 import { monsterTypes } from '@/data/monsterTypes';
-import { Monster, Item } from '@/types';
-import { getRandomSampleItem } from '@/data/sampleItems';
-import type { EnhancedItem, ItemPower } from '@/types/item';
+import { Monster, Item, ItemTypeId } from '@/types';
+import type { EnhancedItem, ItemPower, TargetScope } from '@/types/item';
+import { generateRandomItem } from './generateRandomItem';
 
 /**
  * Toggles the alive status of a monster and updates XP accordingly
@@ -45,46 +45,55 @@ export function toggleMonsterStatus(monster: Monster): void {
 function generateMonsterDrop(monster: Monster, monsterLevel: string): void {
   // Determine drop chance based on monster level
   let dropChance = 0;
+  let itemLevel = 1;
+  
   switch (monsterLevel) {
     case 'minion':
-      dropChance = 0.2; // 20% chance for minions
+      dropChance = 0.3; // 30% chance for minions
+      itemLevel = 1;
       break;
     case 'grunt':
-      dropChance = 0.3; // 30% chance for grunts
+      dropChance = 0.4; // 40% chance for grunts
+      itemLevel = 2;
       break;
     case 'elite':
-      dropChance = 0.5; // 50% chance for elites
+      dropChance = 0.7; // 70% chance for elites
+      itemLevel = 3;
       break;
     case 'boss':
       dropChance = 1.0; // 100% chance for bosses
+      itemLevel = 4;
       break;
     default:
-      dropChance = 0.2;
+      dropChance = 0.3;
+      itemLevel = 1;
   }
 
   // Determine if monster drops an item
   if (Math.random() < dropChance) {
-    // For now, use sample items. In the future, this would be more sophisticated
-    const newItem = getRandomSampleItem();
+    // Use our new random item generator
+    const enhancedItem = generateRandomItem(itemLevel);
     
-    // Convert EnhancedItem to Item format
+    // Convert to simple Item format for storage on the monster
     const itemForMonster: Item = {
-      type: 'transmute', // Default to transmute but could be based on the power
-      name: newItem.name,
-      power: newItem.description,
-      description: newItem.story,
-      uses: newItem.uses || 1,
-      level: 2, // Default level, could be based on monster level
+      id: enhancedItem.id,
+      type: enhancedItem.power as ItemTypeId,
+      name: enhancedItem.name,
+      power: enhancedItem.description,
+      description: '', // Empty description since we no longer generate stories
+      uses: enhancedItem.uses || 1,
+      level: itemLevel,
     };
     
     monster.item = itemForMonster;
+    console.log(`Generated item ${itemForMonster.name} for ${monster.name}`);
   }
 }
 
 /**
- * Checks if all monsters in a location are defeated
- * @param monsters - The array of monsters to check
- * @returns True if all monsters are defeated
+ * Check if all monsters in an array are defeated
+ * @param monsters - Array of monsters to check
+ * @returns true if all monsters are defeated, false otherwise
  */
 export function areAllMonstersDefeated(monsters: Monster[]): boolean {
   if (!monsters || monsters.length === 0) return false;
@@ -103,20 +112,20 @@ export function claimMonsterItem(monster: Monster): boolean {
     
     // Convert standard Item to EnhancedItem format
     const enhancedItem: EnhancedItem = {
-      id: `${monster.type}_${Date.now()}`, // Generate a unique ID
+      id: monster.item.id || `${monster.type}_${Date.now()}`, // Use existing ID or generate new one
       name: monster.item.name,
       description: monster.item.power,
-      story: monster.item.description,
       uses: monster.item.uses,
-      power: convertItemTypeToItemPower(monster.item.type, monster.item.level)
+      power: convertItemType(monster.item.type),
+      targetScope: getTargetScopeFromItemType(monster.item.type)
     };
     
     inventoryStore.addItem(enhancedItem);
     
-    // Remove the item from the monster instead of marking it claimed
+    // Remove the item from the monster
     delete monster.item;
     
-    console.log(`Claimed item from ${monster.name}`);
+    console.log(`Claimed item ${enhancedItem.name} from ${monster.name}`);
     return true;
   }
   
@@ -124,19 +133,41 @@ export function claimMonsterItem(monster: Monster): boolean {
 }
 
 /**
- * Helper function to convert ItemTypeId to a specific ItemPower value
+ * Convert old item types to new power types
  */
-function convertItemTypeToItemPower(type: string, level: number): ItemPower | undefined {
-  // Simple mapping based on item type and level
+function convertItemType(type: string): ItemPower {
   switch (type) {
+    case 'kill_one':
+    case 'kill_all':
     case 'kill':
-      return level >= 3 ? 'kill_all' : 'kill_one';
+      return 'kill';
+    case 'transmute_one':
+    case 'transmute_all':
     case 'transmute':
-      return level >= 3 ? 'transmute_all' : 'transmute_one';
-    case 'healing':
-      // No direct equivalent in our power system yet
-      return undefined;
+      return 'transmute';
+    case 'scout_500':
+      return 'scout_500';
+    case 'scout_1000':
+      return 'scout_1000';
+    case 'scout_any':
+      return 'scout_any';
+    case 'shrink':
+      return 'shrink';
+    case 'split':
+      return 'split';
+    case 'pickpocket':
+      return 'pickpocket';
     default:
-      return undefined;
+      return 'kill'; // Default fallback
   }
+}
+
+/**
+ * Get target scope from old item type
+ */
+function getTargetScopeFromItemType(type: string): TargetScope {
+  if (type === 'kill_all' || type === 'transmute_all') {
+    return 'all';
+  }
+  return 'one'; // Default to targeting a single entity
 } 

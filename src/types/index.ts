@@ -77,9 +77,19 @@ export type QuestState = 'no_quest' | 'active' | 'completed'
 
 export type GPSStatus = 'initializing' | 'loading' | 'success' | 'error' 
 
-export type ItemTypeId = 'healing' | 'transmute' | 'kill'
+export type ItemTypeId = 
+  | 'healing' 
+  | 'transmute' 
+  | 'kill'
+  | 'scout_500'
+  | 'scout_1000'
+  | 'scout_any'
+  | 'shrink'
+  | 'split'
+  | 'pickpocket'
 
 export interface Item {
+  id?: string
   type: ItemTypeId
   target?: string
   name: string

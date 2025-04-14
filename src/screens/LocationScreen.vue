@@ -33,7 +33,7 @@
               Target: {{ questStore.currentPub.giftItem.target }}
             </span>
           </div>
-          <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.giftItem.level === 4, 'take-item-btn-level5': questStore.currentPub.giftItem.level === 5}">
+          <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.giftItem.level === 4, 'take-item-btn-level5': questStore.currentPub.giftItem.level === 5}" @click="claimGiftItem()">
             Take Gift
           </button>
         </div>
@@ -81,22 +81,28 @@
           </div>
           
           <!-- Monster item (if any) -->
-          <div v-if="monster.item" class="monster-item">
+          <div v-if="monster.item" class="monster-item" :class="{'item-available': !monster.alive}">
             <div class="item-info">
-              <div class="item-name" :class="{'item-name-level4': monster.item.level === 4, 'item-name-level5': monster.item.level === 5}">
-                {{ monster.item.name }}
+              <div class="item-header">
+                <div class="item-name" :class="{'item-name-level3': monster.item.level === 3, 'item-name-level4': monster.item.level === 4, 'item-name-level5': monster.item.level === 5}">
+                  {{ monster.item.name }}
+                </div>
+                <span class="item-level-badge" :class="{'level3': monster.item.level === 3, 'level4': monster.item.level === 4, 'level5': monster.item.level === 5}">Lvl {{ monster.item.level }}</span>
               </div>
               <div class="item-power">{{ monster.item.power }}</div>
+              <div class="item-type">{{ getItemTypeName(monster.item.type, monster.item.level) }}</div>
               <button 
                 class="take-item-btn compact-btn" 
                 :class="{
+                  'take-item-btn-level3': monster.item.level === 3,
                   'take-item-btn-level4': monster.item.level === 4, 
                   'take-item-btn-level5': monster.item.level === 5
                 }" 
                 :disabled="monster.alive"
                 @click="claimItem(monster)"
               >
-                {{ monster.alive ? 'Defeat to claim' : 'Claim Item' }}
+                <span v-if="monster.alive">Defeat to claim</span>
+                <span v-else>Claim Item</span>
               </button>
             </div>
           </div>
@@ -125,7 +131,7 @@
                 Target: {{ questStore.currentPub.prizeItem.target }}
               </span>
             </div>
-            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}" :disabled="!areAllMonstersDefeated">
+            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}" :disabled="!areAllMonstersDefeated" @click="claimPrizeItem()">
               {{ areAllMonstersDefeated ? 'Claim Prize' : 'Defeat all monsters to claim' }}
             </button>
           </div>
@@ -144,9 +150,11 @@ import {Monster, ItemTypeId} from "../types";
 import {areAllMonstersDefeated, toggleMonsterStatus, claimMonsterItem} from "../helpers/combatHelper";
 import '../styles/monsterStyles.css';
 import { computed } from 'vue';
+import {useInventoryStore} from "../stores/inventoryStore";
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
+const inventoryStore = useInventoryStore()
 
 // Keep monsters in their original order rather than sorting based on alive status
 const sortedMonsters = computed(() => {
@@ -251,7 +259,80 @@ function leavePub() {
 
 function claimItem(monster: Monster) {
   if (!monster.alive && monster.item) {
-    claimMonsterItem(monster);
+    const itemName = monster.item.name;
+    const success = claimMonsterItem(monster);
+    
+    if (success) {
+      appStore.addNotification(`${itemName} added to inventory!`, 'success');
+      // Optionally open inventory to show the new item
+      // appStore.openInventory('items');
+    }
+  }
+}
+
+function claimPrizeItem() {
+  if (areAllMonstersDefeated.value && questStore.currentPub?.prizeItem) {
+    const prizeItem = questStore.currentPub.prizeItem;
+    
+    // Convert to EnhancedItem format
+    const enhancedItem = {
+      id: `prize_${Date.now()}`,
+      name: prizeItem.name,
+      description: prizeItem.power,
+      story: prizeItem.description || '',
+      uses: prizeItem.uses,
+      power: convertPrizeItemToPower(prizeItem.type, prizeItem.level)
+    };
+    
+    // Add to inventory
+    inventoryStore.addItem(enhancedItem);
+    
+    // Remove from pub
+    delete questStore.currentPub.prizeItem;
+    
+    // Show notification
+    appStore.addNotification(`Prize ${enhancedItem.name} added to inventory!`, 'success');
+  }
+}
+
+function convertPrizeItemToPower(type: string, level: number) {
+  // Simple mapping based on item type and level
+  if (type === 'kill') {
+    return level >= 3 ? 'kill_all' : 'kill_one';
+  } else if (type === 'transmute') {
+    return level >= 3 ? 'transmute_all' : 'transmute_one';
+  } else if (type === 'scout') {
+    if (level >= 4) return 'scout_any';
+    if (level >= 3) return 'scout_1000';
+    return 'scout_500';
+  }
+  
+  // Try to use the type directly if it matches a power
+  return type;
+}
+
+function claimGiftItem() {
+  if (questStore.currentPub?.giftItem) {
+    const giftItem = questStore.currentPub.giftItem;
+    
+    // Convert to EnhancedItem format
+    const enhancedItem = {
+      id: `gift_${Date.now()}`,
+      name: giftItem.name,
+      description: giftItem.power,
+      story: giftItem.description || '',
+      uses: giftItem.uses,
+      power: convertPrizeItemToPower(giftItem.type, giftItem.level)
+    };
+    
+    // Add to inventory
+    inventoryStore.addItem(enhancedItem);
+    
+    // Remove from pub
+    delete questStore.currentPub.giftItem;
+    
+    // Show notification
+    appStore.addNotification(`Gift ${enhancedItem.name} added to inventory!`, 'success');
   }
 }
 </script>
@@ -589,16 +670,69 @@ function claimItem(monster: Monster) {
 }
 
 .monster-item {
-  margin-top: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 0.75rem;
-  background: rgba(0, 0, 0, 0.3);
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.monster-item.item-available {
+  border-color: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
 }
 
 .item-info {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.item-level-badge {
+  background: #666;
+  color: white;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.item-level-badge.level3 {
+  background: #43a047;
+}
+
+.item-level-badge.level4 {
+  background: #7b1fa2;
+}
+
+.item-level-badge.level5 {
+  background: #ff9800;
+}
+
+.item-name-level3 {
+  color: #66bb6a;
+  text-shadow: 0 0 3px rgba(102, 187, 106, 0.3);
 }
 
 .item-name {
@@ -616,18 +750,10 @@ function claimItem(monster: Monster) {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-button {
-  padding: 0.8rem 1.5rem;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-button:disabled {
-  background: #666;
-  cursor: not-allowed;
+.item-type {
+  font-size: 0.9rem;
+  color: #bbbbbb;
+  margin-bottom: 0.5rem;
 }
 
 .item-description {
@@ -651,12 +777,6 @@ button:disabled {
   flex-wrap: wrap;
   gap: 0.8rem;
   color: rgba(255, 255, 255, 0.8);
-}
-
-.item-type, .item-uses, .item-target, .item-level {
-  padding: 0.3rem 0.6rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
 }
 
 .item-level {

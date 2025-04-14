@@ -34,6 +34,9 @@
           <button class="clear-items" @click="clearItems">
             Clear All Items
           </button>
+          <button class="test-item-generation" @click="testItemGeneration">
+            Test Item Generation
+          </button>
         </div>
       </div>
       
@@ -63,6 +66,7 @@ import { getRandomSampleItem } from "../data/sampleItems"
 import ItemCard from "../components/ItemCard.vue"
 import ItemInspectModal from "../components/ItemInspectModal.vue"
 import type { InventoryItem, EnhancedItem } from '../types/item'
+import { generateTestItems, logItemDetails } from '../helpers/generateRandomItem'
 
 const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
@@ -114,6 +118,23 @@ function handleUseItemFromModal(item: EnhancedItem) {
   console.log('Using item from modal:', item.name)
   // This will be implemented in later stages
   inventoryStore.useItem(item.id)
+}
+
+function testItemGeneration() {
+  const items = generateTestItems()
+  console.log('======= TEST ITEM GENERATION =======')
+  console.log(`Generated ${items.length} test items`)
+  
+  items.forEach(item => {
+    logItemDetails(item)
+  })
+  
+  console.log('===================================')
+  
+  // Add a sample item to inventory for testing
+  if (items.length > 0) {
+    inventoryStore.addItem(items[0])
+  }
 }
 </script>
 
@@ -187,28 +208,25 @@ h3 {
 }
 
 .add-test-item,
-.clear-items {
-  padding: 0.8rem 1.5rem;
-  background-color: #666;
+.clear-items,
+.test-item-generation {
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  background-color: #2196f3;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-weight: bold;
   width: 100%;
-  max-width: 200px;
-}
-
-.add-test-item:hover {
-  background-color: #888;
 }
 
 .clear-items {
-  background-color: #933;
+  background-color: #f44336;
 }
 
-.clear-items:hover {
-  background-color: #c33;
+.test-item-generation {
+  background-color: #9c27b0;
 }
 
 .test-controls {

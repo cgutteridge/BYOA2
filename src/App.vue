@@ -12,6 +12,7 @@ import LocationScreen from './screens/LocationScreen.vue'
 import VictoryScreen from './screens/VictoryScreen.vue'
 import LocationInfoScreen from "./screens/LocationInfoScreen.vue"
 import InventoryModal from './components/InventoryModal.vue'
+import NotificationSystem from './components/NotificationSystem.vue'
 // Import test screen for development
 import InventoryTestScreen from './screens/InventoryScreen.vue'
 
@@ -161,6 +162,8 @@ onUnmounted(() => {
   <div class="app">
     <div v-if="isDebugMode" class="debug-banner">DEBUG MODE</div>
     <div v-if="isTestMode" class="test-banner">TEST MODE</div>
+    
+    <NotificationSystem />
     
     <div class="debug-overlay" v-if="appStore.playerLocation">
       <div>COORDS: {{ appStore.playerLocation.lat.toFixed(5) }}, {{ appStore.playerLocation.lng.toFixed(5) }}</div>

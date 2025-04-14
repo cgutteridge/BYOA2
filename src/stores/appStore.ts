@@ -3,6 +3,14 @@ import {computed, ref} from 'vue'
 import type {GPSStatus, Location, PubId, ScreenId} from '../types'
 import {usePubStore} from "../stores/pubStore";
 
+// Notification interface
+interface Notification {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  timeout?: number;
+}
+
 export const useAppStore = defineStore('app', () => {
   const isFetchingPubs = ref(false)
   const screen = ref<ScreenId>('start_quest')
@@ -16,6 +24,9 @@ export const useAppStore = defineStore('app', () => {
   // Inventory UI state
   const isInventoryOpen = ref(false)
   const inventoryTab = ref('items') // 'items', 'quest', 'log', 'options'
+  
+  // Notifications
+  const notifications = ref<Notification[]>([])
 
   const setScreen = (newScreen: ScreenId) => {
     screen.value = newScreen
@@ -62,6 +73,28 @@ export const useAppStore = defineStore('app', () => {
   const setInventoryTab = (tab: string): void => {
     inventoryTab.value = tab
   }
+  
+  // Notification methods
+  const addNotification = (
+    message: string, 
+    type: 'success' | 'error' | 'info' | 'warning' = 'info',
+    timeout = 3000
+  ): void => {
+    const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+    notifications.value.push({ id, message, type, timeout });
+    
+    // Auto-remove after timeout
+    if (timeout > 0) {
+      setTimeout(() => removeNotification(id), timeout);
+    }
+  }
+  
+  const removeNotification = (id: string): void => {
+    const index = notifications.value.findIndex(n => n.id === id);
+    if (index !== -1) {
+      notifications.value.splice(index, 1);
+    }
+  }
 
   const focusPub = computed(() => {
     if (focusPubId.value === undefined) {
@@ -81,6 +114,7 @@ export const useAppStore = defineStore('app', () => {
     focusPub,
     isInventoryOpen,
     inventoryTab,
+    notifications,
     setFocusPub,
     unsetFocusPub,
     setScreen,
@@ -91,6 +125,8 @@ export const useAppStore = defineStore('app', () => {
     toggleInventory,
     openInventory,
     closeInventory,
-    setInventoryTab
+    setInventoryTab,
+    addNotification,
+    removeNotification
   }
 }) 
