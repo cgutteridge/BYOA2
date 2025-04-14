@@ -65,8 +65,8 @@ export async function scoutPub(
     console.log(pub,extraInstructions)
     
     // Get prize and gift item powers to pass to ChatGPT
-    const prizeItemPower = pub.prizeItem?.power || "an item that lets you defeat any single enemy";
-    const giftItemPower = pub.giftItem?.power;
+    const prizeItemPower = pub.prizeItem?.effectDescription || "nothing";
+    const giftItemPower = pub.giftItem?.effectDescription  ;
     
     // Generate pub description, name, and item details from AI
     const {

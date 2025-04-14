@@ -16,8 +16,8 @@
           </div>
           
           <div v-if="item.power" class="item-inspect-modal__power">
-            <h3>Power</h3>
-            <p>{{ getPowerDescription(item.power) }}</p>
+            <h3>Effect</h3>
+            <p>{{ item.effectDescription || getPowerDescription(item.power) }}</p>
             <p v-if="getTargetDescription(item)" class="item-inspect-modal__targeting">
               {{ getTargetDescription(item) }}
             </p>

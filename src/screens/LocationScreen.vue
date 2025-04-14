@@ -19,7 +19,7 @@
           <div class="item-name" :class="{'item-name-level4': questStore.currentPub.giftItem.level === 4, 'item-name-level5': questStore.currentPub.giftItem.level === 5}">
             {{ questStore.currentPub.giftItem.name }}
           </div>
-          <div class="item-power">{{ questStore.currentPub.giftItem.power }}</div>
+          <div class="item-power">{{ questStore.currentPub.giftItem.effectDescription || questStore.currentPub.giftItem.power }}</div>
           <div v-if="questStore.currentPub.giftItem.description" class="item-description">
             <span class="description-label">Story:</span> {{ questStore.currentPub.giftItem.description }}
           </div>
@@ -89,7 +89,7 @@
                 </div>
                 <span class="item-level-badge" :class="{'level3': monster.item.level === 3, 'level4': monster.item.level === 4, 'level5': monster.item.level === 5}">Lvl {{ monster.item.level }}</span>
               </div>
-              <div class="item-power">{{ monster.item.power }}</div>
+              <div class="item-power">{{ monster.item.effectDescription || monster.item.power }}</div>
               <div class="item-type">{{ getItemTypeName(monster.item) }}</div>
               <button 
                 class="take-item-btn compact-btn" 
@@ -117,7 +117,7 @@
             <div class="item-name" :class="{'item-name-level4': questStore.currentPub.prizeItem.level === 4, 'item-name-level5': questStore.currentPub.prizeItem.level === 5}">
               {{ questStore.currentPub.prizeItem.name }}
             </div>
-            <div class="item-power">{{ questStore.currentPub.prizeItem.power }}</div>
+            <div class="item-power">{{ questStore.currentPub.prizeItem.effectDescription || questStore.currentPub.prizeItem.power }}</div>
             <div v-if="questStore.currentPub.prizeItem.description" class="item-description">
               <span class="description-label">Story:</span> {{ questStore.currentPub.prizeItem.description }}
             </div>

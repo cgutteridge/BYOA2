@@ -13,7 +13,7 @@
             <h3>Reward:</h3>
             <div class="prize-name">{{ pub.prizeItem.name }}</div>
             <div class="prize-details">
-              <span class="prize-label">Power:</span> {{ pub.prizeItem.power }}
+              <span class="prize-label">Effect:</span> {{ pub.prizeItem.effectDescription || pub.prizeItem.power }}
             </div>
             <div v-if="pub.prizeItem.description" class="prize-story">
               <div class="story-label">Story:</div>

@@ -26,6 +26,7 @@ export interface Item {
   id: string
   name: string
   description: string  // A brief description of what the item does
+  effectDescription?: string  // A simple description of the effect that explains what the item does
   uses: number
   level: number
   power: ItemPower

@@ -68,7 +68,7 @@ export class ChatGPTAPI {
       {
         role: 'user',
         content: `
-           Generate a JSON object for the ${pubType}} at '${pubName}'. 
+           Generate a JSON object for the ${pubType} at '${pubName}'. 
            ${giftItemPower ? `The players may find or be given an item with this power: "${giftItemPower}".` : ''}
            The players must defeat ${enemies} to win an item with this power: "${prizeItemPower}".
             Be outrageous."

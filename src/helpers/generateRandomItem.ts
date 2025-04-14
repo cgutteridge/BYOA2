@@ -92,6 +92,133 @@ const AVAILABLE_FLAGS: MonsterFlag[] = [
 ];
 
 /**
+ * Convert item level to descriptive quality term
+ */
+function getLevelQualityTerm(level: number): string {
+  switch (level) {
+    case 1: return "crap";
+    case 2: return "mediocre";
+    case 3: return "decent";
+    case 4: return "superior";
+    case 5: return "excellent";
+    case 6: return "legendary";
+    default: return "unknown quality";
+  }
+}
+
+/**
+ * Generate a clear effect description for the item
+ */
+function generateEffectDescription(item: Item): string {
+  if (!item.power) return "Does nothing special.";
+  
+  const qualityTerm = getLevelQualityTerm(item.level);
+  let effect = "";
+  
+  // Base effect by power type
+  switch (item.power) {
+    case 'kill':
+      effect = `This ${qualityTerm} item instantly defeats`;
+      break;
+    case 'transmute':
+      effect = `This ${qualityTerm} item transforms`;
+      break;
+    case 'shrink':
+      effect = `This ${qualityTerm} item reduces the power of`;
+      break;
+    case 'split':
+      effect = `This ${qualityTerm} item splits`;
+      break;
+    case 'pickpocket':
+      effect = `This ${qualityTerm} item steals from`;
+      break;
+    case 'banish':
+      effect = `This ${qualityTerm} item banishes`;
+      break;
+    case 'scout_500':
+      return `This ${qualityTerm} item reveals any location within 500 meters.`;
+    case 'scout_1000':
+      return `This ${qualityTerm} item reveals any location within 1000 meters.`;
+    case 'scout_any':
+      return `This ${qualityTerm} item reveals any location.`;
+    default:
+      return `This ${qualityTerm} item has unknown effects.`;
+  }
+  
+  // Add targeting scope
+  if (item.targetScope) {
+    switch (item.targetScope) {
+      case 'one':
+        effect += " a single monster";
+        break;
+      case 'type':
+        effect += " all monsters of the same type in the current location";
+        break;
+      case 'race':
+        effect += " all monsters of the same race in the current location";
+        break;
+      case 'all':
+        effect += " all monsters in the current location";
+        break;
+    }
+  } else {
+    effect += " a single monster";
+  }
+  
+  // Add target filters if present
+  if (item.targetFilters) {
+    const filters = [];
+    
+    if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
+      filters.push(`${item.targetFilters.levels.join('/')} level`);
+    }
+    
+    if (item.targetFilters.species && item.targetFilters.species.length > 0) {
+      filters.push(`${item.targetFilters.species.join('/')} species`);
+    }
+    
+    if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
+      filters.push(`${item.targetFilters.flags.join('/')} type`);
+    }
+    
+    if (filters.length > 0) {
+      effect += ` (works on ${filters.join(', ')})`;
+    }
+  }
+  
+  // Add result restrictions for transmute items
+  if (item.power === 'transmute') {
+    effect += ".";
+    
+    // Add information about what the monster transforms into
+    if (item.result) {
+      switch (item.result) {
+        case 'random':
+          effect += " Transforms target into a random monster.";
+          break;
+        case 'pick':
+          effect += " User chooses what monster to transform target into.";
+          break;
+        case 'level':
+          if (item.resultLevel) {
+            effect += ` Transforms target into a ${item.resultLevel} monster of the same race.`;
+          }
+          break;
+        case 'species':
+          if (item.resultSpecies) {
+            effect += ` Transforms target into a ${item.resultSpecies} monster of the same level.`;
+          }
+          break;
+      }
+    }
+  } else {
+    effect += ".";
+  }
+  
+  return effect;
+}
+
+/**
  * Generate a random item of the specified level
  * @param level Item level (1-6)
  * @returns A random item with appropriate properties for the level
@@ -292,6 +419,9 @@ export function generateRandomItem(level: number): Item {
   // Adjust the item description based on its final scope
   item.description = generateFinalDescription(item);
   
+  // Generate the effect description
+  item.effectDescription = generateEffectDescription(item);
+  
   return item;
 }
 
@@ -468,8 +598,11 @@ export function generateTestItems(): Item[] {
  */
 export function logItemDetails(item: Item): void {
   console.log(`==== Item: ${item.name} ====`);
+  console.log(`Quality: ${getLevelQualityTerm(item.level)} (Level ${item.level})`);
   console.log(`Power: ${item.power}`);
   console.log(`Uses: ${item.uses || 1}`);
+  console.log(`Description: ${item.description}`);
+  console.log(`Effect: ${item.effectDescription || 'None'}`);
   console.log(`Target mode: ${item.target || 'none'}`);
   console.log(`Target scope: ${item.targetScope || 'none'}`);
   
@@ -495,6 +628,5 @@ export function logItemDetails(item: Item): void {
     }
   }
   
-  console.log(`Description: ${item.description}`);
   console.log('============================');
 } 
