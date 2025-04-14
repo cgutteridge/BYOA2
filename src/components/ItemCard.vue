@@ -6,9 +6,6 @@
   >
     <div class="item-card__header">
       <h3 class="item-card__title">{{ item.name }}</h3>
-      <div v-if="showQuantity && item.quantity && item.quantity > 1" class="item-card__quantity">
-        x{{ item.quantity }}
-      </div>
       <div v-if="item.uses !== undefined" class="item-card__uses">
         Uses: {{ item.uses }}
       </div>
@@ -48,7 +45,6 @@ defineProps<{
   selected?: boolean
   showUseButton?: boolean
   showInspectButton?: boolean
-  showQuantity?: boolean
 }>()
 
 // Define emits
@@ -97,7 +93,6 @@ defineEmits<{
   font-weight: 600;
 }
 
-.item-card__quantity,
 .item-card__uses {
   font-size: 0.9rem;
   color: #666;

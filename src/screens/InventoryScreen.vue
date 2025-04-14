@@ -61,10 +61,19 @@ function closeItemInspectModal() {
   isInspectModalOpen.value = false
 }
 
-// Sort items by level and then by name
+// Sort items by timestamp (newest first), then by level and name
 const sortedItems = computed(() => {
   return [...inventoryStore.items].sort((a, b) => {
-    // First by level descending
+    // First by timestamp (newest first)
+    if (a.timestamp && b.timestamp) {
+      return b.timestamp - a.timestamp
+    } else if (a.timestamp) {
+      return -1 // a is newer (has timestamp)
+    } else if (b.timestamp) {
+      return 1  // b is newer (has timestamp)
+    }
+    
+    // Then by level descending
     if (b.level !== a.level) {
       return b.level - a.level
     }

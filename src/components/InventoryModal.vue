@@ -39,7 +39,6 @@
                   :item="item"
                   :show-use-button="true"
                   :show-inspect-button="true"
-                  :show-quantity="true"
                   @use="handleUseItem(item)"
                   @inspect="handleInspectItem(item)"
                 />
@@ -104,7 +103,25 @@ const activeTab = computed({
   set: (value) => appStore.setInventoryTab(value)
 })
 const hasItems = computed(() => inventoryStore.hasItems)
-const inventoryItems = computed(() => inventoryStore.items)
+const inventoryItems = computed(() => {
+  return [...inventoryStore.items].sort((a, b) => {
+    // First by timestamp (newest first)
+    if (a.timestamp && b.timestamp) {
+      return b.timestamp - a.timestamp
+    } else if (a.timestamp) {
+      return -1 // a is newer (has timestamp)
+    } else if (b.timestamp) {
+      return 1  // b is newer (has timestamp)
+    }
+    
+    // Then by level descending
+    if (b.level !== a.level) {
+      return b.level - a.level
+    }
+    // Then by name ascending
+    return a.name.localeCompare(b.name)
+  })
+})
 
 // Tabs
 const tabs = [

@@ -9,33 +9,26 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   // Getters
   const hasItems = computed(() => items.value.length > 0)
-  const itemCount = computed(() => items.value.reduce((total, item) => total + (item.quantity || 1), 0))
+  const itemCount = computed(() => items.value.length)
   
   // Actions
-  function addItem(newItem: Item, quantity = 1) {
-    const existingItem = items.value.find(item => item.id === newItem.id)
+  function addItem(newItem: Item) {
+    // Check if item with same ID already exists
+    const exists = items.value.some(item => item.id === newItem.id)
     
-    if (existingItem) {
-      existingItem.quantity = (existingItem.quantity || 1) + quantity
-    } else {
+    if (!exists) {
       items.value.push({
         ...newItem,
-        quantity
+        timestamp: Date.now() // Add timestamp when item is first added
       })
     }
   }
   
-  function removeItem(itemId: string, quantity = 1) {
+  function removeItem(itemId: string) {
     const index = items.value.findIndex(item => item.id === itemId)
     
     if (index !== -1) {
-      const item = items.value[index]
-      
-      if ((item.quantity || 1) > quantity) {
-        item.quantity = (item.quantity || 1) - quantity
-      } else {
-        items.value.splice(index, 1)
-      }
+      items.value.splice(index, 1)
     }
   }
   

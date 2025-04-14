@@ -37,5 +37,5 @@ export interface Item {
   resultLevel?: MonsterLevel
   resultSpecies?: Species
   icon?: string
-  quantity?: number  // For inventory tracking
+  timestamp?: number  // To track when the item was added or updated
 } 
