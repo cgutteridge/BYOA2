@@ -87,8 +87,16 @@
                 {{ monster.item.name }}
               </div>
               <div class="item-power">{{ monster.item.power }}</div>
-              <button class="take-item-btn compact-btn" :class="{'take-item-btn-level4': monster.item.level === 4, 'take-item-btn-level5': monster.item.level === 5}" :disabled="monster.alive">
-                {{ !monster.alive ? 'Claim Item' : 'Defeat to claim' }}
+              <button 
+                class="take-item-btn compact-btn" 
+                :class="{
+                  'take-item-btn-level4': monster.item.level === 4, 
+                  'take-item-btn-level5': monster.item.level === 5
+                }" 
+                :disabled="monster.alive"
+                @click="claimItem(monster)"
+              >
+                {{ monster.alive ? 'Defeat to claim' : 'Claim Item' }}
               </button>
             </div>
           </div>
@@ -133,7 +141,7 @@ import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {itemTypesById, getItemTypesByLevel} from "../data/itemTypes";
 import {Monster, ItemTypeId} from "../types";
-import {areAllMonstersDefeated, toggleMonsterStatus} from "../helpers/combatHelper";
+import {areAllMonstersDefeated, toggleMonsterStatus, claimMonsterItem} from "../helpers/combatHelper";
 import '../styles/monsterStyles.css';
 import { computed } from 'vue';
 
@@ -239,6 +247,12 @@ function getItemTypeName(itemTypeId: string, level: number = 1): string {
 function leavePub() {
   appStore.setScreen('map')
   questStore.unsetCurrentPub()
+}
+
+function claimItem(monster: Monster) {
+  if (!monster.alive && monster.item) {
+    claimMonsterItem(monster);
+  }
 }
 </script>
 
@@ -671,5 +685,15 @@ button:disabled {
   display: inline-block;
   white-space: nowrap;
   margin-right: 0.25rem;
+}
+
+/* Add new style for claimed items */
+.item-claimed {
+  background-color: #666 !important;
+  cursor: default !important;
+}
+
+.item-claimed:hover {
+  background-color: #666 !important;
 }
 </style> 

@@ -57,10 +57,11 @@ export interface MonsterType {
 }
 
 export interface Monster {
-  type: string
-  name: string
-  alive: boolean
-  item?: Item
+  id: string;
+  type: string;
+  name: string;
+  alive: boolean;
+  item?: Item;
 }
 
 export type ScreenId =
