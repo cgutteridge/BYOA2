@@ -24,7 +24,7 @@
             <span class="description-label">Story:</span> {{ questStore.currentPub.giftItem.description }}
           </div>
           <div class="item-details">
-            <span class="item-type">Type: {{ getItemTypeName(questStore.currentPub.giftItem.type, questStore.currentPub.giftItem.level) }}</span>
+            <span class="item-type">Type: {{ getItemTypeName(questStore.currentPub.giftItem) }}</span>
             <span class="item-level" :class="{'item-level-4': questStore.currentPub.giftItem.level === 4, 'item-level-5': questStore.currentPub.giftItem.level === 5}">
               Level: {{ questStore.currentPub.giftItem.level }}
             </span>
@@ -90,7 +90,7 @@
                 <span class="item-level-badge" :class="{'level3': monster.item.level === 3, 'level4': monster.item.level === 4, 'level5': monster.item.level === 5}">Lvl {{ monster.item.level }}</span>
               </div>
               <div class="item-power">{{ monster.item.power }}</div>
-              <div class="item-type">{{ getItemTypeName(monster.item.type, monster.item.level) }}</div>
+              <div class="item-type">{{ getItemTypeName(monster.item) }}</div>
               <button 
                 class="take-item-btn compact-btn" 
                 :class="{
@@ -122,7 +122,7 @@
               <span class="description-label">Story:</span> {{ questStore.currentPub.prizeItem.description }}
             </div>
             <div class="item-details">
-              <span class="item-type">Type: {{ getItemTypeName(questStore.currentPub.prizeItem.type, questStore.currentPub.prizeItem.level) }}</span>
+              <span class="item-type">Type: {{ getItemTypeName(questStore.currentPub.prizeItem) }}</span>
               <span class="item-level" :class="{'item-level-4': questStore.currentPub.prizeItem.level === 4, 'item-level-5': questStore.currentPub.prizeItem.level === 5}">
                 Level: {{ questStore.currentPub.prizeItem.level }}
               </span>
@@ -131,8 +131,8 @@
                 Target: {{ questStore.currentPub.prizeItem.target }}
               </span>
             </div>
-            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}" :disabled="!areAllMonstersDefeated" @click="claimPrizeItem()">
-              {{ areAllMonstersDefeated ? 'Claim Prize' : 'Defeat all monsters to claim' }}
+            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}" :disabled="!allMonstersDefeated" @click="claimPrizeItem()">
+              {{ allMonstersDefeated ? 'Claim Prize' : 'Defeat all monsters to claim' }}
             </button>
           </div>
         </div>
@@ -147,7 +147,7 @@ import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {itemTypesById, getItemTypesByLevel} from "../data/itemTypes";
 import {Monster} from "../types";
-import {Item, ItemPower} from "../types/item";
+import {Item} from "../types/item";
 import {areAllMonstersDefeated, toggleMonsterStatus, claimMonsterItem} from "../helpers/combatHelper";
 import '../styles/monsterStyles.css';
 import { computed } from 'vue';
@@ -167,14 +167,12 @@ const sortedMonsters = computed(() => {
   return [...questStore.currentPub.monsters];
 });
 
-// Check if all monsters are defeated
-const areAllMonstersDefeated = computed(() => {
-  if (!questStore.currentPub?.monsters || questStore.currentPub.monsters.length === 0) {
-    return false;
-  }
-  
-  return questStore.currentPub.monsters.every(monster => !monster.alive);
-});
+// Compute whether all monsters are defeated here
+const allMonstersDefeated = computed(() => {
+  return questStore.currentPub?.monsters 
+    ? areAllMonstersDefeated(questStore.currentPub.monsters) 
+    : false
+})
 
 function getMonsterTitle(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
@@ -245,12 +243,19 @@ function getMonsterFlags(monsterId: string): string[] {
   return monster.flags
 }
 
-function getItemTypeName(itemTypeId: string, level: number = 1): string {
-  const itemTypes = getItemTypesByLevel(level, itemTypeId as ItemTypeId);
+function getItemTypeName(item: Item): string {
+  // Instead of using the type property which doesn't exist anymore, use the power property
+  const powerType = item.power;
+  const level = item.level || 1;
+  
+  // For version using itemTypes
+  const itemTypes = getItemTypesByLevel(level, powerType);
   if (itemTypes.length > 0) {
     return itemTypes[0].title;
   }
-  return itemTypesById[itemTypeId as ItemTypeId]?.title || itemTypeId;
+  
+  // Fallback
+  return itemTypesById[powerType]?.title || powerType;
 }
 
 function leavePub() {
@@ -272,7 +277,7 @@ function claimItem(monster: Monster) {
 }
 
 function claimPrizeItem() {
-  if (areAllMonstersDefeated.value && questStore.currentPub?.prizeItem) {
+  if (allMonstersDefeated.value && questStore.currentPub?.prizeItem) {
     const prizeItem = questStore.currentPub.prizeItem;
     
     // Add to inventory

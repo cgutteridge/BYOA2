@@ -6,7 +6,7 @@
   >
     <div class="item-card__header">
       <h3 class="item-card__title">{{ item.name }}</h3>
-      <div v-if="showQuantity && item.quantity > 1" class="item-card__quantity">
+      <div v-if="showQuantity && item.quantity && item.quantity > 1" class="item-card__quantity">
         x{{ item.quantity }}
       </div>
       <div v-if="item.uses !== undefined" class="item-card__uses">
@@ -42,8 +42,8 @@
 import { defineProps, defineEmits } from 'vue'
 import type { Item } from '../types/item'
 
-// Define props
-const props = defineProps<{
+// Define props directly instead of storing in a variable
+defineProps<{
   item: Item
   selected?: boolean
   showUseButton?: boolean

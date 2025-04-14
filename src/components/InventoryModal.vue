@@ -81,7 +81,7 @@ import { computed } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore'
 import { useAppStore } from '../stores/appStore'
 import ItemCard from './ItemCard.vue'
-import type { InventoryItem } from '../types/item'
+import type { Item } from '../types/item'
 
 // Stores
 const inventoryStore = useInventoryStore()
@@ -119,13 +119,13 @@ function close() {
   emit('close')
 }
 
-function handleUseItem(item: InventoryItem) {
+function handleUseItem(item: Item) {
   // This will be implemented in later stages
   console.log('Use item:', item.name)
   inventoryStore.useItem(item.id)
 }
 
-function handleInspectItem(item: InventoryItem) {
+function handleInspectItem(item: Item) {
   // This will be implemented in later stages
   console.log('Inspect item:', item.name)
 }

@@ -15,11 +15,6 @@
             {{ item.description }}
           </div>
           
-          <div v-if="showStory && item.story" class="item-inspect-modal__story">
-            <h3>Story</h3>
-            <p>{{ item.story }}</p>
-          </div>
-          
           <div v-if="item.power" class="item-inspect-modal__power">
             <h3>Power</h3>
             <p>{{ getPowerDescription(item.power) }}</p>
@@ -67,7 +62,6 @@ const emit = defineEmits<{
 }>()
 
 // Computed properties
-const showStory = props.context === 'inventory'
 const showUseButton = props.context === 'inventory'
 
 // Helper function to get a human-readable description of a power

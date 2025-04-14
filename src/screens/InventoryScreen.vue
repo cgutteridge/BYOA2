@@ -91,7 +91,7 @@ const useItem = (item: Item) => {
 
 // Sort items by level and then by name
 const sortedItems = computed(() => {
-  return [...inventoryStore.inventory].sort((a, b) => {
+  return [...inventoryStore.items].sort((a, b) => {
     // First by level descending
     if (b.level !== a.level) {
       return b.level - a.level

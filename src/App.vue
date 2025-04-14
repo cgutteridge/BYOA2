@@ -2,23 +2,11 @@
 import { onMounted, ref, onUnmounted } from 'vue'
 import { useAppStore } from './stores/appStore'
 import { useQuestStore } from './stores/questStore'
-import { useInventoryStore } from './stores/inventoryStore'
-
-import MapScreen from './screens/MapScreen.vue'
-import QuestStartScreen from './screens/QuestStartScreen.vue'
-import IntroScreen from './screens/IntroScreen.vue'
-import InfoScreen from './screens/InfoScreen.vue'
-import LocationScreen from './screens/LocationScreen.vue'
-import VictoryScreen from './screens/VictoryScreen.vue'
-import LocationInfoScreen from "./screens/LocationInfoScreen.vue"
-import InventoryModal from './components/InventoryModal.vue'
-import NotificationSystem from './components/NotificationSystem.vue'
 // Import test screen for development
 import InventoryTestScreen from './screens/InventoryScreen.vue'
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
-const inventoryStore = useInventoryStore()
 const isDebugMode = ref(false)
 const watchId = ref<number | null>(null)
 const isTestMode = ref(false)
