@@ -29,7 +29,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'elite',
     species: 'vampire',
     flags: ["undead","magic-user"],
-    xp: 3.5 // 250ml, 14% ABV
+    xp: 3.5, // 250ml, 14% ABV
+    splits: 'thrall_vampire'
   },
   {
     id: 'dark_knight',
@@ -38,7 +39,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'elite',
     species: 'human',
     flags: ['mortal'],
-    xp: 3.4 // Pint (568ml) at 6% ABV
+    xp: 3.4, // Pint (568ml) at 6% ABV
+    splits: 'knight'
   },
   {
     id: 'highland_wraith',
@@ -47,7 +49,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'elite',
     species: 'ghost',
     flags: ['spirit'],
-    xp: 2.8 // Double (50ml) at 40% ABV
+    xp: 2.8, // Double (50ml) at 40% ABV
+    splits: 'ancient_spirit'
   },
   {
     id: 'necromancer',
@@ -56,7 +59,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'elite',
     species: 'human',
     flags: ['mortal','magic-user'],
-    xp: 2.0 // Mixed cocktail, ~40ml vodka at 40% ABV
+    xp: 2.0, // Mixed cocktail, ~40ml vodka at 40% ABV
+    splits: 'peasant'
   },
   {
     id: 'bog_witch',
@@ -66,7 +70,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'human',
     flags: ['mortal','magic-user'],
-    xp: 1.5 // 50ml at ~17% ABV
+    xp: 1.5, // 50ml at ~17% ABV
+    splits: 'peasant'
   },
   {
     id: 'mage_and_familiar',
@@ -76,7 +81,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'elite',
     species: 'human',
     flags: ['mortal','magic-user'],
-    xp: 3.0 // 25ml whisky + half pint beer
+    xp: 3.0, // 25ml whisky + half pint beer
+    splits: 'peasant'
   },
   {
     id: 'high_elf',
@@ -85,7 +91,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'elite',
     species: 'elf',
     flags: ['mortal'],
-    xp: 3.0 // 250ml at 12% ABV
+    xp: 3.0, // 250ml at 12% ABV
+    splits: 'forest_elf'
   },
 
   // Grunt monsters
@@ -96,7 +103,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'goblinoid',
     flags: ['mortal'],
-    xp: 2.8 // Pint (568ml) at ~5% ABV
+    xp: 2.8, // Pint (568ml) at ~5% ABV
+    splits: 'goblin'
   },
   {
     id: 'human_fighter',
@@ -105,7 +113,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'human',
     flags: ['mortal'],
-    xp: 2.3 // Pint (568ml) at ~4% ABV
+    xp: 2.3, // Pint (568ml) at ~4% ABV
+    splits: 'peasant'
   },
   {
     id: 'mounted_knight',
@@ -114,7 +123,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'human',
     flags: ['mortal'],
-    xp: 3.0 // Pint (568ml) at ~5.2% ABV
+    xp: 3.0, // Pint (568ml) at ~5.2% ABV
+    splits: 'knight'
   },
   {
     id: 'dwarf_miner',
@@ -132,7 +142,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'dwarf',
     flags: ['mortal'],
-    xp: 2.2 // Pint (568ml) at ~4% ABV
+    xp: 2.2, // Pint (568ml) at ~4% ABV
+    splits: 'dwarf'
   },
   {
     id: 'dryad',
@@ -141,7 +152,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'fey',
     flags: ['spirit'],
-    xp: 2.0 // Double (50ml) at 40% ABV
+    xp: 2.0, // Double (50ml) at 40% ABV
+    splits: 'hedge_spirit'
   },
   {
     id: 'ghostly_warrior',
@@ -150,7 +162,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'ghost',
     flags: ['spirit'],
-    xp: 2.0 // Double (50ml) at 40% ABV
+    xp: 2.0, // Double (50ml) at 40% ABV
+    splits: 'spectral_soldier'
   },
   {
     id: 'ancient_spirit',
@@ -168,7 +181,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'ghost',
     flags: ['spirit'],
-    xp: 2.0 // Double (50ml) at 40% ABV
+    xp: 2.0, // Double (50ml) at 40% ABV
+    splits: 'wrathful_wraith'
   },
   {
     id: 'wrathful_wraith',
@@ -186,7 +200,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'ghost',
     flags: ['spirit'],
-    xp: 2.0 // Double (50ml) at 40% ABV
+    xp: 2.0, // Double (50ml) at 40% ABV
+    splits: 'desert_wisp'
   },
   {
     id: 'demon',
@@ -195,7 +210,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'demonoid',
     flags: ['magic-user'],
-    xp: 2.0 // Double (50ml) at 40% ABV
+    xp: 2.0, // Double (50ml) at 40% ABV
+    splits: 'imp'
   },
   {
     id: 'metamorph',
@@ -204,7 +220,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'chameleonoid',
     flags: ['mortal'],
-    xp: 2.0 // Average value
+    xp: 2.0, // Average value
+    splits: 'mimic'
   },
   {
     id: 'zombie_horde',
@@ -213,7 +230,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'human',
     flags: ['group','undead'],
-    xp: 3.5 // Strong cocktail with several spirits
+    xp: 3.5, // Strong cocktail with several spirits
+    splits: 'swarm'
   },
   {
     id: 'djinn',
@@ -223,7 +241,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'demonoid',
     flags: ['magic-user'],
-    xp: 2.5 // Average bottled beverage
+    xp: 2.5, // Average bottled beverage
+    splits: 'imp'
   },
   {
     id: 'changeling',
@@ -232,7 +251,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'fey',
     flags: ['group'],
-    xp: 2.3 // Average pint
+    xp: 2.3, // Average pint
+    splits: 'swarm'
   },
   {
     id: 'army',
@@ -242,7 +262,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'special',
     flags: ['group'],
-    xp: 2.3 // Average pint
+    xp: 2.3, // Average pint
+    splits: 'swarm'
   },
   {
     id: 'plains_elf',
@@ -251,7 +272,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'elf',
     flags: ['mortal'],
-    xp: 2.1 // 175ml at 12% ABV
+    xp: 2.1, // 175ml at 12% ABV
+    splits: 'forest_elf'
   },
   {
     id: 'trickster',
@@ -260,7 +282,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'chameleonoid',
     flags: [],
-    xp: 2.0 // Average value
+    xp: 2.0, // Average value
+    splits: 'mimic'
   },
   // Minion monsters
   {
@@ -399,7 +422,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'demonoid',
     flags: ['mortal', 'magic-user'],
-    xp: 2.0 // Double shot (50ml) at 40% ABV
+    xp: 2.0, // Double shot (50ml) at 40% ABV
+    splits: 'desert_wyrm'
   },
   {
     id: 'fire_phantom',
@@ -417,7 +441,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'elemental',
     flags: ['spirit', 'magic-user'],
-    xp: 2.0 // Double shot (50ml) at 38% ABV
+    xp: 2.0, // Double shot (50ml) at 38% ABV
+    splits: 'fire_phantom'
   },
   // Earth elementals for brandy
   {
@@ -436,7 +461,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'elemental',
     flags: ['spirit', 'magic-user'],
-    xp: 2.0 // Double shot (50ml) at ~40% ABV
+    xp: 2.0, // Double shot (50ml) at ~40% ABV
+    splits: 'earth_shaper'
   },
   // Water elementals for water
   {
@@ -455,7 +481,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'elemental',
     flags: ['magic-user'],
-    xp: 0.0 // Large glass of water (no alcohol content)
+    xp: 0.0, // Large glass of water (no alcohol content)
+    splits: 'water_sprite'
   },
   // Ice elementals
   {
@@ -474,7 +501,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'elemental',
     flags: ['spirit'],
-    xp: 0.0 // Ice has no alcohol
+    xp: 0.0, // Ice has no alcohol
+    splits: 'ice_shard'
   },
   {
     id: 'glacial_titan',
@@ -483,7 +511,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'elite',
     species: 'elemental',
     flags: ['spirit', 'magic-user'],
-    xp: 0.0 // Ice has no alcohol
+    xp: 0.0, // Ice has no alcohol
+    splits: 'frost_golem'
   },
   {
     id: 'obsidian_guardian',
@@ -492,7 +521,8 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'elemental',
     flags: [],
-    xp: 2.3 // Pint (568ml) at ~4.2% ABV
+    xp: 2.3, // Pint (568ml) at ~4.2% ABV
+    splits: 'obsidian_golem'
   },
   {
     id: 'obsidian_golem',

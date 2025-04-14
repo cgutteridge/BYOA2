@@ -56,6 +56,7 @@ export interface MonsterType {
   species: Species
   flags: MonsterFlag[]
   xp: number  // Experience points (based on alcohol units)
+  splits?: string  // ID of monster that this monster splits into
 }
 
 export interface Monster {
