@@ -257,4 +257,21 @@
   50% {
     box-shadow: 0 0 15px rgba(3, 169, 244, 0.6);
   }
+}
+
+/* Special styling for ice elementals */
+.monster-card[class*="ice"], .monster-card[class*="frost"], .monster-card[class*="glacial"] {
+  animation: ice-shimmer 4s infinite alternate;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #a5d6f7 0%, #0288d1 100%) !important;
+}
+
+@keyframes ice-shimmer {
+  0% {
+    box-shadow: 0 0 10px rgba(173, 216, 230, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(173, 216, 230, 0.7);
+  }
 } 

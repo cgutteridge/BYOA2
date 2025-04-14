@@ -466,6 +466,34 @@ export const monsterTypes: MonsterType[] = [
     flags: ['magic-user'],
     xp: 0.0 // Large glass of water (no alcohol content)
   },
+  // Ice elementals
+  {
+    id: 'ice_shard',
+    title: 'Ice Shard',
+    drink: 'One Ice Cube',
+    level: 'minion',
+    species: 'elemental',
+    flags: ['spirit'],
+    xp: 0.0 // Ice has no alcohol
+  },
+  {
+    id: 'frost_golem',
+    title: 'Frost Golem',
+    drink: 'Three Ice Cubes',
+    level: 'grunt',
+    species: 'elemental',
+    flags: ['spirit'],
+    xp: 0.0 // Ice has no alcohol
+  },
+  {
+    id: 'glacial_titan',
+    title: 'Glacial Titan',
+    drink: 'Pint of Ice Cubes',
+    level: 'elite',
+    species: 'elemental',
+    flags: ['spirit', 'magic-user'],
+    xp: 0.0 // Ice has no alcohol
+  },
 ]
 
 export function getRandomMonsterType(): string | null {
