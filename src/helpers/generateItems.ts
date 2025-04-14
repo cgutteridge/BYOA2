@@ -1,7 +1,13 @@
-import { Item, LocationDifficulty, MonsterLevel, ItemTypeId, Unit } from '../types';
-import { getItemTypesByLevel } from '../data/itemTypes';
+import { LocationDifficulty } from '../types';
 import { monsterTypes } from '../data/monsterTypes';
-import pickOne from './pickOne';
+import { generateRandomItem } from './generateRandomItem';
+import { Item } from '../types/item';
+
+// Define the Unit type if not exported from another module
+interface Unit {
+  type: string;
+  // Add other properties as needed
+}
 
 /**
  * Generate a gift item based on location difficulty
@@ -11,12 +17,12 @@ import pickOne from './pickOne';
 export function generateGiftItem(difficulty: LocationDifficulty): Item | undefined {
   // Easy locations always have a level 1 gift
   if (difficulty === 'easy' || difficulty === 'start') {
-    return createRandomItem(1);
+    return generateRandomItem(1);
   }
   
   // Medium locations have a 50% chance of a level 2 gift
   if (difficulty === 'medium') {
-    return Math.random() < 0.5 ? createRandomItem(2) : undefined;
+    return Math.random() < 0.5 ? generateRandomItem(2) : undefined;
   }
   
   // Hard and end locations have no gift
@@ -33,17 +39,17 @@ export function generatePrizeItem(difficulty: LocationDifficulty): Item {
     case 'easy':
     case 'start':
       // Easy locations have level 2 prizes
-      return createRandomItem(2);
+      return generateRandomItem(2);
     case 'medium':
       // Medium locations have level 3 prizes
-      return createRandomItem(3);
+      return generateRandomItem(3);
     case 'hard':
     case 'end':
       // Hard and end locations have level 4 prizes
-      return createRandomItem(4);
+      return generateRandomItem(4);
     default:
       // Fallback to level 2
-      return createRandomItem(2);
+      return generateRandomItem(2);
   }
 }
 
@@ -69,53 +75,14 @@ export function generateUnitItem(unit: Unit): Item | undefined {
   // Generate item based on monster level
   switch (monster.level) {
     case 'minion':
-      return createRandomItem(1);
+      return generateRandomItem(1);
     case 'grunt':
-      return createRandomItem(2);
+      return generateRandomItem(2);
     case 'elite':
-      return createRandomItem(3);
+      return generateRandomItem(3);
     case 'boss':
-      return createRandomItem(4);
+      return generateRandomItem(4);
     default:
       return undefined;
   }
-}
-
-/**
- * Create a random item of the specified level
- * @param level The item level
- * @returns A randomly generated item
- */
-function createRandomItem(level: number): Item {
-  // Get all item types for the given level
-  const itemTypeOptions: ItemTypeId[] = ['healing', 'transmute', 'kill'];
-  
-  // Select a random item type
-  const type = pickOne(itemTypeOptions);
-  
-  // Get possible items of the selected type and level
-  const itemTypes = getItemTypesByLevel(level, type);
-  
-  if (itemTypes.length === 0) {
-    // Fallback if no matching item types
-    return {
-      type,
-      name: `Level ${level} ${type} Item`,
-      power: `A generic ${type} item of level ${level}`,
-      uses: 1,
-      level
-    };
-  }
-  
-  // Pick a random item from the available options
-  const itemType = pickOne(itemTypes);
-  
-  // Create the item
-  return {
-    type: itemType.id,
-    name: itemType.title,
-    power: itemType.power,
-    uses: 1, // Default to 1 use
-    level: itemType.level
-  };
 } 
