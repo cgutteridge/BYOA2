@@ -1,83 +1,83 @@
 /* Monster species-based styles */
 .monster-vampire {
-  background-color: #8B0000;  /* Dark blood red */
-  color: #FFFFFF;             /* White */
-  border-color: #FF0000;      /* Bright red */
+  background: linear-gradient(135deg, #480708 0%, #710b0d 100%);
+  color: #FFFFFF;
+  border-color: #FF0000;
 }
-.monster-vampire.monster-boss { box-shadow: 0 0 10px #FF0000; }
-.monster-vampire.monster-elite { box-shadow: 0 0 5px #FF0000; }
+.monster-vampire.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-vampire.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 .monster-ghost {
-  background-color: #E6F2FF;  /* Pale blue */
-  color: #000033;             /* Dark navy */
-  border-color: #A6C9E2;      /* Light blue */
+  background: linear-gradient(135deg, #2d3a4a 0%, #3f51b5 100%);
+  color: #FFFFFF;
+  border-color: #A6C9E2;
 }
-.monster-ghost.monster-boss { box-shadow: 0 0 10px #A6C9E2; }
-.monster-ghost.monster-elite { box-shadow: 0 0 5px #A6C9E2; }
+.monster-ghost.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-ghost.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 .monster-human {
-  background-color: #8B4513;  /* Saddle brown */
-  color: #F5F5DC;             /* Beige */
-  border-color: #A0522D;      /* Sienna */
+  background: linear-gradient(135deg, #4a3932 0%, #795548 100%);
+  color: #FFFFFF;
+  border-color: #A0522D;
 }
-.monster-human.monster-boss { box-shadow: 0 0 10px #A0522D; }
-.monster-human.monster-elite { box-shadow: 0 0 5px #A0522D; }
+.monster-human.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-human.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 .monster-chameleonoid {
-  background-color: #9370DB;  /* Medium purple */
-  color: #FFFFFF;             /* White */
-  border-color: #4B0082;      /* Indigo */
+  background: linear-gradient(135deg, #1b5e20 0%, #4caf50 100%);
+  color: #FFFFFF;
+  border-color: #4B0082;
 }
-.monster-chameleonoid.monster-boss { box-shadow: 0 0 10px #4B0082; }
-.monster-chameleonoid.monster-elite { box-shadow: 0 0 5px #4B0082; }
+.monster-chameleonoid.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-chameleonoid.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 .monster-goblinoid {
-  background-color: #2F4F4F;  /* Dark slate gray */
-  color: #8FBC8F;             /* Dark sea green */
-  border-color: #006400;      /* Dark green */
+  background: linear-gradient(135deg, #1b4d1b 0%, #388e3c 100%);
+  color: #FFFFFF;
+  border-color: #006400;
 }
-.monster-goblinoid.monster-boss { box-shadow: 0 0 10px #006400; }
-.monster-goblinoid.monster-elite { box-shadow: 0 0 5px #006400; }
+.monster-goblinoid.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-goblinoid.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 .monster-elf {
-  background-color: #228B22;  /* Forest green */
-  color: #F0FFF0;             /* Honeydew (very light green) */
-  border-color: #7CFC00;      /* Lawn green */
+  background: linear-gradient(135deg, #0d47a1 0%, #2196f3 100%);
+  color: #FFFFFF;
+  border-color: #7CFC00;
 }
-.monster-elf.monster-boss { box-shadow: 0 0 10px #7CFC00; }
-.monster-elf.monster-elite { box-shadow: 0 0 5px #7CFC00; }
+.monster-elf.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-elf.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 .monster-demonoid {
-  background-color: #B22222;  /* Firebrick */
-  color: #FFD700;             /* Gold */
-  border-color: #FF4500;      /* Orange red */
+  background: linear-gradient(135deg, #bf360c 0%, #ff5722 100%);
+  color: #FFFFFF;
+  border-color: #FF4500;
 }
-.monster-demonoid.monster-boss { box-shadow: 0 0 10px #FF4500; }
-.monster-demonoid.monster-elite { box-shadow: 0 0 5px #FF4500; }
+.monster-demonoid.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-demonoid.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 .monster-dwarf {
-  background-color: #696969;  /* Dim gray */
-  color: #F5F5F5;             /* White smoke */
-  border-color: #A9A9A9;      /* Dark gray */
+  background: linear-gradient(135deg, #52433a 0%, #8d6e63 100%);
+  color: #FFFFFF;
+  border-color: #A9A9A9;
 }
-.monster-dwarf.monster-boss { box-shadow: 0 0 10px #A9A9A9; }
-.monster-dwarf.monster-elite { box-shadow: 0 0 5px #A9A9A9; }
+.monster-dwarf.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-dwarf.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 .monster-special {
-  background-color: #4B0082;  /* Indigo */
-  color: #E6E6FA;             /* Lavender */
-  border-color: #9932CC;      /* Dark orchid */
+  background: linear-gradient(135deg, #311b92 0%, #673ab7 100%);
+  color: #FFFFFF;
+  border-color: #9932CC;
 }
-.monster-special.monster-boss { box-shadow: 0 0 10px #9932CC; }
-.monster-special.monster-elite { box-shadow: 0 0 5px #9932CC; }
+.monster-special.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-special.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 .monster-fey {
-  background-color: #00FA9A;  /* Medium spring green */
-  color: #191970;             /* Midnight blue */
-  border-color: #00FFFF;      /* Cyan */
+  background: linear-gradient(135deg, #00695c 0%, #009688 100%);
+  color: #FFFFFF;
+  border-color: #00FFFF;
 }
-.monster-fey.monster-boss { box-shadow: 0 0 10px #00FFFF; }
-.monster-fey.monster-elite { box-shadow: 0 0 5px #00FFFF; }
+.monster-fey.monster-boss { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+.monster-fey.monster-elite { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
 
 /* Monster level-based styles */
 .monster-boss {
@@ -104,6 +104,13 @@
 .monster-card {
   border-radius: 12px;
   margin: 1rem 0;
+}
+
+/* Defeated monster style */
+.monster-card.defeated {
+  opacity: 0.5;
+  filter: grayscale(0.9);
+  background: linear-gradient(135deg, #111111 0%, #333333 100%) !important;
 }
 
 /* Make monster count box darker for better contrast */
