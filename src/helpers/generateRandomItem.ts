@@ -136,84 +136,95 @@ function generateEffectDescription(item: Item): string {
       effect = `This ${qualityTerm} item banishes`;
       break;
     case 'scout_500':
-      return `This ${qualityTerm} item reveals any location within 500 meters.`;
+      effect = `This ${qualityTerm} item reveals any location within 500 meters`;
+      break;
     case 'scout_1000':
-      return `This ${qualityTerm} item reveals any location within 1000 meters.`;
+      effect = `This ${qualityTerm} item reveals any location within 1000 meters`;
+      break;
     case 'scout_any':
-      return `This ${qualityTerm} item reveals any location.`;
+      effect = `This ${qualityTerm} item reveals any location`;
+      break;
     default:
-      return `This ${qualityTerm} item has unknown effects.`;
+      effect = `This ${qualityTerm} item has unknown effects`;
   }
   
-  // Add targeting scope
-  if (item.targetScope) {
-    switch (item.targetScope) {
-      case 'one':
-        effect += " a single monster";
-        break;
-      case 'type':
-        effect += " all monsters of the same type in the current location";
-        break;
-      case 'race':
-        effect += " all monsters of the same race in the current location";
-        break;
-      case 'all':
-        effect += " all monsters in the current location";
-        break;
-    }
-  } else {
-    effect += " a single monster";
-  }
-  
-  // Add target filters if present
-  if (item.targetFilters) {
-    const filters = [];
-    
-    if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
-      filters.push(`${item.targetFilters.levels.join('/')} level`);
-    }
-    
-    if (item.targetFilters.species && item.targetFilters.species.length > 0) {
-      filters.push(`${item.targetFilters.species.join('/')} species`);
-    }
-    
-    if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
-      filters.push(`${item.targetFilters.flags.join('/')} type`);
-    }
-    
-    if (filters.length > 0) {
-      effect += ` (works on ${filters.join(', ')})`;
-    }
-  }
-  
-  // Add result restrictions for transmute items
-  if (item.power === 'transmute') {
+  // For scout powers, add a period and skip target scope processing
+  if (item.power?.startsWith('scout_')) {
     effect += ".";
-    
-    // Add information about what the monster transforms into
-    if (item.result) {
-      switch (item.result) {
-        case 'random':
-          effect += " Transforms target into a random monster.";
+  } else {
+    // Add targeting scope
+    if (item.targetScope) {
+      switch (item.targetScope) {
+        case 'one':
+          effect += " a single monster";
           break;
-        case 'pick':
-          effect += " User chooses what monster to transform target into.";
+        case 'type':
+          effect += " all monsters of the same type in the current location";
           break;
-        case 'level':
-          if (item.resultLevel) {
-            effect += ` Transforms target into a ${item.resultLevel} monster of the same race.`;
-          }
+        case 'race':
+          effect += " all monsters of the same race in the current location";
           break;
-        case 'species':
-          if (item.resultSpecies) {
-            effect += ` Transforms target into a ${item.resultSpecies} monster of the same level.`;
-          }
+        case 'all':
+          effect += " all monsters in the current location";
           break;
       }
+    } else {
+      effect += " a single monster";
     }
-  } else {
-    effect += ".";
+    
+    // Add target filters if present
+    if (item.targetFilters) {
+      const filters = [];
+      
+      if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
+        filters.push(`${item.targetFilters.levels.join('/')} level`);
+      }
+      
+      if (item.targetFilters.species && item.targetFilters.species.length > 0) {
+        filters.push(`${item.targetFilters.species.join('/')} species`);
+      }
+      
+      if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
+        filters.push(`${item.targetFilters.flags.join('/')} type`);
+      }
+      
+      if (filters.length > 0) {
+        effect += ` (works on ${filters.join(', ')})`;
+      }
+    }
+    
+    // Add result restrictions for transmute items
+    if (item.power === 'transmute') {
+      effect += ".";
+      
+      // Add information about what the monster transforms into
+      if (item.result) {
+        switch (item.result) {
+          case 'random':
+            effect += " Transforms target into a random monster.";
+            break;
+          case 'pick':
+            effect += " User chooses what monster to transform target into.";
+            break;
+          case 'level':
+            if (item.resultLevel) {
+              effect += ` Transforms target into a ${item.resultLevel} monster of the same race.`;
+            }
+            break;
+          case 'species':
+            if (item.resultSpecies) {
+              effect += ` Transforms target into a ${item.resultSpecies} monster of the same level.`;
+            }
+            break;
+        }
+      }
+    } else {
+      effect += ".";
+    }
   }
+  
+  // Add number of uses
+  effect += ` Has ${item.uses || 1} ${(item.uses === 1 || !item.uses) ? 'use' : 'uses'} remaining.`;
   
   return effect;
 }
