@@ -40,6 +40,7 @@ export default function generateMonsters(pub: Pub): Monster[] {
             }
             
             monsters.push({
+                id: `monster_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
                 type: monsterType.id,
                 name: monsterName, // This will be replaced with AI-generated name
                 alive: true,

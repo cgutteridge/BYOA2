@@ -2,7 +2,7 @@ import type { Item } from '../types/item'
 import type { Monster } from '../types'
 import type { PowerFunction, PowerResult } from './types'
 import { banish } from './banish'
-import { killOne, killAll } from './kill'
+import { killOne } from './kill'
 
 // Register all power implementations
 const powerFunctions: Record<string, PowerFunction> = {

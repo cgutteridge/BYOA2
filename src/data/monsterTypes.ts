@@ -1,4 +1,4 @@
-import type { MonsterType, Species } from '../types'
+import type { MonsterType } from '../types'
 
 export const monsterTypes: MonsterType[] = [
   // Boss monsters

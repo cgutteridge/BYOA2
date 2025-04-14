@@ -1,5 +1,5 @@
-import type { Item, ItemPower, TargetMode, ResultMode, TargetScope } from '@/types/item';
-import type { MonsterLevel, Species, MonsterFlag } from '@/types';
+import type { Item, ItemPower, TargetMode, ResultMode, TargetScope } from '../types/item';
+import type { MonsterLevel, Species, MonsterFlag } from '../types';
 
 // Base point costs for different power types
 const POWER_BASE_COSTS: Record<ItemPower, number> = {

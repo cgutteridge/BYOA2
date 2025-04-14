@@ -63,7 +63,7 @@ export const killOne: PowerFunction = {
     return true
   },
   
-  getValidTargets: (item: Item): Monster[] => {
+  getValidTargets: (_item: Item): Monster[] => {
     // This will be implemented to return all valid monsters in the current location
     return []
   },
@@ -103,7 +103,7 @@ export const killAll: PowerFunction = {
     // 4. Maybe trigger special effects
   },
   
-  canTarget: (item: Item, targetType: any): boolean => {
+  canTarget: (_item: Item, targetType: any): boolean => {
     // Check if targetType is a string representing a monster type
     if (typeof targetType !== 'string') {
       return false
@@ -114,12 +114,12 @@ export const killAll: PowerFunction = {
     return true
   },
   
-  getValidTargets: (item: Item): string[] => {
+  getValidTargets: (_item: Item): string[] => {
     // This will return unique monster types in the current location
     return []
   },
   
-  getTargetDescription: (item: Item): string => {
+  getTargetDescription: (_item: Item): string => {
     return 'Can target all monsters of a specific type.'
   }
 }
