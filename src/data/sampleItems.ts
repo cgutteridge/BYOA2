@@ -17,13 +17,12 @@ export const sampleItems: Item[] = [
   {
     id: 'potion_of_transmutation',
     name: 'Potion of Transmutation',
-    description: 'Transforms a monster into a weaker form when thrown at it.',
+    description: 'Transforms a monster into a different form of the same level when thrown at it.',
     uses: 2,
     level: 1,
     power: 'transmute',
     target: 'pick',
-    result: 'level',
-    resultLevel: 'minion'
+    result: 'random'
   },
   {
     id: 'crystal_ball_of_far_sight',

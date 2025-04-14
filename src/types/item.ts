@@ -19,7 +19,7 @@ export type TargetMode = 'pick' | 'random' | undefined;
 export type TargetScope = 'one' | 'type' | undefined;
 
 // Result modes
-export type ResultMode = 'random' | 'pick' | 'level' | 'species' | undefined;
+export type ResultMode = 'random' | 'pick' | undefined;
 
 // Unified Item interface
 export interface Item {

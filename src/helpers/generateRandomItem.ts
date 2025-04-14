@@ -1,9 +1,10 @@
 import type { Item, ItemPower, TargetScope } from '../types/item';
 import type { MonsterLevel, Species, MonsterFlag } from '../types';
+import { generateEffectDescription, getLevelQualityTerm } from './generateEffectDescription';
 
 // Base point costs for different power types
 const POWER_BASE_COSTS: Record<ItemPower, number> = {
-  kill: 1,
+  kill: 2,
   transmute: 1,
   scout_500: 1,
   scout_1000: 2,
@@ -92,138 +93,6 @@ const AVAILABLE_FLAGS: MonsterFlag[] = [
 ];
 
 /**
- * Convert item level to descriptive quality term
- */
-function getLevelQualityTerm(level: number): string {
-  switch (level) {
-    case 1: return "crap";
-    case 2: return "mediocre";
-    case 3: return "decent";
-    case 4: return "superior";
-    case 5: return "excellent";
-    case 6: return "legendary";
-    default: return "unknown quality";
-  }
-}
-
-/**
- * Generate a clear effect description for the item
- */
-function generateEffectDescription(item: Item): string {
-  if (!item.power) return "Does nothing special.";
-  
-  const qualityTerm = getLevelQualityTerm(item.level);
-  let effect = "";
-  
-  // Base effect by power type
-  switch (item.power) {
-    case 'kill':
-      effect = `This ${qualityTerm} item instantly defeats`;
-      break;
-    case 'transmute':
-      effect = `This ${qualityTerm} item transforms`;
-      break;
-    case 'shrink':
-      effect = `This ${qualityTerm} item reduces the power of`;
-      break;
-    case 'split':
-      effect = `This ${qualityTerm} item splits`;
-      break;
-    case 'pickpocket':
-      effect = `This ${qualityTerm} item steals from`;
-      break;
-    case 'banish':
-      effect = `This ${qualityTerm} item banishes`;
-      break;
-    case 'scout_500':
-      effect = `This ${qualityTerm} item reveals any location within 500 meters`;
-      break;
-    case 'scout_1000':
-      effect = `This ${qualityTerm} item reveals any location within 1000 meters`;
-      break;
-    case 'scout_any':
-      effect = `This ${qualityTerm} item reveals any location`;
-      break;
-    default:
-      effect = `This ${qualityTerm} item has unknown effects`;
-  }
-  
-  // For scout powers, add a period and skip target scope processing
-  if (item.power?.startsWith('scout_')) {
-    effect += ".";
-  } else {
-    // Add targeting scope
-    if (item.targetScope) {
-      switch (item.targetScope) {
-        case 'one':
-          effect += " a single monster";
-          break;
-        case 'type':
-          effect += " all monsters of the same type in the current location";
-          break;
-      }
-    } else {
-      effect += " a single monster";
-    }
-    
-    // Add target filters if present
-    if (item.targetFilters) {
-      const filters = [];
-      
-      if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
-        filters.push(`${item.targetFilters.levels.join('/')} level`);
-      }
-      
-      if (item.targetFilters.species && item.targetFilters.species.length > 0) {
-        filters.push(`${item.targetFilters.species.join('/')} species`);
-      }
-      
-      if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
-        filters.push(`${item.targetFilters.flags.join('/')} type`);
-      }
-      
-      if (filters.length > 0) {
-        effect += ` (works on ${filters.join(', ')})`;
-      }
-    }
-    
-    // Add result restrictions for transmute items
-    if (item.power === 'transmute') {
-      effect += ".";
-      
-      // Add information about what the monster transforms into
-      if (item.result) {
-        switch (item.result) {
-          case 'random':
-            effect += " Transforms target into a random monster.";
-            break;
-          case 'pick':
-            effect += " User chooses what monster to transform target into.";
-            break;
-          case 'level':
-            if (item.resultLevel) {
-              effect += ` Transforms target into a ${item.resultLevel} monster of the same species.`;
-            }
-            break;
-          case 'species':
-            if (item.resultSpecies) {
-              effect += ` Transforms target into a ${item.resultSpecies} monster of the same level.`;
-            }
-            break;
-        }
-      }
-    } else {
-      effect += ".";
-    }
-  }
-  
-  // Add number of uses
-  effect += ` Has ${item.uses || 1} ${(item.uses === 1 || !item.uses) ? 'use' : 'uses'} remaining.`;
-  
-  return effect;
-}
-
-/**
  * Generate a random item of the specified level
  * @param level Item level (1-6)
  * @returns A random item with appropriate properties for the level
@@ -289,14 +158,9 @@ export function generateRandomItem(level: number): Item {
     // Default to a restricted result
     item.result = 'random';
     
-    // 50% chance to restrict by level, 50% by species
-    if (Math.random() < 0.5) {
-      item.result = 'level';
-      item.resultLevel = randomChoice(['minion', 'grunt', 'elite'] as MonsterLevel[]);
-    } else {
-      item.result = 'species';
-      item.resultSpecies = randomChoice(AVAILABLE_SPECIES);
-    }
+    // Remove resultLevel and resultSpecies properties as they're no longer needed
+    delete item.resultLevel;
+    delete item.resultSpecies;
   }
   
   // Step 4: Spend remaining points on upgrades
