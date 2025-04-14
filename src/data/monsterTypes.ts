@@ -1,4 +1,4 @@
-import type { MonsterType } from '../types'
+import type { MonsterType, Species } from '../types'
 
 export const monsterTypes: MonsterType[] = [
   // Boss monsters
@@ -389,8 +389,83 @@ export const monsterTypes: MonsterType[] = [
     species: 'dwarf',
     flags: ['mortal'],
     xp: 1.1 // Half pint (284ml) at ~4% ABV
-  }
+  },
   
+  // Special monsters with unique abilities
+  {
+    id: 'desert_wyrm',
+    title: 'Desert Wyrm',
+    drink: 'Single Tequila',
+    level: 'grunt',
+    species: 'demonoid',
+    flags: ['magic-user'],
+    xp: 1.0 // Single shot (25ml) at 40% ABV
+  },
+  {
+    id: 'sand_titan',
+    title: 'Sand Titan',
+    drink: 'Double Tequila',
+    level: 'elite',
+    species: 'demonoid',
+    flags: ['mortal', 'magic-user'],
+    xp: 2.0 // Double shot (50ml) at 40% ABV
+  },
+  {
+    id: 'frost_phantom',
+    title: 'Frost Phantom',
+    drink: 'Single Sambuca',
+    level: 'grunt',
+    species: 'elemental',
+    flags: ['spirit'],
+    xp: 1.0 // Single shot (25ml) at 38% ABV
+  },
+  {
+    id: 'azure_flame_elemental',
+    title: 'Azure Flame Elemental',
+    drink: 'Double Sambuca',
+    level: 'elite',
+    species: 'elemental',
+    flags: ['spirit', 'magic-user'],
+    xp: 2.0 // Double shot (50ml) at 38% ABV
+  },
+  // Earth elementals for brandy
+  {
+    id: 'earth_shaper',
+    title: 'Earth Shaper',
+    drink: 'Single Brandy',
+    level: 'grunt',
+    species: 'elemental',
+    flags: ['spirit'],
+    xp: 1.0 // Single shot (25ml) at ~40% ABV
+  },
+  {
+    id: 'mountain_guardian',
+    title: 'Mountain Guardian',
+    drink: 'Double Brandy',
+    level: 'elite',
+    species: 'elemental',
+    flags: ['spirit', 'magic-user'],
+    xp: 2.0 // Double shot (50ml) at ~40% ABV
+  },
+  // Water elementals for water
+  {
+    id: 'water_sprite',
+    title: 'Water Sprite',
+    drink: 'Small Glass of Water',
+    level: 'minion',
+    species: 'elemental',
+    flags: ['magic-user'],
+    xp: 0.0 // Glass of water (no alcohol content)
+  },
+  {
+    id: 'tidal_guardian',
+    title: 'Tidal Guardian',
+    drink: 'Large Glass of Water',
+    level: 'grunt',
+    species: 'elemental',
+    flags: ['magic-user'],
+    xp: 0.0 // Large glass of water (no alcohol content)
+  },
 ]
 
 export function getRandomMonsterType(): string | null {

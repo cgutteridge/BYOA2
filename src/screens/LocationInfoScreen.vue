@@ -157,17 +157,36 @@ function getMonsterDrink(monsterId: string): string {
 
 function getMonsterXP(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
-  return monster?.xp ? monster.xp.toFixed(1) : "Unknown"
+  if (monster?.xp !== undefined) {
+    // If XP is a whole number, show as integer, otherwise show one decimal place
+    return monster.xp % 1 === 0 ? monster.xp.toString() : monster.xp.toFixed(1);
+  }
+  return "Unknown";
 }
 
 function getMonsterClasses(monsterId: string): Record<string, boolean> {
   const monster = monsterTypes.find(m => m.id === monsterId)
   if (!monster) return {}
   
-  return {
+  const classes = {
     [`monster-${monster.species}`]: true,
     [`monster-${monster.level}`]: true
   }
+  
+  // Add special classes for themed monsters
+  if (monster.id.includes('desert') || monster.id.includes('sand')) {
+    classes['desert-monster'] = true
+  } else if (monster.id.includes('flame')) {
+    classes['flame-monster'] = true
+  } else if (monster.id.includes('frost')) {
+    classes['frost-monster'] = true
+  } else if (monster.id.includes('earth') || monster.id.includes('mountain')) {
+    classes['earth-monster'] = true
+  } else if (monster.id.includes('water') || monster.id.includes('tidal')) {
+    classes['water-monster'] = true
+  }
+  
+  return classes
 }
 
 function getMonsterSpecies(monsterId: string): string {

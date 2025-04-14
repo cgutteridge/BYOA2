@@ -40,7 +40,7 @@ export type Encounter = {
 }[]
 
 
-export type Species = "vampire"|"ghost"|"human"|"chameleonoid"|"goblinoid"|"elf"|"demonoid"|"dwarf"|"special"|"fey"
+export type Species = "vampire"|"ghost"|"human"|"chameleonoid"|"goblinoid"|"elf"|"demonoid"|"dwarf"|"special"|"fey"|"elemental"
 export type MonsterLevel  = "minion"|"grunt"|"elite"|"boss"
 export type MonsterFlag = "spirit"|"undead"|"mortal"|"magic-user"|"group"
 export type LocationDifficulty = "start" | "easy" | "medium" | "hard" | "end"
