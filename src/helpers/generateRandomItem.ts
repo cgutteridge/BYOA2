@@ -1,4 +1,4 @@
-import type { Item, ItemPower, TargetMode, ResultMode, TargetScope } from '../types/item';
+import type { Item, ItemPower, TargetScope } from '../types/item';
 import type { MonsterLevel, Species, MonsterFlag } from '../types';
 
 // Base point costs for different power types

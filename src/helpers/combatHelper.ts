@@ -2,7 +2,6 @@ import { useQuestStore } from '@/stores/questStore';
 import { useInventoryStore } from '@/stores/inventoryStore';
 import { monsterTypes } from '@/data/monsterTypes';
 import { Monster } from '@/types';
-import { Item } from '@/types/item';
 import { generateRandomItem } from './generateRandomItem';
 
 /**
