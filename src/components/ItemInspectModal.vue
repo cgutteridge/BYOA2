@@ -11,7 +11,7 @@
         </div>
         
         <div class="item-inspect-modal__body">
-          <div class="item-inspect-modal__description">
+          <div class="item-inspect-modal__description" v-if="item.description">
             {{ item.description }}
           </div>
           

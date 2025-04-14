@@ -22,6 +22,7 @@
     </div>
     
     <ItemInspectModal 
+      v-if="selectedItem"
       :is-open="isInspectModalOpen" 
       :item="selectedItem" 
       context="inventory" 
@@ -33,15 +34,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useAppStore } from "../stores/appStore"
 import { useInventoryStore } from "../stores/inventoryStore"
 import { getRandomSampleItem } from "../data/sampleItems"
 import ItemCard from "../components/ItemCard.vue"
 import ItemInspectModal from "../components/ItemInspectModal.vue"
 import type { Item } from '../types/item'
-import { generateTestItems, logItemDetails } from '../helpers/generateRandomItem'
 
-const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
 
 // State for item inspection modal
@@ -75,10 +73,6 @@ const sortedItems = computed(() => {
   })
 })
 
-function continueToMap() {
-  appStore.setScreen('map')
-}
-
 function addTestItem() {
   const randomItem = getRandomSampleItem()
   inventoryStore.addItem(randomItem)
@@ -88,27 +82,6 @@ function clearInventory() {
   // Clear all items from inventory
   while (inventoryStore.items.length > 0) {
     inventoryStore.removeItem(inventoryStore.items[0].id)
-  }
-}
-
-function toggleModal() {
-  appStore.toggleInventory()
-}
-
-function testItemGeneration() {
-  const items = generateTestItems()
-  console.log('======= TEST ITEM GENERATION =======')
-  console.log(`Generated ${items.length} test items`)
-  
-  items.forEach(item => {
-    logItemDetails(item)
-  })
-  
-  console.log('===================================')
-  
-  // Add a sample item to inventory for testing
-  if (items.length > 0) {
-    inventoryStore.addItem(items[0])
   }
 }
 </script>
