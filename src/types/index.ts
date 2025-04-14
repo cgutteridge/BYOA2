@@ -70,7 +70,6 @@ export type ScreenId =
   | 'map'
     | 'location'
     | 'location_info'
-  | 'inventory'
   | 'victory'
 
 export type QuestState = 'no_quest' | 'active' | 'completed'

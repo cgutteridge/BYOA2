@@ -2,25 +2,32 @@
 import { onMounted, ref, onUnmounted } from 'vue'
 import { useAppStore } from './stores/appStore'
 import { useQuestStore } from './stores/questStore'
+import { useInventoryStore } from './stores/inventoryStore'
 
 import MapScreen from './screens/MapScreen.vue'
 import QuestStartScreen from './screens/QuestStartScreen.vue'
 import IntroScreen from './screens/IntroScreen.vue'
 import InfoScreen from './screens/InfoScreen.vue'
 import LocationScreen from './screens/LocationScreen.vue'
-import InventoryScreen from './screens/InventoryScreen.vue'
 import VictoryScreen from './screens/VictoryScreen.vue'
-import LocationInfoScreen from "./screens/LocationInfoScreen.vue";
+import LocationInfoScreen from "./screens/LocationInfoScreen.vue"
+import InventoryModal from './components/InventoryModal.vue'
+// Import test screen for development
+import InventoryTestScreen from './screens/InventoryScreen.vue'
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
+const inventoryStore = useInventoryStore()
 const isDebugMode = ref(false)
 const watchId = ref<number | null>(null)
+const isTestMode = ref(false)
 
-// Check if debug mode is enabled via URL fragment
+// Check if debug or test mode is enabled via URL fragment
 function checkDebugMode() {
   isDebugMode.value = window.location.hash === '#DEBUG'
+  isTestMode.value = window.location.hash === '#TEST'
   console.log('Debug mode:', isDebugMode.value ? 'ENABLED' : 'disabled')
+  console.log('Test mode:', isTestMode.value ? 'ENABLED' : 'disabled')
 }
 
 // Initialize the GPS once
@@ -30,12 +37,12 @@ async function initializeGPS() {
     checkDebugMode()
     
     // If in debug mode, use fixed coordinates for Southampton
-    if (isDebugMode.value) {
+    if (isDebugMode.value || isTestMode.value) {
       const debugLocation = {
         lat: 50.91018,
         lng: -1.40419
       }
-      console.log('DEBUG MODE: Using fixed GPS location:', debugLocation)
+      console.log('DEBUG/TEST MODE: Using fixed GPS location:', debugLocation)
       appStore.setPlayerLocation(debugLocation)
       appStore.setGPSStatus('success')
       return
@@ -66,7 +73,7 @@ function startContinuousTracking() {
   }
   
   // Debug mode doesn't need continuous tracking - it's handled in initializeGPS
-  if (isDebugMode.value) {
+  if (isDebugMode.value || isTestMode.value) {
     return
   }
  
@@ -99,10 +106,23 @@ function startContinuousTracking() {
 // Stop GPS tracking
 function stopContinuousTracking() {
   console.log('Stopping GPS tracking')
-  if (!isDebugMode.value && watchId.value !== null) {
+  if ((!isDebugMode.value && !isTestMode.value) && watchId.value !== null) {
     navigator.geolocation.clearWatch(watchId.value)
     watchId.value = null
   }
+}
+
+function toggleInventory() {
+  appStore.toggleInventory()
+}
+
+function closeInventory() {
+  appStore.closeInventory()
+}
+
+function handleQuit() {
+  appStore.setScreen('start_quest')
+  appStore.closeInventory()
 }
 
 onMounted(() => {
@@ -115,17 +135,32 @@ onMounted(() => {
     checkDebugMode()
     initializeGPS() // Re-initialize GPS when debug mode changes
   })
+  
+  // Add keyboard shortcut for inventory
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'i' || e.key === 'I') {
+      toggleInventory()
+    }
+  })
 })
 
 onUnmounted(() => {
   // Clean up the continuous tracking when the component is unmounted
   stopContinuousTracking()
+  
+  // Remove keyboard listener
+  window.removeEventListener('keydown', (e) => {
+    if (e.key === 'i' || e.key === 'I') {
+      toggleInventory()
+    }
+  })
 })
 </script>
 
 <template>
   <div class="app">
     <div v-if="isDebugMode" class="debug-banner">DEBUG MODE</div>
+    <div v-if="isTestMode" class="test-banner">TEST MODE</div>
     
     <div class="debug-overlay" v-if="appStore.playerLocation">
       <div>COORDS: {{ appStore.playerLocation.lat.toFixed(5) }}, {{ appStore.playerLocation.lng.toFixed(5) }}</div>
@@ -142,17 +177,49 @@ onUnmounted(() => {
     </div>
     <div v-else-if="appStore.gpsStatus === 'error'" class="gps-error">
       <p>Unable to get your location. Please enable GPS and refresh the page.</p>
-      <p><a href="#DEBUG">Enable Debug Mode</a></p>
+      <p>
+        <a href="#DEBUG">Enable Debug Mode</a> | 
+        <a href="#TEST">Enable Test Mode</a>
+      </p>
     </div>
     <template v-else>
-      <QuestStartScreen v-if="appStore.screen === 'start_quest'" />
-      <IntroScreen v-else-if="appStore.screen === 'intro'" />
-      <InfoScreen v-else-if="appStore.screen === 'info'" />
-      <MapScreen v-else-if="appStore.screen === 'map'" />
-      <LocationScreen v-else-if="appStore.screen === 'location'" />
-      <LocationInfoScreen v-else-if="appStore.screen === 'location_info'" />
-      <InventoryScreen v-else-if="appStore.screen === 'inventory'" />
-      <VictoryScreen v-else-if="appStore.screen === 'victory'" />
+      <!-- Test mode overrides normal game screens -->
+      <template v-if="isTestMode">
+        <InventoryTestScreen />
+      </template>
+      <!-- Normal game screens -->
+      <template v-else>
+        <QuestStartScreen v-if="appStore.screen === 'start_quest'" />
+        <IntroScreen v-else-if="appStore.screen === 'intro'" />
+        <InfoScreen v-else-if="appStore.screen === 'info'" />
+        <MapScreen v-else-if="appStore.screen === 'map'" />
+        <LocationScreen v-else-if="appStore.screen === 'location'" />
+        <LocationInfoScreen v-else-if="appStore.screen === 'location_info'" />
+        <VictoryScreen v-else-if="appStore.screen === 'victory'" />
+      </template>
+      
+      <!-- Inventory Button (only show during gameplay) -->
+      <button 
+        v-if="(appStore.screen !== 'start_quest' && 
+              appStore.screen !== 'intro' && 
+              appStore.screen !== 'victory') || isTestMode"
+        class="inventory-button"
+        :class="{
+          'with-debug-banner': isDebugMode,
+          'with-test-banner': isTestMode
+        }"
+        @click="toggleInventory"
+        title="Open Inventory (I)"
+      >
+        🎒
+      </button>
+      
+      <!-- Inventory Modal -->
+      <InventoryModal 
+        :is-open="appStore.isInventoryOpen"
+        @close="closeInventory"
+        @quit="handleQuit"
+      />
     </template>
   </div>
 </template>
@@ -180,6 +247,37 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+.inventory-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #4a8;
+  color: white;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 100;
+  border: none;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.inventory-button.with-debug-banner,
+.inventory-button.with-test-banner {
+  top: 45px; /* Adjusted to appear below the banner */
+}
+
+.inventory-button:hover {
+  transform: scale(1.1);
+  background-color: #3a7;
 }
 
 .gps-status, .gps-error {
@@ -225,6 +323,19 @@ body {
   left: 0;
   right: 0;
   background-color: #f00;
+  color: white;
+  text-align: center;
+  padding: 5px;
+  font-weight: bold;
+  z-index: 9999;
+}
+
+.test-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #f80;
   color: white;
   text-align: center;
   padding: 5px;

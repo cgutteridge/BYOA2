@@ -12,6 +12,10 @@ export const useAppStore = defineStore('app', () => {
   const mapPosition = ref<Location | null>(null)
   const mapZoom = ref<number | null>(null)
   const pubStore = usePubStore()
+  
+  // Inventory UI state
+  const isInventoryOpen = ref(false)
+  const inventoryTab = ref('items') // 'items', 'quest', 'log', 'options'
 
   const setScreen = (newScreen: ScreenId) => {
     screen.value = newScreen
@@ -40,6 +44,24 @@ export const useAppStore = defineStore('app', () => {
   const setMapZoom = (zoom: number): void => {
     mapZoom.value = zoom
   }
+  
+  // Inventory UI actions
+  const toggleInventory = (): void => {
+    isInventoryOpen.value = !isInventoryOpen.value
+  }
+  
+  const openInventory = (tab = 'items'): void => {
+    isInventoryOpen.value = true
+    inventoryTab.value = tab
+  }
+  
+  const closeInventory = (): void => {
+    isInventoryOpen.value = false
+  }
+  
+  const setInventoryTab = (tab: string): void => {
+    inventoryTab.value = tab
+  }
 
   const focusPub = computed(() => {
     if (focusPubId.value === undefined) {
@@ -57,12 +79,18 @@ export const useAppStore = defineStore('app', () => {
     mapPosition,
     mapZoom,
     focusPub,
+    isInventoryOpen,
+    inventoryTab,
     setFocusPub,
     unsetFocusPub,
     setScreen,
     setGPSStatus,
     setPlayerLocation,
     setMapPosition,
-    setMapZoom
+    setMapZoom,
+    toggleInventory,
+    openInventory,
+    closeInventory,
+    setInventoryTab
   }
 }) 
