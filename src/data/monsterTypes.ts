@@ -63,7 +63,7 @@ export const monsterTypes: MonsterType[] = [
     title: 'Bog Witch',
     plural: 'Bog Witches',
     drink: 'Bailys',
-    level: 'elite',
+    level: 'grunt',
     species: 'human',
     flags: ['mortal','magic-user'],
     xp: 1.5 // 50ml at ~17% ABV
@@ -178,15 +178,6 @@ export const monsterTypes: MonsterType[] = [
     species: 'ghost',
     flags: ['spirit'],
     xp: 1.0 // Standard (25ml) at 40% ABV
-  },
-  {
-    id: 'dark_knight_grunt',
-    title: 'Dark Knight',
-    drink: 'Guiness',
-    level: 'grunt',
-    species: 'human',
-    flags: ['mortal'],
-    xp: 2.3 // Pint (568ml) at ~4.2% ABV
   },
   {
     id: 'ghostly_buccaneer',
@@ -396,7 +387,7 @@ export const monsterTypes: MonsterType[] = [
     id: 'desert_wyrm',
     title: 'Desert Wyrm',
     drink: 'Single Tequila',
-    level: 'grunt',
+    level: 'minion',
     species: 'demonoid',
     flags: ['magic-user'],
     xp: 1.0 // Single shot (25ml) at 40% ABV
@@ -405,7 +396,7 @@ export const monsterTypes: MonsterType[] = [
     id: 'sand_titan',
     title: 'Sand Titan',
     drink: 'Double Tequila',
-    level: 'elite',
+    level: 'grunt',
     species: 'demonoid',
     flags: ['mortal', 'magic-user'],
     xp: 2.0 // Double shot (50ml) at 40% ABV
@@ -414,7 +405,7 @@ export const monsterTypes: MonsterType[] = [
     id: 'fire_phantom',
     title: 'Fire Phantom',
     drink: 'Single Sambuca',
-    level: 'grunt',
+    level: 'minion',
     species: 'elemental',
     flags: ['spirit'],
     xp: 1.0 // Single shot (25ml) at 38% ABV
@@ -423,7 +414,7 @@ export const monsterTypes: MonsterType[] = [
     id: 'azure_flame_elemental',
     title: 'Azure Flame Elemental',
     drink: 'Double Sambuca',
-    level: 'elite',
+    level: 'grunt',
     species: 'elemental',
     flags: ['spirit', 'magic-user'],
     xp: 2.0 // Double shot (50ml) at 38% ABV
@@ -433,7 +424,7 @@ export const monsterTypes: MonsterType[] = [
     id: 'earth_shaper',
     title: 'Earth Shaper',
     drink: 'Single Brandy',
-    level: 'grunt',
+    level: 'minion',
     species: 'elemental',
     flags: ['spirit'],
     xp: 1.0 // Single shot (25ml) at ~40% ABV
@@ -442,7 +433,7 @@ export const monsterTypes: MonsterType[] = [
     id: 'mountain_guardian',
     title: 'Mountain Guardian',
     drink: 'Double Brandy',
-    level: 'elite',
+    level: 'grunt',
     species: 'elemental',
     flags: ['spirit', 'magic-user'],
     xp: 2.0 // Double shot (50ml) at ~40% ABV
@@ -493,6 +484,24 @@ export const monsterTypes: MonsterType[] = [
     species: 'elemental',
     flags: ['spirit', 'magic-user'],
     xp: 0.0 // Ice has no alcohol
+  },
+  {
+    id: 'obsidian_guardian',
+    title: 'Obsidian Guardian',
+    drink: 'Pint of Guinness',
+    level: 'grunt',
+    species: 'elemental',
+    flags: [],
+    xp: 2.3 // Pint (568ml) at ~4.2% ABV
+  },
+  {
+    id: 'obsidian_golem',
+    title: 'Obsidian Golem',
+    drink: 'Half Pint of Guinness',
+    level: 'minion',
+    species: 'elemental',
+    flags: [],
+    xp: 1.2 // Half pint (284ml) at ~4.2% ABV
   },
 ]
 

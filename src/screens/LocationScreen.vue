@@ -54,7 +54,12 @@
             <div class="monster-name-container">
               <div class="monster-name">{{ monster.name }}</div>
               <div class="monster-subinfo">
-                {{ getMonsterTitle(monster.type) }} - {{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}{{ getMonsterTraits(monster.type) }}
+                <span class="monster-info-block">{{ getMonsterTitle(monster.type) }} - {{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}</span>
+                <span class="monster-flags" v-if="getMonsterFlags(monster.type).length">
+                  <template v-for="(flag, index) in getMonsterFlags(monster.type)" :key="flag">
+                    <template v-if="index === 0">(</template><span class="flag-item">{{ flag }}</span><template v-if="index < getMonsterFlags(monster.type).length - 1">, </template><template v-if="index === getMonsterFlags(monster.type).length - 1">)</template>
+                  </template>
+                </span>
               </div>
             </div>
             <div class="monster-controls">
@@ -193,6 +198,8 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
     classes['water-monster'] = true
   } else if (monster.id.includes('ice') || monster.id.includes('frost') || monster.id.includes('glacial')) {
     classes['ice-monster'] = true
+  } else if (monster.id.includes('obsidian')) {
+    classes['obsidian-monster'] = true
   }
   
   return classes
@@ -214,11 +221,11 @@ function getMonsterLevel(monsterId: string): string {
   return monster.level.charAt(0).toUpperCase() + monster.level.slice(1)
 }
 
-function getMonsterTraits(monsterId: string): string {
+function getMonsterFlags(monsterId: string): string[] {
   const monster = monsterTypes.find(m => m.id === monsterId)
-  if (!monster || !monster.flags || monster.flags.length === 0) return ""
+  if (!monster || !monster.flags || monster.flags.length === 0) return []
   
-  return `, ${monster.flags.join(', ')}`
+  return monster.flags
 }
 
 function getItemTypeName(itemTypeId: string, level: number = 1): string {
@@ -539,9 +546,20 @@ function leavePub() {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.monster-flags {
+  display: inline-block;
+  margin-left: 0.25rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.flag-item {
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: inline-block;
+  word-break: keep-all;
 }
 
 .monster-drink-bar {
@@ -647,5 +665,11 @@ button:disabled {
   padding: 0.5rem 1rem;
   margin-top: 0.3rem;
   font-size: 0.9rem;
+}
+
+.monster-info-block {
+  display: inline-block;
+  white-space: nowrap;
+  margin-right: 0.25rem;
 }
 </style> 

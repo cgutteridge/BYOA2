@@ -274,4 +274,21 @@
   100% {
     box-shadow: 0 0 20px rgba(173, 216, 230, 0.7);
   }
+}
+
+/* Special styling for obsidian elementals */
+.monster-card[class*="obsidian"] {
+  animation: obsidian-pulse 3s infinite alternate;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%) !important;
+}
+
+@keyframes obsidian-pulse {
+  0% {
+    box-shadow: 0 0 10px rgba(50, 50, 50, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(50, 50, 50, 0.8);
+  }
 } 

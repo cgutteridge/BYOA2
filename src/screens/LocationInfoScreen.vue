@@ -184,6 +184,8 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
     classes['water-monster'] = true
   } else if (monster.id.includes('ice') || monster.id.includes('frost') || monster.id.includes('glacial')) {
     classes['ice-monster'] = true
+  } else if (monster.id.includes('obsidian')) {
+    classes['obsidian-monster'] = true
   }
   
   return classes
