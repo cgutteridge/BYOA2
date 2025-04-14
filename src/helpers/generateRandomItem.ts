@@ -124,7 +124,6 @@ export function generateRandomItem(level: number): Item {
   const item: Item = {
     id: `random_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
     name: generateItemName(selectedPower, defaultTargetMode),
-    description: generateItemDescription(selectedPower, defaultTargetMode),
     uses: 1,
     power: selectedPower,
     level: level,
@@ -266,10 +265,7 @@ export function generateRandomItem(level: number): Item {
   // Update the name to match the final target mode
   item.name = generateItemName(selectedPower, item.target);
   
-  // Generate the item description
-  item.description = generateItemDescription(selectedPower, item.target);
-  
-  // Generate the effect description
+  // Generate the effect description (but not the item description)
   item.effectDescription = generateEffectDescription(item);
   
   return item;
@@ -341,43 +337,6 @@ function generateItemName(power: ItemPower, targetMode?: string): string {
 }
 
 /**
- * Generate a description for an item based on its power
- */
-function generateItemDescription(power: ItemPower, targetMode?: TargetMode): string {
-  switch (power) {
-    case 'kill':
-      if (targetMode === 'random_type' || targetMode === 'pick_type') {
-        return 'Instantly defeats all monsters of the same type in the current location.';
-      }
-      return 'Instantly defeats a monster in the current location.';
-    case 'transmute':
-      if (targetMode === 'random_type' || targetMode === 'pick_type') {
-        return 'Transforms all monsters of the same type in the current location.';
-      }
-      return 'Transforms a monster in the current location.';
-    case 'shrink':
-      if (targetMode === 'random_type' || targetMode === 'pick_type') {
-        return 'Reduces all powerful monsters of the same type to a weaker form.';
-      }
-      return 'Reduces a powerful monster to a weaker form.';
-    case 'split':
-      if (targetMode === 'random_type' || targetMode === 'pick_type') {
-        return 'Splits all grunt monsters of the same type into weaker minions.';
-      }
-      return 'Splits a grunt monster into weaker minions.';
-    case 'pickpocket':
-      if (targetMode === 'random_type' || targetMode === 'pick_type') {
-        return 'Steals items from all monsters of the same type without engaging in combat.';
-      }
-      return 'Steals an item from a monster without engaging in combat.';
-    case 'banish':
-      return 'Immediately removes a monster from the location without yielding any loot.';
-    default:
-      return 'Instantly defeats a single target monster.';
-  }
-}
-
-/**
  * Generate test items for each level (1-6)
  * For debugging and testing purposes
  */
@@ -403,7 +362,6 @@ export function logItemDetails(item: Item): void {
   console.log(`Quality: ${getLevelQualityTerm(item.level)} (Level ${item.level})`);
   console.log(`Power: ${item.power}`);
   console.log(`Uses: ${item.uses || 1}`);
-  console.log(`Description: ${item.description}`);
   console.log(`Effect: ${item.effectDescription || 'None'}`);
   console.log(`Target mode: ${item.target || 'none'}`);
   
