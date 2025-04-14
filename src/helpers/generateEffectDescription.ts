@@ -27,44 +27,43 @@ export function getUsesDescription(item: Item): string {
  * Get a description of the item's target options
  */
 export function getTargetDescription(item: Item): string {
-  let effect = '';
-  
-  // Add targeting scope
-  if (item.targetScope) {
-    switch (item.targetScope) {
-      case 'one':
-        effect += " a single monster";
-        break;
-      case 'type':
-        effect += " all monsters of the same type in the current location";
-        break;
-    }
-  } else {
-    effect += " a single monster";
-  }
+  let filterDescription = '';
+  let selectionMethod = '';
   
   // Add target filters if present
   if (item.targetFilters) {
     const filters = [];
     
     if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
-      filters.push(`${item.targetFilters.levels.join('/')} level`);
+      filters.push(item.targetFilters.levels.join('/'));
     }
     
     if (item.targetFilters.species && item.targetFilters.species.length > 0) {
-      filters.push(`${item.targetFilters.species.join('/')} species`);
+      filters.push(item.targetFilters.species.join('/'));
     }
     
     if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
-      filters.push(`${item.targetFilters.flags.join('/')} type`);
+      filters.push(item.targetFilters.flags.join('/'));
     }
     
     if (filters.length > 0) {
-      effect += ` (works on ${filters.join(', ')})`;
+      filterDescription += filters.join(', ');
     }
   }
+
+  // Determine selection method based on target mode
+  if (item.target === 'pick' || item.target === 'pick_type') {
+    selectionMethod = 'chosen';
+  } else {
+    selectionMethod = 'random';
+  }
   
-  return effect;
+  // Type vs single target based on target mode
+  if (item.target === 'random_type' || item.target === 'pick_type') {
+    return `all ${filterDescription} enemies of one ${selectionMethod} type`;
+  }
+  
+  return `a ${selectionMethod} ${filterDescription} enemy`;
 }
 
 /**
@@ -77,10 +76,10 @@ export function getResultDescription(item: Item): string {
   
   switch (item.result) {
     case 'random':
-      effect += " Transforms target into a random monster of the same level.";
+      effect += "a random enemy of the same level";
       break;
     case 'pick':
-      effect += " User chooses what monster to transform target into (same level).";
+      effect += "a chosen enemy of the same level";
       break;
   }
   
@@ -107,8 +106,9 @@ export function generateEffectDescription(item: Item): string {
     case 'transmute':
       effect = `This ${qualityTerm} item transforms`;
       effect += getTargetDescription(item);
-      effect += ".";
+      effect += " into ";
       effect += getResultDescription(item);
+      effect += ".";
       break;
       
     case 'shrink':

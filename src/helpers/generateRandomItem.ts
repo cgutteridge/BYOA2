@@ -1,4 +1,4 @@
-import type { Item, ItemPower, TargetScope } from '../types/item';
+import type { Item, ItemPower, TargetMode } from '../types/item';
 import type { MonsterLevel, Species, MonsterFlag } from '../types';
 import { generateEffectDescription, getLevelQualityTerm } from './generateEffectDescription';
 
@@ -28,8 +28,8 @@ const CAN_HAVE_TARGET_RESTRICTION: Record<ItemPower, boolean> = {
   banish: true
 };
 
-// Which powers support target scope upgrades
-const SUPPORTS_TARGET_SCOPE: Record<ItemPower, boolean> = {
+// Which powers support type targeting
+const SUPPORTS_TYPE_TARGETING: Record<ItemPower, boolean> = {
   kill: true,
   transmute: true,
   scout_500: false,
@@ -41,17 +41,17 @@ const SUPPORTS_TARGET_SCOPE: Record<ItemPower, boolean> = {
   banish: true
 };
 
-// Default target scope for each power
-const DEFAULT_TARGET_SCOPE: Record<ItemPower, TargetScope> = {
-  kill: 'one',
-  transmute: 'one',
+// Default target modes for each power
+const DEFAULT_TARGET_MODE: Record<ItemPower, TargetMode> = {
+  kill: 'random',
+  transmute: 'random',
   scout_500: undefined,
   scout_1000: undefined,
   scout_any: undefined,
-  shrink: 'one',
-  split: 'one',
-  pickpocket: 'one',
-  banish: 'one'
+  shrink: 'random',
+  split: 'random',
+  pickpocket: 'random',
+  banish: 'random'
 };
 
 // Which powers can have result restrictions
@@ -117,19 +117,18 @@ export function generateRandomItem(level: number): Item {
   const selectedPower = randomChoice(availablePowers);
   remainingPoints -= POWER_BASE_COSTS[selectedPower];
   
-  // Set default target scope
-  const targetScope = DEFAULT_TARGET_SCOPE[selectedPower];
+  // Get default target mode
+  const defaultTargetMode = DEFAULT_TARGET_MODE[selectedPower] as TargetMode;
   
   // Initialize item with default properties
   const item: Item = {
     id: `random_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-    name: generateItemName(selectedPower, targetScope),
-    description: generateItemDescription(selectedPower),
+    name: generateItemName(selectedPower, defaultTargetMode),
+    description: generateItemDescription(selectedPower, defaultTargetMode),
     uses: 1,
     power: selectedPower,
     level: level,
-    target: 'random',
-    targetScope: targetScope,
+    target: defaultTargetMode,
     targetFilters: {
       levels: ['minion', 'grunt'] as MonsterLevel[],
     }
@@ -182,17 +181,13 @@ export function generateRandomItem(level: number): Item {
       availableUpgrades.push('result_restriction');
     }
     
-    // Upgrade target mode from random to pick (+1 point)
-    if (item.target === 'random') {
-      availableUpgrades.push('target_mode');
-    }
-    
-    // Upgrade target scope (type/race/all) if supported by this power (+1 point per level)
-    if (SUPPORTS_TARGET_SCOPE[selectedPower] && item.targetScope) {
-      // Points cost: one -> type = 1 point
-      if (item.targetScope === 'one' && remainingPoints >= 1) {
-        availableUpgrades.push('scope_type');
-      }
+    // Target mode upgrade path: random -> pick -> random_type -> pick_type (+1 point each)
+    if (item.target === 'random' && remainingPoints >= 1) {
+      availableUpgrades.push('upgrade_to_pick');
+    } else if (item.target === 'pick' && remainingPoints >= 1 && SUPPORTS_TYPE_TARGETING[selectedPower]) {
+      availableUpgrades.push('upgrade_to_random_type');
+    } else if (item.target === 'random_type' && remainingPoints >= 1) {
+      availableUpgrades.push('upgrade_to_pick_type');
     }
     
     // Increase monster level targeting
@@ -232,24 +227,22 @@ export function generateRandomItem(level: number): Item {
         remainingPoints -= 1;
         break;
         
-      case 'target_mode':
-        // Upgrade to player choice
+      case 'upgrade_to_pick':
+        // Upgrade from random to pick (single target)
         item.target = 'pick';
         remainingPoints -= 1;
         break;
         
-      case 'scope_type':
-        // Upgrade from one to type
-        item.targetScope = 'type';
+      case 'upgrade_to_random_type':
+        // Upgrade from pick to random_type
+        item.target = 'random_type';
         remainingPoints -= 1;
         break;
         
-      case 'scope_race':
-        // No longer supported
-        break;
-        
-      case 'scope_all':
-        // No longer supported
+      case 'upgrade_to_pick_type':
+        // Upgrade from random_type to pick_type
+        item.target = 'pick_type';
+        remainingPoints -= 1;
         break;
         
       case 'level_elite':
@@ -270,56 +263,16 @@ export function generateRandomItem(level: number): Item {
     }
   }
   
-  // After upgrades, update the name to match the final scope
-  if (item.targetScope !== targetScope) {
-    item.name = generateItemName(selectedPower, item.targetScope);
-  }
+  // Update the name to match the final target mode
+  item.name = generateItemName(selectedPower, item.target);
   
-  // Adjust the item description based on its final scope
-  item.description = generateFinalDescription(item);
+  // Generate the item description
+  item.description = generateItemDescription(selectedPower, item.target);
   
   // Generate the effect description
   item.effectDescription = generateEffectDescription(item);
   
   return item;
-}
-
-/**
- * Generate a final description based on item's power and target scope
- */
-function generateFinalDescription(item: Item): string {
-  if (!item.power) return item.description;
-
-  const baseDescription = generateItemDescription(item.power);
-  
-  // For scout powers, no need to adjust
-  if (item.power.startsWith('scout_')) {
-    return baseDescription;
-  }
-  
-  // Adjust description based on target scope for powers that can target different scopes
-  if (item.targetScope) {
-    switch (item.targetScope) {
-      case 'one':
-        return baseDescription; // Default is already targeting one
-        
-      case 'type':
-        if (item.power === 'kill') {
-          return 'Instantly defeats all monsters of the same type in the current location.';
-        } else if (item.power === 'transmute') {
-          return 'Transforms all monsters of the same type in the current location.';
-        } else if (item.power === 'shrink') {
-          return 'Reduces all powerful monsters of the same type to a weaker form.';
-        } else if (item.power === 'split') {
-          return 'Splits all grunt monsters of the same type into weaker minions.';
-        } else if (item.power === 'pickpocket') {
-          return 'Steals items from all monsters of the same type without engaging in combat.';
-        }
-        break;
-    }
-  }
-  
-  return baseDescription;
 }
 
 /**
@@ -345,9 +298,9 @@ function randomChoice<T>(array: T[]): T {
 }
 
 /**
- * Generate a random name for the item based on its power and scope
+ * Generate a random name for the item based on its power and target mode
  */
-function generateItemName(power: ItemPower, targetScope?: TargetScope): string {
+function generateItemName(power: ItemPower, targetMode?: string): string {
   const prefixes = [
     'Ancient', 'Mystical', 'Enchanted', 'Arcane', 'Magical',
     'Cursed', 'Blessed', 'Sacred', 'Demonic', 'Celestial',
@@ -367,41 +320,61 @@ function generateItemName(power: ItemPower, targetScope?: TargetScope): string {
     banish: ['Banishment Scroll', 'Ethereal Disruptor', 'Void Talisman', 'Dimensional Shifter']
   };
   
-  // Scope modifiers
-  const scopeModifiers: Record<string, string[]> = {
-    one: ['Focused', 'Precise', 'Single-Target', 'Selective'],
-    type: ['Type-Seeking', 'Kind-Hunting', 'Variant-Tracking', 'Species-Wide']
+  // Mode modifiers
+  const modeModifiers: Record<string, string[]> = {
+    random: ['Focused', 'Precise', 'Single-Target', 'Selective'],
+    pick: ['Discerning', 'Chooser\'s', 'Hunter\'s', 'Selective'],
+    random_type: ['Type-Seeking', 'Kind-Hunting', 'Variant-Tracking', 'Species-Wide'],
+    pick_type: ['Type-Choosing', 'Group-Targeting', 'Master', 'Family-Hunting']
   };
   
   const prefix = randomChoice(prefixes);
   const baseName = randomChoice(baseNames[power]);
   
-  // Add scope modifier for powers that can have different scopes
-  if (targetScope && SUPPORTS_TARGET_SCOPE[power] && targetScope !== 'one') {
-    const scopeModifier = randomChoice(scopeModifiers[targetScope]);
-    return `${prefix} ${scopeModifier} ${baseName}`;
+  // Add mode modifier if this is a type targeting or pick mode
+  if (targetMode && targetMode !== 'random' && SUPPORTS_TYPE_TARGETING[power]) {
+    const modeModifier = randomChoice(modeModifiers[targetMode]);
+    return `${prefix} ${modeModifier} ${baseName}`;
   }
   
   return `${prefix} ${baseName}`;
 }
 
 /**
- * Generate a brief description of the item's power
+ * Generate a description for an item based on its power
  */
-function generateItemDescription(power: ItemPower): string {
-  const descriptions: Record<ItemPower, string> = {
-    kill: 'Instantly defeats a single target monster.',
-    transmute: 'Transforms a single target monster into another type.',
-    scout_500: 'Reveals pubs within 500 meters.',
-    scout_1000: 'Reveals pubs within 1000 meters.',
-    scout_any: 'Reveals all pubs in the area.',
-    shrink: 'Reduces a single powerful monster to a weaker form.',
-    split: 'Splits a single grunt monster into two weaker minions.',
-    pickpocket: 'Steals an item from a single target monster without engaging in combat.',
-    banish: 'Immediately removes a monster from the location without yielding any loot.'
-  };
-  
-  return descriptions[power];
+function generateItemDescription(power: ItemPower, targetMode?: TargetMode): string {
+  switch (power) {
+    case 'kill':
+      if (targetMode === 'random_type' || targetMode === 'pick_type') {
+        return 'Instantly defeats all monsters of the same type in the current location.';
+      }
+      return 'Instantly defeats a monster in the current location.';
+    case 'transmute':
+      if (targetMode === 'random_type' || targetMode === 'pick_type') {
+        return 'Transforms all monsters of the same type in the current location.';
+      }
+      return 'Transforms a monster in the current location.';
+    case 'shrink':
+      if (targetMode === 'random_type' || targetMode === 'pick_type') {
+        return 'Reduces all powerful monsters of the same type to a weaker form.';
+      }
+      return 'Reduces a powerful monster to a weaker form.';
+    case 'split':
+      if (targetMode === 'random_type' || targetMode === 'pick_type') {
+        return 'Splits all grunt monsters of the same type into weaker minions.';
+      }
+      return 'Splits a grunt monster into weaker minions.';
+    case 'pickpocket':
+      if (targetMode === 'random_type' || targetMode === 'pick_type') {
+        return 'Steals items from all monsters of the same type without engaging in combat.';
+      }
+      return 'Steals an item from a monster without engaging in combat.';
+    case 'banish':
+      return 'Immediately removes a monster from the location without yielding any loot.';
+    default:
+      return 'Instantly defeats a single target monster.';
+  }
 }
 
 /**
@@ -433,7 +406,6 @@ export function logItemDetails(item: Item): void {
   console.log(`Description: ${item.description}`);
   console.log(`Effect: ${item.effectDescription || 'None'}`);
   console.log(`Target mode: ${item.target || 'none'}`);
-  console.log(`Target scope: ${item.targetScope || 'none'}`);
   
   if (item.targetFilters) {
     if (item.targetFilters.levels) {

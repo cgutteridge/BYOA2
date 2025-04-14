@@ -13,10 +13,7 @@ export type ItemPower =
   | 'banish';  // Removes monster without getting any loot
 
 // Target modes - how the target is selected
-export type TargetMode = 'pick' | 'random' | undefined;
-
-// Target scopes - what is targeted
-export type TargetScope = 'one' | 'type' | undefined;
+export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | undefined;
 
 // Result modes
 export type ResultMode = 'random' | 'pick' | undefined;
@@ -31,7 +28,6 @@ export interface Item {
   level: number
   power: ItemPower
   target?: TargetMode
-  targetScope?: TargetScope
   targetFilters?: {
     species?: Species[]
     levels?: MonsterLevel[]
