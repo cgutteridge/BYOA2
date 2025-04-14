@@ -146,7 +146,8 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {itemTypesById, getItemTypesByLevel} from "../data/itemTypes";
-import {Monster, ItemTypeId} from "../types";
+import {Monster} from "../types";
+import {Item, ItemPower} from "../types/item";
 import {areAllMonstersDefeated, toggleMonsterStatus, claimMonsterItem} from "../helpers/combatHelper";
 import '../styles/monsterStyles.css';
 import { computed } from 'vue';
@@ -274,65 +275,29 @@ function claimPrizeItem() {
   if (areAllMonstersDefeated.value && questStore.currentPub?.prizeItem) {
     const prizeItem = questStore.currentPub.prizeItem;
     
-    // Convert to EnhancedItem format
-    const enhancedItem = {
-      id: `prize_${Date.now()}`,
-      name: prizeItem.name,
-      description: prizeItem.power,
-      story: prizeItem.description || '',
-      uses: prizeItem.uses,
-      power: convertPrizeItemToPower(prizeItem.type, prizeItem.level)
-    };
-    
     // Add to inventory
-    inventoryStore.addItem(enhancedItem);
+    inventoryStore.addItem(prizeItem);
     
     // Remove from pub
     delete questStore.currentPub.prizeItem;
     
     // Show notification
-    appStore.addNotification(`Prize ${enhancedItem.name} added to inventory!`, 'success');
+    appStore.addNotification(`Prize ${prizeItem.name} added to inventory!`, 'success');
   }
-}
-
-function convertPrizeItemToPower(type: string, level: number) {
-  // Simple mapping based on item type and level
-  if (type === 'kill') {
-    return level >= 3 ? 'kill_all' : 'kill_one';
-  } else if (type === 'transmute') {
-    return level >= 3 ? 'transmute_all' : 'transmute_one';
-  } else if (type === 'scout') {
-    if (level >= 4) return 'scout_any';
-    if (level >= 3) return 'scout_1000';
-    return 'scout_500';
-  }
-  
-  // Try to use the type directly if it matches a power
-  return type;
 }
 
 function claimGiftItem() {
   if (questStore.currentPub?.giftItem) {
     const giftItem = questStore.currentPub.giftItem;
     
-    // Convert to EnhancedItem format
-    const enhancedItem = {
-      id: `gift_${Date.now()}`,
-      name: giftItem.name,
-      description: giftItem.power,
-      story: giftItem.description || '',
-      uses: giftItem.uses,
-      power: convertPrizeItemToPower(giftItem.type, giftItem.level)
-    };
-    
     // Add to inventory
-    inventoryStore.addItem(enhancedItem);
+    inventoryStore.addItem(giftItem);
     
     // Remove from pub
     delete questStore.currentPub.giftItem;
     
     // Show notification
-    appStore.addNotification(`Gift ${enhancedItem.name} added to inventory!`, 'success');
+    appStore.addNotification(`Gift ${giftItem.name} added to inventory!`, 'success');
   }
 }
 </script>

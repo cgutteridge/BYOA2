@@ -1,3 +1,5 @@
+import { Item, ItemPower } from './item'
+
 export interface Location {
   lat: number
   lng: number
@@ -42,7 +44,7 @@ export type Encounter = {
 
 export type Species = "vampire"|"ghost"|"human"|"chameleonoid"|"goblinoid"|"elf"|"demonoid"|"dwarf"|"special"|"fey"|"elemental"
 export type MonsterLevel  = "minion"|"grunt"|"elite"|"boss"
-export type MonsterFlag = "spirit"|"undead"|"mortal"|"magic-user"|"group"
+export type MonsterFlag = "spirit"|"undead"|"mortal"|"magic-user"|"group"|"fey"
 export type LocationDifficulty = "start" | "easy" | "medium" | "hard" | "end"
 
 export interface MonsterType {
@@ -77,30 +79,8 @@ export type QuestState = 'no_quest' | 'active' | 'completed'
 
 export type GPSStatus = 'initializing' | 'loading' | 'success' | 'error' 
 
-export type ItemTypeId = 
-  | 'healing' 
-  | 'transmute' 
-  | 'kill'
-  | 'scout_500'
-  | 'scout_1000'
-  | 'scout_any'
-  | 'shrink'
-  | 'split'
-  | 'pickpocket'
-
-export interface Item {
-  id?: string
-  type: ItemTypeId
-  target?: string
-  name: string
-  power: string
-  description?: string
-  uses: number
-  level: number
-}
-
 export interface ItemType {
-  id: ItemTypeId
+  id: ItemPower
   title: string
   power: string
   level: number

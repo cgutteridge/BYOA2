@@ -13,7 +13,7 @@
       </div>
       <div v-else class="inventory-grid">
         <div 
-          v-for="item in inventoryStore.items" 
+          v-for="item in sortedItems" 
           :key="item.id"
           class="inventory-grid__item"
         >
@@ -22,8 +22,8 @@
             :show-use-button="true"
             :show-inspect-button="true"
             :show-quantity="true"
-            @use="handleUseItem(item)"
-            @inspect="openItemInspectModal(item)"
+            @use="useItem(item)"
+            @inspect="inspectItem(item)"
           />
         </div>
         
@@ -48,35 +48,57 @@
     </div>
     
     <!-- Item Inspection Modal -->
-    <ItemInspectModal
-      :is-open="isItemModalOpen"
+    <InventoryModal
+      :is-open="showModal"
       :item="selectedItem"
       context="inventory"
-      @close="closeItemInspectModal"
-      @use="handleUseItemFromModal"
+      @close="closeModal"
+      @use="useItem"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useAppStore } from "../stores/appStore"
 import { useInventoryStore } from "../stores/inventoryStore"
 import { getRandomSampleItem } from "../data/sampleItems"
 import ItemCard from "../components/ItemCard.vue"
-import ItemInspectModal from "../components/ItemInspectModal.vue"
-import type { InventoryItem, EnhancedItem } from '../types/item'
+import InventoryModal from "../components/InventoryModal.vue"
+import type { Item } from '../types/item'
 import { generateTestItems, logItemDetails } from '../helpers/generateRandomItem'
 
 const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
 
 // State for item inspection modal
-const isItemModalOpen = ref(false)
-const selectedItem = ref<EnhancedItem>({
-  id: '',
-  name: '',
-  description: ''
+const showModal = ref(false)
+const selectedItem = ref<Item | null>(null)
+
+const inspectItem = (item: Item) => {
+  selectedItem.value = item
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+  selectedItem.value = null
+}
+
+const useItem = (item: Item) => {
+  inventoryStore.useItem(item.id)
+}
+
+// Sort items by level and then by name
+const sortedItems = computed(() => {
+  return [...inventoryStore.inventory].sort((a, b) => {
+    // First by level descending
+    if (b.level !== a.level) {
+      return b.level - a.level
+    }
+    // Then by name ascending
+    return a.name.localeCompare(b.name)
+  })
 })
 
 function continueToMap() {
@@ -97,27 +119,6 @@ function clearItems() {
 
 function toggleModal() {
   appStore.toggleInventory()
-}
-
-function handleUseItem(item: InventoryItem) {
-  console.log('Using item from card:', item.name)
-  // This will be implemented in later stages
-  inventoryStore.useItem(item.id)
-}
-
-function openItemInspectModal(item: InventoryItem) {
-  selectedItem.value = item
-  isItemModalOpen.value = true
-}
-
-function closeItemInspectModal() {
-  isItemModalOpen.value = false
-}
-
-function handleUseItemFromModal(item: EnhancedItem) {
-  console.log('Using item from modal:', item.name)
-  // This will be implemented in later stages
-  inventoryStore.useItem(item.id)
 }
 
 function testItemGeneration() {

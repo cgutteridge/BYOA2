@@ -1,8 +1,8 @@
 import { useQuestStore } from '@/stores/questStore';
 import { useInventoryStore } from '@/stores/inventoryStore';
 import { monsterTypes } from '@/data/monsterTypes';
-import { Monster, Item, ItemTypeId } from '@/types';
-import type { EnhancedItem, ItemPower, TargetScope } from '@/types/item';
+import { Monster } from '@/types';
+import { Item, ItemPower, TargetScope } from '@/types/item';
 import { generateRandomItem } from './generateRandomItem';
 
 /**
@@ -71,22 +71,12 @@ function generateMonsterDrop(monster: Monster, monsterLevel: string): void {
 
   // Determine if monster drops an item
   if (Math.random() < dropChance) {
-    // Use our new random item generator
-    const enhancedItem = generateRandomItem(itemLevel);
+    // Generate a random item
+    const item = generateRandomItem(itemLevel);
     
-    // Convert to simple Item format for storage on the monster
-    const itemForMonster: Item = {
-      id: enhancedItem.id,
-      type: enhancedItem.power as ItemTypeId,
-      name: enhancedItem.name,
-      power: enhancedItem.description,
-      description: '', // Empty description since we no longer generate stories
-      uses: enhancedItem.uses || 1,
-      level: itemLevel,
-    };
-    
-    monster.item = itemForMonster;
-    console.log(`Generated item ${itemForMonster.name} for ${monster.name}`);
+    // Assign the item to the monster
+    monster.item = item;
+    console.log(`Generated item ${item.name} for ${monster.name}`);
   }
 }
 
@@ -110,22 +100,15 @@ export function claimMonsterItem(monster: Monster): boolean {
   if (!monster.alive && monster.item) {
     const inventoryStore = useInventoryStore();
     
-    // Convert standard Item to EnhancedItem format
-    const enhancedItem: EnhancedItem = {
-      id: monster.item.id || `${monster.type}_${Date.now()}`, // Use existing ID or generate new one
-      name: monster.item.name,
-      description: monster.item.power,
-      uses: monster.item.uses,
-      power: convertItemType(monster.item.type),
-      targetScope: getTargetScopeFromItemType(monster.item.type)
-    };
+    const itemName = monster.item.name; // Store name before removal
     
-    inventoryStore.addItem(enhancedItem);
+    // Add the item directly to inventory
+    inventoryStore.addItem(monster.item);
     
     // Remove the item from the monster
     delete monster.item;
     
-    console.log(`Claimed item ${enhancedItem.name} from ${monster.name}`);
+    console.log(`Claimed item ${itemName} from ${monster.name}`);
     return true;
   }
   
@@ -133,41 +116,36 @@ export function claimMonsterItem(monster: Monster): boolean {
 }
 
 /**
- * Convert old item types to new power types
+ * Banishes a monster from the location without getting any loot
+ * @param monster - The monster to banish
+ * @returns True if monster was successfully banished
  */
-function convertItemType(type: string): ItemPower {
-  switch (type) {
-    case 'kill_one':
-    case 'kill_all':
-    case 'kill':
-      return 'kill';
-    case 'transmute_one':
-    case 'transmute_all':
-    case 'transmute':
-      return 'transmute';
-    case 'scout_500':
-      return 'scout_500';
-    case 'scout_1000':
-      return 'scout_1000';
-    case 'scout_any':
-      return 'scout_any';
-    case 'shrink':
-      return 'shrink';
-    case 'split':
-      return 'split';
-    case 'pickpocket':
-      return 'pickpocket';
-    default:
-      return 'kill'; // Default fallback
+export function banishMonster(monster: Monster): boolean {
+  if (!monster.alive) {
+    console.log(`${monster.name} is already defeated and cannot be banished.`);
+    return false;
   }
-}
-
-/**
- * Get target scope from old item type
- */
-function getTargetScopeFromItemType(type: string): TargetScope {
-  if (type === 'kill_all' || type === 'transmute_all') {
-    return 'all';
+  
+  // Find the monster type to get XP value (needed for stats tracking)
+  const monsterType = monsterTypes.find(m => m.id === monster.type);
+  if (monsterType) {
+    // Add XP for defeating the monster
+    const questStore = useQuestStore();
+    questStore.addXP(monsterType.xp);
+    console.log(`Added ${monsterType.xp} XP for banishing ${monster.name}`);
   }
-  return 'one'; // Default to targeting a single entity
+  
+  // Mark the monster as defeated but don't process any drops
+  monster.alive = false;
+  
+  // If the monster had an item, it's lost forever
+  if (monster.item) {
+    console.log(`${monster.name} was banished with ${monster.item.name}, which is now lost forever.`);
+    // The item is intentionally not collected
+    delete monster.item;
+  } else {
+    console.log(`${monster.name} was banished from the realm.`);
+  }
+  
+  return true;
 } 

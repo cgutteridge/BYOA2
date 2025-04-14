@@ -50,20 +50,20 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
-import type { EnhancedItem } from '../types/item'
+import type { Item } from '../types/item'
 import { getTargetDescription } from '../powers'
 
 // Define props
 const props = defineProps<{
   isOpen: boolean
-  item: EnhancedItem
+  item: Item
   context?: 'inventory' | 'location' | 'reward'
 }>()
 
 // Define emits
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'use', item: EnhancedItem): void
+  (e: 'use', item: Item): void
 }>()
 
 // Computed properties

@@ -9,7 +9,8 @@ export type ItemPower =
   | 'scout_any' 
   | 'shrink' 
   | 'split' 
-  | 'pickpocket';
+  | 'pickpocket'
+  | 'banish';  // Removes monster without getting any loot
 
 // Target modes - how the target is selected
 export type TargetMode = 'pick' | 'random' | undefined;
@@ -20,14 +21,14 @@ export type TargetScope = 'one' | 'type' | 'race' | 'all' | undefined;
 // Result modes
 export type ResultMode = 'random' | 'pick' | 'level' | 'species' | undefined;
 
-// Enhanced Item interface
-export interface EnhancedItem {
+// Unified Item interface
+export interface Item {
   id: string
   name: string
-  description: string
-  story?: string
-  uses?: number
-  power?: ItemPower
+  description: string  // A brief description of what the item does
+  uses: number
+  level: number
+  power: ItemPower
   target?: TargetMode
   targetScope?: TargetScope
   targetFilters?: {
@@ -39,9 +40,5 @@ export interface EnhancedItem {
   resultLevel?: MonsterLevel
   resultSpecies?: Species
   icon?: string
-}
-
-// Item type for the inventory system
-export interface InventoryItem extends EnhancedItem {
-  quantity: number
+  quantity?: number  // For inventory tracking
 } 

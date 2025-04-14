@@ -1,11 +1,11 @@
-import { ItemType, ItemTypeId } from '../types'
+import { ItemType } from '../types'
 
 export const itemTypes: ItemType[] = [
   // Level 1 Items
   {
-    id: 'healing',
-    title: 'Minor Healing Potion',
-    power: 'Restores health to a single ally',
+    id: 'banish',
+    title: 'Minor Banishment Scroll',
+    power: 'Removes a single lesser monster',
     level: 1
   },
   {
@@ -23,9 +23,9 @@ export const itemTypes: ItemType[] = [
   
   // Level 2 Items
   {
-    id: 'healing',
-    title: 'Greater Healing Elixir',
-    power: 'Restores health to multiple allies',
+    id: 'banish',
+    title: 'Planar Disruptor',
+    power: 'Banishes multiple minor enemies',
     level: 2
   },
   {
@@ -43,9 +43,9 @@ export const itemTypes: ItemType[] = [
   
   // Level 3 Items
   {
-    id: 'healing',
-    title: 'Master Healer\'s Kit',
-    power: 'Fully restores all allies and removes negative effects',
+    id: 'banish',
+    title: 'Void Gate Generator',
+    power: 'Creates a temporary void gate that pulls all standard monsters into another dimension',
     level: 3
   },
   {
@@ -63,9 +63,9 @@ export const itemTypes: ItemType[] = [
   
   // Level 4 Items
   {
-    id: 'healing',
-    title: 'Phoenix Tears',
-    power: 'Resurrects all fallen allies with full health and grants temporary invulnerability',
+    id: 'banish',
+    title: 'Dimensional Anchor',
+    power: 'Permanently banishes any monster, including bosses, without leaving a trace',
     level: 4
   },
   {
@@ -83,7 +83,7 @@ export const itemTypes: ItemType[] = [
   
   // Level 5 Items
   {
-    id: 'healing',
+    id: 'banish',
     title: 'Divine Restoration',
     power: 'Grants immortality to the entire party for a limited duration and enhances all abilities',
     level: 5
@@ -103,16 +103,16 @@ export const itemTypes: ItemType[] = [
 ]
 
 // Helper function to get item types by level and type
-export function getItemTypesByLevel(level: number, type?: ItemTypeId): ItemType[] {
+export function getItemTypesByLevel(level: number, type?: string): ItemType[] {
   return itemTypes.filter(item => 
     item.level === level && (type ? item.id === type : true)
   );
 }
 
-export const itemTypesList: ItemTypeId[] = Array.from(new Set(itemTypes.map(itemType => itemType.id)))
+export const itemTypesList: string[] = Array.from(new Set(itemTypes.map(itemType => itemType.id)))
 
 // Note: This now only contains one entry per item type ID (the last one in the list)
-export const itemTypesById: Record<ItemTypeId, ItemType> = itemTypes.reduce((acc, itemType) => {
+export const itemTypesById: Record<string, ItemType> = itemTypes.reduce((acc, itemType) => {
   acc[itemType.id] = itemType
   return acc
-}, {} as Record<ItemTypeId, ItemType>) 
+}, {} as Record<string, ItemType>) 

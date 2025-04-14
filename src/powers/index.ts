@@ -1,15 +1,19 @@
-import type { EnhancedItem } from '../types/item'
+import type { Item } from '../types/item'
 import type { Monster } from '../types'
 import type { PowerFunction, PowerResult } from './types'
+import { banish } from './banish'
 
-// This will be populated with power implementations in later stages
-const powerFunctions: Record<string, PowerFunction> = {}
+// Register all power implementations
+const powerFunctions: Record<string, PowerFunction> = {
+  banish
+  // Other power implementations will be added here
+}
 
 /**
  * Execute a power with the given item and target
  */
 export function executePower(
-  item: EnhancedItem, 
+  item: Item, 
   target?: Monster | string | any
 ): PowerResult {
   // Default result
@@ -58,7 +62,7 @@ export function executePower(
  * Check if an item can target the specified target
  */
 export function canTargetWith(
-  item: EnhancedItem, 
+  item: Item, 
   target?: Monster | string | any
 ): boolean {
   if (!item.power) return false
@@ -75,7 +79,7 @@ export function canTargetWith(
  * Get valid targets for an item
  */
 export function getValidTargets(
-  item: EnhancedItem
+  item: Item
 ): Monster[] | string[] | any[] {
   if (!item.power) return []
   
@@ -90,7 +94,7 @@ export function getValidTargets(
 /**
  * Get a description of what targets an item can affect
  */
-export function getTargetDescription(item: EnhancedItem): string {
+export function getTargetDescription(item: Item): string {
   if (!item.power) return 'This item has no power.'
   
   const powerFunction = powerFunctions[item.power]

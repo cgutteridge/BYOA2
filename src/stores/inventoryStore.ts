@@ -1,22 +1,22 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { InventoryItem, EnhancedItem } from '../types/item'
+import type { Item } from '../types/item'
 
 export const useInventoryStore = defineStore('inventory', () => {
   // State
-  const items = ref<InventoryItem[]>([])
+  const items = ref<Item[]>([])
   const persist = ref(['items']) // Add this to persist items between sessions
 
   // Getters
   const hasItems = computed(() => items.value.length > 0)
-  const itemCount = computed(() => items.value.reduce((total, item) => total + item.quantity, 0))
+  const itemCount = computed(() => items.value.reduce((total, item) => total + (item.quantity || 1), 0))
   
   // Actions
-  function addItem(newItem: EnhancedItem, quantity = 1) {
+  function addItem(newItem: Item, quantity = 1) {
     const existingItem = items.value.find(item => item.id === newItem.id)
     
     if (existingItem) {
-      existingItem.quantity += quantity
+      existingItem.quantity = (existingItem.quantity || 1) + quantity
     } else {
       items.value.push({
         ...newItem,
@@ -31,8 +31,8 @@ export const useInventoryStore = defineStore('inventory', () => {
     if (index !== -1) {
       const item = items.value[index]
       
-      if (item.quantity > quantity) {
-        item.quantity -= quantity
+      if ((item.quantity || 1) > quantity) {
+        item.quantity = (item.quantity || 1) - quantity
       } else {
         items.value.splice(index, 1)
       }

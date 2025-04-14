@@ -1,4 +1,4 @@
-import type { EnhancedItem, ItemPower, TargetMode, ResultMode, TargetScope } from '@/types/item';
+import type { Item, ItemPower, TargetMode, ResultMode, TargetScope } from '@/types/item';
 import type { MonsterLevel, Species, MonsterFlag } from '@/types';
 
 // Base point costs for different power types
@@ -10,7 +10,8 @@ const POWER_BASE_COSTS: Record<ItemPower, number> = {
   scout_any: 3,
   shrink: 2,
   split: 1,
-  pickpocket: 2
+  pickpocket: 2,
+  banish: 1
 };
 
 // Which powers can have target restrictions
@@ -22,7 +23,8 @@ const CAN_HAVE_TARGET_RESTRICTION: Record<ItemPower, boolean> = {
   scout_any: false,
   shrink: true,
   split: true,
-  pickpocket: true
+  pickpocket: true,
+  banish: true
 };
 
 // Which powers support target scope upgrades
@@ -34,7 +36,8 @@ const SUPPORTS_TARGET_SCOPE: Record<ItemPower, boolean> = {
   scout_any: false,
   shrink: true,
   split: true,
-  pickpocket: true
+  pickpocket: true,
+  banish: true
 };
 
 // Default target scope for each power
@@ -46,7 +49,8 @@ const DEFAULT_TARGET_SCOPE: Record<ItemPower, TargetScope> = {
   scout_any: undefined,
   shrink: 'one',
   split: 'one',
-  pickpocket: 'one'
+  pickpocket: 'one',
+  banish: 'one'
 };
 
 // Which powers can have result restrictions
@@ -58,7 +62,8 @@ const CAN_HAVE_RESULT_RESTRICTION: Record<ItemPower, boolean> = {
   scout_any: false,
   shrink: false,
   split: false,
-  pickpocket: false
+  pickpocket: false,
+  banish: false
 };
 
 // Which powers are restricted to certain monster levels
@@ -71,7 +76,8 @@ const LEVEL_RESTRICTIONS: Record<ItemPower, LevelRestriction> = {
   scout_any: null,
   shrink: ['elite', 'boss'], // Shrink only works on elite and boss
   split: ['grunt'], // Split only works on grunts
-  pickpocket: null
+  pickpocket: null,
+  banish: null
 };
 
 // Available species for targeting
@@ -90,7 +96,7 @@ const AVAILABLE_FLAGS: MonsterFlag[] = [
  * @param level Item level (1-6)
  * @returns A random item with appropriate properties for the level
  */
-export function generateRandomItem(level: number): EnhancedItem {
+export function generateRandomItem(level: number): Item {
   // Convert level 1-6 to points
   const totalPoints = levelToPoints(level);
   
@@ -114,13 +120,14 @@ export function generateRandomItem(level: number): EnhancedItem {
   const targetScope = DEFAULT_TARGET_SCOPE[selectedPower];
   
   // Initialize item with default properties
-  const item: EnhancedItem = {
+  const item: Item = {
     id: `random_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
     name: generateItemName(selectedPower, targetScope),
     description: generateItemDescription(selectedPower),
     uses: 1,
     power: selectedPower,
-    target: 'random' as TargetMode,
+    level: level,
+    target: 'random',
     targetScope: targetScope,
     targetFilters: {
       levels: ['minion', 'grunt'] as MonsterLevel[],
@@ -291,7 +298,7 @@ export function generateRandomItem(level: number): EnhancedItem {
 /**
  * Generate a final description based on item's power and target scope
  */
-function generateFinalDescription(item: EnhancedItem): string {
+function generateFinalDescription(item: Item): string {
   if (!item.power) return item.description;
 
   const baseDescription = generateItemDescription(item.power);
@@ -395,7 +402,8 @@ function generateItemName(power: ItemPower, targetScope?: TargetScope): string {
     scout_any: ['All-seeing Eye', 'Omniscient Orb', 'Cosmic Map', 'Planar Compass'],
     shrink: ['Miniaturizing Ray', 'Reduction Powder', 'Shrinking Solution', 'Diminution Wand'],
     split: ['Splitter\'s Dagger', 'Division Wand', 'Duplicator\'s Rod', 'Replicator Stone'],
-    pickpocket: ['Thief\'s Gloves', 'Shadow Hand', 'Pilferer\'s Tool', 'Sticky Fingers Charm']
+    pickpocket: ['Thief\'s Gloves', 'Shadow Hand', 'Pilferer\'s Tool', 'Sticky Fingers Charm'],
+    banish: ['Banishment Scroll', 'Ethereal Disruptor', 'Void Talisman', 'Dimensional Shifter']
   };
   
   // Scope modifiers
@@ -430,7 +438,8 @@ function generateItemDescription(power: ItemPower): string {
     scout_any: 'Reveals all pubs in the area.',
     shrink: 'Reduces a single powerful monster to a weaker form.',
     split: 'Splits a single grunt monster into two weaker minions.',
-    pickpocket: 'Steals an item from a single target monster without engaging in combat.'
+    pickpocket: 'Steals an item from a single target monster without engaging in combat.',
+    banish: 'Immediately removes a monster from the location without yielding any loot.'
   };
   
   return descriptions[power];
@@ -440,8 +449,8 @@ function generateItemDescription(power: ItemPower): string {
  * Generate test items for each level (1-6)
  * For debugging and testing purposes
  */
-export function generateTestItems(): EnhancedItem[] {
-  const items: EnhancedItem[] = [];
+export function generateTestItems(): Item[] {
+  const items: Item[] = [];
   
   for (let level = 1; level <= 6; level++) {
     // Generate 3 items for each level
@@ -457,7 +466,7 @@ export function generateTestItems(): EnhancedItem[] {
  * Log details about a generated item
  * For debugging purposes
  */
-export function logItemDetails(item: EnhancedItem): void {
+export function logItemDetails(item: Item): void {
   console.log(`==== Item: ${item.name} ====`);
   console.log(`Power: ${item.power}`);
   console.log(`Uses: ${item.uses || 1}`);

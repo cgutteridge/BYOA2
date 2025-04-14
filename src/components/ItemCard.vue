@@ -40,11 +40,11 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
-import type { InventoryItem, EnhancedItem } from '../types/item'
+import type { Item } from '../types/item'
 
 // Define props
 const props = defineProps<{
-  item: EnhancedItem | InventoryItem
+  item: Item
   selected?: boolean
   showUseButton?: boolean
   showInspectButton?: boolean
@@ -53,9 +53,9 @@ const props = defineProps<{
 
 // Define emits
 defineEmits<{
-  (e: 'click', item: EnhancedItem | InventoryItem): void
-  (e: 'use', item: EnhancedItem | InventoryItem): void
-  (e: 'inspect', item: EnhancedItem | InventoryItem): void
+  (e: 'click', item: Item): void
+  (e: 'use', item: Item): void
+  (e: 'inspect', item: Item): void
 }>()
 </script>
 
