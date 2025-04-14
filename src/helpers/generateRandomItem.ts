@@ -161,12 +161,6 @@ function generateEffectDescription(item: Item): string {
         case 'type':
           effect += " all monsters of the same type in the current location";
           break;
-        case 'race':
-          effect += " all monsters of the same race in the current location";
-          break;
-        case 'all':
-          effect += " all monsters in the current location";
-          break;
       }
     } else {
       effect += " a single monster";
@@ -208,7 +202,7 @@ function generateEffectDescription(item: Item): string {
             break;
           case 'level':
             if (item.resultLevel) {
-              effect += ` Transforms target into a ${item.resultLevel} monster of the same race.`;
+              effect += ` Transforms target into a ${item.resultLevel} monster of the same species.`;
             }
             break;
           case 'species':
@@ -331,15 +325,9 @@ export function generateRandomItem(level: number): Item {
     
     // Upgrade target scope (type/race/all) if supported by this power (+1 point per level)
     if (SUPPORTS_TARGET_SCOPE[selectedPower] && item.targetScope) {
-      // Points cost: one -> type = 1 point, type -> race = 1 point, race -> all = 1 point
+      // Points cost: one -> type = 1 point
       if (item.targetScope === 'one' && remainingPoints >= 1) {
         availableUpgrades.push('scope_type');
-      }
-      if (item.targetScope === 'type' && remainingPoints >= 1) {
-        availableUpgrades.push('scope_race');
-      }
-      if (item.targetScope === 'race' && remainingPoints >= 1) {
-        availableUpgrades.push('scope_all');
       }
     }
     
@@ -393,15 +381,11 @@ export function generateRandomItem(level: number): Item {
         break;
         
       case 'scope_race':
-        // Upgrade from type to race
-        item.targetScope = 'race';
-        remainingPoints -= 1;
+        // No longer supported
         break;
         
       case 'scope_all':
-        // Upgrade from race to all
-        item.targetScope = 'all';
-        remainingPoints -= 1;
+        // No longer supported
         break;
         
       case 'level_elite':
@@ -468,34 +452,6 @@ function generateFinalDescription(item: Item): string {
           return 'Steals items from all monsters of the same type without engaging in combat.';
         }
         break;
-        
-      case 'race':
-        if (item.power === 'kill') {
-          return 'Instantly defeats all monsters of the same race in the current location.';
-        } else if (item.power === 'transmute') {
-          return 'Transforms all monsters of the same race in the current location.';
-        } else if (item.power === 'shrink') {
-          return 'Reduces all powerful monsters of the same race to a weaker form.';
-        } else if (item.power === 'split') {
-          return 'Splits all grunt monsters of the same race into weaker minions.';
-        } else if (item.power === 'pickpocket') {
-          return 'Steals items from all monsters of the same race without engaging in combat.';
-        }
-        break;
-        
-      case 'all':
-        if (item.power === 'kill') {
-          return 'Instantly defeats all monsters in the current location.';
-        } else if (item.power === 'transmute') {
-          return 'Transforms all monsters in the current location.';
-        } else if (item.power === 'shrink') {
-          return 'Reduces all powerful monsters in the current location to a weaker form.';
-        } else if (item.power === 'split') {
-          return 'Splits all grunt monsters in the current location into weaker minions.';
-        } else if (item.power === 'pickpocket') {
-          return 'Steals items from all monsters in the current location without engaging in combat.';
-        }
-        break;
     }
   }
   
@@ -550,9 +506,7 @@ function generateItemName(power: ItemPower, targetScope?: TargetScope): string {
   // Scope modifiers
   const scopeModifiers: Record<string, string[]> = {
     one: ['Focused', 'Precise', 'Single-Target', 'Selective'],
-    type: ['Type-Seeking', 'Kind-Hunting', 'Variant-Tracking', 'Species-Wide'],
-    race: ['Race-Hunting', 'Ancestry-Tracking', 'Lineage-Bound', 'Heritage-Seeking'],
-    all: ['Mass', 'Sweeping', 'Universal', 'All-Encompassing']
+    type: ['Type-Seeking', 'Kind-Hunting', 'Variant-Tracking', 'Species-Wide']
   };
   
   const prefix = randomChoice(prefixes);

@@ -16,7 +16,7 @@ export type ItemPower =
 export type TargetMode = 'pick' | 'random' | undefined;
 
 // Target scopes - what is targeted
-export type TargetScope = 'one' | 'type' | 'race' | 'all' | undefined;
+export type TargetScope = 'one' | 'type' | undefined;
 
 // Result modes
 export type ResultMode = 'random' | 'pick' | 'level' | 'species' | undefined;
