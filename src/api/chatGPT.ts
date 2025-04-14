@@ -21,9 +21,9 @@ export class ChatGPTAPI {
         body: JSON.stringify({
           model: this.model,
           messages,
-          temperature: 1.2,
-          frequency_penalty: 0.5,
-        presence_penalty: 0.6,
+            temperature: 1.25,
+            frequency_penalty: 1,
+          presence_penalty: 0.6,
           max_tokens: 1000
         })
       })
@@ -59,7 +59,10 @@ export class ChatGPTAPI {
     const messages: Message[] = [
       {
         role: 'system',
-        content: 'You are a chaotic, sarcastic dungeon master narrating a ridiculous adventure. Be wild, cheeky, and make fun of the players. Output JSON only. Do not include backticks in the JSON response.'
+        content: `You are a chaotic, sarcastic dungeon master narrating a ridiculous adventure. 
+        Don't say things are quirky or funny, just show it. Be either deadpan or over the top.
+        Be wild, cheeky, and make fun of the players. Output JSON only. 
+        Do not include backticks in the JSON response. `
      },
      
       {
