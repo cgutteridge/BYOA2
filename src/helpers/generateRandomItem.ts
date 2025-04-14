@@ -1,6 +1,7 @@
 import type { Item, ItemPower, TargetMode } from '../types/item';
 import type { MonsterLevel, Species, MonsterFlag } from '../types';
 import { generateEffectDescription, getLevelQualityTerm } from './generateEffectDescription';
+import pickOne from "@/helpers/pickOne.ts";
 
 // Base point costs for different power types
 const POWER_BASE_COSTS: Record<ItemPower, number> = {
@@ -98,8 +99,8 @@ const AVAILABLE_FLAGS: MonsterFlag[] = [
  * @returns A random item with appropriate properties for the level
  */
 export function generateRandomItem(level: number): Item {
-  // Convert level 1-6 to points
-  const totalPoints = levelToPoints(level);
+  // Use level directly as points
+  const totalPoints = level;
   
   // Track points spent
   let remainingPoints = totalPoints;
@@ -114,7 +115,7 @@ export function generateRandomItem(level: number): Item {
     availablePowers.push('kill');
   }
   
-  const selectedPower = randomChoice(availablePowers);
+  const selectedPower = pickOne(availablePowers);
   remainingPoints -= POWER_BASE_COSTS[selectedPower];
   
   // Get default target mode
@@ -145,9 +146,9 @@ export function generateRandomItem(level: number): Item {
   if (CAN_HAVE_TARGET_RESTRICTION[selectedPower] && item.targetFilters) {
     // By default, add a species restriction (50%) or flag restriction (50%)
     if (Math.random() < 0.5) {
-      item.targetFilters.species = [randomChoice(AVAILABLE_SPECIES)];
+      item.targetFilters.species = [pickOne(AVAILABLE_SPECIES)];
     } else {
-      item.targetFilters.flags = [randomChoice(AVAILABLE_FLAGS)];
+      item.targetFilters.flags = [pickOne(AVAILABLE_FLAGS)];
     }
   }
   
@@ -163,103 +164,16 @@ export function generateRandomItem(level: number): Item {
   
   // Step 4: Spend remaining points on upgrades
   while (remainingPoints > 0) {
-    const availableUpgrades = [];
-    
-    // Add uses (+1 point for +2 uses)
-    if (remainingPoints >= 1) {
-      availableUpgrades.push('uses');
-    }
-    
-    // Remove target restriction (+1 point)
-    if (item.targetFilters?.species || item.targetFilters?.flags) {
-      availableUpgrades.push('target_restriction');
-    }
-    
-    // Remove result restriction (+1 point)
-    if (item.result && item.result !== 'pick') {
-      availableUpgrades.push('result_restriction');
-    }
-    
-    // Target mode upgrade path: random -> pick -> random_type -> pick_type (+1 point each)
-    if (item.target === 'random' && remainingPoints >= 1) {
-      availableUpgrades.push('upgrade_to_pick');
-    } else if (item.target === 'pick' && remainingPoints >= 1 && SUPPORTS_TYPE_TARGETING[selectedPower]) {
-      availableUpgrades.push('upgrade_to_random_type');
-    } else if (item.target === 'random_type' && remainingPoints >= 1) {
-      availableUpgrades.push('upgrade_to_pick_type');
-    }
-    
-    // Increase monster level targeting
-    const currentLevels = item.targetFilters?.levels || [];
-    if (!currentLevels.includes('elite') && !LEVEL_RESTRICTIONS[selectedPower]) {
-      availableUpgrades.push('level_elite');
-    }
-    if (!currentLevels.includes('boss') && currentLevels.includes('elite') && !LEVEL_RESTRICTIONS[selectedPower]) {
-      availableUpgrades.push('level_boss');
-    }
+    const availableUpgrades = getAvailableUpgrades(item, remainingPoints, selectedPower);
     
     // Break if no more upgrades possible
     if (availableUpgrades.length === 0) break;
     
     // Pick a random upgrade
-    const selectedUpgrade = randomChoice(availableUpgrades);
+    const selectedUpgrade = pickOne(availableUpgrades);
     
-    // Apply the upgrade
-    switch (selectedUpgrade) {
-      case 'uses':
-        item.uses = (item.uses || 1) + 2;
-        remainingPoints -= 1;
-        break;
-        
-      case 'target_restriction':
-        // Remove species and flag restrictions
-        if (item.targetFilters) {
-          delete item.targetFilters.species;
-          delete item.targetFilters.flags;
-        }
-        remainingPoints -= 1;
-        break;
-        
-      case 'result_restriction':
-        // Upgrade to player choice
-        item.result = 'pick';
-        remainingPoints -= 1;
-        break;
-        
-      case 'upgrade_to_pick':
-        // Upgrade from random to pick (single target)
-        item.target = 'pick';
-        remainingPoints -= 1;
-        break;
-        
-      case 'upgrade_to_random_type':
-        // Upgrade from pick to random_type
-        item.target = 'random_type';
-        remainingPoints -= 1;
-        break;
-        
-      case 'upgrade_to_pick_type':
-        // Upgrade from random_type to pick_type
-        item.target = 'pick_type';
-        remainingPoints -= 1;
-        break;
-        
-      case 'level_elite':
-        // Add elite to targetable levels
-        if (item.targetFilters) {
-          item.targetFilters.levels = [...currentLevels, 'elite'];
-        }
-        remainingPoints -= 1;
-        break;
-        
-      case 'level_boss':
-        // Add boss to targetable levels
-        if (item.targetFilters) {
-          item.targetFilters.levels = [...currentLevels, 'boss'];
-        }
-        remainingPoints -= 1;
-        break;
-    }
+    // Apply the upgrade and reduce remaining points
+    remainingPoints = applyUpgrade(item, selectedUpgrade, remainingPoints);
   }
   
   // Update the name to match the final target mode
@@ -272,25 +186,103 @@ export function generateRandomItem(level: number): Item {
 }
 
 /**
- * Convert level (1-6) to points for item generation
+ * Get available upgrades for an item based on remaining points and power type
  */
-function levelToPoints(level: number): number {
-  switch (level) {
-    case 1: return 1;
-    case 2: return 2;
-    case 3: return 4;
-    case 4: return 6;
-    case 5: return 8;
-    case 6: return 10;
-    default: return Math.max(1, Math.min(10, level)); // Clamp between 1-10
+function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: ItemPower): string[] {
+  const availableUpgrades: string[] = [];
+  
+  // Add uses (+1 point for +2 uses)
+  if (remainingPoints >= 1) {
+    availableUpgrades.push('uses');
   }
+  
+  // Remove target restriction (+1 point)
+  if (item.targetFilters?.species || item.targetFilters?.flags) {
+    availableUpgrades.push('target_restriction');
+  }
+  
+  // Remove result restriction (+1 point)
+  if (item.result && item.result !== 'pick') {
+    availableUpgrades.push('result_restriction');
+  }
+  
+  // Target mode upgrade path: random -> pick -> random_type -> pick_type (+1 point each)
+  if (item.target === 'random' && remainingPoints >= 1) {
+    availableUpgrades.push('upgrade_to_pick');
+  } else if (item.target === 'pick' && remainingPoints >= 1 && SUPPORTS_TYPE_TARGETING[powerType]) {
+    availableUpgrades.push('upgrade_to_random_type');
+  } else if (item.target === 'random_type' && remainingPoints >= 1) {
+    availableUpgrades.push('upgrade_to_pick_type');
+  }
+  
+  // Increase monster level targeting
+  const currentLevels = item.targetFilters?.levels || [];
+  if (!currentLevels.includes('elite') && !LEVEL_RESTRICTIONS[powerType]) {
+    availableUpgrades.push('level_elite');
+  }
+  if (!currentLevels.includes('boss') && currentLevels.includes('elite') && !LEVEL_RESTRICTIONS[powerType]) {
+    availableUpgrades.push('level_boss');
+  }
+  
+  return availableUpgrades;
 }
 
 /**
- * Pick a random item from an array
+ * Apply the selected upgrade to the item and return remaining points
  */
-function randomChoice<T>(array: T[]): T {
-  return array[Math.floor(Math.random() * array.length)];
+function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): number {
+  switch (upgrade) {
+    case 'uses':
+      item.uses = (item.uses || 1) + 2;
+      return remainingPoints - 1;
+      
+    case 'target_restriction':
+      // Remove species and flag restrictions
+      if (item.targetFilters) {
+        delete item.targetFilters.species;
+        delete item.targetFilters.flags;
+      }
+      return remainingPoints - 1;
+      
+    case 'result_restriction':
+      // Upgrade to player choice
+      item.result = 'pick';
+      return remainingPoints - 1;
+      
+    case 'upgrade_to_pick':
+      // Upgrade from random to pick (single target)
+      item.target = 'pick';
+      return remainingPoints - 1;
+      
+    case 'upgrade_to_random_type':
+      // Upgrade from pick to random_type
+      item.target = 'random_type';
+      return remainingPoints - 1;
+      
+    case 'upgrade_to_pick_type':
+      // Upgrade from random_type to pick_type
+      item.target = 'pick_type';
+      return remainingPoints - 1;
+      
+    case 'level_elite':
+      // Add elite to targetable levels
+      if (item.targetFilters) {
+        const currentLevels = item.targetFilters.levels || [];
+        item.targetFilters.levels = [...currentLevels, 'elite'];
+      }
+      return remainingPoints - 1;
+      
+    case 'level_boss':
+      // Add boss to targetable levels
+      if (item.targetFilters) {
+        const currentLevels = item.targetFilters.levels || [];
+        item.targetFilters.levels = [...currentLevels, 'boss'];
+      }
+      return remainingPoints - 1;
+      
+    default:
+      return remainingPoints;
+  }
 }
 
 /**
@@ -324,12 +316,12 @@ function generateItemName(power: ItemPower, targetMode?: string): string {
     pick_type: ['Type-Choosing', 'Group-Targeting', 'Master', 'Family-Hunting']
   };
   
-  const prefix = randomChoice(prefixes);
-  const baseName = randomChoice(baseNames[power]);
+  const prefix = pickOne(prefixes);
+  const baseName = pickOne(baseNames[power]);
   
   // Add mode modifier if this is a type targeting or pick mode
   if (targetMode && targetMode !== 'random' && SUPPORTS_TYPE_TARGETING[power]) {
-    const modeModifier = randomChoice(modeModifiers[targetMode]);
+    const modeModifier = pickOne(modeModifiers[targetMode]);
     return `${prefix} ${modeModifier} ${baseName}`;
   }
   
