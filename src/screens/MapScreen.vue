@@ -5,21 +5,27 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
+import {computed, nextTick, onMounted, onUnmounted, ref, watch, createApp} from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type {Location, Pub} from '../types'
 import {usePubStore} from "../stores/pubStore";
 import {useAppStore} from "../stores/appStore";
 import {locationTypesById} from "@/data/locationTypes.ts";
+import {useQuestStore} from "../stores/questStore";
+import PubPopup from '@/components/PubPopup.vue'
 
 const appStore = useAppStore()
 const pubStore = usePubStore()
+const questStore = useQuestStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
 const pubMarkers = ref<L.Marker[]>([])
 const isInitializing = ref<boolean>(false)
+const selectedPub = ref<Pub | null>(null)
+const activePopup = ref<L.Popup | null>(null)
+const mountedPopupApps = ref<any[]>([])
 
 // Computed properties
 const playerLocation = computed(() => appStore.playerLocation)
@@ -40,26 +46,143 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
       iconUrl: iconPath,
       iconSize: [67, 83],
       iconAnchor: [34, 83],
-      popupAnchor: [0, -16],
+      popupAnchor: [0, -30],
       shadowUrl: './icons/shadow.png',
       shadowSize: [161, 100],
       shadowAnchor: [10, 90]
     })
-  })
-      .addTo(mapInstance)
+  }).addTo(mapInstance)
 
+  // Create popup for this pub
+  const popup = L.popup({
+    className: 'pub-info-popup',
+    maxWidth: 500,
+    minWidth: 320,
+    closeButton: false,
+    autoClose: false,
+    closeOnEscapeKey: true,
+    offset: [0, -25],
+    autoPan: true,
+    keepInView: true
+  })
 
   marker.on('click', () => {
+    // Store selected pub
+    selectedPub.value = pub
     appStore.setFocusPub(pub.id)
-    appStore.setScreen('location_info')
+    
+    // Close any existing popup first
+    if (map.value) {
+      map.value.closePopup()
+    }
+    
+    // Center map on pub with a slight offset to account for popup
+    mapInstance.setView([pub.lat, pub.lng - 0.0005], mapInstance.getZoom(), { animate: true })
+    
+    // Create the popup content with Vue
+    const container = document.createElement('div')
+    container.className = 'popup-vue-container'
+    
+    // Create a new Vue app with our component
+    const app = createApp(PubPopup, {
+      pub,
+      onClose: closePopup,
+      onScout: handleScout,
+      onEnter: handleEnter
+    })
+    
+    // Mount the app to our container
+    app.mount(container)
+    
+    // Add to list of mounted apps for cleanup
+    mountedPopupApps.value.push(app)
+    
+    // Set the popup content
+    popup.setContent(container)
+    
+    // Unbind any existing popup and bind a new one
+    marker.unbindPopup()
+    marker.bindPopup(popup)
+    
+    // Open the popup with a slight delay
+    setTimeout(() => {
+      marker.openPopup()
+      activePopup.value = popup
+    }, 50)
   })
 
   return marker
 }
 
+function closePopup() {
+  if (map.value) {
+    // First try to close any open popups using Leaflet's methods
+    map.value.closePopup();
+    
+    // Clean up Vue apps
+    cleanupPopupApps();
+    
+    // As a fallback, also remove popup elements directly
+    const activePubs = document.querySelectorAll('.leaflet-popup');
+    activePubs.forEach(popup => {
+      popup.remove();
+    });
+    
+    activePopup.value = null;
+    selectedPub.value = null;
+  }
+}
+
+function handleScout(pubId: string) {
+  // After scouting, refresh markers to update popup content
+  nextTick(() => {
+    generatePubMarkers()
+    if (pubId && map.value) {
+      // Find pub in store
+      const pub = pubStore.pub(pubId)
+      if (pub) {
+        // Set as selected pub again and reopen popup
+        selectedPub.value = pub
+        const markers = pubMarkers.value.filter(marker => {
+          const latlng = marker.getLatLng()
+          return latlng.lat === pub.lat && latlng.lng === pub.lng
+        })
+        
+        if (markers.length > 0) {
+          // Trigger click on marker to reopen popup with fresh content
+          markers[0].fire('click')
+        }
+      }
+    }
+  })
+}
+
+function handleEnter(pubId: string) {
+  if (pubId) {
+    appStore.setFocusPub(pubId)
+    appStore.setScreen('location')
+    questStore.setCurrentPub(pubId)
+  }
+}
+
 function cleanupMap(): void {
+  // First make sure all popups are closed and Vue apps unmounted
+  closePopup();
+  cleanupPopupApps();
+  
   if (map.value) {
     try {
+      // Remove markers first
+      pubMarkers.value.forEach(marker => {
+        try {
+          if (marker) marker.remove()
+        } catch (error) {
+          console.error('Error removing marker:', error)
+        }
+      })
+      pubMarkers.value = []
+      
+      // Then remove map
       map.value.off()
       map.value.remove()
     } catch (error) {
@@ -67,14 +190,6 @@ function cleanupMap(): void {
     }
     map.value = null
   }
-  pubMarkers.value.forEach(marker => {
-    try {
-      if (marker) marker.remove()
-    } catch (error) {
-      console.error('Error removing marker:', error)
-    }
-  })
-  pubMarkers.value = []
 }
 
 function initializeMap(): void {
@@ -124,6 +239,11 @@ function initializeMap(): void {
 
     mapInstance.on('zoomend', () => {
       appStore.setMapZoom(mapInstance.getZoom())
+    })
+
+    // Add click listener to close popup when clicking on map
+    mapInstance.on('click', () => {
+      closePopup()
     })
 
     L.tileLayer('https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey=090957d4bae841118cdb982b96895428', {
@@ -180,8 +300,6 @@ function initializeMap(): void {
   }
 }
 
-
-
 function initWhenReady(): void {
   if (playerLocation.value) {
     initializeMap()
@@ -200,6 +318,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  closePopup();
+  cleanupPopupApps();
   if (map.value) {
     map.value.remove()
     map.value = null
@@ -214,9 +334,24 @@ watch(playerLocation, (newLocation) => {
 }, { immediate: true })
 
 // Watch for game mode changes
-watch(() => appStore.screen, (newMode) => {
+watch(() => appStore.screen, (newMode, oldMode) => {
   if (newMode !== 'map' && map.value) {
+    closePopup()
     cleanupMap()
+  } else if (newMode === 'map' && oldMode === 'location' && appStore.focusPub) {
+    // When returning to the map from a location, regenerate markers and reopen the popup
+    nextTick(() => {
+      if (!map.value) return
+      
+      // Ensure map is initialized
+      if (isInitializing.value) {
+        setTimeout(() => {
+          reopenFocusedPubPopup()
+        }, 500)
+      } else {
+        reopenFocusedPubPopup()
+      }
+    })
   }
 }, { immediate: true })
 
@@ -236,6 +371,7 @@ function generatePubMarkers(): void {
 
   console.log('Total markers created:', pubMarkers.value.length)
 }
+
 function updatePlayerMarker(location: Location): void {
   const theMap = map.value as L.Map
   if (!theMap) return
@@ -264,6 +400,33 @@ function centerOnPlayer(): void {
     16,
     { animate: true }
   )
+}
+
+// Function to reopen the popup for the focused pub
+function reopenFocusedPubPopup() {
+  if (!map.value || !appStore.focusPub) return
+  
+  const focusedPub = appStore.focusPub
+  const markers = pubMarkers.value.filter(marker => {
+    const latlng = marker.getLatLng()
+    return latlng.lat === focusedPub.lat && latlng.lng === focusedPub.lng
+  })
+  
+  if (markers.length > 0) {
+    markers[0].fire('click')
+  }
+}
+
+// Helper to clean up mounted Vue apps
+function cleanupPopupApps() {
+  mountedPopupApps.value.forEach(app => {
+    try {
+      app.unmount();
+    } catch (e) {
+      console.error('Error unmounting Vue app:', e);
+    }
+  });
+  mountedPopupApps.value = [];
 }
 </script>
 
@@ -304,5 +467,52 @@ button {
 :deep(.leaflet-control-center) {
   font-size: 22px;
   font-weight: bold;
+}
+
+/* Popup styles */
+:deep(.pub-info-popup) {
+  max-width: 90vw !important;
+}
+
+:deep(.pub-info-popup .leaflet-popup-content-wrapper) {
+  background: rgba(30, 30, 30, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.7);
+  padding: 5px;
+}
+
+:deep(.pub-info-popup .leaflet-popup-tip) {
+  background: rgba(30, 30, 30, 0.95);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
+}
+
+:deep(.pub-info-popup .leaflet-popup-content) {
+  margin: 0;
+  width: auto !important;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+:deep(.popup-vue-container) {
+  max-width: 100%;
+  min-width: 280px;
+  display: block;
+}
+
+@media screen and (min-width: 601px) {
+  :deep(.popup-vue-container) {
+    min-width: 320px;
+    width: 450px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  :deep(.pub-info-popup) {
+    max-width: 95vw !important;
+  }
+  
+  :deep(.pub-info-popup .leaflet-popup-content) {
+    max-height: 70vh;
+  }
 }
 </style> 
