@@ -60,8 +60,9 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
     autoClose: true,
     closeOnEscapeKey: true,
     offset: [0, -25],
+    autoPan: true,
+    keepInView: true
   })
-  //popup.setContent('<div>Hello</div>')
 
   marker.on('popupopen', () => {
     // Create the popup content with Vue
@@ -79,10 +80,26 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
 
     // First, set the content of the popup
     popup.setContent(container)
+    
+    // After the Vue component has rendered, update popup position to ensure proper positioning
+    setTimeout(() => {
+      if (map.value && popup.isOpen()) {
+        popup._updatePosition();
+        try {
+          map.value.panInside(popup.getLatLng(), {
+            padding: [20, 20],
+            animate: true,
+          });
+        } catch (e) {
+          console.error('Error auto-panning map:', e);
+        }
+      }
+    }, 50);
   })
 
   marker.on('popupclose', () => {
     console.log('Popup closed')
+    // Always clean up apps since we're not reopening popups
     cleanupPopupApps()
   })
   marker.bindPopup(popup)
@@ -91,7 +108,6 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
 }
 
 function closePopup() {
-
   // Clean up Vue apps
   cleanupPopupApps()
 
@@ -177,13 +193,22 @@ function initializeMap(): void {
     mapInstance.on('moveend', () => {
       const center = mapInstance.getCenter()
       appStore.setMapPosition({ lat: center.lat, lng: center.lng })
+      
+      // Remove popup reopening logic
     })
 
     mapInstance.on('zoomend', () => {
       appStore.setMapZoom(mapInstance.getZoom())
+      
+      // Remove popup reopening logic
     })
 
-    // Add click listener to close popup when clicking on map
+    // Simplify to just close any open popup when zoom starts
+    mapInstance.on('zoomstart', () => {
+      closePopup()
+    })
+
+    // Keep click listener to close popup
     mapInstance.on('click', () => {
       closePopup()
     })
