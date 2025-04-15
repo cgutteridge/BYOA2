@@ -15,28 +15,12 @@
     <div class="gift-item-section" v-if="questStore.currentPub?.giftItem">
       <div class="gift-item-container">
         <h3>Gift Item Available!</h3>
-        <div class="item-card" :class="{'item-card-level4': questStore.currentPub.giftItem.level === 4, 'item-card-level5': questStore.currentPub.giftItem.level === 5}">
-          <div class="item-name" :class="{'item-name-level4': questStore.currentPub.giftItem.level === 4, 'item-name-level5': questStore.currentPub.giftItem.level === 5}">
-            {{ questStore.currentPub.giftItem.name }}
-          </div>
-          <div class="item-power">{{ questStore.currentPub.giftItem.effectDescription || questStore.currentPub.giftItem.power }}</div>
-          <div v-if="questStore.currentPub.giftItem.description" class="item-description">
-            <span class="description-label">Story:</span> {{ questStore.currentPub.giftItem.description }}
-          </div>
-          <div class="item-details">
-            <span class="item-type">Type: {{ getItemTypeName(questStore.currentPub.giftItem) }}</span>
-            <span class="item-level" :class="{'item-level-4': questStore.currentPub.giftItem.level === 4, 'item-level-5': questStore.currentPub.giftItem.level === 5}">
-              Level: {{ questStore.currentPub.giftItem.level }}
-            </span>
-            <span class="item-uses">Uses: {{ questStore.currentPub.giftItem.uses }}</span>
-            <span class="item-target" v-if="questStore.currentPub.giftItem.target">
-              Target: {{ questStore.currentPub.giftItem.target }}
-            </span>
-          </div>
-          <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.giftItem.level === 4, 'take-item-btn-level5': questStore.currentPub.giftItem.level === 5}" @click="claimGiftItem()">
-            Take Gift
-          </button>
-        </div>
+        <ItemCard 
+          :item="questStore.currentPub.giftItem"
+          variant="gift"
+          :show-details="true"
+          @action="claimGiftItem"
+        />
       </div>
     </div>
 
@@ -80,31 +64,14 @@
             {{ getMonsterDrink(monster.type) }}
           </div>
           
-          <!-- Monster item (if any) -->
+          <!-- Monster item (if any) - use ItemCard component -->
           <div v-if="monster.item" class="monster-item" :class="{'item-available': !monster.alive}">
-            <div class="item-info">
-              <div class="item-header">
-                <div class="item-name" :class="{'item-name-level3': monster.item.level === 3, 'item-name-level4': monster.item.level === 4, 'item-name-level5': monster.item.level === 5}">
-                  {{ monster.item.name }}
-                </div>
-                <span class="item-level-badge" :class="{'level3': monster.item.level === 3, 'level4': monster.item.level === 4, 'level5': monster.item.level === 5}">Lvl {{ monster.item.level }}</span>
-              </div>
-              <div class="item-power">{{ monster.item.effectDescription || monster.item.power }}</div>
-              <div class="item-type">{{ getItemTypeName(monster.item) }}</div>
-              <button 
-                class="take-item-btn compact-btn" 
-                :class="{
-                  'take-item-btn-level3': monster.item.level === 3,
-                  'take-item-btn-level4': monster.item.level === 4, 
-                  'take-item-btn-level5': monster.item.level === 5
-                }" 
-                :disabled="monster.alive"
-                @click="claimItem(monster)"
-              >
-                <span v-if="monster.alive">Defeat to claim</span>
-                <span v-else>Claim Item</span>
-              </button>
-            </div>
+            <ItemCard 
+              :item="monster.item"
+              variant="drop"
+              :show-details="true"
+              @action="claimItem(monster)"
+            />
           </div>
         </div>
       </div>
@@ -113,28 +80,12 @@
       <div v-if="questStore.currentPub.prizeItem" class="prize-item-section">
         <div class="prize-item-container">
           <h3>Quest Prize:</h3>
-          <div class="item-card" :class="{'item-card-level4': questStore.currentPub.prizeItem.level === 4, 'item-card-level5': questStore.currentPub.prizeItem.level === 5}">
-            <div class="item-name" :class="{'item-name-level4': questStore.currentPub.prizeItem.level === 4, 'item-name-level5': questStore.currentPub.prizeItem.level === 5}">
-              {{ questStore.currentPub.prizeItem.name }}
-            </div>
-            <div class="item-power">{{ questStore.currentPub.prizeItem.effectDescription || questStore.currentPub.prizeItem.power }}</div>
-            <div v-if="questStore.currentPub.prizeItem.description" class="item-description">
-              <span class="description-label">Story:</span> {{ questStore.currentPub.prizeItem.description }}
-            </div>
-            <div class="item-details">
-              <span class="item-type">Type: {{ getItemTypeName(questStore.currentPub.prizeItem) }}</span>
-              <span class="item-level" :class="{'item-level-4': questStore.currentPub.prizeItem.level === 4, 'item-level-5': questStore.currentPub.prizeItem.level === 5}">
-                Level: {{ questStore.currentPub.prizeItem.level }}
-              </span>
-              <span class="item-uses">Uses: {{ questStore.currentPub.prizeItem.uses }}</span>
-              <span class="item-target" v-if="questStore.currentPub.prizeItem.target">
-                Target: {{ questStore.currentPub.prizeItem.target }}
-              </span>
-            </div>
-            <button class="take-item-btn" :class="{'take-item-btn-level4': questStore.currentPub.prizeItem.level === 4, 'take-item-btn-level5': questStore.currentPub.prizeItem.level === 5}" :disabled="!allMonstersDefeated" @click="claimPrizeItem()">
-              {{ allMonstersDefeated ? 'Claim Prize' : 'Defeat all monsters to claim' }}
-            </button>
-          </div>
+          <ItemCard 
+            :item="questStore.currentPub.prizeItem"
+            variant="prize"
+            :show-details="true"
+            @action="claimPrizeItem"
+          />
         </div>
       </div>
     </div>
@@ -152,6 +103,7 @@ import {areAllMonstersDefeated, toggleMonsterStatus, claimMonsterItem} from "../
 import '../styles/monsterStyles.css';
 import { computed } from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
+import ItemCard from "../components/ItemCard.vue";
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
@@ -264,30 +216,32 @@ function leavePub() {
 }
 
 function claimItem(monster: Monster) {
+  // Only allow claiming items from defeated monsters
   if (!monster.alive && monster.item) {
     const itemName = monster.item.name;
     const success = claimMonsterItem(monster);
     
     if (success) {
       appStore.addNotification(`${itemName} added to inventory!`, 'success');
-      // Optionally open inventory to show the new item
-      // appStore.openInventory('items');
+    }
+  } else {
+    // If monster is alive, just show the item description
+    if (monster.item) {
+      appStore.openItemInspectModal(monster.item);
     }
   }
 }
 
 function claimPrizeItem() {
   if (allMonstersDefeated.value && questStore.currentPub?.prizeItem) {
-    const prizeItem = questStore.currentPub.prizeItem;
-    
-    // Add to inventory
-    inventoryStore.addItem(prizeItem);
-    
-    // Remove from pub
+    inventoryStore.addItem(questStore.currentPub.prizeItem);
     delete questStore.currentPub.prizeItem;
-    
-    // Show notification
-    appStore.addNotification(`Prize ${prizeItem.name} added to inventory!`, 'success');
+    appStore.addNotification('Prize item added to your inventory!', 'success');
+  } else {
+    // Just show the description if not all monsters are defeated
+    if (questStore.currentPub?.prizeItem) {
+      appStore.openItemInspectModal(questStore.currentPub.prizeItem);
+    }
   }
 }
 
@@ -377,80 +331,14 @@ function claimGiftItem() {
   font-size: 1.3rem;
 }
 
-.item-card {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  padding: 1rem;
+.monster-item {
+  margin-top: 1rem;
+  opacity: 0.6;
   transition: all 0.3s ease;
 }
 
-.item-card-level4 {
-  box-shadow: 0 0 10px rgba(186, 104, 200, 0.3);
-  animation: glow-purple 2s infinite alternate;
-}
-
-.item-card-level5 {
-  box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
-  animation: glow-orange 2s infinite alternate;
-}
-
-@keyframes glow-purple {
-  0% {
-    box-shadow: 0 0 10px rgba(186, 104, 200, 0.3);
-  }
-  100% {
-    box-shadow: 0 0 20px rgba(186, 104, 200, 0.5);
-  }
-}
-
-@keyframes glow-orange {
-  0% {
-    box-shadow: 0 0 15px rgba(255, 152, 0, 0.3);
-  }
-  100% {
-    box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
-  }
-}
-
-.item-name-level4 {
-  color: #ba68c8;
-  text-shadow: 0 0 5px rgba(186, 104, 200, 0.3);
-}
-
-.item-name-level5 {
-  color: #ffc107;
-  text-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-
-.take-item-btn-level4 {
-  background: linear-gradient(135deg, #7b1fa2 0%, #ba68c8 100%) !important;
-  color: white !important;
-}
-
-.take-item-btn-level5 {
-  background: linear-gradient(135deg, #ff9800 0%, #ffeb3b 100%) !important;
-  color: #333 !important;
-  text-transform: uppercase;
-  font-weight: 800;
-}
-
-.take-item-btn {
-  padding: 0.8rem 1.5rem;
-  background: #8bc34a;
-  color: #1a1a1a;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.take-item-btn:hover {
-  background: #9ccc65;
-  transform: translateY(-2px);
+.monster-item.item-available {
+  opacity: 1;
 }
 
 .combat-container {
@@ -637,153 +525,5 @@ function claimGiftItem() {
   color: white;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-.monster-item {
-  margin-top: 1rem;
-  padding: 0.8rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-.monster-item.item-available {
-  border-color: #4caf50;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
-  animation: pulse-green 2s infinite;
-}
-
-@keyframes pulse-green {
-  0% {
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
-  }
-}
-
-.item-info {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.item-level-badge {
-  background: #666;
-  color: white;
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.item-level-badge.level3 {
-  background: #43a047;
-}
-
-.item-level-badge.level4 {
-  background: #7b1fa2;
-}
-
-.item-level-badge.level5 {
-  background: #ff9800;
-}
-
-.item-name-level3 {
-  color: #66bb6a;
-  text-shadow: 0 0 3px rgba(102, 187, 106, 0.3);
-}
-
-.item-name {
-  font-size: 1.05rem;
-  font-weight: bold;
-  margin-bottom: 0.3rem;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.item-power {
-  font-size: 0.85rem;
-  margin-bottom: 0.3rem;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.item-type {
-  font-size: 0.9rem;
-  color: #bbbbbb;
-  margin-bottom: 0.5rem;
-}
-
-.item-description {
-  font-size: 0.95rem;
-  margin-bottom: 1rem;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.4;
-  font-style: italic;
-}
-
-.description-label {
-  font-weight: bold;
-  color: #ffeb3b;
-  font-style: normal;
-}
-
-.item-details {
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.item-level {
-  color: #ffeb3b;
-  position: relative;
-}
-
-.item-level-4 {
-  color: #ba68c8;
-  font-weight: bold;
-}
-
-.item-level-5 {
-  color: #ff9800;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 152, 0, 0.5);
-}
-
-.compact-btn {
-  padding: 0.5rem 1rem;
-  margin-top: 0.3rem;
-  font-size: 0.9rem;
-}
-
-.monster-info-block {
-  display: inline-block;
-  white-space: nowrap;
-  margin-right: 0.25rem;
-}
-
-/* Add new style for claimed items */
-.item-claimed {
-  background-color: #666 !important;
-  cursor: default !important;
-}
-
-.item-claimed:hover {
-  background-color: #666 !important;
 }
 </style> 

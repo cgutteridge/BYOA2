@@ -98,7 +98,6 @@ export function claimMonsterItem(monster: Monster): boolean {
   // Can only claim from defeated monsters that have an item
   if (!monster.alive && monster.item) {
     const inventoryStore = useInventoryStore();
-    
     const itemName = monster.item.name; // Store name before removal
     
     // Add the item directly to inventory
