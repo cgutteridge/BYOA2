@@ -50,28 +50,29 @@
         </div>
       </div>
       
-      <div v-else-if="!pub.scouted" class="unscouted-message">
-        <p>This location has not been scouted yet. Visit it to learn more!</p>
+      <!-- Loading state when scouting -->
+      <div v-else-if="isLoading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Scouting location...</p>
       </div>
+
     </div>
     
     <div class="action-buttons">
-      <button v-if="!pub.scouted" @click="scoutPub" class="scout-button">Scout Location</button>
-      <button @click="enterPub" :disabled="!pub.scouted || !isNearby" class="enter-button">Enter Location</button>
-      <button @click="closePopup" class="close-button">Close</button>
+      <button v-if="!pub.scouted && !isLoading" @click="scoutPub" class="scout-button">Scout Location</button>
+      <button @click="enterPub" v-if="isNearby" class="enter-button">Enter Location</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { Pub, Monster, LocationType } from '../types'
 import { useAppStore } from "../stores/appStore"
 import { locationTypesById } from '@/data/locationTypes'
 import { monsterTypes } from '../data/monsterTypes'
 import { scoutLocation } from '@/quest/scoutLocation.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
-import { generateEffectDescription } from '@/quest/generateEffectDescription.ts'
 import ItemCard from './ItemCard.vue'
 import '../styles/monsterStyles.css'
 
@@ -79,7 +80,7 @@ const props = defineProps<{
   pub: Pub
 }>()
 
-const emit = defineEmits(['close', 'scout', 'enter'])
+const emit = defineEmits(['close'])
 
 const appStore = useAppStore()
 
@@ -144,6 +145,10 @@ const allMonstersDefeated = computed(() => {
   
   return props.pub.monsters.every(monster => !monster.alive);
 });
+
+const isLoading = computed(() => {
+  return props.pub.scouted && !props.pub.description;
+})
 
 function getMonsterTitle(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
@@ -214,18 +219,16 @@ function getMonsterTraits(monsterId: string): string {
   return `, ${monster.flags.join(', ')}`
 }
 
-function scoutPub() {
+function scoutPub(event: MouseEvent) {
+  event.stopPropagation()
   scoutLocation(props.pub)
-  emit('scout', props.pub.id)
 }
 
-function enterPub() {
-  emit('enter', props.pub.id)
+function enterPub(event: MouseEvent) {
+  event.stopPropagation()
+  console.log( 'enter pub' )
 }
 
-function closePopup() {
-  emit('close')
-}
 </script>
 
 <style scoped>
@@ -481,5 +484,31 @@ button:disabled {
   background: #9e9e9e;
   color: rgba(255, 255, 255, 0.7);
   cursor: not-allowed;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: #4CAF50;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style> 

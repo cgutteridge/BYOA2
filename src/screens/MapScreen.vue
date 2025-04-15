@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, onUnmounted, ref, watch, createApp} from 'vue'
+import {computed, createApp, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type {Location, Pub} from '../types'
@@ -23,8 +23,6 @@ const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
 const pubMarkers = ref<L.Marker[]>([])
 const isInitializing = ref<boolean>(false)
-const selectedPub = ref<Pub | null>(null)
-const activePopup = ref<L.Popup | null>(null)
 const mountedPopupApps = ref<any[]>([])
 
 // Computed properties
@@ -59,102 +57,62 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
     maxWidth: 500,
     minWidth: 320,
     closeButton: false,
-    autoClose: false,
+    autoClose: true,
     closeOnEscapeKey: true,
     offset: [0, -25],
-    autoPan: true,
-    keepInView: true
   })
+  //popup.setContent('<div>Hello</div>')
 
-  marker.on('click', () => {
-    // Store selected pub
-    selectedPub.value = pub
-    appStore.setFocusPub(pub.id)
-    
-    // Close any existing popup first
-    if (map.value) {
-      map.value.closePopup()
-    }
-    
-    // Center map on pub with a slight offset to account for popup
-    mapInstance.setView([pub.lat, pub.lng - 0.0005], mapInstance.getZoom(), { animate: true })
-    
+  marker.on('popupopen', () => {
     // Create the popup content with Vue
     const container = document.createElement('div')
     container.className = 'popup-vue-container'
     
     // Create a new Vue app with our component
-    const app = createApp(PubPopup, {
-      pub,
-      onClose: closePopup,
-      onScout: handleScout,
-      onEnter: handleEnter
-    })
+    const app = createApp(PubPopup, {pub})
     
     // Mount the app to our container
     app.mount(container)
     
     // Add to list of mounted apps for cleanup
     mountedPopupApps.value.push(app)
-    
-    // Set the popup content
+
+    // First, set the content of the popup
     popup.setContent(container)
-    
-    // Unbind any existing popup and bind a new one
-    marker.unbindPopup()
-    marker.bindPopup(popup)
-    
-    // Open the popup with a slight delay
-    setTimeout(() => {
-      marker.openPopup()
-      activePopup.value = popup
-    }, 50)
   })
+
+  marker.on('popupclose', () => {
+    console.log('Popup closed')
+    cleanupPopupApps()
+  })
+  marker.bindPopup(popup)
 
   return marker
 }
 
 function closePopup() {
-  if (map.value) {
-    // First try to close any open popups using Leaflet's methods
-    map.value.closePopup();
-    
-    // Clean up Vue apps
-    cleanupPopupApps();
-    
-    // As a fallback, also remove popup elements directly
-    const activePubs = document.querySelectorAll('.leaflet-popup');
-    activePubs.forEach(popup => {
-      popup.remove();
-    });
-    
-    activePopup.value = null;
-    selectedPub.value = null;
+  // Make sure we have a map instance before attempting to close popups
+  if (!map.value) {
+    // Just clean up Vue apps if no valid map
+    cleanupPopupApps()
+    return
   }
-}
 
-function handleScout(pubId: string) {
-  // After scouting, refresh markers to update popup content
-  nextTick(() => {
-    generatePubMarkers()
-    if (pubId && map.value) {
-      // Find pub in store
-      const pub = pubStore.pub(pubId)
-      if (pub) {
-        // Set as selected pub again and reopen popup
-        selectedPub.value = pub
-        const markers = pubMarkers.value.filter(marker => {
-          const latlng = marker.getLatLng()
-          return latlng.lat === pub.lat && latlng.lng === pub.lng
-        })
-        
-        if (markers.length > 0) {
-          // Trigger click on marker to reopen popup with fresh content
-          markers[0].fire('click')
-        }
-      }
-    }
-  })
+  try {
+    // Try to close popups safely
+    map.value.closePopup()
+  } catch (error) {
+    console.error('Error closing popup:', error)
+  }
+
+  // Clean up Vue apps
+  cleanupPopupApps()
+
+
+  // If there was an active popup, update the map
+  if (map.value && !map.value.isRemoved) {
+    map.value.invalidateSize()
+  }
 }
 
 function handleEnter(pubId: string) {
@@ -338,20 +296,6 @@ watch(() => appStore.screen, (newMode, oldMode) => {
   if (newMode !== 'map' && map.value) {
     closePopup()
     cleanupMap()
-  } else if (newMode === 'map' && oldMode === 'location' && appStore.focusPub) {
-    // When returning to the map from a location, regenerate markers and reopen the popup
-    nextTick(() => {
-      if (!map.value) return
-      
-      // Ensure map is initialized
-      if (isInitializing.value) {
-        setTimeout(() => {
-          reopenFocusedPubPopup()
-        }, 500)
-      } else {
-        reopenFocusedPubPopup()
-      }
-    })
   }
 }, { immediate: true })
 
@@ -402,31 +346,29 @@ function centerOnPlayer(): void {
   )
 }
 
-// Function to reopen the popup for the focused pub
-function reopenFocusedPubPopup() {
-  if (!map.value || !appStore.focusPub) return
-  
-  const focusedPub = appStore.focusPub
-  const markers = pubMarkers.value.filter(marker => {
-    const latlng = marker.getLatLng()
-    return latlng.lat === focusedPub.lat && latlng.lng === focusedPub.lng
-  })
-  
-  if (markers.length > 0) {
-    markers[0].fire('click')
-  }
-}
-
 // Helper to clean up mounted Vue apps
 function cleanupPopupApps() {
   mountedPopupApps.value.forEach(app => {
     try {
-      app.unmount();
+      app.unmount()
     } catch (e) {
-      console.error('Error unmounting Vue app:', e);
+      console.error('Error unmounting Vue app:', e)
     }
-  });
-  mountedPopupApps.value = [];
+  })
+  mountedPopupApps.value = []
+
+  // Also clean up any orphaned popup containers
+  try {
+    const containers = document.querySelectorAll('.popup-vue-container')
+    containers.forEach(container => {
+      if (container.parentElement && container.parentElement.classList.contains('leaflet-popup-content')) {
+        // Only remove if it's inside a popup
+        container.remove()
+      }
+    })
+  } catch (error) {
+    console.error('Error cleaning up popup containers:', error)
+  }
 }
 </script>
 

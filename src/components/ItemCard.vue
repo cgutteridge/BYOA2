@@ -10,7 +10,6 @@
       'item-card--drop': variant === 'drop'
     }"
     :data-power="item.power"
-    :data-level="item.level"
     :aria-label="`${item.name}, ${generateEffectDescription(item)}, ${item.uses !== undefined ? item.uses + ' uses remaining' : 'Unlimited uses'}`"
     @click="handleClick"
   >
@@ -285,7 +284,6 @@ function handleClick() {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 
 .item-card__uses {
   align-self: stretch;
