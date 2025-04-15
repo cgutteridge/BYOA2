@@ -4,13 +4,23 @@ import type { PowerFunction, PowerResult, PowerFactory } from './types'
 import { banish } from './banish'
 import { killOne, killAll } from './kill'
 import { spy } from './spy'
+import { transmute } from './transmute'
+import { shrink } from './shrink'
+import { split } from './split'
+import { pickpocket } from './pickpocket'
+import { freeze } from './freeze'
 
 // Register all power implementations
 const powerFunctions: Record<string, PowerFunction> = {
   banish,
   kill: killOne,  // Map 'kill' power to killOne implementation
   killAll,
-  spy
+  spy,
+  transmute,
+  shrink,
+  split,
+  pickpocket,
+  freeze
   // Other power implementations will be added here
 }
 

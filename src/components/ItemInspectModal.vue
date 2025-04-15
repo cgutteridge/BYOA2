@@ -131,11 +131,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Item } from '../types/item'
+import type { Monster } from '../types'
 import { getTargetDescription, generateEffectDescription } from '../quest/generateEffectDescription.ts'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
+import { getValidTargets } from '../powers'
 import { 
-  validTargets, 
   getUniqueMonsterSpecies, 
   getMonsterCountBySpecies, 
   getMonsterLevel, 
@@ -194,10 +195,10 @@ const isChoiceTarget = computed(() => {
   return item.value.target === 'pick' || item.value.target === 'pick_type'
 })
 
-// Use the helper function from targetingHelpers
+// Use the powers helper function to get valid targets
 const availableMonsters = computed(() => {
   if (!questStore.currentPub?.monsters) return []
-  return validTargets(item.value, questStore.currentPub.monsters)
+  return getValidTargets(item.value, questStore.currentPub.monsters) as Monster[]
 })
 
 const availableMonsterTypes = computed(() => {

@@ -3,24 +3,24 @@ import type { Monster } from '../types'
 import type { PowerFunction } from './types'
 import { isMonster, canTarget, getValidTargets } from './utils'
 
-// Spy power implementation
-export const spy: PowerFunction = {
+// Freeze power implementation
+export const freeze: PowerFunction = {
   execute: (item: Item, target: Monster | string) => {
     // Handle individual monster targeting
     if (isMonster(target)) {
-      console.log(`Using ${item.name} to spy on ${target.name}`)
+      console.log(`Using ${item.name} to freeze ${target.name}`)
       
       if (target.alive) {
-        // TODO: In a real implementation, reveal information about the monster
-        console.log(`Discovered secrets about ${target.name}!`)
+        // TODO: In a real implementation, apply freeze status to monster
+        console.log(`${target.name} has been frozen solid!`)
       }
     }
     // Handle type targeting
     else if (typeof target === 'string') {
-      console.log(`Using ${item.name} to spy on all monsters of type ${target}`)
+      console.log(`Using ${item.name} to freeze all monsters of type ${target}`)
       
       // TODO: Find all monsters matching the target type
-      // and reveal information about them (in the actual game implementation)
+      // and freeze them all (in the actual game implementation)
     }
   },
   
@@ -28,7 +28,7 @@ export const spy: PowerFunction = {
   getValidTargets,
   
   // UI properties
-  displayName: "Spy",
-  icon: "👁️",
-  glowColor: "rgba(0, 128, 0, 0.8)"
+  displayName: "Freeze",
+  icon: "❄️",
+  glowColor: "rgba(0, 191, 255, 0.8)"
 } 

@@ -1,4 +1,4 @@
-import { MonsterFlag, MonsterLevel, Species } from '.'
+import type { MonsterLevel, Species, MonsterFlag } from './index';
 
 // Item power types
 export type ItemPower = 
@@ -8,13 +8,14 @@ export type ItemPower =
   | 'shrink' 
   | 'split' 
   | 'pickpocket'
-  | 'banish';  // Removes monster without getting any loot
+  | 'banish'
+  | 'freeze';  // Removes monster without getting any loot
 
 // Target modes - how the target is selected
-export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | undefined;
+export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'location' | undefined;
 
 // Result modes
-export type ResultMode = 'random' | 'pick' | undefined;
+export type ResultMode = 'random' | 'pick' | 'random_type' | 'chosen_type' | undefined;
 
 // Unified Item interface
 export interface Item {
