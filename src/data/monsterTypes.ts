@@ -169,7 +169,7 @@ export const monsterTypes: MonsterType[] = [
     id: 'ancient_spirit',
     title: 'Ancient Spirit',
     drink: 'Fancy Whisky',
-    level: 'grunt',
+    level: 'minion',
     species: 'ghost',
     flags: ['spirit'],
     xp: 1.0 // Standard (25ml) at 40% ABV
@@ -472,7 +472,7 @@ export const monsterTypes: MonsterType[] = [
     level: 'minion',
     species: 'elemental',
     flags: ['magic-user'],
-    xp: 0.0 // Glass of water (no alcohol content)
+    xp: 0.5 // No alcohol, but still counts as minion XP
   },
   {
     id: 'tidal_guardian',
@@ -481,7 +481,7 @@ export const monsterTypes: MonsterType[] = [
     level: 'grunt',
     species: 'elemental',
     flags: ['magic-user'],
-    xp: 0.0, // Large glass of water (no alcohol content)
+    xp: 2.0, // No alcohol, but still counts as grunt XP
     splits: 'water_sprite'
   },
   // Ice elementals
@@ -491,8 +491,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'One Ice Cube',
     level: 'minion',
     species: 'elemental',
-    flags: ['spirit'],
-    xp: 0.0 // Ice has no alcohol
+    flags: [],
+    xp: 0.5 // No alcohol, but still counts as minion XP
   },
   {
     id: 'frost_golem',
@@ -500,8 +500,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Three Ice Cubes',
     level: 'grunt',
     species: 'elemental',
-    flags: ['spirit'],
-    xp: 0.0, // Ice has no alcohol
+    flags: [],
+    xp: 2.0, // No alcohol, but still counts as grunt XP
     splits: 'ice_shard'
   },
   {
@@ -510,8 +510,8 @@ export const monsterTypes: MonsterType[] = [
     drink: 'Pint of Ice Cubes',
     level: 'elite',
     species: 'elemental',
-    flags: ['spirit', 'magic-user'],
-    xp: 0.0, // Ice has no alcohol
+    flags: ['magic-user'],
+    xp: 3.0, // Updated from 0.0 to match elite level
     splits: 'frost_golem'
   },
   {
