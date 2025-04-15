@@ -38,7 +38,7 @@
                     :class="{ 'target-selected': selectedTargetTypes.includes(type) }"
                     @click="isChoiceTarget ? toggleTargetType(type) : null"
                   >
-                    {{ type.charAt(0).toUpperCase() + type.slice(1) }} ({{ getMonsterCountByType(type) }})
+                    {{ getMonsterTitle(type) }} ({{ getMonsterCountByType(type) }})
                   </div>
                 </div>
                 <div v-else class="target-monster-list">
@@ -142,6 +142,7 @@ import {
   getMonsterLevel, 
   getMonsterSpecies 
 } from '../quest/targeting.ts'
+import { monsterTypes } from '../data/monsterTypes.ts'
 
 // Stores
 const appStore = useAppStore()
@@ -202,7 +203,15 @@ const availableMonsters = computed(() => {
 })
 
 const availableMonsterTypes = computed(() => {
-  // Get unique monster species from available monsters
+  // Use the correct function to get monster types for type targeting
+  if (!questStore.currentPub?.monsters) return []
+  
+  if (item.value.power === 'kill' || targetMode.value === 'type') {
+    // Use getValidTargets which will return string[] for type targeting
+    return getValidTargets(item.value, questStore.currentPub.monsters) as string[]
+  }
+  
+  // Fallback to species for other cases
   return getUniqueMonsterSpecies(availableMonsters.value)
 })
 
@@ -248,6 +257,12 @@ const isUseButtonDisabled = computed(() => {
 
 // Helper function to get monster count by type
 function getMonsterCountByType(type: string): number {
+  if (targetMode.value === 'type') {
+    // When dealing with monster types, count monsters of the exact type
+    const monsters = questStore.currentPub?.monsters || []
+    return monsters.filter(monster => monster.type === type && monster.alive).length
+  }
+  // Otherwise use the species-based count
   return getMonsterCountBySpecies(availableMonsters.value, type)
 }
 
@@ -322,6 +337,12 @@ function useItem() {
   // Use appStore or other store methods to apply item effects
   // This would be implemented in the actual game logic
   // For example: questStore.useItem(item.value, selectedTargets.value)
+}
+
+// Add this function to get monster title
+function getMonsterTitle(typeId: string): string {
+  const monsterType = monsterTypes.find(mt => mt.id === typeId)
+  return monsterType ? monsterType.title : typeId.charAt(0).toUpperCase() + typeId.slice(1).replace(/_/g, ' ')
 }
 </script>
 
