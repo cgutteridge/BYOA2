@@ -228,6 +228,7 @@ function handleClick() {
   padding: 12px 16px;
   font-weight: 600;
   flex-grow: 1;
+  color: #555;
 }
 
 .item-card__power {
