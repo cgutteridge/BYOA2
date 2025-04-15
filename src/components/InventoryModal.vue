@@ -251,12 +251,12 @@ function handleQuit() {
 
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
 .inventory-grid__item {
-  min-height: 150px;
+  /* Remove fixed height */
 }
 
 .options-section {

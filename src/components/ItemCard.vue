@@ -68,11 +68,11 @@ function inspectItem() {
   border-radius: 8px;
   cursor: pointer;
   background-color: #f8f8f8;
-  height: 100%;
   display: flex;
   align-items: center;
   overflow: hidden;
   position: relative;
+  min-height: 60px;
 }
 
 .item-card--selected {
@@ -100,7 +100,7 @@ function inspectItem() {
 }
 
 .item-card__uses {
-  height: 100%;
+  align-self: stretch;
   padding: 12px;
   color: white;
   background-color: rgba(0, 0, 0, 0.7);
