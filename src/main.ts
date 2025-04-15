@@ -31,8 +31,11 @@ pinia.use(({store}) => {
     // @ts-ignore
     store.$subscribe((mutation, state) => {
         // Save properties
+        console.log( `STORYING ${store.$id})`)
+        console.log(state)
         const stateToSave: Record<string, any> = {}
         state.persist.map((key: any) => {
+            
             stateToSave[key] = state[key]
         })
         const json = JSON.stringify(stateToSave)
@@ -46,6 +49,7 @@ const questStore = useQuestStore()
 const appStore = useAppStore()
 
 if (questStore.status === 'active') {
+    console.log(questStore)
     if (questStore.currentPub === undefined) {
         appStore.setScreen('map')
     } else {

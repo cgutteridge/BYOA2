@@ -79,6 +79,7 @@ export const useQuestStore = defineStore('quest', () => {
   return {
     startPub,
     endPub,
+    currentPubId,
     status,
     title,
     description,
