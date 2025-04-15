@@ -4,10 +4,12 @@
     <div class="distance-info" v-if="playerDistance !== null">
       <span>{{ Math.round(playerDistance) }}m away</span>
     </div>
-    
+    <div class="action-buttons">
+      <button v-if="!pub.scouted && !isLoading" @click="scoutPub" class="scout-button">Scout Location</button>
+      <button @click="enterPub" v-if="pub.scouted && isNearby" class="enter-button">Enter Location</button>
+    </div>
     <div class="pub-details">
       <div v-if="pub.scouted && pub.description">
-        <div class="location-description">{{ pub.description }}</div>
         <div v-if="pub.prizeItem" class="prize-info">
           <h3>Reward:</h3>
           <ItemCard 
@@ -15,10 +17,6 @@
             variant="prize"
             :show-details="true"
           />
-          <div v-if="pub.prizeItem.description" class="prize-story">
-            <div class="story-label">Story:</div>
-            <div class="story-text">{{ pub.prizeItem.description }}</div>
-          </div>
         </div>
         <h3 class="monsters-heading">Active Monsters:</h3>
         
@@ -57,16 +55,12 @@
       </div>
 
     </div>
-    
-    <div class="action-buttons">
-      <button v-if="!pub.scouted && !isLoading" @click="scoutPub" class="scout-button">Scout Location</button>
-      <button @click="enterPub" v-if="isNearby" class="enter-button">Enter Location</button>
-    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { Pub, Monster, LocationType } from '../types'
 import { useAppStore } from "../stores/appStore"
 import { locationTypesById } from '@/data/locationTypes'
@@ -75,6 +69,7 @@ import { scoutLocation } from '@/quest/scoutLocation.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
 import '../styles/monsterStyles.css'
+import {useQuestStore} from "@/stores/questStore.ts";
 
 const props = defineProps<{
   pub: Pub
@@ -83,6 +78,7 @@ const props = defineProps<{
 const emit = defineEmits(['close'])
 
 const appStore = useAppStore()
+const questStore = useQuestStore()
 
 const locationType = computed((): LocationType => locationTypesById[props.pub.locationType])
 
@@ -99,7 +95,7 @@ const playerDistance = computed(() => {
 
 // Check if player is within range to interact with the pub
 const isNearby = computed(() => {
-  return playerDistance.value !== null && playerDistance.value < 500; // 500 meters range
+  return playerDistance.value !== null && playerDistance.value < 50000; // 50000 meters range
 });
 
 // Group undefeated monsters by type for display
@@ -226,6 +222,8 @@ function scoutPub(event: MouseEvent) {
 
 function enterPub(event: MouseEvent) {
   event.stopPropagation()
+  questStore.setCurrentPub(props.pub.id)
+  appStore.setScreen('location')
   console.log( 'enter pub' )
 }
 
@@ -259,15 +257,8 @@ h2 {
   margin: 1rem 0;
 }
 
-.location-description {
-  margin-bottom: 1.25rem;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
 .prize-info {
   margin: 1.25rem 0;
-  background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   padding: 1rem;
   text-align: left;
@@ -277,7 +268,6 @@ h2 {
   margin-top: 0;
   margin-bottom: 0.75rem;
   text-align: center;
-  color: #ffeb3b;
   font-size: 1.2rem;
 }
 
@@ -286,7 +276,6 @@ h2 {
   margin: 0.5rem 0 1rem;
   max-width: 100%;
   border-width: 2px;
-  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .prize-info :deep(.item-card__power) {
@@ -294,47 +283,12 @@ h2 {
   line-height: 1.2;
 }
 
-.prize-name {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 0.75rem;
-  color: #fff;
-  text-align: center;
-}
-
-.prize-details {
-  margin-bottom: 0.75rem;
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-
-.prize-label {
-  font-weight: bold;
-  color: #8bc34a;
-}
-
-.prize-story {
-  font-size: 0.9rem;
-  font-style: italic;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.85);
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.story-label {
-  font-weight: bold;
-  margin-bottom: 0.25rem;
-  color: #ffeb3b;
-}
-
 .monsters-heading {
   font-size: 1.2rem;
   margin: 1.25rem 0 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 0.5rem;
   color: #fff;
+  text-align: center;
 }
 
 .monster-groups {
@@ -419,17 +373,6 @@ h2 {
   border-radius: 8px;
   border: 1px solid rgba(76, 175, 80, 0.3);
   font-size: 1rem;
-}
-
-.unscouted-message {
-  margin: 1rem 0;
-  padding: 1rem;
-  font-style: italic;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  font-size: 1rem;
-  line-height: 1.5;
 }
 
 .action-buttons {

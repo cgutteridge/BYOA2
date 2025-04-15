@@ -17,7 +17,6 @@ import PubPopup from '@/components/PubPopup.vue'
 
 const appStore = useAppStore()
 const pubStore = usePubStore()
-const questStore = useQuestStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
@@ -119,9 +118,6 @@ function closePopup() {
   }
 
   // If there was an active popup, update the map
-  if (map.value) {
-    map.value.invalidateSize()
-  }
 }
 
 function cleanupMap(): void {
@@ -301,6 +297,7 @@ watch(playerLocation, (newLocation) => {
 }, { immediate: true })
 
 // Watch for game mode changes
+// @ts-ignore
 watch(() => appStore.screen, (newMode, oldMode) => {
   if (newMode !== 'map' && map.value) {
     closePopup()
