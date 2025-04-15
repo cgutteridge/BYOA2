@@ -28,16 +28,21 @@
         
         <!-- Group monsters by type and display -->
         <div v-else-if="groupedMonsters.length > 0" class="monster-groups">
-          <div v-for="(group, gIndex) in groupedMonsters" :key="gIndex" class="monster-group">
-            <div class="monster-group-header">
-              <h4>{{ getMonsterTitle(group.type) }} ({{ group.monsters.length }})</h4>
-              <div class="monster-details">
-                <span class="monster-drink">
-                  <span class="detail-label">Drink:</span> {{ getMonsterDrink(group.type) }}
-                </span>
-                <span class="monster-traits" v-if="getMonsterTraits(group.type)">
-                  {{ getMonsterTraits(group.type) }}
-                </span>
+          <div v-for="(group, gIndex) in groupedMonsters" :key="gIndex" class="monster-type-group">
+            <div 
+              class="monster-card"
+              :class="getMonsterClasses(group.type)"
+            >
+              <div class="monster-count">
+                <span>{{ group.monsters.length }}x</span>
+              </div>
+              <div class="monster-info">
+                <div class="monster-title">{{ getMonsterTitle(group.type) }}</div>
+                <div class="monster-subinfo">{{ getMonsterSpecies(group.type) }} {{ getMonsterLevel(group.type) }}{{ getMonsterTraits(group.type) }}</div>
+                <div class="monster-xp">{{ getMonsterXP(group.type) }} XP</div>
+                <div class="monster-details">
+                  <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(group.type) }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -58,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineEmits } from 'vue'
+import { computed } from 'vue'
 import type { Pub, Monster, LocationType } from '../types'
 import { useAppStore } from "../stores/appStore"
 import { locationTypesById } from '@/data/locationTypes'
@@ -66,6 +71,7 @@ import { monsterTypes } from '../data/monsterTypes'
 import { scoutLocation } from '@/quest/scoutLocation.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import { generateEffectDescription } from '@/quest/generateEffectDescription.ts'
+import '../styles/monsterStyles.css'
 
 const props = defineProps<{
   pub: Pub
@@ -145,6 +151,58 @@ function getMonsterTitle(monsterId: string): string {
 function getMonsterDrink(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   return monster?.drink || "Unknown"
+}
+
+function getMonsterXP(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (monster?.xp !== undefined) {
+    // If XP is a whole number, show as integer, otherwise show one decimal place
+    return monster.xp % 1 === 0 ? monster.xp.toString() : monster.xp.toFixed(1);
+  }
+  return "Unknown";
+}
+
+function getMonsterClasses(monsterId: string): Record<string, boolean> {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return {}
+  
+  const classes = {
+    [`monster-${monster.species}`]: true,
+    [`monster-${monster.level}`]: true
+  }
+  
+  // Add special classes for themed monsters
+  if (monster.id.includes('desert') || monster.id.includes('sand')) {
+    classes['desert-monster'] = true
+  } else if (monster.id.includes('flame') || monster.id.includes('fire')) {
+    classes['flame-monster'] = true
+  } else if (monster.id.includes('earth') || monster.id.includes('mountain')) {
+    classes['earth-monster'] = true
+  } else if (monster.id.includes('water') || monster.id.includes('tidal')) {
+    classes['water-monster'] = true
+  } else if (monster.id.includes('ice') || monster.id.includes('frost') || monster.id.includes('glacial')) {
+    classes['ice-monster'] = true
+  } else if (monster.id.includes('obsidian')) {
+    classes['obsidian-monster'] = true
+  }
+  
+  return classes
+}
+
+function getMonsterSpecies(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return ""
+  
+  // Capitalize first letter of species
+  return monster.species.charAt(0).toUpperCase() + monster.species.slice(1)
+}
+
+function getMonsterLevel(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return ""
+  
+  // Capitalize first letter of level
+  return monster.level.charAt(0).toUpperCase() + monster.level.slice(1)
 }
 
 function getMonsterTraits(monsterId: string): string {
@@ -262,28 +320,71 @@ h2 {
   margin: 0.75rem 0;
 }
 
-.monster-group {
+.monster-type-group {
   margin-bottom: 1rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  padding: 0.75rem;
 }
 
-.monster-group-header h4 {
-  margin: 0 0 0.5rem;
-  font-size: 1.1rem;
-  color: #fff;
+/* Monster card styling */
+.monster-card {
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  margin: 0.5rem 0;
+}
+
+.monster-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  font-size: 2rem;
+  font-weight: 900;
+  background: rgba(0, 0, 0, 0.3);
+  min-width: 80px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.monster-info {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.monster-title {
+  font-weight: bold;
+  font-size: 1.3rem;
+  margin-bottom: 0.25rem;
+  padding-right: 60px; /* Make room for XP */
+  color: #ffeb3b;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.monster-subinfo {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  font-style: italic;
+}
+
+.monster-xp {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
 .monster-details {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.4;
+  display: flex;
+  gap: 1.5rem;
 }
 
-.detail-label {
-  font-weight: bold;
-  color: #8bc34a;
+.monster-stat {
+  font-size: 0.95rem;
 }
 
 .all-defeated-message {
