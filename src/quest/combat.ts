@@ -24,58 +24,11 @@ export function toggleMonsterStatus(monster: Monster): void {
       questStore.addXP(monsterType.xp);
       console.log(`Added ${monsterType.xp} XP for defeating ${monster.name}`);
       
-      // Generate a random item drop if monster doesn't already have one
-      if (!monster.item) {
-        generateMonsterDrop(monster, monsterType.level);
-      }
     } else {
       // Monster was defeated and now is alive - remove XP
       questStore.addXP(-monsterType.xp);
       console.log(`Removed ${monsterType.xp} XP for undefeating ${monster.name}`);
     }
-  }
-}
-
-/**
- * Generates a random item drop for a monster based on its level
- * @param monster - The monster to generate a drop for
- * @param monsterLevel - The level of the monster
- */
-function generateMonsterDrop(monster: Monster, monsterLevel: string): void {
-  // Determine drop chance based on monster level
-  let dropChance = 0;
-  let itemLevel = 1;
-  
-  switch (monsterLevel) {
-    case 'minion':
-      dropChance = 0.3; // 30% chance for minions
-      itemLevel = 1;
-      break;
-    case 'grunt':
-      dropChance = 0.4; // 40% chance for grunts
-      itemLevel = 2;
-      break;
-    case 'elite':
-      dropChance = 0.7; // 70% chance for elites
-      itemLevel = 3;
-      break;
-    case 'boss':
-      dropChance = 1.0; // 100% chance for bosses
-      itemLevel = 4;
-      break;
-    default:
-      dropChance = 0.3;
-      itemLevel = 1;
-  }
-
-  // Determine if monster drops an item
-  if (Math.random() < dropChance) {
-    // Generate a random item
-    const item = generateRandomItem(itemLevel);
-    
-    // Assign the item to the monster
-    monster.item = item;
-    console.log(`Generated item ${item.name} for ${monster.name}`);
   }
 }
 
