@@ -1,18 +1,20 @@
 import type {Monster, Pub} from '../types'
-import {ChatGPTAPI} from '../api/chatGPT'
+import {ChatGPTAPI} from '../api/chatGPT.ts'
 import generateMonsters from './generateMonsters.ts'
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {monsterTypes} from "@/data/monsterTypes.ts";
-import { useQuestStore } from '@/stores/questStore.ts';
-import { generateGiftItem, generatePrizeItem, generateUnitItem } from './generateItems.ts';
-import { generateEffectDescription } from './generateEffectDescription'
+import {useQuestStore} from '@/stores/questStore.ts';
+import {generateEffectDescription} from './generateEffectDescription.ts'
+import {monsterItem} from "@/quest/monsterItem.ts";
+import {locationGiftItem} from "@/quest/locationGiftItem.ts";
+import {generatePrizeItem} from "@/quest/locationPrizeItem.ts";
 
 /**
  * Scout a location, generating its description, monsters, and prize
  * @param pub The pub to scout
  * @returns Promise resolving to true when scouting is complete
  */
-export async function scoutPub(
+export async function scoutLocation(
     pub: Pub,
 ): Promise<boolean> {
     const chatGPT = new ChatGPTAPI()
@@ -29,7 +31,7 @@ export async function scoutPub(
         if (monster.item !== undefined) {
             const monsterType = monsterTypes.find(m => m.id === monster.type);
             if (monsterType && (monsterType.level === 'elite' || monsterType.level === 'boss')) {
-                monster.item = generateUnitItem({ type: monster.type } as any);
+                monster.item = monsterItem(monster.type);
             } else {
                 monster.item = undefined;
             }
@@ -41,12 +43,11 @@ export async function scoutPub(
 
     // Generate a gift item based on location difficulty
     if (pub.difficulty) {
-        pub.giftItem = generateGiftItem(pub.difficulty);
+        pub.giftItem = locationGiftItem(pub.difficulty);
         
         // Also generate a prize item to be awarded for completing the location
-        const prizeItem = generatePrizeItem(pub.difficulty);
         // We'll store this as metadata, but not display it until the player defeats all monsters
-        pub.prizeItem = prizeItem;
+        pub.prizeItem = generatePrizeItem(pub.difficulty);
     }
 
     // Create a string description of the monsters for the API

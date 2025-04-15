@@ -71,16 +71,16 @@
 
 <script setup lang="ts">
 import {computed} from 'vue'
-import calculateDistance from "../helpers/calculateDistance";
+import calculateDistance from "../utils/calculateDistance.ts";
 import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {usePubStore} from "../stores/pubStore";
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {LocationType, Monster, Pub} from "@/types";
-import {scoutPub} from "@/helpers/scoutPub.ts";
+import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {monsterTypes} from "../data/monsterTypes";
 import '../styles/monsterStyles.css';
-import { generateEffectDescription } from '../helpers/generateEffectDescription';
+import { generateEffectDescription } from '../quest/generateEffectDescription.ts';
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
@@ -217,7 +217,7 @@ function getMonsterTraits(monsterId: string): string {
 
 function callScoutPub() {
   if (!appStore.focusPub) return
-  scoutPub(appStore.focusPub)
+  scoutLocation(appStore.focusPub)
 }
 
 function enterPub() {

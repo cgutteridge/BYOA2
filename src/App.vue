@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted } from 'vue'
-import { useAppStore } from './stores/appStore'
-import { useQuestStore } from './stores/questStore'
-import { useInventoryStore } from './stores/inventoryStore'
+import {onMounted, onUnmounted, ref} from 'vue'
+import {useAppStore} from './stores/appStore'
+import {useQuestStore} from './stores/questStore'
 
 import MapScreen from './screens/MapScreen.vue'
 import QuestStartScreen from './screens/QuestStartScreen.vue'
@@ -11,15 +10,12 @@ import InfoScreen from './screens/InfoScreen.vue'
 import LocationScreen from './screens/LocationScreen.vue'
 import VictoryScreen from './screens/VictoryScreen.vue'
 import LocationInfoScreen from "./screens/LocationInfoScreen.vue"
-import InventoryModal from './components/InventoryModal.vue'
+import InterfaceModal from './components/InterfaceModal.vue'
 import ItemInspectModal from './components/ItemInspectModal.vue'
 import NotificationSystem from './components/NotificationSystem.vue'
-// Import test screen for development
-import InventoryTestScreen from './screens/InventoryScreen.vue'
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
-const inventoryStore = useInventoryStore()
 const isDebugMode = ref(false)
 const watchId = ref<number | null>(null)
 const isTestMode = ref(false)
@@ -114,17 +110,8 @@ function stopContinuousTracking() {
   }
 }
 
-function toggleInventory() {
+function toggleInterface() {
   appStore.toggleInventory()
-}
-
-function closeInventory() {
-  appStore.closeInventory()
-}
-
-function handleQuit() {
-  appStore.setScreen('start_quest')
-  appStore.closeInventory()
 }
 
 onMounted(() => {
@@ -141,7 +128,7 @@ onMounted(() => {
   // Add keyboard shortcut for inventory
   window.addEventListener('keydown', (e) => {
     if (e.key === 'i' || e.key === 'I') {
-      toggleInventory()
+      toggleInterface()
     }
   })
 })
@@ -153,7 +140,7 @@ onUnmounted(() => {
   // Remove keyboard listener
   window.removeEventListener('keydown', (e) => {
     if (e.key === 'i' || e.key === 'I') {
-      toggleInventory()
+      toggleInterface()
     }
   })
 })
@@ -187,42 +174,34 @@ onUnmounted(() => {
       </p>
     </div>
     <template v-else>
-      <!-- Test mode overrides normal game screens -->
-      <template v-if="isTestMode">
-        <InventoryTestScreen />
-      </template>
       <!-- Normal game screens -->
-      <template v-else>
-        <QuestStartScreen v-if="appStore.screen === 'start_quest'" />
-        <IntroScreen v-else-if="appStore.screen === 'intro'" />
-        <InfoScreen v-else-if="appStore.screen === 'info'" />
-        <MapScreen v-else-if="appStore.screen === 'map'" />
-        <LocationScreen v-else-if="appStore.screen === 'location'" />
-        <LocationInfoScreen v-else-if="appStore.screen === 'location_info'" />
-        <VictoryScreen v-else-if="appStore.screen === 'victory'" />
-      </template>
-      
-      <!-- Inventory Button (only show during gameplay) -->
+      <QuestStartScreen v-if="appStore.screen === 'start_quest'" />
+      <IntroScreen v-else-if="appStore.screen === 'intro'" />
+      <InfoScreen v-else-if="appStore.screen === 'info'" />
+      <MapScreen v-else-if="appStore.screen === 'map'" />
+      <LocationScreen v-else-if="appStore.screen === 'location'" />
+      <LocationInfoScreen v-else-if="appStore.screen === 'location_info'" />
+      <VictoryScreen v-else-if="appStore.screen === 'victory'" />
+
+      <!-- Interface Button (only show during gameplay) -->
       <button 
         v-if="(appStore.screen !== 'start_quest' && 
               appStore.screen !== 'intro' && 
               appStore.screen !== 'victory') || isTestMode"
-        class="inventory-button"
+        class="interface-button"
         :class="{
           'with-debug-banner': isDebugMode,
           'with-test-banner': isTestMode
         }"
-        @click="toggleInventory"
-        title="Open Inventory (I)"
+        @click="toggleInterface"
+        title="Open Interface (I)"
       >
         🎒
       </button>
       
       <!-- Inventory Modal -->
-      <InventoryModal 
-        :is-open="appStore.isInventoryOpen"
-        @close="closeInventory"
-        @quit="handleQuit"
+      <InterfaceModal
+          :is-open="appStore.isInterfaceOpen"
       />
       
       <!-- Global ItemInspectModal -->
@@ -256,7 +235,7 @@ body {
   overflow-y: auto;
 }
 
-.inventory-button {
+.interface-button {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -277,12 +256,12 @@ body {
   padding: 0;
 }
 
-.inventory-button.with-debug-banner,
-.inventory-button.with-test-banner {
+.interface-button.with-debug-banner,
+.interface-button.with-test-banner {
   top: 45px; /* Adjusted to appear below the banner */
 }
 
-.inventory-button:hover {
+.interface-button:hover {
   transform: scale(1.1);
   background-color: #3a7;
 }

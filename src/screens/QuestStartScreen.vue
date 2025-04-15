@@ -139,7 +139,7 @@ import {computed, onMounted, ref, watch} from 'vue'
 import {usePubStore} from '../stores/pubStore'
 import {useAppStore} from '../stores/appStore'
 import {Pub} from "../types";
-import {startQuest} from "@/helpers/startQuest.ts";
+import {startQuest} from "@/quest/startQuest.ts";
 
 const pubStore = usePubStore()
 const appStore = useAppStore()

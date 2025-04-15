@@ -131,8 +131,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Item } from '../types/item'
-import type { Monster } from '../types'
-import { getTargetDescription, generateEffectDescription } from '../helpers/generateEffectDescription'
+import { getTargetDescription, generateEffectDescription } from '../quest/generateEffectDescription.ts'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
 import { 
@@ -141,7 +140,7 @@ import {
   getMonsterCountBySpecies, 
   getMonsterLevel, 
   getMonsterSpecies 
-} from '../helpers/targetingHelpers'
+} from '../quest/targeting.ts'
 
 // Stores
 const appStore = useAppStore()
@@ -154,7 +153,7 @@ const item = computed(() => appStore.inspectedItem || {} as Item)
 // Determine context based on app state
 const context = computed(() => {
   const hasCurrentLocation = !!questStore.currentPub
-  const isInventoryOpen = appStore.isInventoryOpen
+  const isInventoryOpen = appStore.isInterfaceOpen
   
   if (hasCurrentLocation && isInventoryOpen) return 'inventory_in_pub'
   if (hasCurrentLocation && !isInventoryOpen) return 'item_in_pub'

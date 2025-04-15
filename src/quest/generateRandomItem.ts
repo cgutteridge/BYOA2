@@ -1,7 +1,7 @@
-import type { Item, ItemPower, TargetMode } from '../types/item';
+import type { Item, ItemPower, TargetMode } from '../types/item.ts';
 import type { MonsterLevel, Species, MonsterFlag } from '../types';
-import { generateEffectDescription, getLevelQualityTerm } from './generateEffectDescription';
-import pickOne from "@/helpers/pickOne.ts";
+import { generateEffectDescription, getLevelQualityTerm } from './generateEffectDescription.ts';
+import pickOne from "@/utils/pickOne.ts";
 
 // Base point costs for different power types
 const POWER_BASE_COSTS: Record<ItemPower, number> = {

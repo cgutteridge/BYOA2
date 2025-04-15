@@ -1,9 +1,9 @@
 import type {Pub} from '@/types'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {usePubStore} from "@/stores/pubStore.ts";
-import initialisePub from "@/helpers/initialisePub.ts";
+import initialiseLocation from "@/quest/initialiseLocation.ts";
 import { useInventoryStore } from "@/stores/inventoryStore.ts";
-import { generateRandomItem } from "@/helpers/generateRandomItem.ts";
+import { generateRandomItem } from "@/quest/generateRandomItem.ts";
 
 export async function startQuest(
     title: string,
@@ -27,7 +27,7 @@ export async function startQuest(
 
     // Initialize pubs
     pubStore.pubs.forEach((pub) => {
-        initialisePub(pub)
+        initialiseLocation(pub)
     })
     
     // Clear any existing inventory items

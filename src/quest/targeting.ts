@@ -1,6 +1,6 @@
-import type { Item } from '../types/item'
+import type { Item } from '../types/item.ts'
 import type { Monster, MonsterFlag, MonsterLevel } from '../types'
-import { monsterTypes } from '../data/monsterTypes'
+import { monsterTypes } from '../data/monsterTypes.ts'
 
 /**
  * Helper function to get valid monster targets for an item

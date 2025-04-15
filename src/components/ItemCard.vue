@@ -26,8 +26,8 @@ import { computed } from 'vue'
 import type { Item } from '../types/item'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
-import { validTargets } from '../helpers/targetingHelpers'
-import { generateEffectDescription } from '../helpers/generateEffectDescription'
+import { validTargets } from '../quest/targeting.ts'
+import { generateEffectDescription } from '../quest/generateEffectDescription.ts'
 
 // Get the stores
 const appStore = useAppStore()
@@ -72,7 +72,7 @@ const isSelected = computed(() => {
 
 // Determine if we're in a location with the inventory open
 const isInPubWithInventory = computed(() => {
-  return !!questStore.currentPub && appStore.isInventoryOpen
+  return !!questStore.currentPub && appStore.isInterfaceOpen
 })
 
 // Check if this item has valid targets in the current location

@@ -3,9 +3,9 @@ import {ref} from 'vue'
 import type {LocationTypeId, Pub, PubId} from '../types'
 import {LocationDifficulty} from '../types'
 import {useAppStore} from './appStore'
-import fetchNearbyPubs from "../helpers/overpass"
-import {scoutPub} from '../helpers/scoutPub.ts'
-import calculateDistance from '../helpers/calculateDistance'
+import fetchNearbyPubs from "../api/overpass.ts"
+import {scoutLocation} from '../quest/scoutLocation.ts'
+import calculateDistance from '../utils/calculateDistance.ts'
 
 export const usePubStore = defineStore('pub', () => {
   const appStore = useAppStore()
@@ -78,7 +78,7 @@ export const usePubStore = defineStore('pub', () => {
     pubs,
     setPubs,
     fetchNearbyPubs: fetchNearbyPubsFromAPI,
-    scoutPub,
+    scoutPub: scoutLocation,
     pub,
     canScout,
     setPubDifficulty,

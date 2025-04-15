@@ -1,8 +1,8 @@
-import { useQuestStore } from '@/stores/questStore';
-import { useInventoryStore } from '@/stores/inventoryStore';
-import { monsterTypes } from '@/data/monsterTypes';
+import { useQuestStore } from '@/stores/questStore.ts';
+import { useInventoryStore } from '@/stores/inventoryStore.ts';
+import { monsterTypes } from '@/data/monsterTypes.ts';
 import { Monster } from '@/types';
-import { generateRandomItem } from './generateRandomItem';
+import { generateRandomItem } from './generateRandomItem.ts';
 
 /**
  * Toggles the alive status of a monster and updates XP accordingly

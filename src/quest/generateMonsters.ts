@@ -1,19 +1,21 @@
 // generate the monsters for a location based on it's attributes.
-import pickWeightedOne from "@/helpers/pickWeightedOne.ts";
+import pickWeightedOne from "@/utils/pickWeightedOne.ts";
 import {monsterTypes} from "@/data/monsterTypes.ts";
 import {Encounter, LocationDifficulty, Monster, MonsterLevel, Pub} from "@/types";
-import pickOne from "@/helpers/pickOne.ts";
+import pickOne from "@/utils/pickOne.ts";
 import {useQuestStore} from "@/stores/questStore.ts";
 import {encounterTable} from "@/data/encounterTable.ts";
+import {Item} from "@/types/item.ts";
+import {monsterItem} from "@/quest/monsterItem.ts";
 
 
 export default function generateMonsters(pub: Pub): Monster[] {
     // step one is to pick a pattern
     const encounter: Encounter = pickWeightedOne(encounterTable[pub.difficulty ?? 'medium'])
     console.log("encounter", encounter)
-    
+
     const monsters: Monster[] = []
-    
+
     encounter.forEach((unitSpec) => {
         // pick a monster
         const possibleMonsters = monsterTypes.filter((monster) => monster.level === unitSpec.level)
@@ -24,21 +26,14 @@ export default function generateMonsters(pub: Pub): Monster[] {
         console.log("monsterCount", monsterCount)
         console.log("monster level", unitSpec.level)
         console.log("pub difficulty", pub.difficulty)
-        
+
         // Create individual monsters with placeholder names that will be replaced by AI
         for (let i = 0; i < monsterCount; i++) {
-            const monsterName = monsterCount > 1 
-                ? `${monsterType.title} ${i + 1}` 
+            const monsterName = monsterCount > 1
+                ? `${monsterType.title} ${i + 1}`
                 : monsterType.title
-                
-            // Create item only for elite and boss monsters
-            let item = undefined;
-            if ((unitSpec.level === 'elite' || unitSpec.level === 'boss') && i === 0) {
-                // We'll add the actual item generation in the scoutPub function
-                // Just marking this monster as one that should get an item
-                item = {} as any;
-            }
-            
+            let item: Item | undefined = monsterItem(monsterType.id)
+
             monsters.push({
                 id: `monster_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
                 type: monsterType.id,
@@ -48,7 +43,7 @@ export default function generateMonsters(pub: Pub): Monster[] {
             })
         }
     })
-    
+
     console.log(monsters)
     return monsters
 }

@@ -2,7 +2,7 @@ import type { Item } from '../types/item'
 import type { Monster, MonsterFlag } from '../types'
 import type { PowerFunction } from './types'
 import { useQuestStore } from '../stores/questStore'
-import { banishMonster } from '../helpers/combatHelper'
+import { banishMonster } from '../quest/combat.ts'
 
 // Banish power implementation
 export const banish: PowerFunction = {

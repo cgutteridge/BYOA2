@@ -104,10 +104,8 @@
 import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
-import {itemTypesById, getItemTypesByLevel} from "../data/itemTypes";
 import {Monster} from "../types";
-import {Item} from "../types/item";
-import {areAllMonstersDefeated, toggleMonsterStatus, claimMonsterItem} from "../helpers/combatHelper";
+import {areAllMonstersDefeated, toggleMonsterStatus, claimMonsterItem} from "../quest/combat.ts";
 import '../styles/monsterStyles.css';
 import { computed } from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
@@ -201,21 +199,6 @@ function getMonsterFlags(monsterId: string): string[] {
   if (!monster || !monster.flags || monster.flags.length === 0) return []
   
   return monster.flags
-}
-
-function getItemTypeName(item: Item): string {
-  // Instead of using the type property which doesn't exist anymore, use the power property
-  const powerType = item.power;
-  const level = item.level || 1;
-  
-  // For version using itemTypes
-  const itemTypes = getItemTypesByLevel(level, powerType);
-  if (itemTypes.length > 0) {
-    return itemTypes[0].title;
-  }
-  
-  // Fallback
-  return itemTypesById[powerType]?.title || powerType;
 }
 
 function leavePub() {

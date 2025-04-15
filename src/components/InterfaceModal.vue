@@ -1,16 +1,16 @@
 <template>
   <Teleport to="body">
-    <div v-if="isOpen" class="inventory-modal">
-      <div class="inventory-modal__backdrop" @click="close"></div>
+    <div v-if="isOpen" class="interface-modal">
+      <div class="interface-modal__backdrop" @click="close"></div>
       
-      <div class="inventory-modal__content">
-        <div class="inventory-modal__header">
-          <div class="inventory-modal__tabs">
+      <div class="interface-modal__content">
+        <div class="interface-modal__header">
+          <div class="interface-modal__tabs">
             <button 
               v-for="tab in tabs" 
               :key="tab.id"
-              class="inventory-modal__tab"
-              :class="{ 'inventory-modal__tab--active': activeTab === tab.id }"
+              class="interface-modal__tab"
+              :class="{ 'interface-modal__tab--active': activeTab === tab.id }"
               :disabled="tab.disabled"
               @click="activeTab = tab.id"
             >
@@ -18,22 +18,22 @@
             </button>
           </div>
           
-          <button class="inventory-modal__close" @click="close">
+          <button class="interface-modal__close" @click="close">
             ×
           </button>
         </div>
         
-        <div class="inventory-modal__body">
+        <div class="interface-modal__body">
           <!-- Items Tab -->
-          <div v-if="activeTab === 'items'" class="inventory-tab inventory-tab--items">
-            <div v-if="!hasItems" class="inventory-tab__empty">
+          <div v-if="activeTab === 'items'" class="interface-tab interface-tab--items">
+            <div v-if="!hasItems" class="interface-tab__empty">
               Your inventory is empty.
             </div>
-            <div v-else class="inventory-grid">
+            <div v-else class="interface-grid">
               <div 
                 v-for="item in inventoryItems" 
                 :key="item.id"
-                class="inventory-grid__item"
+                class="interface-grid__item"
               >
                 <ItemCard 
                   :item="item"
@@ -44,19 +44,19 @@
           </div>
           
           <!-- Quest Tab -->
-          <div v-else-if="activeTab === 'quest'" class="inventory-tab inventory-tab--quest">
+          <div v-else-if="activeTab === 'quest'" class="interface-tab interface-tab--quest">
             <h2>Current Quest</h2>
             <p>Quest details will be displayed here in a future update.</p>
           </div>
           
           <!-- Log Tab (disabled for now) -->
-          <div v-else-if="activeTab === 'log'" class="inventory-tab inventory-tab--log">
+          <div v-else-if="activeTab === 'log'" class="interface-tab interface-tab--log">
             <h2>Quest Log</h2>
             <p>Your quest log will be displayed here in a future update.</p>
           </div>
           
           <!-- Options Tab -->
-          <div v-else-if="activeTab === 'options'" class="inventory-tab inventory-tab--options">
+          <div v-else-if="activeTab === 'options'" class="interface-tab interface-tab--options">
             <h2>Game Options</h2>
             
             <div class="options-section">
@@ -77,22 +77,12 @@ import { computed } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore'
 import { useAppStore } from '../stores/appStore'
 import ItemCard from './ItemCard.vue'
-import type { Item } from '../types/item'
 
 // Stores
 const inventoryStore = useInventoryStore()
 const appStore = useAppStore()
 
-// Props
-defineProps<{
-  isOpen: boolean
-}>()
-
-// Emits
-const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'quit'): void
-}>()
+const isOpen = computed(()=>appStore.isInterfaceOpen)
 
 // Computed
 const activeTab = computed({
@@ -130,16 +120,17 @@ const tabs = [
 
 // Methods
 function close() {
-  emit('close')
+  appStore.closeInventory()
 }
 
 function handleQuit() {
-  emit('quit')
+  appStore.setScreen('start_quest')
+  appStore.closeInventory()
 }
 </script>
 
 <style scoped>
-.inventory-modal {
+.interface-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -151,7 +142,7 @@ function handleQuit() {
   align-items: center;
 }
 
-.inventory-modal__backdrop {
+.interface-modal__backdrop {
   position: absolute;
   top: 0;
   left: 0;
@@ -161,7 +152,7 @@ function handleQuit() {
   backdrop-filter: blur(2px);
 }
 
-.inventory-modal__content {
+.interface-modal__content {
   position: relative;
   width: 90%;
   height: 90%;
@@ -174,7 +165,7 @@ function handleQuit() {
   overflow: hidden;
 }
 
-.inventory-modal__header {
+.interface-modal__header {
   padding: 16px;
   border-bottom: 1px solid #eee;
   display: flex;
@@ -183,12 +174,12 @@ function handleQuit() {
   background-color: #f5f5f5;
 }
 
-.inventory-modal__tabs {
+.interface-modal__tabs {
   display: flex;
   gap: 1px;
 }
 
-.inventory-modal__tab {
+.interface-modal__tab {
   padding: 8px 16px;
   border: none;
   background-color: transparent;
@@ -198,16 +189,16 @@ function handleQuit() {
   transition: all 0.2s;
 }
 
-.inventory-modal__tab:hover:not(:disabled) {
+.interface-modal__tab:hover:not(:disabled) {
   background-color: #eaeaea;
 }
 
-.inventory-modal__tab--active {
+.interface-modal__tab--active {
   color: #4a8;
   font-weight: 600;
 }
 
-.inventory-modal__tab--active::after {
+.interface-modal__tab--active::after {
   content: '';
   position: absolute;
   left: 0;
@@ -218,12 +209,12 @@ function handleQuit() {
   border-radius: 3px 3px 0 0;
 }
 
-.inventory-modal__tab:disabled {
+.interface-modal__tab:disabled {
   color: #aaa;
   cursor: not-allowed;
 }
 
-.inventory-modal__close {
+.interface-modal__close {
   border: none;
   background: transparent;
   font-size: 32px;
@@ -233,31 +224,27 @@ function handleQuit() {
   color: #666;
 }
 
-.inventory-modal__close:hover {
+.interface-modal__close:hover {
   color: #333;
 }
 
-.inventory-modal__body {
+.interface-modal__body {
   flex-grow: 1;
   padding: 20px;
   overflow-y: auto;
 }
 
-.inventory-tab__empty {
+.interface-tab__empty {
   text-align: center;
   padding: 40px;
   color: #888;
   font-style: italic;
 }
 
-.inventory-grid {
+.interface-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-}
-
-.inventory-grid__item {
-  /* Remove fixed height */
 }
 
 .options-section {

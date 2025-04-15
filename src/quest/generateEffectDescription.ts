@@ -1,4 +1,4 @@
-import type { Item } from '../types/item';
+import type { Item } from '../types/item.ts';
 
 /**
  * Convert item level to descriptive quality term
@@ -13,14 +13,6 @@ export function getLevelQualityTerm(level: number): string {
     case 6: return "legendary";
     default: return "unknown quality";
   }
-}
-
-/**
- * Get a description of the item's uses
- */
-export function getUsesDescription(item: Item): string {
-  if (!item.uses) return '';
-  return ` Has ${item.uses} ${item.uses === 1 ? 'use' : 'uses'} remaining.`;
 }
 
 /**
@@ -155,9 +147,6 @@ export function generateEffectDescription(item: Item): string {
     default:
       effect = `This ${qualityTerm} item has unknown effects.`;
   }
-  
-  // Add number of uses
-  effect += getUsesDescription(item);
-  
+
   return effect;
 } 

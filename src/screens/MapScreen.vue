@@ -1,23 +1,6 @@
 <template>
   <div class="map-container">
     <div id="map" ref="mapContainer"></div>
-
-
-    <div v-if="questStore.status !== 'no_quest'" class="quest-info">
-      <h3>{{ questStore.title }}</h3>
-      <button @click="showQuitDialog = true">Quit Quest</button>
-    </div>
-
-    <div v-if="showQuitDialog" class="dialog-overlay">
-      <div class="dialog">
-        <h3>Quit Quest?</h3>
-        <p>Are you sure you want to quit your current quest?</p>
-        <div class="dialog-actions">
-          <button @click="quitQuest">Yes, Quit</button>
-          <button @click="showQuitDialog = false">Cancel</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -26,19 +9,16 @@ import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type {Location, Pub} from '../types'
-import {useQuestStore} from "../stores/questStore";
 import {usePubStore} from "../stores/pubStore";
 import {useAppStore} from "../stores/appStore";
 import {locationTypesById} from "@/data/locationTypes.ts";
 
-const questStore = useQuestStore()
 const appStore = useAppStore()
 const pubStore = usePubStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
 const pubMarkers = ref<L.Marker[]>([])
-const showQuitDialog = ref<boolean>(false)
 const isInitializing = ref<boolean>(false)
 
 // Computed properties
@@ -202,12 +182,6 @@ function initializeMap(): void {
 
 
 
-function quitQuest(): void {
-  questStore.endQuest()
-  appStore.setScreen('start_quest')
-  showQuitDialog.value = false
-}
-
 function initWhenReady(): void {
   if (playerLocation.value) {
     initializeMap()
@@ -302,85 +276,11 @@ function centerOnPlayer(): void {
   flex-direction: column;
 }
 
-.quest-info {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  z-index: 1000;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 1rem;
-  border-radius: 8px;
-  color: white;
-  max-width: 300px;
-}
-
-.pub-info {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.start-pub, .end-pub {
-  flex: 1;
-}
-
 #map {
   flex: 1;
   width: 100%;
   height: 100%;
   z-index: 1;
-}
-
-.player-marker {
-  background-color: #4CAF50;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-}
-
-.pub-details {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  z-index: 1000;
-}
-
-.dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.dialog {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  text-align: center;
-}
-
-.dialog-actions {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.pub-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
 }
 
 button {
@@ -392,11 +292,6 @@ button {
   cursor: pointer;
 }
 
-:deep(.player-marker) {
-  font-size: 24px;
-  text-align: center;
-}
-
 :deep(.player-dot) {
   width: 20px;
   height: 20px;
@@ -404,10 +299,6 @@ button {
   border-radius: 50%;
   border: 3px solid white;
   box-shadow: 0 0 5px rgba(0,0,0,0.5);
-}
-
-:deep(.pub-marker) {
-  cursor: pointer;
 }
 
 :deep(.leaflet-control-center) {

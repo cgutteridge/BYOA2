@@ -128,7 +128,7 @@ export const useAppStore = defineStore('app', () => {
     mapPosition,
     mapZoom,
     focusPub,
-    isInventoryOpen,
+    isInterfaceOpen: isInventoryOpen,
     inventoryTab,
     inspectedItem,
     notifications,

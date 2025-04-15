@@ -1,12 +1,12 @@
 import {locationTypesList} from "@/data/locationTypes.ts";
 import {LocationDifficulty, Pub} from "@/types";
-import pickOne from "@/helpers/pickOne.ts";
+import pickOne from "@/utils/pickOne.ts";
 import {useQuestStore} from "@/stores/questStore.ts";
 import {usePubStore} from "@/stores/pubStore.ts";
-import calculateDistance from "@/helpers/calculateDistance.ts";
+import calculateDistance from "@/utils/calculateDistance.ts";
 
 
-export default function initialisePub(pub: Pub) {
+export default function initialiseLocation(pub: Pub) {
     const pubStore = usePubStore()
     // calculate difficulty
     pubStore.setPubDifficulty(pub.id, calculateDifficulty(pub))

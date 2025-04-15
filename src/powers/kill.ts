@@ -1,7 +1,7 @@
 import type { Item } from '../types/item'
 import type { Monster, MonsterFlag } from '../types'
 import type { PowerFunction } from './types'
-import { toggleMonsterStatus } from '../helpers/combatHelper'
+import { toggleMonsterStatus } from '../quest/combat.ts'
 
 // Kill One power implementation
 export const killOne: PowerFunction = {
