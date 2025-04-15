@@ -10,14 +10,15 @@
     </div>
     <div class="pub-details">
       <div v-if="pub.scouted && pub.description">
-        <div v-if="pub.prizeItem" class="prize-info">
-          <h3>Reward:</h3>
+        <div v-if="pub.giftItem" class="gift-info">
+          <h3>Gift:</h3>
           <ItemCard 
-            :item="pub.prizeItem"
-            variant="prize"
+            :item="pub.giftItem"
+            variant="gift"
             :show-details="true"
           />
         </div>
+        
         <h3 class="monsters-heading">Active Monsters:</h3>
         
         <!-- Show a message when all monsters are defeated -->
@@ -45,6 +46,15 @@
               </div>
             </div>
           </div>
+        </div>
+        
+        <div v-if="pub.prizeItem" class="prize-info">
+          <h3>Reward:</h3>
+          <ItemCard 
+            :item="pub.prizeItem"
+            variant="prize"
+            :show-details="true"
+          />
         </div>
       </div>
       
@@ -257,28 +267,32 @@ h2 {
   margin: 1rem 0;
 }
 
-.prize-info {
+.prize-info,
+.gift-info {
   margin: 1.25rem 0;
   border-radius: 8px;
   padding: 1rem;
   text-align: left;
 }
 
-.prize-info h3 {
+.prize-info h3,
+.gift-info h3 {
   margin-top: 0;
   margin-bottom: 0.75rem;
   text-align: center;
   font-size: 1.2rem;
 }
 
-/* Styling modifications for ItemCard inside prize-info */
-.prize-info :deep(.item-card) {
+/* Styling modifications for ItemCard inside prize-info and gift-info */
+.prize-info :deep(.item-card),
+.gift-info :deep(.item-card) {
   margin: 0.5rem 0 1rem;
   max-width: 100%;
   border-width: 2px;
 }
 
-.prize-info :deep(.item-card__power) {
+.prize-info :deep(.item-card__power),
+.gift-info :deep(.item-card__power) {
   white-space: normal;
   line-height: 1.2;
 }
