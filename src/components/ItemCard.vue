@@ -13,7 +13,7 @@
     @click="handleClick"
   >
     <div class="item-card__name">{{ item.name }}</div>
-    <div class="item-card__power" v-if="showDetails">{{ item.effectDescription || item.power }}</div>
+    <div class="item-card__power" v-if="showDetails">{{ generateEffectDescription(item) }}</div>
     <div class="item-card__uses">{{ item.uses !== undefined ? item.uses : '∞' }}</div>
   </div>
 </template>
@@ -24,6 +24,7 @@ import type { Item } from '../types/item'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
 import { validTargets } from '../helpers/targetingHelpers'
+import { generateEffectDescription } from '../helpers/generateEffectDescription'
 
 // Get the stores
 const appStore = useAppStore()

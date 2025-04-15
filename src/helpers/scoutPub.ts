@@ -5,6 +5,7 @@ import {locationTypesById} from "@/data/locationTypes.ts";
 import {monsterTypes} from "@/data/monsterTypes.ts";
 import { useQuestStore } from '@/stores/questStore.ts';
 import { generateGiftItem, generatePrizeItem, generateUnitItem } from './generateItems.ts';
+import { generateEffectDescription } from './generateEffectDescription'
 
 /**
  * Scout a location, generating its description, monsters, and prize
@@ -65,8 +66,8 @@ export async function scoutPub(
     console.log(pub,extraInstructions)
     
     // Get prize and gift item powers to pass to ChatGPT
-    const prizeItemPower = pub.prizeItem?.effectDescription || "nothing";
-    const giftItemPower = pub.giftItem?.effectDescription  ;
+    const prizeItemPower = pub.prizeItem ? generateEffectDescription(pub.prizeItem) : "nothing";
+    const giftItemPower = pub.giftItem ? generateEffectDescription(pub.giftItem) : undefined;
     
     // Generate pub description, name, and item details from AI
     const {

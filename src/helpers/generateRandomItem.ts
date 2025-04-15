@@ -179,9 +179,6 @@ export function generateRandomItem(level: number): Item {
   // Update the name to match the final target mode
   item.name = generateItemName(selectedPower, item.target);
   
-  // Generate the effect description (but not the item description)
-  item.effectDescription = generateEffectDescription(item);
-  
   return item;
 }
 
@@ -354,7 +351,7 @@ export function logItemDetails(item: Item): void {
   console.log(`Quality: ${getLevelQualityTerm(item.level)} (Level ${item.level})`);
   console.log(`Power: ${item.power}`);
   console.log(`Uses: ${item.uses || 1}`);
-  console.log(`Effect: ${item.effectDescription || 'None'}`);
+  console.log(`Effect: ${generateEffectDescription(item)}`);
   console.log(`Target mode: ${item.target || 'none'}`);
   
   if (item.targetFilters) {

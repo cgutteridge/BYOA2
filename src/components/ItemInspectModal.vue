@@ -21,7 +21,7 @@
             
             <!-- Effect description -->
             <div class="item-inspect-modal__effect">
-              <p>{{ item.effectDescription }}</p>
+              <p>{{ generateEffectDescription(item) }}</p>
             </div>
             
             <!-- Target selection (when in pub) -->
@@ -132,7 +132,7 @@
 import { ref, computed } from 'vue'
 import type { Item } from '../types/item'
 import type { Monster } from '../types'
-import { getTargetDescription } from '../helpers/generateEffectDescription'
+import { getTargetDescription, generateEffectDescription } from '../helpers/generateEffectDescription'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
 import { 
