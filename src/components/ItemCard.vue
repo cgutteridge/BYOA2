@@ -10,13 +10,17 @@
       'item-card--drop': variant === 'drop'
     }"
     :data-power="item.power"
+    :data-level="item.level"
+    :aria-label="`${item.name}, ${generateEffectDescription(item)}, ${item.uses !== undefined ? item.uses + ' uses remaining' : 'Unlimited uses'}`"
     @click="handleClick"
   >
     <div class="item-card__icon" v-if="item.power">
       <span class="icon" :class="`icon-${item.power}`">{{ getPowerIcon(item.power) }}</span>
     </div>
-    <div class="item-card__name">{{ item.name }}</div>
-    <div class="item-card__power" v-if="showDetails">{{ generateEffectDescription(item) }}</div>
+    <div class="item-card__content">
+      <div class="item-card__name">{{ item.name }}</div>
+      <div class="item-card__power" v-if="showDetails">{{ generateEffectDescription(item) }}</div>
+    </div>
     <div class="item-card__uses">{{ item.uses !== undefined ? item.uses : '∞' }}</div>
   </div>
 </template>
@@ -259,19 +263,29 @@ function handleClick() {
   text-align: center;
 }
 
-.item-card__name {
-  padding: 12px 16px;
-  font-weight: 600;
+.item-card__content {
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
+  padding: 8px 12px;
+  overflow: hidden;
+}
+
+.item-card__name {
+  font-weight: 600;
   color: #555;
+  margin-bottom: 4px;
 }
 
 .item-card__power {
   font-size: 0.85rem;
   color: #555;
-  padding: 0 8px;
-  max-width: 60%;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 
 .item-card__uses {
   align-self: stretch;

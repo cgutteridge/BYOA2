@@ -10,10 +10,11 @@
         <div class="location-description">{{ pub.description }}</div>
         <div v-if="pub.prizeItem" class="prize-info">
           <h3>Reward:</h3>
-          <div class="prize-name">{{ pub.prizeItem.name }}</div>
-          <div class="prize-details">
-            <span class="prize-label">Effect:</span> {{ generateEffectDescription(pub.prizeItem) }}
-          </div>
+          <ItemCard 
+            :item="pub.prizeItem"
+            variant="prize"
+            :show-details="true"
+          />
           <div v-if="pub.prizeItem.description" class="prize-story">
             <div class="story-label">Story:</div>
             <div class="story-text">{{ pub.prizeItem.description }}</div>
@@ -71,6 +72,7 @@ import { monsterTypes } from '../data/monsterTypes'
 import { scoutLocation } from '@/quest/scoutLocation.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import { generateEffectDescription } from '@/quest/generateEffectDescription.ts'
+import ItemCard from './ItemCard.vue'
 import '../styles/monsterStyles.css'
 
 const props = defineProps<{
@@ -270,10 +272,23 @@ h2 {
 
 .prize-info h3 {
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   text-align: center;
   color: #ffeb3b;
   font-size: 1.2rem;
+}
+
+/* Styling modifications for ItemCard inside prize-info */
+.prize-info :deep(.item-card) {
+  margin: 0.5rem 0 1rem;
+  max-width: 100%;
+  border-width: 2px;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.prize-info :deep(.item-card__power) {
+  white-space: normal;
+  line-height: 1.2;
 }
 
 .prize-name {
@@ -300,6 +315,9 @@ h2 {
   font-style: italic;
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.85);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .story-label {
