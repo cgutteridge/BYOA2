@@ -191,9 +191,7 @@ onUnmounted(() => {
       </button>
       
       <!-- Inventory Modal -->
-      <InterfaceModal
-          :is-open="appStore.isInterfaceOpen"
-      />
+      <InterfaceModal />
       
       <!-- Global ItemInspectModal -->
       <ItemInspectModal v-if="appStore.inspectedItem" />

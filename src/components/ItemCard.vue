@@ -57,14 +57,14 @@ function getPowerIcon(power: string | undefined): string {
     kill: '⚔️',
     transmute: '✨',
     shrink: '📏',
-    split: '🔪',
+    split: '👬',
     pickpocket: '💰',
     banish: '🔮',
     scout_500: '👁️',
     scout_1000: '👁️',
     scout_any: '👁️'
   }
-  
+
   return icons[power] || '?'
 }
 
