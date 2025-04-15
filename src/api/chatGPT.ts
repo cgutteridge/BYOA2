@@ -21,9 +21,9 @@ export class ChatGPTAPI {
         body: JSON.stringify({
           model: this.model,
           messages,
-            temperature: 1.25,
-            frequency_penalty: 1,
-          presence_penalty: 0.6,
+            temperature: 0.1,
+            frequency_penalty: 0.3,
+          presence_penalty: 0.3,
           max_tokens: 1000
         })
       })
@@ -77,7 +77,8 @@ export class ChatGPTAPI {
         Do not promise additional rewards. 
         You may retitle the location in an amusing way maybe combining the real name with the fantasy theme. 
         The description field in the JSON response must describe ALL OF the location, 
-        ${giftItemPower ? "the item available and why, ":""}, the challenge, and the prize.
+        ${giftItemPower ? "the item available and why, ":""}, the challenge, and the prize as the situation lies when the
+        players arrive.
         
         ${extraInstructions}
 
