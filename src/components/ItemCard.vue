@@ -12,6 +12,9 @@
     :data-power="item.power"
     @click="handleClick"
   >
+    <div class="item-card__icon" v-if="item.power">
+      <span class="icon" :class="`icon-${item.power}`">{{ getPowerIcon(item.power) }}</span>
+    </div>
     <div class="item-card__name">{{ item.name }}</div>
     <div class="item-card__power" v-if="showDetails">{{ generateEffectDescription(item) }}</div>
     <div class="item-card__uses">{{ item.uses !== undefined ? item.uses : '∞' }}</div>
@@ -42,6 +45,25 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'action', item: Item): void
 }>()
+
+// Get power icon based on item power
+function getPowerIcon(power: string | undefined): string {
+  if (!power) return '?'
+  
+  const icons: Record<string, string> = {
+    kill: '⚔️',
+    transmute: '✨',
+    shrink: '📏',
+    split: '🔪',
+    pickpocket: '💰',
+    banish: '🔮',
+    scout_500: '👁️',
+    scout_1000: '👁️',
+    scout_any: '👁️'
+  }
+  
+  return icons[power] || '?'
+}
 
 // Is this item currently selected?
 const isSelected = computed(() => {
@@ -224,6 +246,19 @@ function handleClick() {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.item-card__icon {
+  align-self: stretch;
+  width: 40px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 8px 0 0 8px;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
 .item-card__name {
   padding: 12px 16px;
   font-weight: 600;
@@ -240,14 +275,15 @@ function handleClick() {
 
 .item-card__uses {
   align-self: stretch;
-  padding: 12px;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.7);
-  font-weight: bold;
+  width: 40px;
+  min-width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  font-weight: bold;
   text-align: center;
+  border-radius: 0 8px 8px 0;
 }
 </style> 
