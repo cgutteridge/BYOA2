@@ -4,6 +4,64 @@ import {usePubStore} from "@/stores/pubStore.ts";
 import initialiseLocation from "@/quest/initialiseLocation.ts";
 import { useInventoryStore } from "@/stores/inventoryStore.ts";
 import { generateRandomItem } from "@/quest/generateRandomItem.ts";
+import type { Item, ItemPower } from "@/types/item.ts";
+
+// Function to create unrestricted debug items with pick and pick_type for each power
+function createDebugItems(): Item[] {
+  // Define all available powers
+  const powers: ItemPower[] = [
+    'kill', 
+    'transmute', 
+    'spy',
+    'shrink', 
+    'split', 
+    'pickpocket',
+    'banish',
+    'freeze'
+  ];
+  
+  const items: Item[] = [];
+  
+  // Create a pick item for each power
+  powers.forEach(power => {
+    // Create pick item
+    const pickItem: Item = {
+      id: `debug_pick_${power}_${Date.now()}`,
+      name: `Debug ${power.charAt(0).toUpperCase() + power.slice(1)} Picker`,
+      description: `Debug item with unrestricted pick ability for ${power}`,
+      uses: 999,
+      level: 6,
+      power,
+      target: 'pick',
+      targetFilters: {
+        levels: ['minion', 'grunt', 'elite', 'boss']
+      },
+      icon: '🛠️',
+      timestamp: Date.now()
+    };
+    
+    // Create pick_type item
+    const pickTypeItem: Item = {
+      id: `debug_pick_type_${power}_${Date.now()}`,
+      name: `Debug ${power.charAt(0).toUpperCase() + power.slice(1)} Type Picker`,
+      description: `Debug item with unrestricted pick_type ability for ${power}`,
+      uses: 999,
+      level: 6,
+      power,
+      target: 'pick_type',
+      targetFilters: {
+        levels: ['minion', 'grunt', 'elite', 'boss']
+      },
+      icon: '🛠️',
+      timestamp: Date.now()
+    };
+    
+    items.push(pickItem);
+    items.push(pickTypeItem);
+  });
+  
+  return items;
+}
 
 export async function startQuest(
     title: string,
@@ -40,4 +98,9 @@ export async function startQuest(
         const item = generateRandomItem(1);
         inventoryStore.addItem(item);
     }
+    
+    // Add debug items with unrestricted pick and pick_type for each power
+    createDebugItems().forEach(item => {
+        inventoryStore.addItem(item);
+    });
 }
