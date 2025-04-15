@@ -1,8 +1,8 @@
 import type { Item } from '../types/item'
 import type { Monster, MonsterFlag } from '../types'
 import type { PowerFunction } from './types'
-import { useQuestStore } from '../stores/questStore'
 import { banishMonster } from '../quest/combat.ts'
+import { monsterTypes } from '../data/monsterTypes.ts'
 
 // Banish power implementation
 export const banish: PowerFunction = {
@@ -28,35 +28,34 @@ export const banish: PowerFunction = {
     
     // Check target filters
     if (item.targetFilters) {
+      // Find the monster type definition
+      const monster = target as Monster
+      const monsterType = monsterTypes.find(mt => mt.id === monster.type)
+      if (!monsterType) {
+        return false
+      }
+      
       // Check level restrictions
       if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
-        const monster = target as Monster
-        const monsterType = getMonsterType(monster.type)
-        if (monsterType && !item.targetFilters.levels.includes(monsterType.level)) {
+        if (!item.targetFilters.levels.includes(monsterType.level)) {
           return false
         }
       }
       
       // Check species restrictions
       if (item.targetFilters.species && item.targetFilters.species.length > 0) {
-        const monster = target as Monster
-        const monsterType = getMonsterType(monster.type)
-        if (monsterType && !item.targetFilters.species.includes(monsterType.species)) {
+        if (!item.targetFilters.species.includes(monsterType.species)) {
           return false
         }
       }
       
       // Check flag restrictions
       if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
-        const monster = target as Monster
-        const monsterType = getMonsterType(monster.type)
-        if (monsterType) {
-          const hasValidFlag = monsterType.flags.some((flag: MonsterFlag) => 
-            item.targetFilters?.flags?.includes(flag)
-          )
-          if (!hasValidFlag) {
-            return false
-          }
+        const hasValidFlag = monsterType.flags.some((flag: MonsterFlag) => 
+          item.targetFilters?.flags?.includes(flag)
+        )
+        if (!hasValidFlag) {
+          return false
         }
       }
     }
@@ -64,25 +63,17 @@ export const banish: PowerFunction = {
     return true
   },
   
-  getValidTargets: (item: Item): Monster[] => {
-    // This will return all valid monsters in the current location
-    const questStore = useQuestStore()
-    if (!questStore.currentPub || !questStore.currentPub.monsters) {
+  getValidTargets: (item: Item, monsters: Monster[]): Monster[] => {
+    if (!monsters || !monsters.length) {
       return []
     }
     
-    // Store reference to canTarget since 'this' won't work in the filter
-    const canTargetFunc = banish.canTarget
-    
-    return questStore.currentPub.monsters.filter(monster => 
-      monster.alive && canTargetFunc(item, monster)
-    )
-  }
-}
-
-// Helper function to get monster type details
-function getMonsterType(typeId: string) {
-  // Import here to avoid circular dependencies
-  const { monsterTypes } = require('../data/monsterTypes')
-  return monsterTypes.find((type: any) => type.id === typeId)
+    // Filter monsters based on canTarget logic
+    return monsters.filter(monster => banish.canTarget(item, monster))
+  },
+  
+  // UI properties
+  displayName: "Banish",
+  icon: "🔮",
+  glowColor: "rgba(75, 0, 130, 0.8)"
 } 

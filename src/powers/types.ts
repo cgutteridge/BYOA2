@@ -5,7 +5,18 @@ import type { Monster } from '../types'
 export interface PowerFunction {
   execute: (item: Item, target?: Monster | string | any) => void
   canTarget: (item: Item, target?: Monster | string | any) => boolean
-  getValidTargets?: (item: Item) => Monster[] | string[] | any[]
+  getValidTargets: (item: Item, monsters: Monster[]) => Monster[] | string[] | any[]
+  displayName?: string
+  icon?: string
+  glowColor?: string
+}
+
+// Power factory to provide UI properties and functionality
+export interface PowerFactory {
+  getPowerFunction: (powerName: string) => PowerFunction | undefined
+  getIcon: (powerName: string) => string
+  getGlowColor: (powerName: string) => string
+  getDisplayName: (powerName: string) => string
 }
 
 // Result type for power executions

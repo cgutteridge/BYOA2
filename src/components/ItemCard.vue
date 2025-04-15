@@ -29,7 +29,7 @@ import { computed } from 'vue'
 import type { Item } from '../types/item'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
-import { validTargets } from '../quest/targeting.ts'
+import { powerFactory, getValidTargets } from '../powers'
 import { generateEffectDescription } from '../quest/generateEffectDescription.ts'
 
 // Get the stores
@@ -52,20 +52,7 @@ const emit = defineEmits<{
 // Get power icon based on item power
 function getPowerIcon(power: string | undefined): string {
   if (!power) return '?'
-  
-  const icons: Record<string, string> = {
-    kill: '⚔️',
-    transmute: '✨',
-    shrink: '📏',
-    split: '👬',
-    pickpocket: '💰',
-    banish: '🔮',
-    scout_500: '👁️',
-    scout_1000: '👁️',
-    scout_any: '👁️'
-  }
-
-  return icons[power] || '?'
+  return powerFactory.getIcon(power)
 }
 
 // Is this item currently selected?
@@ -91,12 +78,12 @@ const hasValidTargets = computed(() => {
   }
   
   // Only apply to items with targeting powers
-  if (!props.item.power || !['kill', 'transmute', 'shrink', 'split', 'pickpocket', 'banish'].includes(props.item.power)) {
+  if (!props.item.power) {
     return false
   }
   
   // Check if there are valid targets for this item
-  const targets = validTargets(props.item, questStore.currentPub.monsters)
+  const targets = getValidTargets(props.item, questStore.currentPub.monsters)
   return targets.length > 0
 })
 
@@ -137,7 +124,7 @@ function handleClick() {
 /* Base has-targets styling with glowing effect */
 .item-card--has-targets {
   border-width: 2px;
-  border-color: white;
+  border-color: v-bind("props.item.power ? powerFactory.getGlowColor(props.item.power) : 'white'");
   z-index: 2;
   animation: pulse-glow 2s infinite alternate;
 }
@@ -151,88 +138,28 @@ function handleClick() {
   }
 }
 
-/* Power-specific glow colors */
-.item-card--has-targets[data-power="kill"] {
-  border-color: rgba(255, 0, 0, 0.8);
-  animation: pulse-glow-kill 2s infinite alternate;
+/* This keeps the animation but uses a dynamic color setup */
+.item-card--has-targets:after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 8px;
+  pointer-events: none;
+  background: transparent;
+  opacity: 0;
+  box-shadow: 0 0 8px v-bind("props.item.power ? powerFactory.getGlowColor(props.item.power) : 'rgba(255, 255, 255, 0.8)'");
+  animation: pulse-glow-effect 2s infinite alternate;
 }
 
-@keyframes pulse-glow-kill {
-  from {
-    box-shadow: 0 0 8px rgba(255, 0, 0, 0.4), 0 0 12px rgba(255, 0, 0, 0.2);
+@keyframes pulse-glow-effect {
+  0% {
+    opacity: 0.2;
   }
-  to {
-    box-shadow: 0 0 12px rgba(255, 0, 0, 0.7), 0 0 20px rgba(255, 0, 0, 0.5);
-  }
-}
-
-.item-card--has-targets[data-power="transmute"] {
-  border-color: rgba(138, 43, 226, 0.8);
-  animation: pulse-glow-transmute 2s infinite alternate;
-}
-
-@keyframes pulse-glow-transmute {
-  from {
-    box-shadow: 0 0 8px rgba(138, 43, 226, 0.4), 0 0 12px rgba(138, 43, 226, 0.2);
-  }
-  to {
-    box-shadow: 0 0 12px rgba(138, 43, 226, 0.7), 0 0 20px rgba(138, 43, 226, 0.5);
-  }
-}
-
-.item-card--has-targets[data-power="shrink"] {
-  border-color: rgba(0, 191, 255, 0.8);
-  animation: pulse-glow-shrink 2s infinite alternate;
-}
-
-@keyframes pulse-glow-shrink {
-  from {
-    box-shadow: 0 0 8px rgba(0, 191, 255, 0.4), 0 0 12px rgba(0, 191, 255, 0.2);
-  }
-  to {
-    box-shadow: 0 0 12px rgba(0, 191, 255, 0.7), 0 0 20px rgba(0, 191, 255, 0.5);
-  }
-}
-
-.item-card--has-targets[data-power="split"] {
-  border-color: rgba(255, 215, 0, 0.8);
-  animation: pulse-glow-split 2s infinite alternate;
-}
-
-@keyframes pulse-glow-split {
-  from {
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4), 0 0 12px rgba(255, 215, 0, 0.2);
-  }
-  to {
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.5);
-  }
-}
-
-.item-card--has-targets[data-power="pickpocket"] {
-  border-color: rgba(50, 205, 50, 0.8);
-  animation: pulse-glow-pickpocket 2s infinite alternate;
-}
-
-@keyframes pulse-glow-pickpocket {
-  from {
-    box-shadow: 0 0 8px rgba(50, 205, 50, 0.4), 0 0 12px rgba(50, 205, 50, 0.2);
-  }
-  to {
-    box-shadow: 0 0 12px rgba(50, 205, 50, 0.7), 0 0 20px rgba(50, 205, 50, 0.5);
-  }
-}
-
-.item-card--has-targets[data-power="banish"] {
-  border-color: rgba(75, 0, 130, 0.8);
-  animation: pulse-glow-banish 2s infinite alternate;
-}
-
-@keyframes pulse-glow-banish {
-  from {
-    box-shadow: 0 0 8px rgba(75, 0, 130, 0.4), 0 0 12px rgba(75, 0, 130, 0.2);
-  }
-  to {
-    box-shadow: 0 0 12px rgba(75, 0, 130, 0.7), 0 0 20px rgba(75, 0, 130, 0.5);
+  100% {
+    opacity: 0.7;
   }
 }
 

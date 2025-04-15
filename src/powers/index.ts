@@ -1,14 +1,46 @@
 import type { Item } from '../types/item'
 import type { Monster } from '../types'
-import type { PowerFunction, PowerResult } from './types'
+import type { PowerFunction, PowerResult, PowerFactory } from './types'
 import { banish } from './banish'
-import { killOne } from './kill'
+import { killOne, killAll } from './kill'
 
 // Register all power implementations
 const powerFunctions: Record<string, PowerFunction> = {
   banish,
-  kill: killOne  // Map 'kill' power to killOne implementation
+  kill: killOne,  // Map 'kill' power to killOne implementation
+  killAll
   // Other power implementations will be added here
+}
+
+// Default power UI properties
+const defaultPowerProperties = {
+  icon: '?',
+  glowColor: 'rgba(255, 255, 255, 0.8)',
+  displayName: 'Unknown'
+}
+
+/**
+ * Power factory implementation
+ */
+export const powerFactory: PowerFactory = {
+  getPowerFunction: (powerName: string): PowerFunction | undefined => {
+    return powerFunctions[powerName]
+  },
+  
+  getIcon: (powerName: string): string => {
+    const powerFunction = powerFunctions[powerName]
+    return powerFunction?.icon || defaultPowerProperties.icon
+  },
+  
+  getGlowColor: (powerName: string): string => {
+    const powerFunction = powerFunctions[powerName]
+    return powerFunction?.glowColor || defaultPowerProperties.glowColor
+  },
+  
+  getDisplayName: (powerName: string): string => {
+    const powerFunction = powerFunctions[powerName]
+    return powerFunction?.displayName || powerName || defaultPowerProperties.displayName
+  }
 }
 
 /**
@@ -78,16 +110,17 @@ export function canTargetWith(
 }
 
 /**
- * Get valid targets for an item
+ * Get valid targets for an item in the current monsters array
  */
 export function getValidTargets(
-  item: Item
+  item: Item,
+  monsters: Monster[]
 ): Monster[] | string[] | any[] {
   if (!item.power) return []
   
   const powerFunction = powerFunctions[item.power]
-  if (powerFunction && powerFunction.getValidTargets) {
-    return powerFunction.getValidTargets(item)
+  if (powerFunction) {
+    return powerFunction.getValidTargets(item, monsters)
   }
   
   return []

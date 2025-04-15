@@ -2,6 +2,7 @@ import type { Item } from '../types/item'
 import type { Monster, MonsterFlag } from '../types'
 import type { PowerFunction } from './types'
 import { toggleMonsterStatus } from '../quest/combat.ts'
+import { monsterTypes } from '../data/monsterTypes.ts'
 
 // Kill One power implementation
 export const killOne: PowerFunction = {
@@ -25,37 +26,36 @@ export const killOne: PowerFunction = {
       return false
     }
     
-    // Check target filters
+    // Check target filters - moved from validTargets in targeting.ts
     if (item.targetFilters) {
+      // Find the monster type definition
+      const monster = target as Monster
+      const monsterType = monsterTypes.find(mt => mt.id === monster.type)
+      if (!monsterType) {
+        return false
+      }
+      
       // Check level restrictions
       if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
-        const monster = target as Monster
-        const monsterType = getMonsterType(monster.type)
-        if (monsterType && !item.targetFilters.levels.includes(monsterType.level)) {
+        if (!item.targetFilters.levels.includes(monsterType.level)) {
           return false
         }
       }
       
       // Check species restrictions
       if (item.targetFilters.species && item.targetFilters.species.length > 0) {
-        const monster = target as Monster
-        const monsterType = getMonsterType(monster.type)
-        if (monsterType && !item.targetFilters.species.includes(monsterType.species)) {
+        if (!item.targetFilters.species.includes(monsterType.species)) {
           return false
         }
       }
       
       // Check flag restrictions
       if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
-        const monster = target as Monster
-        const monsterType = getMonsterType(monster.type)
-        if (monsterType) {
-          const hasValidFlag = monsterType.flags.some((flag: MonsterFlag) => 
-            item.targetFilters?.flags?.includes(flag)
-          )
-          if (!hasValidFlag) {
-            return false
-          }
+        const hasValidFlag = monsterType.flags.some((flag: MonsterFlag) => 
+          item.targetFilters?.flags?.includes(flag)
+        )
+        if (!hasValidFlag) {
+          return false
         }
       }
     }
@@ -63,10 +63,19 @@ export const killOne: PowerFunction = {
     return true
   },
   
-  getValidTargets: (_item: Item): Monster[] => {
-    // This will be implemented to return all valid monsters in the current location
-    return []
-  }
+  getValidTargets: (item: Item, monsters: Monster[]): Monster[] => {
+    if (!monsters || !monsters.length) {
+      return []
+    }
+    
+    // Filter monsters based on canTarget logic
+    return monsters.filter(monster => killOne.canTarget(item, monster))
+  },
+  
+  // UI properties
+  displayName: "Kill",
+  icon: "⚔️",
+  glowColor: "rgba(255, 0, 0, 0.8)"
 }
 
 // Kill All power implementation
@@ -81,7 +90,7 @@ export const killAll: PowerFunction = {
     // 4. Maybe trigger special effects
   },
   
-  canTarget: (_item: Item, targetType: any): boolean => {
+  canTarget: (item: Item, targetType: any): boolean => {
     // Check if targetType is a string representing a monster type
     if (typeof targetType !== 'string') {
       return false
@@ -92,10 +101,61 @@ export const killAll: PowerFunction = {
     return true
   },
   
-  getValidTargets: (_item: Item): string[] => {
-    // This will return unique monster types in the current location
-    return []
-  }
+  getValidTargets: (item: Item, monsters: Monster[]): string[] => {
+    if (!monsters || !monsters.length) {
+      return []
+    }
+    
+    // Get all unique monster types that match the item's targeting criteria
+    const validTypes = new Set<string>()
+    
+    monsters.forEach(monster => {
+      if (monster.alive) {
+        const monsterType = monsterTypes.find(mt => mt.id === monster.type)
+        if (monsterType) {
+          // Apply the same filtering logic as in canTarget
+          let isValid = true
+          
+          if (item.targetFilters) {
+            // Check level restrictions
+            if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
+              if (!item.targetFilters.levels.includes(monsterType.level)) {
+                isValid = false
+              }
+            }
+            
+            // Check species restrictions
+            if (item.targetFilters.species && item.targetFilters.species.length > 0) {
+              if (!item.targetFilters.species.includes(monsterType.species)) {
+                isValid = false
+              }
+            }
+            
+            // Check flag restrictions
+            if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
+              const hasValidFlag = monsterType.flags.some((flag: MonsterFlag) => 
+                item.targetFilters?.flags?.includes(flag)
+              )
+              if (!hasValidFlag) {
+                isValid = false
+              }
+            }
+          }
+          
+          if (isValid) {
+            validTypes.add(monster.type)
+          }
+        }
+      }
+    })
+    
+    return Array.from(validTypes)
+  },
+  
+  // UI properties
+  displayName: "Kill All",
+  icon: "⚔️",
+  glowColor: "rgba(255, 0, 0, 0.8)"
 }
 
 // Helper function to get monster type details

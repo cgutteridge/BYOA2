@@ -1,58 +1,5 @@
-import type { Item } from '../types/item.ts'
-import type { Monster, MonsterFlag, MonsterLevel } from '../types'
+import type { Monster } from '../types'
 import { monsterTypes } from '../data/monsterTypes.ts'
-
-/**
- * Helper function to get valid monster targets for an item
- * @param item The item to check targets for
- * @param monsters Array of monsters to filter
- * @returns Array of monsters that are valid targets
- */
-export function validTargets(item: Item, monsters: Monster[]): Monster[] {
-  if (!item || !monsters || !monsters.length) {
-    return []
-  }
-  
-  // Filter monsters based on item targeting criteria
-  return monsters.filter(monster => {
-    // Only include alive monsters
-    if (!monster.alive) return false
-    
-    // Find the monster type definition
-    const monsterType = monsterTypes.find(mt => mt.id === monster.type)
-    if (!monsterType) {
-      return false
-    }
-    
-    // Filter by level if specified in item
-    if (item.targetFilters?.levels?.length) {
-      if (!item.targetFilters.levels.includes(monsterType.level as MonsterLevel)) {
-        return false
-      }
-    }
-    
-    // Filter by species if specified in item
-    if (item.targetFilters?.species?.length) {
-      if (!item.targetFilters.species.includes(monsterType.species)) {
-        return false
-      }
-    }
-    
-    // Filter by flags if specified in item
-    if (item.targetFilters?.flags?.length) {
-      // Monster must have at least one of the specified flags
-      const hasMatchingFlag = item.targetFilters.flags.some(flag => 
-        monsterType.flags.includes(flag as MonsterFlag)
-      )
-      
-      if (!hasMatchingFlag) {
-        return false
-      }
-    }
-    
-    return true
-  })
-}
 
 /**
  * Get unique monster species from available monsters
