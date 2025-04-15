@@ -21,7 +21,7 @@
             
             <!-- Effect description -->
             <div class="item-inspect-modal__effect">
-              <p>{{ item.effectDescription || getPowerDescription(item.power) }}</p>
+              <p>{{ item.effectDescription }}</p>
             </div>
             
             <!-- Target selection (when in pub) -->
@@ -298,23 +298,6 @@ function toggleTargetType(type: string) {
 // Helper function to select a result
 function selectResult(result: string) {
   selectedResult.value = result
-}
-
-// Helper function to get a human-readable description of a power
-function getPowerDescription(power: string): string {
-  const descriptions: Record<string, string> = {
-    'kill': 'Instantly defeats a target monster.',
-    'transmute': 'Transforms a monster into a different form.',
-    'scout_500': 'Reveals locations within 500 meters.',
-    'scout_1000': 'Reveals locations within 1000 meters.',
-    'scout_any': 'Reveals any location on the map.',
-    'shrink': 'Reduces a monster\'s level (boss→elite→grunt→minion).',
-    'split': 'Splits one monster into multiple lower-level monsters.',
-    'pickpocket': 'Steals an item from a monster without defeating it.',
-    'banish': 'Removes a monster without getting any loot.'
-  }
-  
-  return descriptions[power] || 'Unknown power'
 }
 
 // Methods
