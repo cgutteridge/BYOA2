@@ -139,10 +139,10 @@ function handleClick() {
 
 @keyframes pulse-glow {
   from {
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4), 0 0 12px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.6), 0 0 16px rgba(255, 255, 255, 0.3);
   }
   to {
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.7);
   }
 }
 
@@ -158,16 +158,16 @@ function handleClick() {
   pointer-events: none;
   background: transparent;
   opacity: 0;
-  box-shadow: 0 0 8px v-bind("props.item.power ? powerFactory.getGlowColor(props.item.power) : 'rgba(255, 255, 255, 0.8)'");
+  box-shadow: 0 0 15px v-bind("props.item.power ? powerFactory.getGlowColor(props.item.power) : 'rgba(255, 255, 255, 0.8)'");
   animation: pulse-glow-effect 2s infinite alternate;
 }
 
 @keyframes pulse-glow-effect {
   0% {
-    opacity: 0.2;
+    opacity: 0.3;
   }
   100% {
-    opacity: 0.7;
+    opacity: 0.9;
   }
 }
 
