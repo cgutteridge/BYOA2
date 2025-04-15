@@ -10,7 +10,7 @@
         <div v-if="!showResults" class="item-modal-view">
           <div class="item-inspect-modal__header">
             <h2 class="item-inspect-modal__title">{{ item.name }}</h2>
-            <div class="item-inspect-modal__level">{{ item.uses !== undefined ? `${item.uses} uses remaining` : 'Unlimited uses' }}</div>
+            <div class="item-inspect-modal__level">{{ item.uses !== undefined ? `${item.uses} use${item.uses!=1?"s":""} remaining` : 'Unlimited uses' }}</div>
           </div>
           
           <div class="item-inspect-modal__body">

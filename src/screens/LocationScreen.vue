@@ -2,8 +2,9 @@
   <div class="location-screen">
     <div class="location-header">
       <h2>{{ questStore.currentPub?.name }}</h2>
-      <button class="leave-button" @click="leavePub">Leave Pub</button>
     </div>
+
+    <button class="leave-button" @click="leavePub">Leave</button>
 
     <!-- Location description section -->
     <div class="location-description-section" v-if="questStore.currentPub?.description">
@@ -105,9 +106,9 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {Monster} from "../types";
-import {areAllMonstersDefeated, toggleMonsterStatus, claimMonsterItem} from "../quest/combat.ts";
+import {areAllMonstersDefeated, claimMonsterItem, toggleMonsterStatus} from "../quest/combat.ts";
 import '../styles/monsterStyles.css';
-import { computed } from 'vue';
+import {computed} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
 import ItemCard from "../components/ItemCard.vue";
 
@@ -256,19 +257,20 @@ function claimGiftItem() {
 .location-screen {
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #666666 100%);
   color: white;
   overflow-y: auto;
+  text-align: center;
 }
 
 .location-header {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
+  text-align: center;
   margin-bottom: 1.5rem;
 }
 
 .location-header h2 {
+  display: inline-block;
   margin: 0;
   font-size: 2rem;
 }
@@ -279,6 +281,8 @@ function claimGiftItem() {
   color: white;
   border: none;
   border-radius: 4px;
+  margin: auto;
+  display: inline-block;
   cursor: pointer;
 }
 

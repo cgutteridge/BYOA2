@@ -292,8 +292,8 @@ function handleClick() {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.7);
+  color: black;
+  background-color: rgba(0, 0, 0, 0.1);
   font-weight: bold;
   text-align: center;
   border-radius: 0 8px 8px 0;
