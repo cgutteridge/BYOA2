@@ -15,6 +15,10 @@ import {locationTypesById} from "@/data/locationTypes.ts";
 import {useQuestStore} from "../stores/questStore";
 import PubPopup from '@/components/PubPopup.vue'
 
+// Configuration constants
+const BOTTOM_OFFSET = 20 // Distance from bottom of screen  when opening a popup in pixels
+const EDGE_OFFSET = 300 // Minimum distance from screen edges  when opening a popup in pixels
+
 const appStore = useAppStore()
 const pubStore = usePubStore()
 const mapContainer = ref<HTMLElement | null>(null)
@@ -59,8 +63,8 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
     autoClose: true,
     closeOnEscapeKey: true,
     offset: [0, -25],
-    autoPan: true,
-    keepInView: true
+    autoPan: false,
+    keepInView: false
   })
 
   marker.on('popupopen', () => {
@@ -85,12 +89,51 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
       if (map.value && popup.isOpen()) {
         popup._updatePosition();
         try {
-          map.value.panInside(popup.getLatLng(), {
-            padding: [20, 20],
-            animate: true,
-          });
+          // Get map size
+          const mapSize = map.value.getSize();
+          
+          // We want the marker at position X,Y where:
+          // Y is BOTTOM_OFFSET from bottom of screen
+          // X follows our rules for horizontal positioning
+          
+          // Get the geographic coordinate that will appear at the center of the screen
+          const currentCenter = map.value.getCenter();
+          
+          // Get current popup position in pixels
+          const markerPoint = map.value.latLngToContainerPoint(marker.getLatLng());
+          
+          // Calculate where we want it in pixels
+          let targetX = markerPoint.x;
+          if (mapSize.x < EDGE_OFFSET * 2) {
+            // Center on small screens
+            targetX = mapSize.x / 2;
+          } else {
+            // Enforce minimum distance from edges on larger screens
+            if (targetX < EDGE_OFFSET) {
+              targetX = EDGE_OFFSET;
+            } else if (targetX > mapSize.x - EDGE_OFFSET) {
+              targetX = mapSize.x - EDGE_OFFSET;
+            }
+          }
+          
+          // The Y position: BOTTOM_OFFSET from bottom
+          const targetY = mapSize.y - BOTTOM_OFFSET;
+          
+          // Calculate how far we need to move in pixels
+          const deltaX = targetX - markerPoint.x;
+          const deltaY = targetY - markerPoint.y;
+          
+          // Convert that pixel offset to a change in the map center
+          // We need to move the map in the opposite direction
+          const newCenter = map.value.containerPointToLatLng([
+            mapSize.x/2 - deltaX,
+            mapSize.y/2 - deltaY
+          ]);
+          
+          // Pan the map to the new center
+          map.value.panTo(newCenter, { animate: true });
         } catch (e) {
-          console.error('Error auto-panning map:', e);
+          console.error('Error positioning map:', e);
         }
       }
     }, 50);
