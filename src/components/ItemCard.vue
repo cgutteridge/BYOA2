@@ -29,12 +29,14 @@ import { computed } from 'vue'
 import type { Item } from '../types/item'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
+import { usePubStore } from '../stores/pubStore'
 import { powerFactory, getValidTargets } from '../powers'
 import { generateEffectDescription } from '../quest/generateEffectDescription.ts'
 
 // Get the stores
 const appStore = useAppStore()
 const questStore = useQuestStore()
+const pubStore = usePubStore()
 
 // Define props
 const props = defineProps<{
@@ -72,19 +74,25 @@ const hasValidTargets = computed(() => {
     return false
   }
   
-  // Only check if we're in a location with monsters
-  if (!isInPubWithInventory.value || !questStore.currentPub?.monsters) {
-    return false
-  }
-  
   // Only apply to items with targeting powers
   if (!props.item.power) {
     return false
   }
   
-  // Check if there are valid targets for this item
-  const targets = getValidTargets(props.item, questStore.currentPub.monsters)
-  return targets.length > 0
+  // Different handling for spy vs monster targeting items
+  if (props.item.power === 'spy') {
+    // For spy items, check if there are unscouted pubs
+    return pubStore.pubs.some(pub => !pub.scouted)
+  } else {
+    // For monster targeting items, check if we're in a location with valid monster targets
+    if (!isInPubWithInventory.value || !questStore.currentPub?.monsters) {
+      return false
+    }
+    
+    // Check if there are valid targets for this item
+    const targets = getValidTargets(props.item, questStore.currentPub.monsters)
+    return targets.length > 0
+  }
 })
 
 // Handler for clicking on the item card

@@ -63,7 +63,12 @@ export const killOne: PowerFunction = {
     return true
   },
   
-  getValidTargets: (item: Item, monsters: Monster[]): Monster[] => {
+  getValidTargets: (item: Item, targets: Monster[] | any[]): Monster[] => {
+    // For kill power, we only care about Monster[] targets
+    const monsters = targets.filter(target => 
+      target && typeof target === 'object' && 'type' in target && 'alive' in target
+    ) as Monster[]
+    
     if (!monsters || !monsters.length) {
       return []
     }
@@ -101,7 +106,12 @@ export const killAll: PowerFunction = {
     return true
   },
   
-  getValidTargets: (item: Item, monsters: Monster[]): string[] => {
+  getValidTargets: (item: Item, targets: Monster[] | any[]): string[] => {
+    // For killAll power, we only care about Monster[] targets to get types
+    const monsters = targets.filter(target => 
+      target && typeof target === 'object' && 'type' in target && 'alive' in target
+    ) as Monster[]
+    
     if (!monsters || !monsters.length) {
       return []
     }

@@ -132,16 +132,8 @@ export function generateEffectDescription(item: Item): string {
       effect += ".";
       break;
       
-    case 'scout_500':
-      effect = `This ${qualityTerm} item reveals any location within 500 meters.`;
-      break;
-      
-    case 'scout_1000':
-      effect = `This ${qualityTerm} item reveals any location within 1000 meters.`;
-      break;
-      
-    case 'scout_any':
-      effect = `This ${qualityTerm} item reveals any location.`;
+    case 'spy':
+      effect = `This ${qualityTerm} item reveals any location without visiting it.`;
       break;
       
     default:

@@ -1,11 +1,11 @@
 import type { Item } from '../types/item'
-import type { Monster } from '../types'
+import type { Monster, Pub } from '../types'
 
 // Base interface for all power functions
 export interface PowerFunction {
-  execute: (item: Item, target?: Monster | string | any) => void
-  canTarget: (item: Item, target?: Monster | string | any) => boolean
-  getValidTargets: (item: Item, monsters: Monster[]) => Monster[] | string[] | any[]
+  execute: (item: Item, target?: Monster | Pub | string | any) => void
+  canTarget: (item: Item, target?: Monster | Pub | string | any) => boolean
+  getValidTargets: (item: Item, targets: Monster[] | Pub[] | any[]) => Monster[] | Pub[] | string[] | any[]
   displayName?: string
   icon?: string
   glowColor?: string
@@ -23,6 +23,6 @@ export interface PowerFactory {
 export interface PowerResult {
   success: boolean
   message: string
-  targets?: Monster[] | string[]
+  targets?: Monster[] | Pub[] | string[]
   affectedItems?: Item[]
 } 

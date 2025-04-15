@@ -7,9 +7,7 @@ import pickOne from "@/utils/pickOne.ts";
 const POWER_BASE_COSTS: Record<ItemPower, number> = {
   kill: 2,
   transmute: 1,
-  scout_500: 1,
-  scout_1000: 2,
-  scout_any: 3,
+  spy: 2,  // Base cost for spying
   shrink: 2,
   split: 1,
   pickpocket: 2,
@@ -20,9 +18,7 @@ const POWER_BASE_COSTS: Record<ItemPower, number> = {
 const CAN_HAVE_TARGET_RESTRICTION: Record<ItemPower, boolean> = {
   kill: true,
   transmute: true,
-  scout_500: false,
-  scout_1000: false,
-  scout_any: false,
+  spy: false,
   shrink: true,
   split: true,
   pickpocket: true,
@@ -33,9 +29,7 @@ const CAN_HAVE_TARGET_RESTRICTION: Record<ItemPower, boolean> = {
 const SUPPORTS_TYPE_TARGETING: Record<ItemPower, boolean> = {
   kill: true,
   transmute: true,
-  scout_500: false,
-  scout_1000: false,
-  scout_any: false,
+  spy: false,
   shrink: true,
   split: true,
   pickpocket: true,
@@ -46,9 +40,7 @@ const SUPPORTS_TYPE_TARGETING: Record<ItemPower, boolean> = {
 const DEFAULT_TARGET_MODE: Record<ItemPower, TargetMode> = {
   kill: 'random',
   transmute: 'random',
-  scout_500: undefined,
-  scout_1000: undefined,
-  scout_any: undefined,
+  spy: undefined,
   shrink: 'random',
   split: 'random',
   pickpocket: 'random',
@@ -59,9 +51,7 @@ const DEFAULT_TARGET_MODE: Record<ItemPower, TargetMode> = {
 const CAN_HAVE_RESULT_RESTRICTION: Record<ItemPower, boolean> = {
   kill: false,
   transmute: true,
-  scout_500: false,
-  scout_1000: false,
-  scout_any: false,
+  spy: false,
   shrink: false,
   split: false,
   pickpocket: false,
@@ -73,9 +63,7 @@ type LevelRestriction = MonsterLevel[] | null;
 const LEVEL_RESTRICTIONS: Record<ItemPower, LevelRestriction> = {
   kill: null, // No special restrictions
   transmute: null,
-  scout_500: null,
-  scout_1000: null,
-  scout_any: null,
+  spy: null,
   shrink: ['elite', 'boss'], // Shrink only works on elite and boss
   split: ['grunt'], // Split only works on grunts
   pickpocket: null,
@@ -296,9 +284,7 @@ function generateItemName(power: ItemPower, targetMode?: string): string {
   const baseNames: Record<ItemPower, string[]> = {
     kill: ['Dagger', 'Blade', 'Sword', 'Wand', 'Staff', 'Orb of Destruction'],
     transmute: ['Transmutation Wand', 'Alchemist\'s Stone', 'Morphing Crystal', 'Shifter Orb'],
-    scout_500: ['Far-seeing Glass', 'Scout\'s Compass', 'Seeker Stone', 'Tracker\'s Map'],
-    scout_1000: ['Enhanced Scout Lens', 'Surveyor\'s Compass', 'Explorer\'s Map', 'Pathfinder Orb'],
-    scout_any: ['All-seeing Eye', 'Omniscient Orb', 'Cosmic Map', 'Planar Compass'],
+    spy: ['Far-seeing Glass', 'Spyglass Telescope', 'Winged Monkey', 'Scrying Orb', 'Crystal Ball', 'Astral Eye'],
     shrink: ['Miniaturizing Ray', 'Reduction Powder', 'Shrinking Solution', 'Diminution Wand'],
     split: ['Splitter\'s Dagger', 'Division Wand', 'Duplicator\'s Rod', 'Replicator Stone'],
     pickpocket: ['Thief\'s Gloves', 'Shadow Hand', 'Pilferer\'s Tool', 'Sticky Fingers Charm'],

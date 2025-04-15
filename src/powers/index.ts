@@ -1,14 +1,16 @@
 import type { Item } from '../types/item'
-import type { Monster } from '../types'
+import type { Monster, Pub } from '../types'
 import type { PowerFunction, PowerResult, PowerFactory } from './types'
 import { banish } from './banish'
 import { killOne, killAll } from './kill'
+import { spy } from './spy'
 
 // Register all power implementations
 const powerFunctions: Record<string, PowerFunction> = {
   banish,
   kill: killOne,  // Map 'kill' power to killOne implementation
-  killAll
+  killAll,
+  spy
   // Other power implementations will be added here
 }
 
@@ -48,7 +50,7 @@ export const powerFactory: PowerFactory = {
  */
 export function executePower(
   item: Item, 
-  target?: Monster | string | any
+  target?: Monster | Pub | string | any
 ): PowerResult {
   // Default result
   const defaultResult: PowerResult = {
@@ -97,7 +99,7 @@ export function executePower(
  */
 export function canTargetWith(
   item: Item, 
-  target?: Monster | string | any
+  target?: Monster | Pub | string | any
 ): boolean {
   if (!item.power) return false
   
@@ -114,13 +116,13 @@ export function canTargetWith(
  */
 export function getValidTargets(
   item: Item,
-  monsters: Monster[]
-): Monster[] | string[] | any[] {
+  targets: Monster[] | Pub[] | any[]
+): Monster[] | Pub[] | string[] | any[] {
   if (!item.power) return []
   
   const powerFunction = powerFunctions[item.power]
   if (powerFunction) {
-    return powerFunction.getValidTargets(item, monsters)
+    return powerFunction.getValidTargets(item, targets)
   }
   
   return []
