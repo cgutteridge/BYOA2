@@ -24,11 +24,14 @@ function createDebugItems(): Item[] {
   
   // Create a pick item for each power
   powers.forEach(power => {
-    // Create pick item
+    // Get capitalized power name for display
+    const powerName = power.charAt(0).toUpperCase() + power.slice(1);
+    
+    // Create pick item (use on individual monster)
     const pickItem: Item = {
       id: `debug_pick_${power}_${Date.now()}`,
-      name: `Debug ${power.charAt(0).toUpperCase() + power.slice(1)} Picker`,
-      description: `Debug item with unrestricted pick ability for ${power}`,
+      name: `${powerName} (Use on Monster)`,
+      description: `Debug item with unrestricted ability to ${power} individual monsters`,
       uses: 999,
       level: 6,
       power,
@@ -40,11 +43,11 @@ function createDebugItems(): Item[] {
       timestamp: Date.now()
     };
     
-    // Create pick_type item
+    // Create pick_type item (use on monster type)
     const pickTypeItem: Item = {
       id: `debug_pick_type_${power}_${Date.now()}`,
-      name: `Debug ${power.charAt(0).toUpperCase() + power.slice(1)} Type Picker`,
-      description: `Debug item with unrestricted pick_type ability for ${power}`,
+      name: `${powerName} (Use on Type)`,
+      description: `Debug item with unrestricted ability to ${power} all monsters of a type`,
       uses: 999,
       level: 6,
       power,

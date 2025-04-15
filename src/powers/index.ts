@@ -2,7 +2,7 @@ import type { Item } from '../types/item'
 import type { Monster, Pub } from '../types'
 import type { PowerFunction, PowerResult, PowerFactory } from './types'
 import { banish } from './banish'
-import { killOne, killAll } from './kill'
+import { kill } from './kill'
 import { spy } from './spy'
 import { transmute } from './transmute'
 import { shrink } from './shrink'
@@ -13,8 +13,7 @@ import { freeze } from './freeze'
 // Register all power implementations
 const powerFunctions: Record<string, PowerFunction> = {
   banish,
-  kill: killOne,  // Map 'kill' power to killOne implementation
-  killAll,
+  kill,  // Use the consolidated kill implementation
   spy,
   transmute,
   shrink,

@@ -11,7 +11,8 @@ const POWER_BASE_COSTS: Record<ItemPower, number> = {
   shrink: 2,
   split: 1,
   pickpocket: 2,
-  banish: 1
+  banish: 1,
+  freeze: 2
 };
 
 // Which powers can have target restrictions
@@ -22,7 +23,8 @@ const CAN_HAVE_TARGET_RESTRICTION: Record<ItemPower, boolean> = {
   shrink: true,
   split: true,
   pickpocket: true,
-  banish: true
+  banish: true,
+  freeze: true
 };
 
 // Which powers support type targeting
@@ -33,7 +35,8 @@ const SUPPORTS_TYPE_TARGETING: Record<ItemPower, boolean> = {
   shrink: true,
   split: true,
   pickpocket: true,
-  banish: true
+  banish: true,
+  freeze: true
 };
 
 // Default target modes for each power
@@ -44,7 +47,8 @@ const DEFAULT_TARGET_MODE: Record<ItemPower, TargetMode> = {
   shrink: 'random',
   split: 'random',
   pickpocket: 'random',
-  banish: 'random'
+  banish: 'random',
+  freeze: 'random'
 };
 
 // Which powers can have result restrictions
@@ -55,7 +59,8 @@ const CAN_HAVE_RESULT_RESTRICTION: Record<ItemPower, boolean> = {
   shrink: false,
   split: false,
   pickpocket: false,
-  banish: false
+  banish: false,
+  freeze: false
 };
 
 // Which powers are restricted to certain monster levels
@@ -67,7 +72,8 @@ const LEVEL_RESTRICTIONS: Record<ItemPower, LevelRestriction> = {
   shrink: ['elite', 'boss'], // Shrink only works on elite and boss
   split: ['grunt'], // Split only works on grunts
   pickpocket: null,
-  banish: null
+  banish: null,
+  freeze: null
 };
 
 // Available species for targeting
@@ -288,7 +294,8 @@ function generateItemName(power: ItemPower, targetMode?: string): string {
     shrink: ['Miniaturizing Ray', 'Reduction Powder', 'Shrinking Solution', 'Diminution Wand'],
     split: ['Splitter\'s Dagger', 'Division Wand', 'Duplicator\'s Rod', 'Replicator Stone'],
     pickpocket: ['Thief\'s Gloves', 'Shadow Hand', 'Pilferer\'s Tool', 'Sticky Fingers Charm'],
-    banish: ['Banishment Scroll', 'Ethereal Disruptor', 'Void Talisman', 'Dimensional Shifter']
+    banish: ['Banishment Scroll', 'Ethereal Disruptor', 'Void Talisman', 'Dimensional Shifter'],
+    freeze: ['Freezing Ray', 'Ice Crystal', 'Frost Orb', 'Cryogenic Wand']
   };
   
   // Mode modifiers

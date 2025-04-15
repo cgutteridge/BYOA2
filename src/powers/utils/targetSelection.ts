@@ -38,7 +38,7 @@ export function getValidMonsterTypes(item: Item, monsters: Monster[]): string[] 
 
 /**
  * Get all valid monster types for the item with filtering logic
- * This version is used for killAll and similar powers that need detailed filtering
+ * This version is used for type-targeting powers that need detailed filtering
  */
 export function getValidMonsterTypesWithFilters(item: Item, monsters: Monster[]): string[] {
   if (!monsters || !monsters.length) {
