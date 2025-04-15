@@ -2,7 +2,7 @@
   <div 
     class="item-card" 
     :class="{'item-card--selected': selected}"
-    @click="$emit('click', item)"
+    @click="inspectItem"
   >
     <div class="item-card__name">{{ item.name }}</div>
     <div class="item-card__uses">{{ item.uses }}</div>
@@ -10,23 +10,25 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
+import { defineProps } from 'vue'
 import type { Item } from '../types/item'
+import { useAppStore } from '../stores/appStore'
 
-// Define props directly instead of storing in a variable
-defineProps<{
+// Get the app store
+const appStore = useAppStore()
+
+// Define props
+const props = defineProps<{
   item: Item
   selected?: boolean
   showUseButton?: boolean
   showInspectButton?: boolean
 }>()
 
-// Define emits
-defineEmits<{
-  (e: 'click', item: Item): void
-  (e: 'use', item: Item): void
-  (e: 'inspect', item: Item): void
-}>()
+// Handler for clicking on the item card
+function inspectItem() {
+  appStore.openItemInspectModal(props.item)
+}
 </script>
 
 <style scoped>

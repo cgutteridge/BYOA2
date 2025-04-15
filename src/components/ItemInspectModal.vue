@@ -27,7 +27,7 @@
             <!-- Target selection (when in pub) -->
             <div v-if="isInPub && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish')" class="item-inspect-modal__target-section">
               <h3>{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
-              <p class="target-description">{{ getTargetDescription(item) }}</p>
+              <p class="target-description">{{ getTargetDescription(item.value) }}</p>
               
               <div v-if="hasTargetableMonsters" class="target-list">
                 <div v-if="targetMode === 'type'" class="target-type-list">
@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, computed } from 'vue'
+import { ref, computed } from 'vue'
 import type { Item } from '../types/item'
 import { getTargetDescription } from '../helpers/generateEffectDescription'
 import { useAppStore } from '../stores/appStore'
@@ -139,18 +139,20 @@ import { useQuestStore } from '../stores/questStore'
 const appStore = useAppStore()
 const questStore = useQuestStore()
 
-// Define props
-const props = defineProps<{
-  isOpen: boolean
-  item: Item
-  context?: 'inventory' | 'location' | 'reward'
-}>()
+// Get modal state from appStore
+const isOpen = computed(() => appStore.inspectedItem !== null)
+const item = computed(() => appStore.inspectedItem || {} as Item)
 
-// Define emits
-const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'use', item: Item): void
-}>()
+// Determine context based on app state
+const context = computed(() => {
+  const hasCurrentLocation = !!questStore.currentPub
+  const isInventoryOpen = appStore.isInventoryOpen
+  
+  if (hasCurrentLocation && isInventoryOpen) return 'inventory_in_pub'
+  if (hasCurrentLocation && !isInventoryOpen) return 'item_in_pub'
+  if (!hasCurrentLocation && isInventoryOpen) return 'inventory'
+  return 'item'
+})
 
 // State
 const showResults = ref(false)
@@ -163,18 +165,18 @@ const selectedResult = ref<string>('')
 
 // Computed properties
 const showUseButton = computed(() => {
-  // Only show use button in inventory context
-  return props.context === 'inventory'
+  // Only show use button in inventory contexts
+  return context.value === 'inventory' || context.value === 'inventory_in_pub'
 })
 
 const isInPub = computed(() => {
-  // Check if the player is in a pub (location screen)
-  return appStore.screen === 'location' && !!questStore.currentPub
+  // Check if the player is in a pub (any context with "pub")
+  return context.value === 'inventory_in_pub' || context.value === 'item_in_pub'
 })
 
 const targetMode = computed(() => {
   // Determine if we're targeting individual monsters or monster types
-  if (props.item.target === 'random_type' || props.item.target === 'pick_type') {
+  if (item.value.target === 'random_type' || item.value.target === 'pick_type') {
     return 'type'
   }
   return 'individual'
@@ -182,7 +184,7 @@ const targetMode = computed(() => {
 
 const isChoiceTarget = computed(() => {
   // Determine if this is a choice-based target selection
-  return props.item.target === 'pick' || props.item.target === 'pick_type'
+  return item.value.target === 'pick' || item.value.target === 'pick_type'
 })
 
 const availableMonsters = computed(() => {
@@ -196,15 +198,15 @@ const availableMonsters = computed(() => {
     if (!monster.alive) return false
     
     // Filter by level if specified
-    if (props.item.targetFilters?.levels?.length) {
-      if (!props.item.targetFilters.levels.includes(monster.level)) {
+    if (item.value.targetFilters?.levels?.length) {
+      if (!item.value.targetFilters.levels.includes(monster.level)) {
         return false
       }
     }
     
     // Filter by species if specified
-    if (props.item.targetFilters?.species?.length) {
-      if (!props.item.targetFilters.species.includes(monster.species)) {
+    if (item.value.targetFilters?.species?.length) {
+      if (!item.value.targetFilters.species.includes(monster.species)) {
         return false
       }
     }
@@ -230,7 +232,7 @@ const hasTargetableMonsters = computed(() => {
 
 const possibleResults = computed(() => {
   // For transmute, determine possible result types
-  if (props.item.power !== 'transmute') return []
+  if (item.value.power !== 'transmute') return []
   
   // Could be fetched from a data source; using placeholder for now
   return ['ghost', 'vampire', 'human', 'goblinoid', 'demonoid', 'elemental']
@@ -240,7 +242,7 @@ const isUseButtonDisabled = computed(() => {
   if (!isInPub.value) return false
   
   // For powers that need targets
-  if (['kill', 'transmute', 'shrink', 'split', 'pickpocket', 'banish'].includes(props.item.power || '')) {
+  if (['kill', 'transmute', 'shrink', 'split', 'pickpocket', 'banish'].includes(item.value.power || '')) {
     // Choice-based targeting requires selection
     if (isChoiceTarget.value) {
       if (targetMode.value === 'type') {
@@ -255,7 +257,7 @@ const isUseButtonDisabled = computed(() => {
   }
   
   // For transmute with pick result
-  if (props.item.power === 'transmute' && props.item.result === 'pick') {
+  if (item.value.power === 'transmute' && item.value.result === 'pick') {
     if (!selectedResult.value) return true
   }
   
@@ -269,7 +271,7 @@ function getMonsterCountByType(type: string): number {
 
 // Helper function to toggle target selection
 function toggleTarget(monsterId: string) {
-  const maxSelections = props.item.uses || 1
+  const maxSelections = item.value.uses || 1
   const index = selectedTargets.value.indexOf(monsterId)
   
   if (index >= 0) {
@@ -283,7 +285,7 @@ function toggleTarget(monsterId: string) {
 
 // Helper function to toggle target type selection
 function toggleTargetType(type: string) {
-  const maxSelections = props.item.uses || 1
+  const maxSelections = item.value.uses || 1
   const index = selectedTargetTypes.value.indexOf(type)
   
   if (index >= 0) {
@@ -311,7 +313,8 @@ function close() {
   selectedTargetTypes.value = []
   selectedResult.value = ''
   
-  emit('close')
+  // Use appStore to close modal
+  appStore.closeItemInspectModal()
 }
 
 function useItem() {
@@ -327,15 +330,16 @@ function useItem() {
   ]
   
   // Set random result message
-  resultsTitle.value = `${props.item.name} Used!`
+  resultsTitle.value = `${item.value.name} Used!`
   resultsMessage.value = resultMessages[Math.floor(Math.random() * resultMessages.length)]
   showVisualResult.value = Math.random() > 0.5
   
   // Show results view
   showResults.value = true
   
-  // In a real implementation, you would emit the use event with selected targets
-  emit('use', props.item)
+  // Use appStore or other store methods to apply item effects
+  // This would be implemented in the actual game logic
+  // For example: questStore.useItem(item.value, selectedTargets.value)
 }
 </script>
 
