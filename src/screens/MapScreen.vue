@@ -91,35 +91,20 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
 }
 
 function closePopup() {
-  // Make sure we have a map instance before attempting to close popups
-  if (!map.value) {
-    // Just clean up Vue apps if no valid map
-    cleanupPopupApps()
-    return
-  }
-
-  try {
-    // Try to close popups safely
-    map.value.closePopup()
-  } catch (error) {
-    console.error('Error closing popup:', error)
-  }
 
   // Clean up Vue apps
   cleanupPopupApps()
 
+  try {
+    // Try to close popups safely
+    map.value?.closePopup()
+  } catch (error) {
+    console.error('Error closing popup:', error)
+  }
 
   // If there was an active popup, update the map
-  if (map.value && !map.value.isRemoved) {
+  if (map.value) {
     map.value.invalidateSize()
-  }
-}
-
-function handleEnter(pubId: string) {
-  if (pubId) {
-    appStore.setFocusPub(pubId)
-    appStore.setScreen('location')
-    questStore.setCurrentPub(pubId)
   }
 }
 
@@ -186,7 +171,6 @@ function initializeMap(): void {
 
     const mapInstance = L.map('map', {
       preferCanvas: true,
-      zoomControl: false
     }).setView([location.lat, location.lng], zoom)
 
     // Add event listeners for map movement and zoom
