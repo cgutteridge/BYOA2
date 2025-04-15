@@ -9,7 +9,6 @@ import IntroScreen from './screens/IntroScreen.vue'
 import InfoScreen from './screens/InfoScreen.vue'
 import LocationScreen from './screens/LocationScreen.vue'
 import VictoryScreen from './screens/VictoryScreen.vue'
-import LocationInfoScreen from "./screens/LocationInfoScreen.vue"
 import InterfaceModal from './components/InterfaceModal.vue'
 import ItemInspectModal from './components/ItemInspectModal.vue'
 import NotificationSystem from './components/NotificationSystem.vue'
@@ -18,14 +17,11 @@ const appStore = useAppStore()
 const questStore = useQuestStore()
 const isDebugMode = ref(false)
 const watchId = ref<number | null>(null)
-const isTestMode = ref(false)
 
-// Check if debug or test mode is enabled via URL fragment
+// Check if debug mode is enabled via URL fragment
 function checkDebugMode() {
   isDebugMode.value = window.location.hash === '#DEBUG'
-  isTestMode.value = window.location.hash === '#TEST'
   console.log('Debug mode:', isDebugMode.value ? 'ENABLED' : 'disabled')
-  console.log('Test mode:', isTestMode.value ? 'ENABLED' : 'disabled')
 }
 
 // Initialize the GPS once
@@ -35,12 +31,12 @@ async function initializeGPS() {
     checkDebugMode()
     
     // If in debug mode, use fixed coordinates for Southampton
-    if (isDebugMode.value || isTestMode.value) {
+    if (isDebugMode.value ) {
       const debugLocation = {
         lat: 50.91018,
         lng: -1.40419
       }
-      console.log('DEBUG/TEST MODE: Using fixed GPS location:', debugLocation)
+      console.log('DEBUG MODE: Using fixed GPS location:', debugLocation)
       appStore.setPlayerLocation(debugLocation)
       appStore.setGPSStatus('success')
       return
@@ -71,7 +67,7 @@ function startContinuousTracking() {
   }
   
   // Debug mode doesn't need continuous tracking - it's handled in initializeGPS
-  if (isDebugMode.value || isTestMode.value) {
+  if (isDebugMode.value ){
     return
   }
  
@@ -104,7 +100,7 @@ function startContinuousTracking() {
 // Stop GPS tracking
 function stopContinuousTracking() {
   console.log('Stopping GPS tracking')
-  if ((!isDebugMode.value && !isTestMode.value) && watchId.value !== null) {
+  if (!isDebugMode.value  && watchId.value !== null) {
     navigator.geolocation.clearWatch(watchId.value)
     watchId.value = null
   }
@@ -149,8 +145,7 @@ onUnmounted(() => {
 <template>
   <div class="app">
     <div v-if="isDebugMode" class="debug-banner">DEBUG MODE</div>
-    <div v-if="isTestMode" class="test-banner">TEST MODE</div>
-    
+
     <NotificationSystem />
     
     <div class="debug-overlay" v-if="appStore.playerLocation">
@@ -169,9 +164,7 @@ onUnmounted(() => {
     <div v-else-if="appStore.gpsStatus === 'error'" class="gps-error">
       <p>Unable to get your location. Please enable GPS and refresh the page.</p>
       <p>
-        <a href="#DEBUG">Enable Debug Mode</a> | 
-        <a href="#TEST">Enable Test Mode</a>
-      </p>
+        <a href="#DEBUG">Enable Debug Mode</a></p>
     </div>
     <template v-else>
       <!-- Normal game screens -->
@@ -180,18 +173,16 @@ onUnmounted(() => {
       <InfoScreen v-else-if="appStore.screen === 'info'" />
       <MapScreen v-else-if="appStore.screen === 'map'" />
       <LocationScreen v-else-if="appStore.screen === 'location'" />
-      <LocationInfoScreen v-else-if="appStore.screen === 'location_info'" />
       <VictoryScreen v-else-if="appStore.screen === 'victory'" />
 
       <!-- Interface Button (only show during gameplay) -->
       <button 
         v-if="(appStore.screen !== 'start_quest' && 
               appStore.screen !== 'intro' && 
-              appStore.screen !== 'victory') || isTestMode"
+              appStore.screen !== 'victory')"
         class="interface-button"
         :class="{
-          'with-debug-banner': isDebugMode,
-          'with-test-banner': isTestMode
+          'with-debug-banner': isDebugMode
         }"
         @click="toggleInterface"
         title="Open Interface (I)"
@@ -256,11 +247,6 @@ body {
   padding: 0;
 }
 
-.interface-button.with-debug-banner,
-.interface-button.with-test-banner {
-  top: 45px; /* Adjusted to appear below the banner */
-}
-
 .interface-button:hover {
   transform: scale(1.1);
   background-color: #3a7;
@@ -309,19 +295,6 @@ body {
   left: 0;
   right: 0;
   background-color: #f00;
-  color: white;
-  text-align: center;
-  padding: 5px;
-  font-weight: bold;
-  z-index: 9999;
-}
-
-.test-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background-color: #f80;
   color: white;
   text-align: center;
   padding: 5px;
