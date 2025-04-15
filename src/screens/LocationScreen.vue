@@ -66,6 +66,9 @@
           
           <!-- Monster item (if any) - use ItemCard component -->
           <div v-if="monster.item" class="monster-item" :class="{'item-available': !monster.alive}">
+            <div v-if="monster.alive" class="monster-item-locked">
+              <span class="lock-icon">🔒</span>
+            </div>
             <ItemCard 
               :item="monster.item"
               variant="drop"
@@ -80,12 +83,17 @@
       <div v-if="questStore.currentPub.prizeItem" class="prize-item-section">
         <div class="prize-item-container">
           <h3>Quest Prize:</h3>
-          <ItemCard 
-            :item="questStore.currentPub.prizeItem"
-            variant="prize"
-            :show-details="true"
-            @action="claimPrizeItem"
-          />
+          <div class="prize-item-wrapper">
+            <div v-if="!allMonstersDefeated" class="monster-item-locked">
+              <span class="lock-icon">🔒</span>
+            </div>
+            <ItemCard 
+              :item="questStore.currentPub.prizeItem"
+              variant="prize"
+              :show-details="true"
+              @action="claimPrizeItem"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -335,10 +343,31 @@ function claimGiftItem() {
   margin-top: 1rem;
   opacity: 0.6;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .monster-item.item-available {
   opacity: 1;
+}
+
+.monster-item-locked {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  border-radius: 8px;
+}
+
+.lock-icon {
+  font-size: 2rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .combat-container {
@@ -525,5 +554,9 @@ function claimGiftItem() {
   color: white;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.prize-item-wrapper {
+  position: relative;
 }
 </style> 

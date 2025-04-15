@@ -3,11 +3,13 @@
     class="item-card" 
     :class="{
       'item-card--selected': isSelected,
+      'item-card--has-targets': hasValidTargets,
       'item-card--compact': compact,
       'item-card--prize': variant === 'prize',
       'item-card--gift': variant === 'gift',
       'item-card--drop': variant === 'drop'
     }"
+    :data-power="item.power"
     @click="handleClick"
   >
     <div class="item-card__name">{{ item.name }}</div>
@@ -21,6 +23,7 @@ import { computed } from 'vue'
 import type { Item } from '../types/item'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
+import { validTargets } from '../helpers/targetingHelpers'
 
 // Get the stores
 const appStore = useAppStore()
@@ -42,6 +45,33 @@ const emit = defineEmits<{
 // Is this item currently selected?
 const isSelected = computed(() => {
   return appStore.inspectedItem?.id === props.item.id
+})
+
+// Determine if we're in a location with the inventory open
+const isInPubWithInventory = computed(() => {
+  return !!questStore.currentPub && appStore.isInventoryOpen
+})
+
+// Check if this item has valid targets in the current location
+const hasValidTargets = computed(() => {
+  // Only check for inventory variant
+  if (props.variant !== 'inventory' && props.variant !== undefined) {
+    return false
+  }
+  
+  // Only check if we're in a location with monsters
+  if (!isInPubWithInventory.value || !questStore.currentPub?.monsters) {
+    return false
+  }
+  
+  // Only apply to items with targeting powers
+  if (!props.item.power || !['kill', 'transmute', 'shrink', 'split', 'pickpocket', 'banish'].includes(props.item.power)) {
+    return false
+  }
+  
+  // Check if there are valid targets for this item
+  const targets = validTargets(props.item, questStore.currentPub.monsters)
+  return targets.length > 0
 })
 
 // Handler for clicking on the item card
@@ -66,7 +96,7 @@ function handleClick() {
   background-color: #f5f5f5;
   display: flex;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   min-height: 60px;
   transition: all 0.2s;
@@ -76,6 +106,108 @@ function handleClick() {
   border-color: #999;
   background-color: #eee;
   box-shadow: 0 0 0 2px rgba(153, 153, 153, 0.3);
+}
+
+/* Base has-targets styling with glowing effect */
+.item-card--has-targets {
+  border-width: 2px;
+  border-color: white;
+  z-index: 2;
+  animation: pulse-glow 2s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  from {
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4), 0 0 12px rgba(255, 255, 255, 0.2);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Power-specific glow colors */
+.item-card--has-targets[data-power="kill"] {
+  border-color: rgba(255, 0, 0, 0.8);
+  animation: pulse-glow-kill 2s infinite alternate;
+}
+
+@keyframes pulse-glow-kill {
+  from {
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.4), 0 0 12px rgba(255, 0, 0, 0.2);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.7), 0 0 20px rgba(255, 0, 0, 0.5);
+  }
+}
+
+.item-card--has-targets[data-power="transmute"] {
+  border-color: rgba(138, 43, 226, 0.8);
+  animation: pulse-glow-transmute 2s infinite alternate;
+}
+
+@keyframes pulse-glow-transmute {
+  from {
+    box-shadow: 0 0 8px rgba(138, 43, 226, 0.4), 0 0 12px rgba(138, 43, 226, 0.2);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(138, 43, 226, 0.7), 0 0 20px rgba(138, 43, 226, 0.5);
+  }
+}
+
+.item-card--has-targets[data-power="shrink"] {
+  border-color: rgba(0, 191, 255, 0.8);
+  animation: pulse-glow-shrink 2s infinite alternate;
+}
+
+@keyframes pulse-glow-shrink {
+  from {
+    box-shadow: 0 0 8px rgba(0, 191, 255, 0.4), 0 0 12px rgba(0, 191, 255, 0.2);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(0, 191, 255, 0.7), 0 0 20px rgba(0, 191, 255, 0.5);
+  }
+}
+
+.item-card--has-targets[data-power="split"] {
+  border-color: rgba(255, 215, 0, 0.8);
+  animation: pulse-glow-split 2s infinite alternate;
+}
+
+@keyframes pulse-glow-split {
+  from {
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4), 0 0 12px rgba(255, 215, 0, 0.2);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+}
+
+.item-card--has-targets[data-power="pickpocket"] {
+  border-color: rgba(50, 205, 50, 0.8);
+  animation: pulse-glow-pickpocket 2s infinite alternate;
+}
+
+@keyframes pulse-glow-pickpocket {
+  from {
+    box-shadow: 0 0 8px rgba(50, 205, 50, 0.4), 0 0 12px rgba(50, 205, 50, 0.2);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(50, 205, 50, 0.7), 0 0 20px rgba(50, 205, 50, 0.5);
+  }
+}
+
+.item-card--has-targets[data-power="banish"] {
+  border-color: rgba(75, 0, 130, 0.8);
+  animation: pulse-glow-banish 2s infinite alternate;
+}
+
+@keyframes pulse-glow-banish {
+  from {
+    box-shadow: 0 0 8px rgba(75, 0, 130, 0.4), 0 0 12px rgba(75, 0, 130, 0.2);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(75, 0, 130, 0.7), 0 0 20px rgba(75, 0, 130, 0.5);
+  }
 }
 
 .item-card--compact {

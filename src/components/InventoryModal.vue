@@ -37,6 +37,7 @@
               >
                 <ItemCard 
                   :item="item"
+                  variant="inventory"
                 />
               </div>
             </div>
