@@ -28,7 +28,7 @@
             <div v-if="isInPub && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish')" class="item-inspect-modal__target-section">
               <h3>{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
               <p class="target-description">{{ getTargetDescription(item) }}</p>
-              {{  item  }}
+              
               <div v-if="hasTargetableMonsters" class="target-list">
                 <div v-if="targetMode === 'type'" class="target-type-list">
                   <div 
@@ -38,7 +38,7 @@
                     :class="{ 'target-selected': selectedTargetTypes.includes(type) }"
                     @click="isChoiceTarget ? toggleTargetType(type) : null"
                   >
-                    {{ type }} ({{ getMonsterCountByType(type) }})
+                    {{ type.charAt(0).toUpperCase() + type.slice(1) }} ({{ getMonsterCountByType(type) }})
                   </div>
                 </div>
                 <div v-else class="target-monster-list">
@@ -49,7 +49,7 @@
                     :class="{ 'target-selected': selectedTargets.includes(monster.id) }"
                     @click="isChoiceTarget ? toggleTarget(monster.id) : null"
                   >
-                    {{ monster.name }} ({{ monster.level }})
+                    {{ monster.name }} ({{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }})
                   </div>
                 </div>
               </div>
@@ -131,9 +131,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Item } from '../types/item'
+import type { Monster } from '../types'
 import { getTargetDescription } from '../helpers/generateEffectDescription'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
+import { 
+  validTargets, 
+  getUniqueMonsterSpecies, 
+  getMonsterCountBySpecies, 
+  getMonsterLevel, 
+  getMonsterSpecies 
+} from '../helpers/targetingHelpers'
 
 // Stores
 const appStore = useAppStore()
@@ -187,50 +195,20 @@ const isChoiceTarget = computed(() => {
   return item.value.target === 'pick' || item.value.target === 'pick_type'
 })
 
+// Use the helper function from targetingHelpers
 const availableMonsters = computed(() => {
-  if (!isInPub.value || !questStore.currentPub?.monsters) {
-    return []
-  }
-  
-  // Filter monsters based on item targeting criteria
-  return questStore.currentPub.monsters.filter(monster => {
-    // Only include alive monsters
-    if (!monster.alive) return false
-    console.log(monster)
-    console.log(item.value.targetFilters?.levels)
-    // Filter by level if specified
-    if (item.value.targetFilters?.levels?.length) {
-      if (!item.value.targetFilters.levels.includes(monster.level)) {
-        console.log('level rejected')
-
-        return false
-      }
-    } 
-    
-    // Filter by species if specified
-    if (item.value.targetFilters?.species?.length) {
-      if (!item.value.targetFilters.species.includes(monster.species)) {
-        console.log('species rejected')
-        return false
-      }
-    }
-    
-    // Filter by flags would require additional monster type data
-    // This is simplified for now
-    
-    return true
-  })
+  if (!questStore.currentPub?.monsters) return []
+  return validTargets(item.value, questStore.currentPub.monsters)
 })
 
 const availableMonsterTypes = computed(() => {
-  // Get unique monster types from available monsters
-  if (!availableMonsters.value.length) return []
-  
-  const types = new Set(availableMonsters.value.map(monster => monster.type))
-  return Array.from(types)
+  // Get unique monster species from available monsters
+  return getUniqueMonsterSpecies(availableMonsters.value)
 })
 
 const hasTargetableMonsters = computed(() => {
+  if (!item.value) return false
+  
   return availableMonsters.value.length > 0 || availableMonsterTypes.value.length > 0
 })
 
@@ -270,7 +248,7 @@ const isUseButtonDisabled = computed(() => {
 
 // Helper function to get monster count by type
 function getMonsterCountByType(type: string): number {
-  return availableMonsters.value.filter(monster => monster.type === type).length
+  return getMonsterCountBySpecies(availableMonsters.value, type)
 }
 
 // Helper function to toggle target selection
@@ -334,7 +312,7 @@ function useItem() {
   ]
   
   // Set random result message
-  resultsTitle.value = `${item.value.name} Used!`
+  resultsTitle.value = `${item.value?.name || 'Item'} Used!`
   resultsMessage.value = resultMessages[Math.floor(Math.random() * resultMessages.length)]
   showVisualResult.value = Math.random() > 0.5
   
