@@ -127,30 +127,6 @@ function handleQuit() {
   appStore.closeInventory()
 }
 
-function getInspectionContext() {
-  // If we're in a location screen, the item is from the location
-  if (appStore.screen === 'location') {
-    return 'location'
-  }
-  // If inventory is open, it's from inventory
-  else if (appStore.isInventoryOpen) {
-    return 'inventory'
-  }
-  // Default to inventory context
-  return 'inventory'
-}
-
-function handleUseItem(item) {
-  if (!appStore.inspectedItem) return
-  
-  inventoryStore.useItem(item.id)
-  
-  // Close after a delay to allow the result message to be displayed
-  setTimeout(() => {
-    appStore.closeItemInspectModal()
-  }, 3000)
-}
-
 onMounted(() => {
   console.log('App mounted, initializing GPS...')
   initializeGPS()
@@ -250,14 +226,7 @@ onUnmounted(() => {
       />
       
       <!-- Global ItemInspectModal -->
-      <ItemInspectModal 
-        v-if="appStore.inspectedItem"
-        :is-open="!!appStore.inspectedItem" 
-        :item="appStore.inspectedItem" 
-        :context="getInspectionContext()" 
-        @close="appStore.closeItemInspectModal" 
-        @use="handleUseItem"  
-      />
+      <ItemInspectModal v-if="appStore.inspectedItem" />
     </template>
   </div>
 </template>

@@ -27,8 +27,8 @@
             <!-- Target selection (when in pub) -->
             <div v-if="isInPub && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish')" class="item-inspect-modal__target-section">
               <h3>{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
-              <p class="target-description">{{ getTargetDescription(item.value) }}</p>
-              
+              <p class="target-description">{{ getTargetDescription(item) }}</p>
+              {{  item  }}
               <div v-if="hasTargetableMonsters" class="target-list">
                 <div v-if="targetMode === 'type'" class="target-type-list">
                   <div 
@@ -196,17 +196,21 @@ const availableMonsters = computed(() => {
   return questStore.currentPub.monsters.filter(monster => {
     // Only include alive monsters
     if (!monster.alive) return false
-    
+    console.log(monster)
+    console.log(item.value.targetFilters?.levels)
     // Filter by level if specified
     if (item.value.targetFilters?.levels?.length) {
       if (!item.value.targetFilters.levels.includes(monster.level)) {
+        console.log('level rejected')
+
         return false
       }
-    }
+    } 
     
     // Filter by species if specified
     if (item.value.targetFilters?.species?.length) {
       if (!item.value.targetFilters.species.includes(monster.species)) {
+        console.log('species rejected')
         return false
       }
     }

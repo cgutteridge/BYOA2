@@ -37,7 +37,6 @@
               >
                 <ItemCard 
                   :item="item"
-                  @click="handleInspectItem(item)"
                 />
               </div>
             </div>
@@ -131,11 +130,6 @@ const tabs = [
 // Methods
 function close() {
   emit('close')
-}
-
-function handleInspectItem(item: Item) {
-  console.log('Inspect item:', item.name)
-  appStore.openItemInspectModal(item)
 }
 
 function handleQuit() {

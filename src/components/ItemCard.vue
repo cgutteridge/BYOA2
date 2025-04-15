@@ -1,7 +1,7 @@
 <template>
   <div 
     class="item-card" 
-    :class="{'item-card--selected': selected}"
+    :class="{'item-card--selected': isSelected}"
     @click="inspectItem"
   >
     <div class="item-card__name">{{ item.name }}</div>
@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { computed } from 'vue'
 import type { Item } from '../types/item'
 import { useAppStore } from '../stores/appStore'
 
@@ -20,10 +20,12 @@ const appStore = useAppStore()
 // Define props
 const props = defineProps<{
   item: Item
-  selected?: boolean
-  showUseButton?: boolean
-  showInspectButton?: boolean
 }>()
+
+// Computed property to check if this item is currently selected
+const isSelected = computed(() => {
+  return appStore.inspectedItem?.id === props.item.id
+})
 
 // Handler for clicking on the item card
 function inspectItem() {

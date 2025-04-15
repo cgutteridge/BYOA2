@@ -27,6 +27,11 @@ export function getUsesDescription(item: Item): string {
  * Get a description of the item's target options
  */
 export function getTargetDescription(item: Item): string {
+  // Handle empty or undefined item objects
+  if (!item || typeof item !== 'object') {
+    return 'an unknown enemy';
+  }
+  
   let filterDescription = '';
   let selectionMethod = '';
   
@@ -34,16 +39,16 @@ export function getTargetDescription(item: Item): string {
   if (item.targetFilters) {
     const filters = [];
     
+    if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
+      filters.push(item.targetFilters.flags.join('/'));
+    }
+
     if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
       filters.push(item.targetFilters.levels.join('/'));
     }
     
     if (item.targetFilters.species && item.targetFilters.species.length > 0) {
       filters.push(item.targetFilters.species.join('/'));
-    }
-    
-    if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
-      filters.push(item.targetFilters.flags.join('/'));
     }
     
     if (filters.length > 0) {

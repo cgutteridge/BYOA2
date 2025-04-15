@@ -13,7 +13,6 @@
         v-for="item in sortedItems" 
         :key="item.id" 
         :item="item" 
-        @click="openItemInspectModal" 
       />
     </div>
     <div v-else class="inventory-empty">
@@ -36,10 +35,6 @@ const appStore = useAppStore()
 const handleUseItem = (item: Item) => {
   console.log('Using item:', item.name)
   inventoryStore.useItem(item.id)
-}
-
-function openItemInspectModal(item: Item) {
-  appStore.openItemInspectModal(item)
 }
 
 // Sort items by timestamp (newest first), then by level and name
