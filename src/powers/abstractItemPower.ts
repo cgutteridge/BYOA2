@@ -153,32 +153,11 @@ export abstract class ItemPower {
         return Array.from(validTypes);
     }
 
-    useOnMonster(item: Item, monsterId: string): PowerResult {
-        console.log(`Using ${item.name} to ${this.displayName} monster ${monsterId}`);
+    useOnMonster(item: Item, monster: Monster): PowerResult {
+        console.log(`Using ${item.name} to ${this.displayName} monster ${monster.id}`);
 
         // Reduce uses
         this.reduceUses(item);
-
-        // Get the quest store
-        const questStore = useQuestStore();
-
-        // Get the current location's monsters
-        const pub = questStore.currentPub;
-        if (!pub || !pub.monsters) {
-            return {
-                success: false,
-                message: `${item.name} couldn't find any monsters to target.`
-            };
-        }
-
-        // Find the monster with the given ID
-        const monster = pub.monsters.find(m => m.id === monsterId);
-        if (!monster) {
-            return {
-                success: false,
-                message: `${item.name} couldn't find the monster to target.`
-            };
-        }
 
         // Kill the monster using shared helper
         const success = this.applyEffect(item, monster);

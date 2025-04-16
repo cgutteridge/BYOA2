@@ -15,5 +15,7 @@ export function getTargetsForItem(item: Item, potentialTargets: Monster[]): Pub[
   return [];
 }
 
+
+
 // Re-export getTargetsForItem as getValidTargets for backward compatibility
 export const getValidTargets = getTargetsForItem;

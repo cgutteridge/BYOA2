@@ -39,7 +39,7 @@ export const powerFactory = {
   /**
    * Get a power instance by name
    */
-  getPower: (powerName: ItemPowerId): ItemPower | undefined => {
+  getPower: (powerName: ItemPowerId): ItemPower  => {
     return powerInstances[powerName];
   }
 } 

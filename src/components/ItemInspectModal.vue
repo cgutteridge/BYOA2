@@ -31,19 +31,19 @@
               
               <div v-if="hasTargetableMonsters" class="target-list">
                 <div v-if="targetMode === 'type'" class="target-type-list">
-                  <div 
-                    v-for="(type, index) in availableMonsterTypes" 
+                  <div
+                      v-for="(type, index) in potentialTargetMonsterTypes"
                     :key="index"
                     class="target-type-item"
                     :class="{ 'target-selected': selectedTargetTypes.includes(type) }"
                     @click="isChoiceTarget ? toggleTargetType(type) : null"
                   >
-                    {{ getMonsterTitle(type) }} ({{ getMonsterCountByType(type) }})
+                    {{ getMonsterTitle(type) }} (x{{ getMonsterCountByType(type) }})
                   </div>
                 </div>
                 <div v-else class="target-monster-list">
-                  <div 
-                    v-for="monster in availableMonsters" 
+                  <div
+                      v-for="monster in potentialTargetMonsters"
                     :key="monster.id"
                     class="target-monster-item"
                     :class="{ 'target-selected': selectedTargets.includes(monster.id) }"
@@ -129,19 +129,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { Item, Monster } from '../types'
-import { getTargetDescription, generateEffectDescription } from '../quest/generateEffectDescription.ts'
-import { useAppStore } from '../stores/appStore'
-import { useQuestStore } from '../stores/questStore'
-import { getValidTargets } from '../quest/targeting.ts'
-import { 
-  getUniqueMonsterSpecies, 
-  getMonsterCountBySpecies, 
-  getMonsterLevel, 
-  getMonsterSpecies 
+import {computed, ref} from 'vue'
+import {Item, Monster, MonsterTypeId, toMonsterTypeId} from '../types'
+import {generateEffectDescription, getTargetDescription} from '../quest/generateEffectDescription.ts'
+import {useAppStore} from '../stores/appStore'
+import {useQuestStore} from '../stores/questStore'
+import {getValidTargets} from '../quest/itemUtils.ts'
+import {
+  getMonsterCountBySpecies,
+  getMonsterLevel,
+  getMonsterSpecies,
+  getUniqueMonsterSpecies
 } from '../quest/monsterUtils.ts'
-import { monsterTypes } from '../data/monsterTypes.ts'
+import {monsterTypes} from '../data/monsterTypes.ts'
+import {powerFactory} from "@/powers";
+import {PowerResult} from "@/powers/abstractItemPower.ts";
+import pickOne from "@/utils/pickOne.ts";
 
 // Stores
 const appStore = useAppStore()
@@ -196,28 +199,19 @@ const isChoiceTarget = computed(() => {
 })
 
 // Use the powers helper function to get valid targets
-const availableMonsters = computed(() => {
+const potentialTargetMonsters = computed(() => {
   if (!questStore.currentPub?.monsters) return []
   return getValidTargets(item.value, questStore.currentPub.monsters) as Monster[]
 })
 
-const availableMonsterTypes = computed(() => {
-  // Use the correct function to get monster types for type targeting
-  if (!questStore.currentPub?.monsters) return []
-  
-  if (item.value.power === 'kill' || targetMode.value === 'type') {
-    // Use getValidTargets which will return string[] for type targeting
-    return getValidTargets(item.value, questStore.currentPub.monsters) as string[]
-  }
-  
-  // Fallback to species for other cases
-  return getUniqueMonsterSpecies(availableMonsters.value)
+const potentialTargetMonsterTypes = computed(() => {
+  return getUniqueMonsterSpecies(potentialTargetMonsters.value)
 })
 
 const hasTargetableMonsters = computed(() => {
   if (!item.value) return false
-  
-  return availableMonsters.value.length > 0 || availableMonsterTypes.value.length > 0
+
+  return potentialTargetMonsters.value.length > 0 || potentialTargetMonsterTypes.value.length > 0
 })
 
 const possibleResults = computed(() => {
@@ -262,7 +256,7 @@ function getMonsterCountByType(type: string): number {
     return monsters.filter(monster => monster.type === type && monster.alive).length
   }
   // Otherwise use the species-based count
-  return getMonsterCountBySpecies(availableMonsters.value, type)
+  return getMonsterCountBySpecies(potentialTargetMonsters.value, type)
 }
 
 // Helper function to toggle target selection
@@ -313,29 +307,47 @@ function close() {
   appStore.closeItemInspectModal()
 }
 
+function applyPower(): PowerResult[] {
+  const power = powerFactory.getPower(item.value.power);
+
+  const results: PowerResult[] = []
+
+  if (item.value.target === 'pick' || item.value.target === 'random') {
+    let targets: Monster[] = []
+    if (item.value.target === 'pick') {
+      targets = selectedTargets.value.map(monsterId => potentialTargetMonsters.value.find(monster => monster.id === monsterId) as Monster)
+    } else {
+      targets = [pickOne(potentialTargetMonsters.value)]
+    }
+    targets.forEach(monster => {
+      results.push(power.useOnMonster(item.value, monster))
+    })
+  } else { // type
+    let targets: MonsterTypeId[] = []
+    if (item.value.target === 'pick_type') {
+      targets = selectedTargets.value.map(toMonsterTypeId)
+    } else {
+      targets = [toMonsterTypeId(pickOne(selectedTargets.value))]
+    }
+    targets.forEach(monster => {
+      results.push(power.useOnType(item.value, monster))
+    })
+  }
+
+  return results
+}
+
 function useItem() {
-  // For demo purposes, we'll show the results UI with a random message
-  // In a real implementation, this would use the selected targets
-  
-  const resultMessages = [
-    "You used the item successfully! The monster falls to the ground, defeated.",
-    "The item glows brightly as its power is unleashed.",
-    "A flash of magical energy surrounds your target. It's super effective!",
-    "The item crumbles to dust as its power is expended.",
-    "The magical energy swirls around you before striking the target with precision."
-  ]
-  
   // Set random result message
   resultsTitle.value = `${item.value?.name || 'Item'} Used!`
-  resultsMessage.value = resultMessages[Math.floor(Math.random() * resultMessages.length)]
-  showVisualResult.value = Math.random() > 0.5
-  
+
+  const results = applyPower()
+
   // Show results view
   showResults.value = true
-  
-  // Use appStore or other store methods to apply item effects
-  // This would be implemented in the actual game logic
-  // For example: questStore.useItem(item.value, selectedTargets.value)
+
+  resultsTitle.value = 'did a thing'
+  resultsMessage.value = results.map(result => result.message).join(', ')
 }
 
 // Add this function to get monster title
