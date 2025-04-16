@@ -1,6 +1,6 @@
 import type { Item } from '../types/item'
 import type { Monster } from '../types'
-import { getValidMonsterTargets, getValidMonsterTypes, getTargetsForItem } from './utils'
+import { powerFactory } from './index'
 
 /**
  * Unified targeting system for all powers
@@ -20,6 +20,11 @@ import { getValidMonsterTargets, getValidMonsterTypes, getTargetsForItem } from 
 export function getTargetingDescription(item: Item): string {
   if (!item.target) {
     return "Targets a random monster"
+  }
+
+  const power = powerFactory.getPower(item.power);
+  if (power) {
+    return power.getTargetingDescription(item);
   }
 
   switch (item.target) {
@@ -59,6 +64,51 @@ export function getResultDescription(item: Item): string {
 }
 
 /**
+ * Get valid monster targets for an item
+ * @param item The item to get targets for
+ * @param monsters Array of available monsters
+ * @returns Array of valid monster targets
+ */
+export function getValidMonsterTargets(item: Item, monsters: Monster[]): Monster[] {
+  const power = powerFactory.getPower(item.power);
+  if (power) {
+    return power.targetMonsters(item, monsters);
+  }
+  return [];
+}
+
+/**
+ * Get valid monster types for an item
+ * @param item The item to get targets for
+ * @param monsters Array of available monsters
+ * @returns Array of valid monster type IDs
+ */
+export function getValidMonsterTypes(item: Item, monsters: Monster[]): string[] {
+  const power = powerFactory.getPower(item.power);
+  if (power) {
+    return power.getValidMonsterTypes(item, monsters);
+  }
+  return [];
+}
+
+/**
+ * Get targets for an item based on its targeting mode
+ * @param item The item to get targets for
+ * @param targets Array of potential targets (monsters, locations, etc)
+ * @returns Array of valid targets
+ */
+export function getTargetsForItem(item: Item, targets: Monster[] | any[]): Monster[] | any[] {
+  const power = powerFactory.getPower(item.power);
+  if (power) {
+    return power.getValidTargets(item, targets);
+  }
+  return [];
+}
+
+// Re-export getTargetsForItem as getValidTargets for backward compatibility
+export const getValidTargets = getTargetsForItem;
+
+/**
  * Execute a targeting selection based on item's target mode
  * @param item The item being used
  * @param monsters Array of available monsters
@@ -88,7 +138,4 @@ export function executeTargeting(
   }
   // For 'pick' and 'pick_type', we don't do anything here
   // as those require user interaction and will be handled by the UI
-}
-
-// Re-export getTargetsForItem for backward compatibility
-export { getTargetsForItem } 
+} 

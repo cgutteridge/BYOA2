@@ -135,7 +135,7 @@ import type { Monster } from '../types'
 import { getTargetDescription, generateEffectDescription } from '../quest/generateEffectDescription.ts'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
-import { getValidTargets } from '../powers'
+import { getValidTargets } from '../powers/targeting'
 import { 
   getUniqueMonsterSpecies, 
   getMonsterCountBySpecies, 

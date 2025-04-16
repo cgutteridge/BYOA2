@@ -29,6 +29,7 @@ export abstract class ItemPower {
   abstract readonly levelRestrictions: MonsterLevel[] | null;
 
   // Target selection methods
+  // @ts-ignore - May be unused in base class, implemented by subclasses
   targetTypes(item: Item): string[] {
     return item.targetFilters?.species || [];
   }
@@ -36,14 +37,17 @@ export abstract class ItemPower {
   /**
    * Filter monsters based on item's target filters
    */
+  // @ts-ignore - May be unused in base class, implemented by subclasses
   targetMonsters(item: Item, monsters: Monster[]): Monster[] {
     return monsters.filter(monster => this.canTargetMonster(item, monster));
   }
 
+  // @ts-ignore - May be unused in base class, implemented by subclasses
   targetLocations(_item: Item, _locations: Pub[]): Pub[] {
     return [];
   }
 
+  // @ts-ignore - May be unused in base class, implemented by subclasses
   hasInputs(_item: Item): { target: boolean; result: boolean } {
     return { target: true, result: false };
   }
@@ -75,6 +79,7 @@ export abstract class ItemPower {
   }
 
   // Implementation methods to be overridden by child classes
+  // @ts-ignore - May be unused in base class, implemented by subclasses
   applyToType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} on all monsters of type ${type}`);
     
@@ -84,6 +89,7 @@ export abstract class ItemPower {
     };
   }
 
+  // @ts-ignore - May be unused in base class, implemented by subclasses
   applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
     const success = this.applyEffect(item, monsterId);
@@ -101,6 +107,7 @@ export abstract class ItemPower {
   // Returns true if the effect was successfully applied, false otherwise
   abstract applyEffect(item: Item, monsterId: string): boolean;
 
+  // @ts-ignore - May be unused in base class, implemented by subclasses
   applyToLocation(_item: Item, _locationId: string): PowerResult {
     return {
       success: false,
@@ -162,8 +169,31 @@ export abstract class ItemPower {
    * Power-specific logic for targeting monster types
    * Override in subclasses for special targeting restrictions
    */
+  // @ts-ignore - May be unused in base class, implemented by subclasses
   protected canTargetMonsterType(monsterType: any): boolean {
     return true;
+  }
+
+  /**
+   * Get valid targets for an item in the current array of potential targets
+   */
+  getValidTargets(
+    item: Item,
+    targets: Monster[] | Pub[] | any[]
+  ): Monster[] | Pub[] | string[] | any[] {
+    // Determine what type of targets we're dealing with
+    if (targets.length > 0) {
+      if ('type' in targets[0] && 'alive' in targets[0]) {
+        // It's a monster array
+        return this.targetMonsters(item, targets as Monster[]);
+      } else if ('monsters' in targets[0]) {
+        // It's a locations array
+        return this.targetLocations(item, targets as Pub[]);
+      }
+    }
+    
+    // Default to empty array if we couldn't determine target type
+    return [];
   }
 
   /**
@@ -215,9 +245,6 @@ export abstract class ItemPower {
 // Power factory to provide UI properties and functionality
 export interface PowerFactory {
   getPower: (powerName: ItemPowerId) => ItemPower | undefined;
-  getIcon: (powerName: ItemPowerId) => string;
-  getGlowColor: (powerName: ItemPowerId) => string;
-  getDisplayName: (powerName: ItemPowerId) => string;
 }
 
 // Result type for power executions

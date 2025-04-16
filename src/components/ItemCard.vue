@@ -14,7 +14,7 @@
     @click="handleClick"
   >
     <div class="item-card__icon" v-if="item.power">
-      <span class="icon" :class="`icon-${item.power}`">{{ getPowerIcon(item.power) }}</span>
+      <span class="icon" :class="`icon-${item.power}`">{{ getItemPowerIcon(item.power) }}</span>
     </div>
     <div class="item-card__content">
       <div class="item-card__name">{{ item.name }}</div>
@@ -31,7 +31,8 @@ import type { ItemPowerId } from '../types'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
 import { usePubStore } from '../stores/pubStore'
-import { powerFactory, getValidTargets } from '../powers'
+import { powerFactory } from '../powers'
+import { getValidTargets } from '../powers/targeting'
 import { generateEffectDescription } from '../quest/generateEffectDescription.ts'
 
 // Get the stores
@@ -53,9 +54,10 @@ const emit = defineEmits<{
 }>()
 
 // Get power icon based on item power
-function getPowerIcon(power: ItemPowerId | undefined): string {
+const getItemPowerIcon = (power: ItemPowerId | undefined): string => {
   if (!power) return '?'
-  return powerFactory.getIcon(power)
+  const powerObj = powerFactory.getPower(power)
+  return powerObj?.icon || '?'
 }
 
 // Is this item currently selected?
@@ -108,6 +110,11 @@ function handleClick() {
     appStore.openItemInspectModal(props.item)
   }
 }
+
+const getPowerGlowColor = (power: ItemPowerId): string => {
+  const powerObj = powerFactory.getPower(power)
+  return powerObj?.glowColor || 'rgba(255, 255, 255, 0.8)'
+}
 </script>
 
 <style scoped>
@@ -133,7 +140,7 @@ function handleClick() {
 /* Base has-targets styling with glowing effect */
 .item-card--has-targets {
   border-width: 2px;
-  border-color: v-bind("props.item.power ? powerFactory.getGlowColor(props.item.power) : 'white'");
+  border-color: v-bind("props.item.power ? getPowerGlowColor(props.item.power) : 'white'");
   z-index: 2;
   animation: pulse-glow 2s infinite alternate;
 }
@@ -159,7 +166,7 @@ function handleClick() {
   pointer-events: none;
   background: transparent;
   opacity: 0;
-  box-shadow: 0 0 15px v-bind("props.item.power ? powerFactory.getGlowColor(props.item.power) : 'rgba(255, 255, 255, 0.8)'");
+  box-shadow: 0 0 15px v-bind("props.item.power ? getPowerGlowColor(props.item.power) : 'rgba(255, 255, 255, 0.8)'");
   animation: pulse-glow-effect 2s infinite alternate;
 }
 

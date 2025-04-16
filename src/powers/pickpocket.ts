@@ -1,23 +1,22 @@
 import type { Item, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult, PowerConstants } from './types'
+import { ItemPower, PowerResult } from './types'
 
 /**
- * Pickpocket power implementation - steals items from monsters
+ * Pickpocket power implementation
  */
 export class PickpocketPower extends ItemPower {
+  // UI properties
   readonly displayName = "Pickpocket";
-  readonly icon = "💰";
-  readonly glowColor = "rgba(184, 134, 11, 0.8)"; // Dark goldenrod
+  readonly icon = "🧤";
+  readonly glowColor = "rgba(255, 215, 0, 0.8)";
   
-  // Power constants for item generation
-  readonly constants: PowerConstants = {
-    baseCost: 2,
-    canHaveTargetRestriction: true,
-    supportsTypeTargeting: true,
-    defaultTargetMode: 'random',
-    canHaveResultRestriction: false,
-    levelRestrictions: null // Can target any level
-  };
+  // Item generation constants
+  readonly baseCost = 2;
+  readonly canHaveTargetRestriction = true;
+  readonly supportsTypeTargeting = true;
+  readonly defaultTargetMode = 'random';
+  readonly canHaveResultRestriction = false;
+  readonly levelRestrictions = null; // Can target any level
 
   applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
@@ -25,7 +24,7 @@ export class PickpocketPower extends ItemPower {
     
     return {
       success,
-      message: success ? `${item.name} successfully stole an item from the monster!` : `${item.name} failed to pickpocket the monster.`
+      message: success ? `${item.name} stole from the monster!` : `${item.name} failed to steal anything.`
     };
   }
 
@@ -34,17 +33,14 @@ export class PickpocketPower extends ItemPower {
     
     return {
       success: true,
-      message: `${item.name} successfully stole items from all ${type}s!`
+      message: `${item.name} picked the pockets of all ${type}s!`
     };
   }
 
   applyEffect(item: Item, monsterId: string): boolean {
     console.log(`Using ${item.name} to pickpocket monster ${monsterId}`);
     
-    // In real implementation:
-    // 1. Find the monster with the given ID
-    // 2. If it has an item, transfer it to the player even if the monster is alive
-    
+    // In a real implementation, find the monster and pickpocket it
     // For now, we'll just return success
     return true;
   }

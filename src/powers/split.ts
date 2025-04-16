@@ -1,23 +1,22 @@
 import type { Item, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult, PowerConstants } from './types'
+import { ItemPower, PowerResult } from './types'
 
 /**
- * Split power implementation - splits a monster into multiple weaker ones
+ * Split power implementation
  */
 export class SplitPower extends ItemPower {
+  // UI properties
   readonly displayName = "Split";
-  readonly icon = "🔪";
-  readonly glowColor = "rgba(153, 102, 204, 0.8)";
+  readonly icon = "✂️";
+  readonly glowColor = "rgba(255, 165, 0, 0.8)";
   
-  // Power constants for item generation
-  readonly constants: PowerConstants = {
-    baseCost: 1,
-    canHaveTargetRestriction: true,
-    supportsTypeTargeting: true,
-    defaultTargetMode: 'random',
-    canHaveResultRestriction: false,
-    levelRestrictions: ['grunt'] // Can only target grunts
-  };
+  // Item generation constants
+  readonly baseCost = 3;
+  readonly canHaveTargetRestriction = true;
+  readonly supportsTypeTargeting = true;
+  readonly defaultTargetMode = 'random';
+  readonly canHaveResultRestriction = false;
+  readonly levelRestrictions = null; // Can target any level
 
   applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
@@ -25,7 +24,7 @@ export class SplitPower extends ItemPower {
     
     return {
       success,
-      message: success ? `${item.name} split the monster into multiple smaller ones!` : `${item.name} failed to split the monster.`
+      message: success ? `${item.name} split the monster in two!` : `${item.name} failed to split the monster.`
     };
   }
 
@@ -34,18 +33,14 @@ export class SplitPower extends ItemPower {
     
     return {
       success: true,
-      message: `${item.name} split all ${type}s into multiple smaller ones!`
+      message: `${item.name} split all ${type}s in two!`
     };
   }
 
   applyEffect(item: Item, monsterId: string): boolean {
     console.log(`Using ${item.name} to split monster ${monsterId}`);
     
-    // In real implementation:
-    // 1. Find the monster with the given ID
-    // 2. Check if it has a "splits" property defining what it splits into
-    // 3. If successful, replace it with multiple monsters of that type
-    
+    // In a real implementation, find the monster and split it
     // For now, we'll just return success
     return true;
   }

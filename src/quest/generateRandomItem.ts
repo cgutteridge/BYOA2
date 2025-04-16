@@ -1,7 +1,7 @@
-import type { Item, TargetMode } from '../types/item.ts';
+import type { Item } from '../types/item.ts';
 import type { MonsterLevel, Species, MonsterFlag, ItemPowerId } from '../types';
 import { toItemId } from '../types';
-import { generateEffectDescription, getLevelQualityTerm } from './generateEffectDescription.ts';
+import { getLevelQualityTerm } from './generateEffectDescription.ts';
 import pickOne from "@/utils/pickOne.ts";
 import { powerFactory } from "@/powers/index.ts";
 
@@ -29,20 +29,21 @@ export function generateRandomItem(level: number): Item {
   let remainingPoints = totalPoints;
   
   // Step 1: Pick a random power type that fits within our budget
-  // Get all power constants for base costs
-  const powerConstants = powerFactory.getAllConstants();
+  // Get all available powers
+  const availablePowerIds: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze'];
   
   // Filter available powers based on cost
-  const availablePowers = Object.entries(powerConstants)
-    .filter(([_, constants]) => constants.baseCost <= remainingPoints)
-    .map(([power]) => power as ItemPowerId);
+  const affordablePowers = availablePowerIds
+    .map(powerId => ({ id: powerId, power: powerFactory.getPower(powerId) }))
+    .filter(({ power }) => power && power.baseCost <= remainingPoints)
+    .map(({ id }) => id);
     
-  if (availablePowers.length === 0) {
+  if (affordablePowers.length === 0) {
     // Fallback to most basic power if no powers fit
-    availablePowers.push('kill');
+    affordablePowers.push('kill');
   }
   
-  const selectedPower = pickOne(availablePowers);
+  const selectedPower = pickOne(affordablePowers);
   const power = powerFactory.getPower(selectedPower);
   if (!power) {
     throw new Error(`Power ${selectedPower} not found`);

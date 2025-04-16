@@ -16,10 +16,16 @@ const powerKeys: ItemPowerId[] = [
   'freeze'
 ];
 
+// Get power display name for the title
+const displayName = (powerKey: ItemPowerId): string => {
+  const power = powerFactory.getPower(powerKey);
+  return power?.displayName || powerKey;
+};
+
 // Compatibility layer to maintain backward compatibility
 export const itemTypes: ItemType[] = powerKeys.map(powerKey => ({
   id: powerKey,
-  title: powerFactory.getDisplayName(powerKey),
+  title: displayName(powerKey),
   power: powerKey,
   level: 1 // Default level is 1
 }));
@@ -28,7 +34,7 @@ export const itemTypes: ItemType[] = powerKeys.map(powerKey => ({
 export const itemTypesByPower: Record<ItemPowerId, ItemType> = powerKeys.reduce((acc, powerKey) => {
   acc[powerKey] = {
     id: powerKey,
-    title: powerFactory.getDisplayName(powerKey),
+    title: displayName(powerKey),
     power: powerKey,
     level: 1 // Default level is 1
   };

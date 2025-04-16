@@ -1,23 +1,22 @@
 import type { Item, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult, PowerConstants } from './types'
+import { ItemPower, PowerResult } from './types'
 
 /**
- * Transmute power implementation - transforms monsters into different types
+ * Transmute power implementation
  */
 export class TransmutePower extends ItemPower {
+  // UI properties
   readonly displayName = "Transmute";
-  readonly icon = "✨";
+  readonly icon = "🔄";
   readonly glowColor = "rgba(138, 43, 226, 0.8)";
   
-  // Power constants for item generation
-  readonly constants: PowerConstants = {
-    baseCost: 1,
-    canHaveTargetRestriction: true,
-    supportsTypeTargeting: true,
-    defaultTargetMode: 'random',
-    canHaveResultRestriction: true, // Only transmute has result restrictions
-    levelRestrictions: null // Can target any level
-  };
+  // Item generation constants
+  readonly baseCost = 3;
+  readonly canHaveTargetRestriction = true;
+  readonly supportsTypeTargeting = true;
+  readonly defaultTargetMode = 'random';
+  readonly canHaveResultRestriction = true;
+  readonly levelRestrictions = null; // Can target any level
 
   applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
@@ -25,7 +24,7 @@ export class TransmutePower extends ItemPower {
     
     return {
       success,
-      message: success ? `${item.name} transmuted the monster into something else!` : `${item.name} failed to transmute the monster.`
+      message: success ? `${item.name} transmuted the monster!` : `${item.name} failed to transmute the monster.`
     };
   }
 
@@ -34,18 +33,14 @@ export class TransmutePower extends ItemPower {
     
     return {
       success: true,
-      message: `${item.name} transmuted all ${type}s into something else!`
+      message: `${item.name} transmuted all ${type}s!`
     };
   }
 
   applyEffect(item: Item, monsterId: string): boolean {
     console.log(`Using ${item.name} to transmute monster ${monsterId}`);
     
-    // In real implementation:
-    // 1. Find the monster with the given ID
-    // 2. Determine the new monster type based on item properties
-    // 3. Transform the monster into the new type
-    
+    // In a real implementation, find the monster and transmute it
     // For now, we'll just return success
     return true;
   }
