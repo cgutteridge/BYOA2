@@ -66,11 +66,12 @@ export class SplitPower extends ItemPower {
     const pub = questStore.currentPub;
     if (!pub || !pub.monsters) return false;
     
-    // "Kill" the original monster
+    // Find the original monster
     const monsterIndex = pub.monsters.findIndex(m => m.id === monster.id);
     if (monsterIndex === -1) return false;
     
-    pub.monsters[monsterIndex].alive = false;
+    // Save its item if it has one
+    const originalItem = pub.monsters[monsterIndex].item;
     
     // Determine how many lesser monsters to create
     let count = 2; // Default is 2
@@ -100,7 +101,8 @@ export class SplitPower extends ItemPower {
       names = Array(count).fill(0).map((_, i) => `${monster.name} ${i + 1}`);
     }
     
-    // Create the specified number of lesser monsters
+    // Create the lesser monsters
+    const newMonsters: Monster[] = [];
     for (let i = 0; i < count; i++) {
       const newMonster: Monster = {
         id: toMonsterId(`${monster.id}_lesser_${i}`),
@@ -108,9 +110,20 @@ export class SplitPower extends ItemPower {
         name: names[i],
         alive: true
       };
-      
-      pub.monsters.push(newMonster);
+      newMonsters.push(newMonster);
     }
+    
+    // If the original monster had an item, give it to a random new monster
+    if (originalItem) {
+      const randomIndex = Math.floor(Math.random() * newMonsters.length);
+      newMonsters[randomIndex].item = originalItem;
+    }
+    
+    // Add the new monsters to the pub
+    pub.monsters.push(...newMonsters);
+    
+    // Remove the original monster
+    pub.monsters.splice(monsterIndex, 1);
     
     return true;
   }

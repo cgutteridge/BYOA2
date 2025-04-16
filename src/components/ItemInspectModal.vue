@@ -322,15 +322,15 @@ function applyPower(): PowerResult[] {
     targets.forEach(monster => {
       results.push(power.useOnMonster(item.value, monster))
     })
-  } else { // type
+  } else { // type (pick_type or random_type)
     let targets: MonsterTypeId[] = []
     if (item.value.target === 'pick_type') {
-      targets = selectedTargets.value.map(toMonsterTypeId)
+      targets = selectedTargetTypes.value.map(toMonsterTypeId)
     } else {
-      targets = [toMonsterTypeId(pickOne(selectedTargets.value))]
+      targets = [toMonsterTypeId(pickOne(potentialTargetMonsterTypes.value))]
     }
-    targets.forEach(monster => {
-      results.push(power.useOnType(item.value, monster))
+    targets.forEach(monsterType => {
+      results.push(power.useOnType(item.value, monsterType))
     })
   }
 
