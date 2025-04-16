@@ -18,22 +18,34 @@ export class BanishPower extends ItemPower {
   readonly canHaveResultRestriction = false;
   readonly levelRestrictions = null; // Can target any level
 
-  applyToMonster(item: Item, monsterId: string): PowerResult {
+  useOnMonster(item: Item, monsterId: string): PowerResult {
+    // Reduce uses
+    this.reduceUses(item);
+    
     // Call the implementation-specific effect method
     const success = this.applyEffect(item, monsterId);
     
     return {
       success,
-      message: success ? `${item.name} banished the monster from this realm!` : `${item.name} failed to banish the monster.`
+      message: success ? `${item.name} banished the monster!` : `${item.name} failed to banish the monster.`
     };
   }
 
-  applyToType(item: Item, type: MonsterTypeId): PowerResult {
+  useOnType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} to banish all monsters of type ${type}`);
     
+    // Reduce uses
+    this.reduceUses(item);
+    
+    // Call the implementation-specific effect method for the type
+    const success = this.applyEffectToType(item, type);
+    
+    // We'll provide a custom message specific to banishing
     return {
-      success: true,
-      message: `${item.name} banished all ${type}s from this realm!`
+      success,
+      message: success 
+        ? `${item.name} banished all ${type}s!` 
+        : `${item.name} failed to banish any ${type}s.`
     };
   }
 
@@ -41,6 +53,17 @@ export class BanishPower extends ItemPower {
     console.log(`Using ${item.name} to banish monster ${monsterId}`);
     
     // In real implementation, find the monster and remove it
+    // For now, we'll just return success
+    return true;
+  }
+
+  applyEffectToType(item: Item, type: MonsterTypeId): boolean {
+    console.log(`Using ${item.name} to banish all monsters of type ${type}`);
+    
+    // In a real implementation, we would:
+    // 1. Find all monsters of this type
+    // 2. For each monster, apply the banish effect
+    
     // For now, we'll just return success
     return true;
   }

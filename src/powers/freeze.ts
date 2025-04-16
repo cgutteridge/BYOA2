@@ -23,40 +23,47 @@ export class FreezePower extends ItemPower {
   readonly canHaveResultRestriction = false;
   readonly levelRestrictions: MonsterLevel[] = ['minion', 'grunt', 'elite']; // Can't target bosses
 
-  applyToMonster(item: Item, monsterId: string): PowerResult {
-    // Find the actual monster object from the current pub
-    const questStore = useQuestStore();
-    const monster = questStore.currentPub?.monsters?.find(m => m.id === monsterId);
+  useOnMonster(item: Item, monsterId: string): PowerResult {
+    console.log(`Using ${item.name} to freeze monster ${monsterId}`);
     
+    // Reduce uses
+    this.reduceUses(item);
+    
+    // Get the quest store
+    const questStore = useQuestStore();
+    
+    // Get the current location's monsters
+    const pub = questStore.currentPub;
+    if (!pub || !pub.monsters) {
+      return {
+        success: false,
+        message: `${item.name} couldn't find any monsters to target.`
+      };
+    }
+    
+    // Find the monster with the given ID
+    const monster = pub.monsters.find(m => m.id === monsterId);
     if (!monster) {
       return {
         success: false,
-        message: `${item.name} couldn't find the target monster.`
+        message: `${item.name} couldn't find the monster.`
       };
     }
     
-    // Get monster type to check if it's a boss
-    const monsterType = monsterTypes.find(mt => mt.id === monster.type);
-    if (monsterType?.level === "boss") {
-      return {
-        success: false,
-        message: `${item.name} failed to freeze the monster. Bosses are immune to freezing!`
-      };
-    }
-    
-    // Call the implementation-specific effect method
-    const success = this.applyEffect(item, monsterId);
+    // Freeze the monster using shared helper
+    const success = this.freezeMonster(monster);
     
     return {
       success,
-      message: success 
-        ? `${item.name} froze the monster into an ice cube you can add to a drink!` 
-        : `${item.name} failed to freeze the monster.`
+      message: success ? `${item.name} froze the monster!` : `${item.name} failed to freeze the monster.`
     };
   }
 
-  applyToType(item: Item, type: MonsterTypeId): PowerResult {
+  useOnType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} to freeze all monsters of type ${type}`);
+    
+    // Reduce uses
+    this.reduceUses(item);
     
     // Find monster type to check if it's a boss
     const monsterType = monsterTypes.find(mt => mt.id === type);
@@ -66,28 +73,34 @@ export class FreezePower extends ItemPower {
         message: `${item.name} failed to freeze the ${type}s. Bosses are immune to freezing!`
       };
     }
-    
+     
     // Find all monsters of this type in the current pub
     const questStore = useQuestStore();
     const monsters = questStore.currentPub?.monsters?.filter(
       monster => monster.type === type && monster.alive
     );
-    
+     
     if (!monsters || monsters.length === 0) {
       return {
         success: false,
         message: `No valid targets of type ${type} found.`
       };
     }
-    
-    // Transform each monster into an ice version
+     
+    // Apply freezing effect to each monster
+    let frozenCount = 0;
     monsters.forEach(monster => {
-      this.transformToIceMonster(monster);
+      if (this.freezeMonster(monster)) {
+        frozenCount++;
+      }
     });
     
+    // Return result based on how many monsters were frozen
     return {
-      success: true,
-      message: `${item.name} froze all ${type}s into ice cubes!`
+      success: frozenCount > 0,
+      message: frozenCount > 0 
+        ? `${item.name} froze ${frozenCount} ${type}${frozenCount > 1 ? 's' : ''} into ice cubes!` 
+        : `${item.name} failed to freeze any ${type}s.`
     };
   }
 
@@ -97,18 +110,28 @@ export class FreezePower extends ItemPower {
     // Find the actual monster object from the current pub
     const questStore = useQuestStore();
     const monster = questStore.currentPub?.monsters?.find(m => m.id === monsterId);
-    
+     
     if (!monster) {
-      return false; // Monster not found
-    }
-    
-    // Can't freeze bosses
-    const monsterType = monsterTypes.find(mt => mt.id === monster.type);
-    if (monsterType?.level === "boss") {
       return false;
     }
+     
+    // Apply freezing effect to the monster
+    return this.freezeMonster(monster);
+  }
+  
+  /**
+   * Freeze a monster if possible
+   * @param monster The monster to freeze
+   * @returns true if monster was frozen, false otherwise
+   */
+  private freezeMonster(monster: Monster): boolean {
+    // Get monster type to check if it's a boss
+    const monsterType = monsterTypes.find(mt => mt.id === monster.type);
+    if (monsterType?.level === "boss") {
+      return false; // Bosses are immune to freezing
+    }
     
-    // Transform this monster into an ice version
+    // Transform the monster into an ice version
     return this.transformToIceMonster(monster);
   }
   
@@ -142,11 +165,5 @@ export class FreezePower extends ItemPower {
     return true;
   }
   
-  /**
-   * Override to prevent targeting boss monsters
-   */
-  protected canTargetMonsterType(monsterType: any): boolean {
-    // Cannot target boss monsters with freeze
-    return monsterType.level !== "boss";
-  }
+
 } 

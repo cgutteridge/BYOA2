@@ -134,13 +134,13 @@ import type { Item, Monster } from '../types'
 import { getTargetDescription, generateEffectDescription } from '../quest/generateEffectDescription.ts'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
-import { getValidTargets } from '../powers/targeting'
+import { getValidTargets } from '../quest/targeting.ts'
 import { 
   getUniqueMonsterSpecies, 
   getMonsterCountBySpecies, 
   getMonsterLevel, 
   getMonsterSpecies 
-} from '../quest/targeting.ts'
+} from '../quest/monsterUtils.ts'
 import { monsterTypes } from '../data/monsterTypes.ts'
 
 // Stores

@@ -1,67 +1,19 @@
-import type { Monster } from '../types'
-import { monsterTypes } from '../data/monsterTypes.ts'
+import type {Item, Monster, MonsterTypeId, Pub} from '../types'
+import {powerFactory} from '../powers'
 
 /**
- * Get unique monster species from available monsters
- * @param monsters Array of monsters to extract species from
- * @returns Array of unique species strings
+ * Get targets for an item based on its targeting mode
+ * @param item The item to get targets for
+ * @param potentialTargets Array of potential targets (monsters, locations, etc)
+ * @returns Array of valid targets
  */
-export function getUniqueMonsterSpecies(monsters: Monster[]): string[] {
-  if (!monsters || !monsters.length) return []
-  
-  // Get all species from filtered monsters
-  const types = new Set<string>()
-  
-  monsters.forEach(monster => {
-    const monsterType = monsterTypes.find(mt => mt.id === monster.type)
-    if (monsterType) {
-      types.add(monsterType.species)
-    }
-  })
-  
-  return Array.from(types)
+export function getTargetsForItem(item: Item, potentialTargets: Monster[]): Pub[] | MonsterTypeId[] | Monster[] {
+  const power = powerFactory.getPower(item.power);
+  if (power) {
+    return power.getValidTargets(item, potentialTargets);
+  }
+  return [];
 }
 
-/**
- * Get monster count by species
- * @param monsters Array of monsters to count
- * @param species Species to count
- * @returns Number of monsters of the specified species
- */
-export function getMonsterCountBySpecies(monsters: Monster[], species: string): number {
-  // Get all monster types matching this species
-  const monsterTypeIds = monsterTypes
-    .filter(mt => mt.species === species)
-    .map(mt => mt.id)
-  
-  // Count monsters that match any of these type IDs
-  return monsters.filter(monster => 
-    monsterTypeIds.includes(monster.type)
-  ).length
-}
-
-/**
- * Get monster level name from type ID
- * @param monsterTypeId The monster type ID
- * @returns Capitalized level name
- */
-export function getMonsterLevel(monsterTypeId: string): string {
-  const monsterType = monsterTypes.find(mt => mt.id === monsterTypeId)
-  if (!monsterType) return 'Unknown'
-  
-  // Capitalize the level
-  return monsterType.level.charAt(0).toUpperCase() + monsterType.level.slice(1)
-}
-
-/**
- * Get monster species name from type ID
- * @param monsterTypeId The monster type ID
- * @returns Capitalized species name
- */
-export function getMonsterSpecies(monsterTypeId: string): string {
-  const monsterType = monsterTypes.find(mt => mt.id === monsterTypeId)
-  if (!monsterType) return 'Unknown'
-  
-  // Capitalize the species
-  return monsterType.species.charAt(0).toUpperCase() + monsterType.species.slice(1)
-} 
+// Re-export getTargetsForItem as getValidTargets for backward compatibility
+export const getValidTargets = getTargetsForItem;

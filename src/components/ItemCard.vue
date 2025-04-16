@@ -31,7 +31,7 @@ import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
 import { usePubStore } from '../stores/pubStore'
 import { powerFactory } from '../powers'
-import { getValidTargets } from '../powers/targeting'
+import { getValidTargets } from '../quest/targeting.ts'
 import { generateEffectDescription } from '../quest/generateEffectDescription.ts'
 
 // Get the stores
