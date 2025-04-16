@@ -1,4 +1,4 @@
-import type { Item, Monster } from '../types';
+import type { Item, Monster, MonsterTypeId } from '../types';
 import { ItemPower, PowerResult } from './types';
 
 /**
@@ -32,24 +32,29 @@ export class KillPower extends ItemPower {
   }
 
   static applyToMonster(item: Item, monsterId: string): PowerResult {
-    console.log(`Using ${item.name} to kill monster ${monsterId}`);
-    
-    this.reduceUses(item);
+    // Call the implementation-specific effect method
+    const success = this.applyEffect(item, monsterId);
     
     return {
-      success: true,
-      message: `${item.name} killed the monster!`
+      success,
+      message: success ? `${item.name} killed the monster!` : `${item.name} failed to kill the monster.`
     };
   }
 
-  static applyToType(item: Item, type: string): PowerResult {
+  static applyToType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} to kill all monsters of type ${type}`);
-    
-    this.reduceUses(item);
     
     return {
       success: true,
       message: `${item.name} killed all ${type}s!`
     };
+  }
+
+  static applyEffect(item: Item, monsterId: string): boolean {
+    console.log(`Using ${item.name} to kill monster ${monsterId}`);
+    
+    // In a real implementation, find the monster and kill it
+    // For now, we'll just return success
+    return true;
   }
 } 

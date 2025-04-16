@@ -1,34 +1,42 @@
-import type { Item } from '../types/item'
-import type { Monster } from '../types'
-import type { ItemPower } from './types'
-import { isMonster, canTarget, getValidTargets } from './utils'
+import type { Item, MonsterTypeId } from '../types'
+import { ItemPower, PowerResult } from './types'
 
-// Freeze power implementation
-export const freeze: ItemPower = {
-  execute: (item: Item, target: Monster | string) => {
-    // Handle individual monster targeting
-    if (isMonster(target)) {
-      console.log(`Using ${item.name} to freeze ${target.name}`)
-      
-      if (target.alive) {
-        // TODO: In a real implementation, apply freeze status to monster
-        console.log(`${target.name} has been frozen solid!`)
-      }
-    }
-    // Handle type targeting
-    else if (typeof target === 'string') {
-      console.log(`Using ${item.name} to freeze all monsters of type ${target}`)
-      
-      // TODO: Find all monsters matching the target type
-      // and freeze them all (in the actual game implementation)
-    }
-  },
-  
-  canTarget,
-  getValidTargets,
-  
-  // UI properties
-  displayName: "Freeze",
-  icon: "❄️",
-  glowColor: "rgba(0, 191, 255, 0.8)"
+/**
+ * Freeze power implementation - immobilizes monsters
+ */
+export class FreezePower extends ItemPower {
+  static displayName = "Freeze";
+  static icon = "❄️";
+  static glowColor = "rgba(0, 191, 255, 0.8)";
+
+  static applyToMonster(item: Item, monsterId: string): PowerResult {
+    // Call the implementation-specific effect method
+    const success = this.applyEffect(item, monsterId);
+    
+    return {
+      success,
+      message: success ? `${item.name} froze the monster solid!` : `${item.name} failed to freeze the monster.`
+    };
+  }
+
+  static applyToType(item: Item, type: MonsterTypeId): PowerResult {
+    console.log(`Using ${item.name} to freeze all monsters of type ${type}`);
+    
+    return {
+      success: true,
+      message: `${item.name} froze all ${type}s solid!`
+    };
+  }
+
+  static applyEffect(item: Item, monsterId: string): boolean {
+    console.log(`Using ${item.name} to freeze monster ${monsterId}`);
+    
+    // In real implementation:
+    // 1. Find the monster with the given ID
+    // 2. Apply a freeze status effect
+    // 3. Prevent the monster from acting for a certain duration
+    
+    // For now, we'll just return success
+    return true;
+  }
 } 

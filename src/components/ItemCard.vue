@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Item } from '../types/item'
+import type { ItemPowerId } from '../types'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
 import { usePubStore } from '../stores/pubStore'
@@ -52,7 +53,7 @@ const emit = defineEmits<{
 }>()
 
 // Get power icon based on item power
-function getPowerIcon(power: string | undefined): string {
+function getPowerIcon(power: ItemPowerId | undefined): string {
   if (!power) return '?'
   return powerFactory.getIcon(power)
 }

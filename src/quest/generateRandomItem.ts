@@ -1,11 +1,11 @@
-import type { Item, ItemPower, TargetMode } from '../types/item.ts';
-import type { MonsterLevel, Species, MonsterFlag } from '../types';
+import type { Item, TargetMode } from '../types/item.ts';
+import type { MonsterLevel, Species, MonsterFlag, ItemPowerId } from '../types';
 import { toItemId } from '../types';
 import { generateEffectDescription, getLevelQualityTerm } from './generateEffectDescription.ts';
 import pickOne from "@/utils/pickOne.ts";
 
 // Base point costs for different power types
-const POWER_BASE_COSTS: Record<ItemPower, number> = {
+const POWER_BASE_COSTS: Record<ItemPowerId, number> = {
   kill: 2,
   transmute: 1,
   spy: 2,  // Base cost for spying
@@ -17,7 +17,7 @@ const POWER_BASE_COSTS: Record<ItemPower, number> = {
 };
 
 // Which powers can have target restrictions
-const CAN_HAVE_TARGET_RESTRICTION: Record<ItemPower, boolean> = {
+const CAN_HAVE_TARGET_RESTRICTION: Record<ItemPowerId, boolean> = {
   kill: true,
   transmute: true,
   spy: false,
@@ -29,7 +29,7 @@ const CAN_HAVE_TARGET_RESTRICTION: Record<ItemPower, boolean> = {
 };
 
 // Which powers support type targeting
-const SUPPORTS_TYPE_TARGETING: Record<ItemPower, boolean> = {
+const SUPPORTS_TYPE_TARGETING: Record<ItemPowerId, boolean> = {
   kill: true,
   transmute: true,
   spy: false,
@@ -41,7 +41,7 @@ const SUPPORTS_TYPE_TARGETING: Record<ItemPower, boolean> = {
 };
 
 // Default target modes for each power
-const DEFAULT_TARGET_MODE: Record<ItemPower, TargetMode> = {
+const DEFAULT_TARGET_MODE: Record<ItemPowerId, TargetMode> = {
   kill: 'random',
   transmute: 'random',
   spy: undefined,
@@ -53,7 +53,7 @@ const DEFAULT_TARGET_MODE: Record<ItemPower, TargetMode> = {
 };
 
 // Which powers can have result restrictions
-const CAN_HAVE_RESULT_RESTRICTION: Record<ItemPower, boolean> = {
+const CAN_HAVE_RESULT_RESTRICTION: Record<ItemPowerId, boolean> = {
   kill: false,
   transmute: true,
   spy: false,
@@ -66,7 +66,7 @@ const CAN_HAVE_RESULT_RESTRICTION: Record<ItemPower, boolean> = {
 
 // Which powers are restricted to certain monster levels
 type LevelRestriction = MonsterLevel[] | null;
-const LEVEL_RESTRICTIONS: Record<ItemPower, LevelRestriction> = {
+const LEVEL_RESTRICTIONS: Record<ItemPowerId, LevelRestriction> = {
   kill: null, // No special restrictions
   transmute: null,
   spy: null,
@@ -103,7 +103,7 @@ export function generateRandomItem(level: number): Item {
   // Step 1: Pick a random power type that fits within our budget
   const availablePowers = Object.entries(POWER_BASE_COSTS)
     .filter(([_, cost]) => cost <= remainingPoints)
-    .map(([power]) => power as ItemPower);
+    .map(([power]) => power as ItemPowerId);
     
   if (availablePowers.length === 0) {
     // Fallback to most basic power if no powers fit
@@ -180,7 +180,7 @@ export function generateRandomItem(level: number): Item {
 /**
  * Get available upgrades for an item based on remaining points and power type
  */
-function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: ItemPower): string[] {
+function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: ItemPowerId): string[] {
   const availableUpgrades: string[] = [];
   
   // Add uses (+1 point for +2 uses)
@@ -280,7 +280,7 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
 /**
  * Generate a random name for the item based on its power and target mode
  */
-function generateItemName(power: ItemPower, targetMode?: string): string {
+function generateItemName(power: ItemPowerId, targetMode?: string): string {
   const prefixes = [
     'Ancient', 'Mystical', 'Enchanted', 'Arcane', 'Magical',
     'Cursed', 'Blessed', 'Sacred', 'Demonic', 'Celestial',
@@ -288,7 +288,7 @@ function generateItemName(power: ItemPower, targetMode?: string): string {
   ];
   
   // Base item names
-  const baseNames: Record<ItemPower, string[]> = {
+  const baseNames: Record<ItemPowerId, string[]> = {
     kill: ['Dagger', 'Blade', 'Sword', 'Wand', 'Staff', 'Orb of Destruction'],
     transmute: ['Transmutation Wand', 'Alchemist\'s Stone', 'Morphing Crystal', 'Shifter Orb'],
     spy: ['Far-seeing Glass', 'Spyglass Telescope', 'Winged Monkey', 'Scrying Orb', 'Crystal Ball', 'Astral Eye'],

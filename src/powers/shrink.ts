@@ -1,4 +1,4 @@
-import type { Item, Monster } from '../types'
+import type { Item, Monster, MonsterTypeId } from '../types'
 import { ItemPower, PowerResult } from './types'
 
 /**
@@ -37,6 +37,27 @@ export class ShrinkPower extends ItemPower {
   }
 
   static applyToMonster(item: Item, monsterId: string): PowerResult {
+    // Call the implementation-specific effect method
+    const success = this.applyEffect(item, monsterId);
+    
+    return {
+      success,
+      message: success 
+        ? `${item.name} shrank the monster down to a less threatening size!` 
+        : `${item.name} failed to shrink the monster.`
+    };
+  }
+
+  static applyToType(item: Item, type: MonsterTypeId): PowerResult {
+    console.log(`Using ${item.name} to shrink all monsters of type ${type}`);
+    
+    return {
+      success: true,
+      message: `${item.name} shrank all ${type}s down to a less threatening size!`
+    };
+  }
+
+  static applyEffect(item: Item, monsterId: string): boolean {
     console.log(`Using ${item.name} to shrink monster ${monsterId}`);
     
     // In real implementation:
@@ -47,11 +68,7 @@ export class ShrinkPower extends ItemPower {
     //    If it's grunt -> fail or convert to minion
     //    If it's minion -> fail
     
-    this.reduceUses(item);
-    
-    return {
-      success: true,
-      message: `${item.name} shrank the monster down to a less threatening size!`
-    };
+    // For now, we'll just return success
+    return true;
   }
 } 

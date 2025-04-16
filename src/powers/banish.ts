@@ -1,4 +1,4 @@
-import type { Item, Monster } from '../types'
+import type { Item, Monster, MonsterTypeId } from '../types'
 import { ItemPower, PowerResult } from './types'
 
 // Banish power implementation
@@ -37,28 +37,29 @@ export class BanishPower extends ItemPower {
   }
 
   static applyToMonster(item: Item, monsterId: string): PowerResult {
-    console.log(`Using ${item.name} to banish monster ${monsterId}`);
-    
-    // In real implementation, would find the monster and banish it
-    this.reduceUses(item);
+    // Call the implementation-specific effect method
+    const success = this.applyEffect(item, monsterId);
     
     return {
-      success: true,
-      message: `${item.name} banished the monster!`
+      success,
+      message: success ? `${item.name} banished the monster!` : `${item.name} failed to banish the monster.`
     };
   }
 
-  static applyToType(item: Item, type: string): PowerResult {
+  static applyToType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} to banish all monsters of type ${type}`);
-    
-    // In real implementation:
-    // 1. Find all monsters of the specified type
-    // 2. Banish them without adding to XP (no loot)
-    this.reduceUses(item);
     
     return {
       success: true,
       message: `${item.name} banished all ${type}s!`
     };
+  }
+
+  static applyEffect(item: Item, monsterId: string): boolean {
+    console.log(`Using ${item.name} to banish monster ${monsterId}`);
+    
+    // In a real implementation, find the monster and banish it
+    // For now, we'll just return success
+    return true;
   }
 } 

@@ -1,10 +1,15 @@
 import type { Item } from '../types/item'
-import type { Monster, Pub } from '../types'
+import type { Monster, Pub, MonsterTypeId, ItemPowerId } from '../types'
 import type { PowerResult } from './types'
 import { ItemPower } from './types'
 import { BanishPower } from './banish'
 import { KillPower } from './kill'
 import { SpyPower } from './spy'
+import { ShrinkPower } from './shrink'
+import { SplitPower } from './split'
+import { TransmutePower } from './transmute'
+import { PickpocketPower } from './pickpocket'
+import { FreezePower } from './freeze'
 // These will be implemented later
 // import { TransmutePower } from './transmute'
 // import { ShrinkPower } from './shrink'
@@ -13,17 +18,16 @@ import { SpyPower } from './spy'
 // import { FreezePower } from './freeze'
 
 // Register all power implementations
-const powerClasses: Record<string, typeof ItemPower> = {
+const powerClasses = {
   banish: BanishPower,
   kill: KillPower,
   spy: SpyPower,
-  // These will be implemented later
-  // transmute: TransmutePower,
-  // shrink: ShrinkPower,
-  // split: SplitPower,
-  // pickpocket: PickpocketPower,
-  // freeze: FreezePower
-}
+  transmute: TransmutePower,
+  shrink: ShrinkPower,
+  split: SplitPower,
+  pickpocket: PickpocketPower,
+  freeze: FreezePower
+} as Record<ItemPowerId, typeof ItemPower>;
 
 // Default power UI properties
 const defaultPowerProperties = {
@@ -36,21 +40,21 @@ const defaultPowerProperties = {
  * Power factory implementation
  */
 export const powerFactory = {
-  getPower: (powerName: string): typeof ItemPower | undefined => {
+  getPower: (powerName: ItemPowerId): typeof ItemPower | undefined => {
     return powerClasses[powerName];
   },
   
-  getIcon: (powerName: string): string => {
+  getIcon: (powerName: ItemPowerId): string => {
     const PowerClass = powerClasses[powerName];
     return PowerClass?.icon || defaultPowerProperties.icon;
   },
   
-  getGlowColor: (powerName: string): string => {
+  getGlowColor: (powerName: ItemPowerId): string => {
     const PowerClass = powerClasses[powerName];
     return PowerClass?.glowColor || defaultPowerProperties.glowColor;
   },
   
-  getDisplayName: (powerName: string): string => {
+  getDisplayName: (powerName: ItemPowerId): string => {
     const PowerClass = powerClasses[powerName];
     return PowerClass?.displayName || powerName || defaultPowerProperties.displayName;
   }
@@ -85,15 +89,15 @@ export function executePower(
       if (typeof target === 'string') {
         // Check if it's a monster ID or type
         if (target.startsWith('monster_')) {
-          return PowerClass.applyToMonster(item, target);
+          return PowerClass.useOnMonster(item, target);
         } else if (target.startsWith('location_')) {
           return PowerClass.applyToLocation(item, target);
         } else {
-          return PowerClass.applyToType(item, target);
+          return PowerClass.useOnType(item, target as MonsterTypeId);
         }
       } else if (target && 'id' in target && 'type' in target && 'alive' in target) {
         // It's a monster object
-        return PowerClass.applyToMonster(item, target.id);
+        return PowerClass.useOnMonster(item, target.id);
       } else if (target && 'id' in target && 'monsters' in target) {
         // It's a location/pub object
         return PowerClass.applyToLocation(item, target.id);

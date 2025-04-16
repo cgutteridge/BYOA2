@@ -2,7 +2,7 @@
 // This barrel file is maintained for backward compatibility
 export { toItemId } from './index';
 export type {
-  ItemPower,
+  ItemPowerId,
   TargetMode,
   ResultMode,
   Item,

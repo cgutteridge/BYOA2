@@ -13,7 +13,7 @@ export const toMonsterTypeId = (id: string): MonsterTypeId => id as MonsterTypeI
 export const toItemId = (id: string): ItemId => id as ItemId
 
 // Item-related types
-export type ItemPower = 
+export type ItemPowerId = 
   | 'kill' 
   | 'transmute' 
   | 'spy'
@@ -21,7 +21,7 @@ export type ItemPower =
   | 'split' 
   | 'pickpocket'
   | 'banish'
-  | 'freeze'  // Removes monster without getting any loot
+  | 'freeze'
 
 // Target modes - how the target is selected
 export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'location' | undefined
@@ -36,7 +36,7 @@ export interface Item {
   description?: string  // A brief description of what the item does
   uses: number
   level: number
-  power: ItemPower
+  power: ItemPowerId
   target?: TargetMode
   targetFilters?: {
     species?: Species[]
@@ -126,8 +126,8 @@ export type GPSStatus = 'initializing' | 'loading' | 'success' | 'error'
 
 // Backward compatibility interface - data is derived from powers directory classes
 export interface ItemType {
-  id: ItemPower
+  id: ItemPowerId
   title: string
-  power: ItemPower
+  power: ItemPowerId
   level: number
 } 

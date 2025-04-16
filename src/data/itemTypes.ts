@@ -1,11 +1,11 @@
 // This file is a compatibility layer that uses the powers directory
 // as the source of truth for item power data
 import { powerFactory } from '../powers';
-import { ItemType, ItemPower } from '../types';
+import { ItemType, ItemPowerId } from '../types';
 
 // Build a list of all available power keys
 // These are the keys used in the powerClasses record in powers/index.ts
-const powerKeys: ItemPower[] = [
+const powerKeys: ItemPowerId[] = [
   'kill',
   'spy',
   'banish',
@@ -25,7 +25,7 @@ export const itemTypes: ItemType[] = powerKeys.map(powerKey => ({
 }));
 
 // Backward compatibility map
-export const itemTypesByPower: Record<ItemPower, ItemType> = powerKeys.reduce((acc, powerKey) => {
+export const itemTypesByPower: Record<ItemPowerId, ItemType> = powerKeys.reduce((acc, powerKey) => {
   acc[powerKey] = {
     id: powerKey,
     title: powerFactory.getDisplayName(powerKey),
@@ -33,4 +33,4 @@ export const itemTypesByPower: Record<ItemPower, ItemType> = powerKeys.reduce((a
     level: 1 // Default level is 1
   };
   return acc;
-}, {} as Record<ItemPower, ItemType>); 
+}, {} as Record<ItemPowerId, ItemType>); 
