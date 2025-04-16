@@ -136,6 +136,12 @@ export function generateEffectDescription(item: Item): string {
       effect = `This ${qualityTerm} item reveals any location without visiting it.`;
       break;
       
+    case 'freeze':
+      effect = `This ${qualityTerm} item transforms `;
+      effect += getTargetDescription(item);
+      effect += " into an ice monster of the same level.";
+      break;
+      
     default:
       effect = `This ${qualityTerm} item has unknown effects.`;
   }
