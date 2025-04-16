@@ -1,5 +1,5 @@
-import type { Item, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult } from './abstractItemPower'
+import { ItemPower } from './abstractItemPower'
+import {Item, Monster} from "@/types";
 
 /**
  * Spy power implementation
@@ -16,6 +16,10 @@ export class SpyPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly levelRestrictions = null; // Can target any level
+  readonly levelRestrictions = null;
+
+  applyEffect(item: Item, monster: Monster): boolean {
+    return false;
+  } // Can target any level
 
 } 

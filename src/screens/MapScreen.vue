@@ -223,6 +223,7 @@ function initializeMap(): void {
 
     const mapInstance = L.map('map', {
       preferCanvas: true,
+      zoomControl: false  // Disable the default zoom control
     }).setView([location.lat, location.lng], zoom)
 
     // Add event listeners for map movement and zoom

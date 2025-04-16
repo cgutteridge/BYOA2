@@ -1,5 +1,5 @@
-import type { Item, Monster, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult } from './abstractItemPower'
+import type { Item, Monster } from '../types'
+import { ItemPower } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
 import { useQuestStore } from '@/stores/questStore.ts'
 import { toMonsterId } from '@/types'
@@ -51,7 +51,7 @@ export class SplitPower extends ItemPower {
    * @param monster The monster to split
    * @returns Whether the operation was successful
    */
-  applyEffect(item: Item, monster: Monster): boolean {
+  applyEffect(_item: Item, monster: Monster): boolean {
     // Get the monster's type definition
     const monsterTypeDef = monsterTypes.find(mt => mt.id === monster.type);
     if (!monsterTypeDef) return false;
