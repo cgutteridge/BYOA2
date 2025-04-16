@@ -17,7 +17,69 @@
     "level": "boss",
     "species": "elf",
     "flags": ["mortal"],
-    "xp": 9.0
+    "xp": 9.0,
+    "lesser": "high_elf",
+    "lesserCount": 3
+  },
+  {
+    "id": "huntsman",
+    "title": "Huntsman",
+    "drink": "Jägermeister",
+    "level": "minion",
+    "species": "human",
+    "flags": ["mortal"],
+    "xp": 1.5
+  },
+  {
+    "id": "huntmaster",
+    "title": "Master of the hunt",
+    "drink": "Jägerbomb",
+    "level": "grunt",
+    "species": "human",
+    "flags": ["mortal"],
+    "xp": 1.5,
+    "lesser": "huntsman"
+  },
+  {
+    "id": "royal_hunt",
+    "title": "Royal Hunt",
+    "drink": "Jägerbomb for every player",
+    "level": "boss",
+    "species": "human",
+    "flags": ["mortal"],
+    "xp": 10,
+    "lesser": "huntmaster",
+    "lesserCount": "player"
+  },
+  {
+    "id": "lost_spirit",
+    "title": "Lost Spirit",
+    "drink": "Shot of your choice",
+    "level": "minion",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 1
+  },
+  {
+    "id": "hungry_ghost",
+    "title": "Hungry Ghost",
+    "drink": "2 Shots of your choice",
+    "level": "grunt",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 2,
+    "lesser": "lost_spirit"
+  },
+  {
+    "id": "spirit_vortex",
+    "title": "Spirit Vortex",
+    "drink": "Shot (of their choice) for every player",
+    "level": "boss",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 10,
+    "lesser": "lost_spirit",
+    "lesserCount": "player"
   },
   {
     "id": "vampire",
@@ -503,22 +565,22 @@
     "lesser": "frost_golem"
   },
   {
-    "id": "obsidian_guardian",
-    "title": "Obsidian Guardian",
+    "id": "shadow_knight",
+    "title": "Shadow Knight",
     "drink": "Pint of Guinness",
     "level": "grunt",
-    "species": "elemental",
-    "flags": [],
+    "species": "human",
+    "flags": ["mortal"],
     "xp": 2.3,
-    "lesser": "obsidian_golem"
+    "lesser": "obsidian_warrior"
   },
   {
-    "id": "obsidian_golem",
-    "title": "Obsidian Golem",
+    "id": "shadow_warrior",
+    "title": "Shadow Warrior",
     "drink": "Half Pint of Guinness",
     "level": "minion",
-    "species": "elemental",
-    "flags": [],
+    "species": "human",
+    "flags": ["mortal"],
     "xp": 1.2
   }
 ] 
