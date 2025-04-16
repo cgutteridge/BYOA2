@@ -23,16 +23,55 @@ export class FreezePower extends ItemPower {
   readonly canHaveResultRestriction = false;
   readonly levelRestrictions: MonsterLevel[] = ['minion', 'grunt', 'elite']; // Can't target bosses
 
+  // Map from level to appropriate ice monster
+  private readonly iceMonsterMap: Record<MonsterLevel, MonsterTypeId> = {
+    'minion': toMonsterTypeId('ice_shard'),
+    'grunt': toMonsterTypeId('frost_golem'),
+    'elite': toMonsterTypeId('glacial_titan'),
+    'boss': toMonsterTypeId('glacial_titan'), // Fallback, but bosses can't be targeted anyway
+  };
 
-    /*
-    // Map from level to appropriate ice monster
-    const iceMonsterMap: Record<string, string> = {
-      'minion': 'ice_shard', // Minions become ice shards
-      'grunt': 'frost_golem', // Grunts become frost golems
-      'elite': 'glacial_titan', // Elites become glacial titans
-      // No boss mapping as bosses can't be frozen
-    };
-    */
-
-
+  applyEffect(item: Item, monster: Monster): boolean {
+    // Guard: check if monster exists and is alive
+    if (!monster || !monster.alive) {
+      return false;
+    }
+    
+    // Find the monster type to get its level
+    const monsterType = monsterTypes.find(m => m.id === monster.type);
+    
+    // Guard: check if we found the monster type
+    if (!monsterType) {
+      console.log(`Could not find type information for monster ${monster.name}`);
+      return false;
+    }
+    
+    // Guard: check if monster is a boss (though we shouldn't be targeting them)
+    if (monsterType.level === 'boss') {
+      console.log(`Cannot freeze boss monster ${monster.name}`);
+      return false;
+    }
+    
+    // Get the appropriate ice monster for this level
+    const iceMonsterTypeId = this.iceMonsterMap[monsterType.level];
+    const iceMonsterType = monsterTypes.find(m => m.id === iceMonsterTypeId);
+    
+    // Guard: check if we found the ice monster type
+    if (!iceMonsterType) {
+      console.log(`Could not find ice monster type for level ${monsterType.level}`);
+      return false;
+    }
+    
+    // Transform the monster into an ice version
+    const originalType = monster.type;
+    const originalName = monster.name;
+    
+    // Update the monster's type and name
+    monster.type = iceMonsterTypeId;
+    monster.name = iceMonsterType.title;
+    
+    console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
+    
+    return true;
+  }
 } 
