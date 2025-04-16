@@ -63,12 +63,21 @@ export const encounterTable: Record<LocationDifficulty, WeightedList<Encounter>>
                 {level: 'grunt', count: 1}
             ],
             weight: 1
-        }
+        },
+        {
+            value: [
+                {level: 'boss', count: 1},
+                {level: 'grunt', count: 2}
+            ],
+            weight: 1
+        },
+
     ]
     ,
     'hard': [
         {
             value: [
+                {level: 'boss', count: 1},
                 {level: 'elite', count: 1},
                 {level: 'grunt', count: 2}
             ],
@@ -76,6 +85,7 @@ export const encounterTable: Record<LocationDifficulty, WeightedList<Encounter>>
         },
         {
             value: [
+                {level: 'boss', count: 1},
                 {level: 'elite', count: 1},
                 {level: 'grunt', count: 1},
                 {level: 'minion', count: 2}
@@ -84,6 +94,7 @@ export const encounterTable: Record<LocationDifficulty, WeightedList<Encounter>>
         },
         {
             value: [
+                {level: 'boss', count: 1},
                 {level: 'elite', count: 2},
                 {level: 'grunt', count: 1}
             ],
@@ -91,11 +102,18 @@ export const encounterTable: Record<LocationDifficulty, WeightedList<Encounter>>
         },
         {
             value: [
+                {level: 'boss', count: 1},
                 {level: 'elite', count: 2},
                 {level: 'minion', count: 2}
             ],
             weight: 1
-        }
+        },
+        {
+            value: [
+                {level: 'boss', count: 3}
+            ],
+            weight: 1
+        },
     ],
     'end': [
         {
