@@ -1,0 +1,65 @@
+# BYOA2 - Cursor Rules
+
+# Import conventions
+- Never use barrel imports or re-exports - import directly from source files
+- Use `@/` alias for absolute imports from the src directory
+- Group imports by type: external libraries first, then internal modules, then types
+
+# TypeScript
+- Use `type` keyword for type imports
+- Prefer interface for public APIs and type for internal usage
+- Use proper TypeScript types instead of `any`
+- When parameter is unused, prefix with underscore (e.g., `_param: string`)
+- Always provide explicit return types for functions
+
+# Component structure (Vue)
+- Use script setup syntax
+- Props should use TypeScript interface or type with defineProps<>()
+- Order within components: props -> emits -> imports -> state -> computed -> methods
+- CSS should use scoped or module approach
+
+# Directory structure
+- Component files go in src/components/
+- Store files go in src/stores/
+- Types go in src/types/
+- Power implementations go in src/powers/
+- Quest related functionality goes in src/quest/
+
+# Naming conventions
+- Component files: PascalCase.vue
+- Utility files: camelCase.ts
+- Store files: camelCase.ts
+- Type files: camelCase.ts
+- CSS classes: kebab-case or BEM convention (block__element--modifier)
+
+# Code style
+- Prefer explicit return types on functions
+- Use single quotes for strings
+- Always use semicolons
+- Prefer arrow functions for callbacks
+- Prefer async/await over promise chains
+- Use computed properties over methods where appropriate
+- Prefer const over let, never use var
+
+# Documentation
+- Use JSDoc for exported functions and interfaces
+- Document complex functions with explanatory comments
+- Add a description for stores indicating their purpose
+- Comment non-obvious state transformations
+
+# Powers
+- Each power implementation extends the abstract ItemPower class
+- Powers must define all required abstract properties/methods
+- Powers must import directly from abstractItemPower.ts
+- Direct property access for constants, not using nested objects
+
+# Consistency
+- Use TypeScript properly instead of any/unknown where possible
+- Import types directly from source files
+- Use MonsterTypeId instead of string for monster types 
+- Avoid duplicated code, extract shared functionality
+
+# Workflow
+- Keep PRs focused on single concerns
+- Update tests when changing functionality
+- Always check for type errors before committing 
