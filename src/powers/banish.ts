@@ -1,6 +1,5 @@
 import type { Item, Monster } from '../types'
 import { ItemPower } from './abstractItemPower'
-import { monsterTypes } from '@/data/monsterTypes'
 import { useQuestStore } from '@/stores/questStore.ts'
 
 /**
@@ -20,7 +19,7 @@ export class BanishPower extends ItemPower {
   readonly canHaveResultRestriction = false;
   readonly levelRestrictions = null; // Can target any level
 
-  applyEffect(item: Item, monster: Monster): boolean {
+  applyEffect(_item: Item, monster: Monster): boolean {
     // Guard: check if monster exists and is alive
     if (!monster || !monster.alive) {
       return false;

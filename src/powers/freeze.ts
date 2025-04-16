@@ -1,7 +1,6 @@
 import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
-import { ItemPower, PowerResult } from './abstractItemPower'
+import { ItemPower } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
-import { useQuestStore } from '@/stores/questStore'
 import { toMonsterTypeId } from '../types'
 
 /**
@@ -31,7 +30,7 @@ export class FreezePower extends ItemPower {
     'boss': toMonsterTypeId('glacial_titan'), // Fallback, but bosses can't be targeted anyway
   };
 
-  applyEffect(item: Item, monster: Monster): boolean {
+  applyEffect(_item: Item, monster: Monster): boolean {
     // Guard: check if monster exists and is alive
     if (!monster || !monster.alive) {
       return false;
