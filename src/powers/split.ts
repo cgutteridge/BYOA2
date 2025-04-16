@@ -21,6 +21,30 @@ export class SplitPower extends ItemPower {
   readonly canHaveResultRestriction = false;
   readonly levelRestrictions = null; // Can target any level
 
+  // Silly name pairs for when exactly 2 monsters are created
+  private readonly namePairs = [
+    ['{name} Eastside', '{name} Westside'],
+    ['Good {name}', 'Evil {name}'],
+    ['Smart {name}', 'Dumb {name}'],
+    ['{name} Prime', '{name} Beta'],
+    ['Doctor {name}', 'Nurse {name}'],
+    ['Sober {name}', 'Drunk {name}'],
+    ['Original {name}', 'Knockoff {name}'],
+    ['Fancy {name}', 'Plain {name}'],
+    ['Smooth {name}', 'Chunky {name}'],
+    ['Business {name}', 'Party {name}'],
+    ['White {name}', 'Black {name}'],
+    ['Captain {name}', 'First Mate {name}'],
+    ['Sweet {name}', 'Salty {name}'],
+    ['Classic {name}', 'Modern {name}'],
+    ['Future {name}', 'Past {name}'],
+    ['Positive {name}', 'Negative {name}'],
+    ['{name} North', '{name} South'],
+    ['{name} the Great', '{name} the Terrible'],
+    ['{name} Senior', '{name} Junior'],
+    ['{name} 2.0', '{name} Legacy']
+  ];
+
   /**
    * Apply the split effect to a monster, creating lesser versions
    * @param item The item being used
@@ -61,12 +85,27 @@ export class SplitPower extends ItemPower {
       }
     }
     
+    // Generate names based on count
+    let names: string[] = [];
+    if (count === 2) {
+      // Use fun paired names for exactly 2 monsters
+      const randomPairIndex = Math.floor(Math.random() * this.namePairs.length);
+      const namePair = this.namePairs[randomPairIndex];
+      names = [
+        namePair[0].replace('{name}', monster.name), 
+        namePair[1].replace('{name}', monster.name)
+      ];
+    } else {
+      // Use numbering for 3+ monsters
+      names = Array(count).fill(0).map((_, i) => `${monster.name} ${i + 1}`);
+    }
+    
     // Create the specified number of lesser monsters
     for (let i = 0; i < count; i++) {
       const newMonster: Monster = {
         id: toMonsterId(`${monster.id}_lesser_${i}`),
         type: monsterTypeDef.lesser,
-        name: `${monster.name}'s Lesser Form ${i + 1}`,
+        name: names[i],
         alive: true
       };
       
