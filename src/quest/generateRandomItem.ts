@@ -1,5 +1,6 @@
 import type { Item, ItemPower, TargetMode } from '../types/item.ts';
 import type { MonsterLevel, Species, MonsterFlag } from '../types';
+import { toItemId } from '../types';
 import { generateEffectDescription, getLevelQualityTerm } from './generateEffectDescription.ts';
 import pickOne from "@/utils/pickOne.ts";
 
@@ -117,7 +118,7 @@ export function generateRandomItem(level: number): Item {
   
   // Initialize item with default properties
   const item: Item = {
-    id: `random_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+    id: toItemId(`random_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`),
     name: generateItemName(selectedPower, defaultTargetMode),
     uses: 1,
     power: selectedPower,

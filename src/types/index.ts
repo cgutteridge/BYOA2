@@ -116,7 +116,7 @@ export type ScreenId =
   | 'start_quest'
   | 'intro'
   | 'map'
-    | 'location'
+  | 'location'
   | 'victory'
 
 export type QuestState = 'no_quest' | 'active' | 'completed'

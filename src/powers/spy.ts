@@ -30,7 +30,7 @@ export class SpyPower extends ItemPower {
     });
   }
 
-  static hasInputs(item: Item): { target: boolean; result: boolean } {
+  static hasInputs(_item: Item): { target: boolean; result: boolean } {
     // Spy requires target input but no result input
     return { target: true, result: false };
   }

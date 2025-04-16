@@ -2,7 +2,6 @@ import { useQuestStore } from '@/stores/questStore.ts';
 import { useInventoryStore } from '@/stores/inventoryStore.ts';
 import { monsterTypes } from '@/data/monsterTypes.ts';
 import { Monster } from '@/types';
-import { generateRandomItem } from './generateRandomItem.ts';
 
 /**
  * Toggles the alive status of a monster and updates XP accordingly
@@ -99,4 +98,17 @@ export function banishMonster(monster: Monster): boolean {
   }
   
   return true;
+}
+
+export function killMonster(monsterId: string): void {
+  console.log(`Killing monster ${monsterId}`);
+  // Implementation will go here
+}
+
+export function getMonsterXP(monster: Monster): number {
+  // Find the monster type definition
+  const monsterType = monsterTypes.find(type => type.id === monster.type);
+  
+  // Return XP value from monster type, default to 1 if not found
+  return monsterType?.xp || 1;
 } 

@@ -5,6 +5,7 @@ import initialiseLocation from "@/quest/initialiseLocation.ts";
 import { useInventoryStore } from "@/stores/inventoryStore.ts";
 import { generateRandomItem } from "@/quest/generateRandomItem.ts";
 import type { Item, ItemPower } from "@/types/item.ts";
+import { toItemId } from '@/types';
 
 // Function to create unrestricted debug items with pick and pick_type for each power
 function createDebugItems(): Item[] {
@@ -29,7 +30,7 @@ function createDebugItems(): Item[] {
     
     // Create pick item (use on individual monster)
     const pickItem: Item = {
-      id: `debug_pick_${power}_${Date.now()}`,
+      id: toItemId(`debug_pick_${power}_${Date.now()}`),
       name: `${powerName} (Use on Monster)`,
       description: `Debug item with unrestricted ability to ${power} individual monsters`,
       uses: 999,
@@ -45,7 +46,7 @@ function createDebugItems(): Item[] {
     
     // Create pick_type item (use on monster type)
     const pickTypeItem: Item = {
-      id: `debug_pick_type_${power}_${Date.now()}`,
+      id: toItemId(`debug_pick_type_${power}_${Date.now()}`),
       name: `${powerName} (Use on Type)`,
       description: `Debug item with unrestricted ability to ${power} all monsters of a type`,
       uses: 999,

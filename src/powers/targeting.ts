@@ -1,6 +1,6 @@
 import type { Item } from '../types/item'
 import type { Monster } from '../types'
-import { canTargetMonster, getValidMonsterTargets, getValidMonsterTypes, getTargetsForItem } from './utils'
+import { getValidMonsterTargets, getValidMonsterTypes, getTargetsForItem } from './utils'
 
 /**
  * Unified targeting system for all powers

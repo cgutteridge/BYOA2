@@ -1,5 +1,5 @@
-import type { Item, ItemPower as ItemPowerType } from '../types'
-import type { Monster, Pub, Location } from '../types'
+import type { Item } from '../types'
+import type { Monster, Pub } from '../types'
 
 // Base abstract class for all power implementations
 export abstract class ItemPower {
@@ -8,19 +8,19 @@ export abstract class ItemPower {
   static glowColor: string = 'rgba(255, 255, 255, 0.8)';
 
   // Target selection methods
-  static targetTypes(item: Item): string[] {
+  static targetTypes(_item: Item): string[] {
     return [];
   }
 
-  static targetMonsters(item: Item, monsters: Monster[]): Monster[] {
+  static targetMonsters(_item: Item, _monsters: Monster[]): Monster[] {
     return [];
   }
 
-  static targetLocations(item: Item, locations: Pub[]): Pub[] {
+  static targetLocations(_item: Item, _locations: Pub[]): Pub[] {
     return [];
   }
 
-  static hasInputs(item: Item): { target: boolean; result: boolean } {
+  static hasInputs(_item: Item): { target: boolean; result: boolean } {
     return { target: false, result: false };
   }
 
@@ -31,21 +31,21 @@ export abstract class ItemPower {
     }
   }
 
-  static applyToType(item: Item, type: string): PowerResult {
+  static applyToType(_item: Item, _type: string): PowerResult {
     return {
       success: false,
       message: 'Not implemented'
     };
   }
 
-  static applyToMonster(item: Item, monsterId: string): PowerResult {
+  static applyToMonster(_item: Item, _monsterId: string): PowerResult {
     return {
       success: false,
       message: 'Not implemented'
     };
   }
 
-  static applyToLocation(item: Item, locationId: string): PowerResult {
+  static applyToLocation(_item: Item, _locationId: string): PowerResult {
     return {
       success: false,
       message: 'Not implemented'

@@ -1,20 +1,24 @@
 // generate the monsters for a location based on it's attributes.
-import pickWeightedOne from "@/utils/pickWeightedOne.ts";
-import {monsterTypes} from "@/data/monsterTypes.ts";
-import {Encounter, LocationDifficulty, Monster, MonsterLevel, Pub} from "@/types";
-import pickOne from "@/utils/pickOne.ts";
-import {useQuestStore} from "@/stores/questStore.ts";
-import {encounterTable} from "@/data/encounterTable.ts";
-import {Item} from "@/types/item.ts";
-import {monsterItem} from "@/quest/monsterItem.ts";
-
+import { Monster, Pub, MonsterLevel, LocationDifficulty, Item, toMonsterId, Encounter } from '../types'
+import { monsterTypes } from '../data'
+import { monsterItem } from './monsterItem'
+import { useQuestStore } from '../stores/questStore'
+import pickOne from "../utils/pickOne"
+import pickWeightedOne from "../utils/pickWeightedOne"
+import {encounterTable} from "../data/encounterTable"
 
 export default function generateMonsters(pub: Pub): Monster[] {
+    // If the pub already has monsters, return them
+    if (pub.monsters && pub.monsters.length > 0) {
+        return pub.monsters
+    }
+
+    // Otherwise, generate new monsters
+    const monsters: Monster[] = []
+
     // step one is to pick a pattern
     const encounter: Encounter = pickWeightedOne(encounterTable[pub.difficulty ?? 'medium'])
     console.log("encounter", encounter)
-
-    const monsters: Monster[] = []
 
     encounter.forEach((unitSpec) => {
         // pick a monster
@@ -35,7 +39,7 @@ export default function generateMonsters(pub: Pub): Monster[] {
             let item: Item | undefined = monsterItem(monsterType.id)
 
             monsters.push({
-                id: `monster_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                id: toMonsterId(`monster_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`),
                 type: monsterType.id,
                 name: monsterName, // This will be replaced with AI-generated name
                 alive: true,
@@ -47,7 +51,6 @@ export default function generateMonsters(pub: Pub): Monster[] {
     console.log(monsters)
     return monsters
 }
-
 
 function calculateMonsterCount(monsterLevel: MonsterLevel, pubLevel: LocationDifficulty) {
     const questStore = useQuestStore()

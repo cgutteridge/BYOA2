@@ -27,7 +27,7 @@ export class KillPower extends ItemPower {
     });
   }
 
-  static hasInputs(item: Item): { target: boolean; result: boolean } {
+  static hasInputs(_item: Item): { target: boolean; result: boolean } {
     return { target: true, result: false };
   }
 
