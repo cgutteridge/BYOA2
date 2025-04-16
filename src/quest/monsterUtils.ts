@@ -1,4 +1,4 @@
-import type { Monster } from '../types'
+import type { Monster, MonsterTypeId } from '../types'
 import { monsterTypes } from '../data/monsterTypes.ts'
 
 /**
@@ -17,6 +17,24 @@ export function getUniqueMonsterSpecies(monsters: Monster[]): string[] {
     if (monsterType) {
       types.add(monsterType.species)
     }
+  })
+  
+  return Array.from(types)
+}
+
+/**
+ * Get unique monster type IDs from available monsters
+ * @param monsters Array of monsters to extract type IDs from
+ * @returns Array of unique monster type IDs
+ */
+export function getUniqueMonsterTypes(monsters: Monster[]): MonsterTypeId[] {
+  if (!monsters || !monsters.length) return []
+  
+  // Get all unique monster types
+  const types = new Set<MonsterTypeId>()
+  
+  monsters.forEach(monster => {
+    types.add(monster.type as MonsterTypeId)
   })
   
   return Array.from(types)

@@ -139,7 +139,8 @@ import {
   getMonsterCountBySpecies,
   getMonsterLevel,
   getMonsterSpecies,
-  getUniqueMonsterSpecies
+  getUniqueMonsterSpecies,
+  getUniqueMonsterTypes
 } from '../quest/monsterUtils.ts'
 import {monsterTypes} from '../data/monsterTypes.ts'
 import {powerFactory} from "@/powers";
@@ -205,7 +206,7 @@ const potentialTargetMonsters = computed(() => {
 })
 
 const potentialTargetMonsterTypes = computed(() => {
-  return getUniqueMonsterSpecies(potentialTargetMonsters.value)
+  return getUniqueMonsterTypes(potentialTargetMonsters.value)
 })
 
 const hasTargetableMonsters = computed(() => {
@@ -250,13 +251,9 @@ const isUseButtonDisabled = computed(() => {
 
 // Helper function to get monster count by type
 function getMonsterCountByType(type: string): number {
-  if (targetMode.value === 'type') {
-    // When dealing with monster types, count monsters of the exact type
-    const monsters = questStore.currentPub?.monsters || []
-    return monsters.filter(monster => monster.type === type && monster.alive).length
-  }
-  // Otherwise use the species-based count
-  return getMonsterCountBySpecies(potentialTargetMonsters.value, type)
+  // Count monsters of the exact type
+  const monsters = questStore.currentPub?.monsters || []
+  return monsters.filter(monster => monster.type === type && monster.alive).length
 }
 
 // Helper function to toggle target selection
