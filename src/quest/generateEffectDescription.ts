@@ -115,7 +115,7 @@ export function generateEffectDescription(item: Item): string {
       break;
       
     case 'split':
-      effect = `This ${qualityTerm} item splits `;
+      effect = `This ${qualityTerm} item creates lesser versions of `;
       effect += getTargetDescription(item);
       effect += ".";
       break;

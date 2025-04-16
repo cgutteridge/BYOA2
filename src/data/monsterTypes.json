@@ -6,7 +6,9 @@
     "level": "boss",
     "species": "vampire",
     "flags": ["undead","magic-user"],
-    "xp": 10.0
+    "xp": 10.0,
+    "lesser": "vampire",
+    "lesserCount": 3
   },
   {
     "id": "elf_queen",
@@ -25,7 +27,7 @@
     "species": "vampire",
     "flags": ["undead","magic-user"],
     "xp": 3.5,
-    "splits": "thrall_vampire"
+    "lesser": "thrall_vampire"
   },
   {
     "id": "dark_knight",
@@ -35,7 +37,7 @@
     "species": "human",
     "flags": ["mortal"],
     "xp": 3.4,
-    "splits": "knight"
+    "lesser": "knight"
   },
   {
     "id": "highland_wraith",
@@ -45,7 +47,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.8,
-    "splits": "ancient_spirit"
+    "lesser": "ancient_spirit"
   },
   {
     "id": "necromancer",
@@ -55,7 +57,7 @@
     "species": "human",
     "flags": ["mortal","magic-user"],
     "xp": 2.0,
-    "splits": "peasant"
+    "lesser": "peasant"
   },
   {
     "id": "bog_witch",
@@ -66,7 +68,7 @@
     "species": "human",
     "flags": ["mortal","magic-user"],
     "xp": 1.5,
-    "splits": "peasant"
+    "lesser": "peasant"
   },
   {
     "id": "mage_and_familiar",
@@ -77,7 +79,7 @@
     "species": "human",
     "flags": ["mortal","magic-user"],
     "xp": 3.0,
-    "splits": "peasant"
+    "lesser": "peasant"
   },
   {
     "id": "high_elf",
@@ -87,7 +89,7 @@
     "species": "elf",
     "flags": ["mortal"],
     "xp": 3.0,
-    "splits": "forest_elf"
+    "lesser": "forest_elf"
   },
   {
     "id": "ork",
@@ -97,7 +99,7 @@
     "species": "goblinoid",
     "flags": ["mortal"],
     "xp": 2.8,
-    "splits": "goblin"
+    "lesser": "goblin"
   },
   {
     "id": "human_fighter",
@@ -107,7 +109,7 @@
     "species": "human",
     "flags": ["mortal"],
     "xp": 2.3,
-    "splits": "peasant"
+    "lesser": "peasant"
   },
   {
     "id": "mounted_knight",
@@ -117,7 +119,7 @@
     "species": "human",
     "flags": ["mortal"],
     "xp": 3.0,
-    "splits": "knight"
+    "lesser": "knight"
   },
   {
     "id": "dwarf_miner",
@@ -136,7 +138,7 @@
     "species": "dwarf",
     "flags": ["mortal"],
     "xp": 2.2,
-    "splits": "dwarf"
+    "lesser": "dwarf"
   },
   {
     "id": "dryad",
@@ -146,7 +148,7 @@
     "species": "fey",
     "flags": ["spirit"],
     "xp": 2.0,
-    "splits": "hedge_spirit"
+    "lesser": "hedge_spirit"
   },
   {
     "id": "ghostly_warrior",
@@ -156,7 +158,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.0,
-    "splits": "spectral_soldier"
+    "lesser": "spectral_soldier"
   },
   {
     "id": "ancient_spirit",
@@ -175,7 +177,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.0,
-    "splits": "wrathful_wraith"
+    "lesser": "wrathful_wraith"
   },
   {
     "id": "wrathful_wraith",
@@ -194,7 +196,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.0,
-    "splits": "desert_wisp"
+    "lesser": "desert_wisp"
   },
   {
     "id": "demon",
@@ -204,7 +206,7 @@
     "species": "demonoid",
     "flags": ["magic-user"],
     "xp": 2.0,
-    "splits": "imp"
+    "lesser": "imp"
   },
   {
     "id": "metamorph",
@@ -214,7 +216,7 @@
     "species": "chameleonoid",
     "flags": ["mortal"],
     "xp": 2.0,
-    "splits": "mimic"
+    "lesser": "mimic"
   },
   {
     "id": "zombie_horde",
@@ -224,7 +226,7 @@
     "species": "human",
     "flags": ["group","undead"],
     "xp": 3.5,
-    "splits": "swarm"
+    "lesser": "swarm"
   },
   {
     "id": "djinn",
@@ -235,7 +237,7 @@
     "species": "demonoid",
     "flags": ["magic-user"],
     "xp": 2.5,
-    "splits": "imp"
+    "lesser": "imp"
   },
   {
     "id": "changeling",
@@ -245,7 +247,7 @@
     "species": "fey",
     "flags": ["group"],
     "xp": 2.3,
-    "splits": "swarm"
+    "lesser": "swarm"
   },
   {
     "id": "army",
@@ -256,7 +258,7 @@
     "species": "special",
     "flags": ["group"],
     "xp": 2.3,
-    "splits": "swarm"
+    "lesser": "swarm"
   },
   {
     "id": "plains_elf",
@@ -266,7 +268,7 @@
     "species": "elf",
     "flags": ["mortal"],
     "xp": 2.1,
-    "splits": "forest_elf"
+    "lesser": "forest_elf"
   },
   {
     "id": "trickster",
@@ -276,7 +278,7 @@
     "species": "chameleonoid",
     "flags": [],
     "xp": 2.0,
-    "splits": "mimic"
+    "lesser": "mimic"
   },
   {
     "id": "goblin",
@@ -412,7 +414,7 @@
     "species": "demonoid",
     "flags": ["mortal", "magic-user"],
     "xp": 2.0,
-    "splits": "desert_wyrm"
+    "lesser": "desert_wyrm"
   },
   {
     "id": "fire_phantom",
@@ -431,7 +433,7 @@
     "species": "elemental",
     "flags": ["spirit", "magic-user"],
     "xp": 2.0,
-    "splits": "fire_phantom"
+    "lesser": "fire_phantom"
   },
   {
     "id": "earth_shaper",
@@ -450,7 +452,7 @@
     "species": "elemental",
     "flags": ["spirit", "magic-user"],
     "xp": 2.0,
-    "splits": "earth_shaper"
+    "lesser": "earth_shaper"
   },
   {
     "id": "water_sprite",
@@ -469,7 +471,7 @@
     "species": "elemental",
     "flags": ["magic-user"],
     "xp": 2.0,
-    "splits": "water_sprite"
+    "lesser": "water_sprite"
   },
   {
     "id": "ice_shard",
@@ -488,7 +490,7 @@
     "species": "elemental",
     "flags": [],
     "xp": 2.0,
-    "splits": "ice_shard"
+    "lesser": "ice_shard"
   },
   {
     "id": "glacial_titan",
@@ -498,7 +500,7 @@
     "species": "elemental",
     "flags": ["magic-user"],
     "xp": 3.0,
-    "splits": "frost_golem"
+    "lesser": "frost_golem"
   },
   {
     "id": "obsidian_guardian",
@@ -508,7 +510,7 @@
     "species": "elemental",
     "flags": [],
     "xp": 2.3,
-    "splits": "obsidian_golem"
+    "lesser": "obsidian_golem"
   },
   {
     "id": "obsidian_golem",

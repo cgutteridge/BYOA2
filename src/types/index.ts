@@ -101,7 +101,8 @@ export interface MonsterType {
   species: Species
   flags: MonsterFlag[]
   xp: number  // Experience points (based on alcohol units)
-  splits?: MonsterTypeId  // ID of monster that this monster splits into
+  lesser?: MonsterTypeId  // ID of monster that this monster splits into (smaller version of same species)
+  lesserCount?: number | "playerCount"  // Number of lesser monsters created when splitting (defaults to 2)
 }
 
 export interface Monster {

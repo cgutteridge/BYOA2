@@ -18,13 +18,14 @@ interface RawMonsterData {
   species: Species;
   flags: MonsterFlag[];
   xp: number;
-  splits?: string;
+  lesser?: string;
+  lesserCount?: number | "playerCount";
 }
 
 // Parse the JSON data and apply the proper branded type to each ID
 export const monsterTypes: MonsterType[] = (monstersData as RawMonsterData[]).map(monster => {
-  // Create a copy without the splits property
-  const { splits, ...rest } = monster;
+  // Create a copy without the lesser property
+  const { lesser, ...rest } = monster;
   
   // Create the base object with branded id
   const processed = {
@@ -32,11 +33,11 @@ export const monsterTypes: MonsterType[] = (monstersData as RawMonsterData[]).ma
     id: toMonsterTypeId(monster.id)
   };
   
-  // Add splits with branded type if it exists
-  if (splits) {
+  // Add lesser with branded type if it exists
+  if (lesser) {
     return {
       ...processed,
-      splits: toMonsterTypeId(splits)
+      lesser: toMonsterTypeId(lesser)
     } as MonsterType;
   }
   
