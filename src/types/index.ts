@@ -23,6 +23,13 @@ export type ItemPower =
   | 'banish'
   | 'freeze'  // Removes monster without getting any loot
 
+// Item power metadata interface
+export interface ItemPowerMetadata {
+  id: ItemPower
+  title: string
+  level: number
+}
+
 // Target modes - how the target is selected
 export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'location' | undefined
 
@@ -123,6 +130,7 @@ export type QuestState = 'no_quest' | 'active' | 'completed'
 
 export type GPSStatus = 'initializing' | 'loading' | 'success' | 'error' 
 
+// For backwards compatibility - to be replaced with ItemPowerMetadata in the future
 export interface ItemType {
   id: ItemPower
   title: string
