@@ -30,7 +30,7 @@
       <div class="monsters-container">
         <div 
           v-for="monster in sortedMonsters" 
-          :key="monster.type + monster.name"
+          :key="monster.id"
           class="monster-card"
           :class="[getMonsterClasses(monster.type), { 'defeated': !monster.alive }]"
         >
