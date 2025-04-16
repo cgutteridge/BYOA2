@@ -28,56 +28,74 @@
     <div class="combat-container" v-if="questStore.currentPub?.monsters">
       <!-- All monsters in a 3-column flex layout with active ones first -->
       <div class="monsters-container">
-        <div 
-          v-for="monster in sortedMonsters" 
-          :key="monster.id"
-          class="monster-card"
-          :class="[getMonsterClasses(monster.type), { 'defeated': !monster.alive }]"
-        >
-          <!-- Monster header with name and attributes on one line -->
-          <div class="monster-header">
-            <div class="monster-name-container">
-              <div class="monster-name">{{ monster.name }}</div>
-              <div class="monster-subinfo">
-                <span class="monster-info-block">{{ getMonsterTitle(monster.type) }} - {{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}</span>
-                <span class="monster-flags" v-if="getMonsterFlags(monster.type).length">
-                  <template v-for="(flag, index) in getMonsterFlags(monster.type)" :key="flag">
-                    <template v-if="index === 0">(</template><span class="flag-item">{{ flag }}</span><template v-if="index < getMonsterFlags(monster.type).length - 1">, </template><template v-if="index === getMonsterFlags(monster.type).length - 1">)</template>
-                  </template>
-                </span>
+        <template v-for="monster in sortedMonsters" :key="monster.id">
+          <div 
+            v-if="monster.alive || (monster.item && !monster.alive)"
+            class="monster-card"
+            :class="[
+              monster.alive ? getMonsterClasses(monster.type) : 'item-only', 
+              { 
+                'defeated': !monster.alive,
+                'dying': isMonsterDying(monster.id)
+              }
+            ]"
+          >
+            <!-- Monster view (only shown when alive) -->
+            <template v-if="monster.alive">
+              <div class="monster-header">
+                <div class="monster-name-container">
+                  <div class="monster-name">{{ monster.name }}</div>
+                  <div class="monster-subinfo">
+                    <span class="monster-info-block">{{ getMonsterTitle(monster.type) }} - {{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}</span>
+                    <span class="monster-flags" v-if="getMonsterFlags(monster.type).length">
+                      <template v-for="(flag, index) in getMonsterFlags(monster.type)" :key="flag">
+                        <template v-if="index === 0">(</template><span class="flag-item">{{ flag }}</span><template v-if="index < getMonsterFlags(monster.type).length - 1">, </template><template v-if="index === getMonsterFlags(monster.type).length - 1">)</template>
+                      </template>
+                    </span>
+                  </div>
+                </div>
+                <div class="monster-controls">
+                  <span 
+                    v-if="monster.item" 
+                    class="monster-has-item" 
+                    title="This monster has an item" 
+                    @click="viewItemDetails(monster)"
+                  >🎁</span>
+                  <button 
+                    class="monster-toggle-btn" 
+                    :class="{ 
+                      'kill-btn': monster.alive && !isMonsterDying(monster.id), 
+                      'cancel-btn': isMonsterDying(monster.id),
+                      'unkill-btn': !monster.alive 
+                    }"
+                    @click="toggleMonsterStatus(monster)"
+                  >
+                    <span class="toggle-icon">{{ isMonsterDying(monster.id) ? '❌' : (monster.alive ? '☠️' : '🔄') }}</span>
+                    {{ isMonsterDying(monster.id) ? 'Cancel' : (monster.alive ? 'Defeat' : 'Revive') }}
+                    <span class="xp-text">{{ getMonsterXP(monster.type) }} XP</span>
+                  </button>
+                </div>
               </div>
-            </div>
-            <div class="monster-controls">
-              <button 
-                class="monster-toggle-btn" 
-                :class="{ 'kill-btn': monster.alive, 'unkill-btn': !monster.alive }"
-                @click="toggleMonsterStatus(monster)"
-              >
-                <span class="toggle-icon">{{ monster.alive ? '☠️' : '🔄' }}</span>
-                {{ monster.alive ? 'Defeat' : 'Revive' }}
-                <span class="xp-text">{{ getMonsterXP(monster.type) }} XP</span>
-              </button>
-            </div>
+              
+              <!-- Monster drink bottom bar -->
+              <div class="monster-drink-bar">
+                {{ getMonsterDrink(monster.type) }}
+              </div>
+            </template>
+            
+            <!-- Item view (only shown when monster is dead and has an item) -->
+            <template v-else-if="monster.item">
+              <ItemCard 
+                :item="monster.item"
+                variant="drop"
+                :show-details="true"
+                @action="claimItem(monster)"
+                @contextmenu.prevent="toggleMonsterStatus(monster)"
+                title="Right-click to revive monster"
+              />
+            </template>
           </div>
-          
-          <!-- Monster drink bottom bar -->
-          <div class="monster-drink-bar">
-            {{ getMonsterDrink(monster.type) }}
-          </div>
-          
-          <!-- Monster item (if any) - use ItemCard component -->
-          <div v-if="monster.item" class="monster-item" :class="{'item-available': !monster.alive}">
-            <div v-if="monster.alive" class="monster-item-locked">
-              <span class="lock-icon">🔒</span>
-            </div>
-            <ItemCard 
-              :item="monster.item"
-              variant="drop"
-              :show-details="true"
-              @action="claimItem(monster)"
-            />
-          </div>
-        </div>
+        </template>
       </div>
       
       <!-- Prize item section -->
@@ -106,15 +124,72 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {Monster} from "../types";
-import {areAllMonstersDefeated, claimMonsterItem, toggleMonsterStatus} from "../quest/combat.ts";
+import {areAllMonstersDefeated, claimMonsterItem} from "../quest/combat.ts";
 import '../styles/monsterStyles.css';
-import {computed} from 'vue';
+import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
 import ItemCard from "../components/ItemCard.vue";
+
+// Constants
+const MONSTER_DEFEAT_DELAY_MS = 1000; // 2 seconds
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
+
+// Keep track of which monsters are currently being defeated (in the countdown)
+const monstersDying = ref<Record<string, { timeoutId: number; startTime: number }>>({});
+
+// Progress animation
+let animationFrameId: number | null = null;
+
+// Calculate transition duration in seconds for CSS
+const transitionDurationSeconds = MONSTER_DEFEAT_DELAY_MS / 1000;
+
+// Update the progress of all dying monsters
+function updateDyingProgress() {
+  if (Object.keys(monstersDying.value).length > 0) {
+    // Force Vue to re-render by creating a new reference
+    monstersDying.value = { ...monstersDying.value };
+  }
+  
+  // Continue the animation loop if there are still dying monsters
+  if (Object.keys(monstersDying.value).length > 0) {
+    animationFrameId = requestAnimationFrame(updateDyingProgress);
+  } else if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+}
+
+// Start the animation loop when a monster starts dying
+function startProgressAnimation() {
+  if (!animationFrameId && Object.keys(monstersDying.value).length > 0) {
+    animationFrameId = requestAnimationFrame(updateDyingProgress);
+  }
+}
+
+// Cancel the animation loop when component is unmounted
+onMounted(() => {
+  // Check if we already have dying monsters when component mounts
+  if (Object.keys(monstersDying.value).length > 0) {
+    startProgressAnimation();
+  }
+});
+
+onUnmounted(() => {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+  
+  // Clear any remaining timeouts
+  Object.keys(monstersDying.value).forEach(monsterId => {
+    if (monstersDying.value[monsterId]) {
+      window.clearTimeout(monstersDying.value[monsterId].timeoutId);
+    }
+  });
+});
 
 // Keep monsters in their original order rather than sorting based on alive status
 const sortedMonsters = computed(() => {
@@ -208,18 +283,12 @@ function leavePub() {
 }
 
 function claimItem(monster: Monster) {
-  // Only allow claiming items from defeated monsters
-  if (!monster.alive && monster.item) {
+  if (monster.item) {
     const itemName = monster.item.name;
     const success = claimMonsterItem(monster);
     
     if (success) {
       appStore.addNotification(`${itemName} added to inventory!`, 'success');
-    }
-  } else {
-    // If monster is alive, just show the item description
-    if (monster.item) {
-      appStore.openItemInspectModal(monster.item);
     }
   }
 }
@@ -250,6 +319,93 @@ function claimGiftItem() {
     // Show notification
     appStore.addNotification(`Gift ${giftItem.name} added to inventory!`, 'success');
   }
+}
+
+function viewItemDetails(monster: Monster) {
+  if (monster.item) {
+    appStore.openItemInspectModal(monster.item);
+  }
+}
+
+// Function to handle monster status toggling with delay
+function toggleMonsterStatus(monster: Monster) {
+  if (monster.alive) {
+    // Start defeat countdown
+    startDefeatCountdown(monster);
+  } else {
+    // Revive immediately
+    reviveMonster(monster);
+  }
+}
+
+// Start defeat countdown for a monster
+function startDefeatCountdown(monster: Monster) {
+  // If already dying, cancel the countdown
+  if (monstersDying.value[monster.id]) {
+    cancelDefeatCountdown(monster);
+    return;
+  }
+  
+  const startTime = Date.now();
+  
+  // Set timeout for defeat
+  const timeoutId = window.setTimeout(() => {
+    // Actually defeat the monster
+    defeatMonster(monster);
+    // Remove from dying list
+    delete monstersDying.value[monster.id];
+  }, MONSTER_DEFEAT_DELAY_MS);
+  
+  // Add to dying monsters with timeout ID and start time
+  monstersDying.value[monster.id] = { timeoutId, startTime };
+  
+  // Start the animation if not already running
+  startProgressAnimation();
+}
+
+// Cancel a monster's defeat countdown
+function cancelDefeatCountdown(monster: Monster) {
+  const dyingInfo = monstersDying.value[monster.id];
+  if (dyingInfo) {
+    // Clear the timeout
+    window.clearTimeout(dyingInfo.timeoutId);
+    // Remove from dying list
+    delete monstersDying.value[monster.id];
+  }
+}
+
+// Actually defeat the monster
+function defeatMonster(monster: Monster) {
+  if (!questStore.currentPub?.monsters) return;
+  
+  // Find the monster in the pub
+  const monsterIndex = questStore.currentPub.monsters.findIndex(m => m.id === monster.id);
+  if (monsterIndex === -1) return;
+  
+  // Set alive to false
+  questStore.currentPub.monsters[monsterIndex].alive = false;
+  
+  // Check if this was the last monster to defeat for quest completion
+  if (areAllMonstersDefeated(questStore.currentPub.monsters)) {
+    appStore.addNotification(`All monsters defeated! Prize unlocked!`, 'success');
+  }
+}
+
+// Revive a monster
+function reviveMonster(monster: Monster) {
+  if (!questStore.currentPub?.monsters) return;
+  
+  // Find the monster in the pub
+  const monsterIndex = questStore.currentPub.monsters.findIndex(m => m.id === monster.id);
+  if (monsterIndex === -1) return;
+  
+  // Set alive to true
+  questStore.currentPub.monsters[monsterIndex].alive = true;
+}
+
+// Check if a monster is currently dying (in countdown)
+function isMonsterDying(monsterId: string): boolean {
+  return !!monstersDying.value[monsterId];
 }
 </script>
 
@@ -448,6 +604,14 @@ function claimGiftItem() {
   opacity: 0.5;
   filter: grayscale(0.9);
   background: linear-gradient(135deg, #111111 0%, #333333 100%) !important;
+  transition: opacity 0.3s ease-out, filter 0.3s ease-out, background 0.3s ease-out;
+}
+
+.monster-card.dying {
+  opacity: 0;
+  filter: grayscale(1);
+  transition: opacity v-bind('`${transitionDurationSeconds}s`') ease-in, 
+              filter v-bind('`${transitionDurationSeconds}s`') ease-in;
 }
 
 .monster-header {
@@ -490,6 +654,19 @@ function claimGiftItem() {
 .kill-btn {
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(244, 67, 54, 0.7);
+}
+
+.kill-btn:hover {
+  background-color: rgba(180, 30, 30, 0.6);
+}
+
+.cancel-btn {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(76, 175, 80, 0.7);
+}
+
+.cancel-btn:hover {
+  background-color: rgba(30, 180, 30, 0.6);
 }
 
 .unkill-btn {
@@ -545,5 +722,47 @@ function claimGiftItem() {
 
 .prize-item-wrapper {
   position: relative;
+}
+
+.monster-toggle-btn:hover {
+  transform: scale(1.05);
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.monster-has-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+  animation: subtle-pulse 2s infinite alternate;
+  border-radius: 50%;
+  padding: 5px;
+  transition: all 0.2s ease;
+}
+
+.monster-has-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.15);
+}
+
+@keyframes subtle-pulse {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+.monster-card.item-only {
+  background: transparent !important;
+  opacity: 1;
+  filter: none;
+  transition: all 0.3s ease;
+  padding: 0.75rem;
+  box-shadow: none;
 }
 </style> 
