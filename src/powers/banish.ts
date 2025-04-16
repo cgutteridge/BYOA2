@@ -1,5 +1,4 @@
-import type { Item } from '../types/item'
-import type { Monster } from '../types'
+import type { Item, Monster } from '../types'
 import { ItemPower, PowerResult } from './types'
 import { banishMonster } from '../quest/combat.ts'
 import { isMonster, canTarget, getValidTargets } from './utils'

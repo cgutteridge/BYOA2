@@ -1,4 +1,4 @@
-import type { Item } from '../types/item'
+import type { Item, ItemPower as ItemPowerType } from '../types'
 import type { Monster, Pub, Location } from '../types'
 
 // Base abstract class for all power implementations
