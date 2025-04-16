@@ -230,7 +230,6 @@ async function callStartQuest() {
         difficulty,
         playerCount.value
     );
-    appStore.setScreen('info')
   }
 }
 

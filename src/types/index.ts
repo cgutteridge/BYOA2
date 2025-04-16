@@ -116,11 +116,10 @@ export interface Monster {
 export type ScreenId =
   | 'start_quest'
   | 'intro'
-  | 'info' // remove later
   | 'map'
   | 'location'
   | 'victory'
 
-export type QuestState = 'no_quest' | 'active' | 'completed'
+export type QuestState = 'no_quest' | 'init' | 'active' | 'completed'
 
 export type GPSStatus = 'initializing' | 'loading' | 'success' | 'error' 

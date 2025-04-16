@@ -6,7 +6,6 @@ import {useQuestStore} from './stores/questStore'
 import MapScreen from './screens/MapScreen.vue'
 import QuestStartScreen from './screens/QuestStartScreen.vue'
 import IntroScreen from './screens/IntroScreen.vue'
-import InfoScreen from './screens/InfoScreen.vue'
 import LocationScreen from './screens/LocationScreen.vue'
 import VictoryScreen from './screens/VictoryScreen.vue'
 import InterfaceModal from './components/InterfaceModal.vue'
@@ -170,7 +169,6 @@ onUnmounted(() => {
       <!-- Normal game screens -->
       <QuestStartScreen v-if="appStore.screen === 'start_quest'" />
       <IntroScreen v-else-if="appStore.screen === 'intro'" />
-      <InfoScreen v-else-if="appStore.screen === 'info'" />
       <MapScreen v-else-if="appStore.screen === 'map'" />
       <LocationScreen v-else-if="appStore.screen === 'location'" />
       <VictoryScreen v-else-if="appStore.screen === 'victory'" />

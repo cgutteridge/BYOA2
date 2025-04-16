@@ -1,11 +1,22 @@
 <template>
   <div class="intro-screen screen-container">
     <QuestInfo />
+    <button v-if="questStore.status==='active' "class="continue-button" @click="start">Continue</button>
   </div>
 </template>
 
 <script setup lang="ts">
 import QuestInfo from './QuestInfo.vue'
+import {useAppStore} from "../stores/appStore.js";
+import {useQuestStore} from "@/stores/questStore.ts";
+
+const questStore = useQuestStore();
+const appStore = useAppStore()
+
+function start() {
+  questStore.setCurrentPub(questStore.startPub.id)
+  appStore.setScreen('location')
+}
 </script>
 
 <style scoped>

@@ -6,6 +6,7 @@ import { useInventoryStore } from "@/stores/inventoryStore.ts";
 import { generateRandomItem } from "@/quest/generateRandomItem.ts";
 import type { Item, ItemPowerId } from "@/types";
 import { toItemId } from '@/types';
+import {scoutLocation} from "@/quest/scoutLocation.ts";
 
 // Function to create unrestricted debug items with pick and pick_type for each power
 function createDebugItems(): Item[] {
@@ -78,12 +79,12 @@ export async function startQuest(
     const pubStore = usePubStore()
     const inventoryStore = useInventoryStore()
 
+    questStore.setStatus('init');
     questStore.setTitle(title);
     questStore.setDescription(`Your quest is to reach ${endPub.name}`);
     questStore.setStartPubId(startPub.id);
     questStore.setEndPubId(endPub.id);
     questStore.setPlayerCount(players);
-    questStore.setStatus('active');
     questStore.setDifficulty(difficulty);
     questStore.setXP(0); // Initialize player XP to zero when starting a new quest
 
@@ -107,4 +108,9 @@ export async function startQuest(
     createDebugItems().forEach(item => {
         inventoryStore.addItem(item);
     });
+
+    scoutLocation(questStore.startPub as Pub);
+
+    questStore.setStatus('active');
+
 }

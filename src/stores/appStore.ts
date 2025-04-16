@@ -23,7 +23,7 @@ export const useAppStore = defineStore('app', () => {
   const pubStore = usePubStore()
   
   // Inventory UI state
-  const isInventoryOpen = ref(false)
+  const isInterfaceOpen = ref(false)
   const inventoryTab = ref('items') // 'items', 'quest', 'log', 'options'
   
   // Item inspection state
@@ -62,16 +62,16 @@ export const useAppStore = defineStore('app', () => {
   
   // Inventory UI actions
   const toggleInventory = (): void => {
-    isInventoryOpen.value = !isInventoryOpen.value
+    isInterfaceOpen.value = !isInterfaceOpen.value
   }
   
   const openInventory = (tab = 'items'): void => {
-    isInventoryOpen.value = true
+    isInterfaceOpen.value = true
     inventoryTab.value = tab
   }
   
   const closeInventory = (): void => {
-    isInventoryOpen.value = false
+    isInterfaceOpen.value = false
   }
   
   const setInventoryTab = (tab: string): void => {
@@ -128,7 +128,7 @@ export const useAppStore = defineStore('app', () => {
     mapPosition,
     mapZoom,
     focusPub,
-    isInterfaceOpen: isInventoryOpen,
+    isInterfaceOpen,
     inventoryTab,
     inspectedItem,
     notifications,
