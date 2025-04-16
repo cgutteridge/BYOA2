@@ -10,12 +10,6 @@ import { SplitPower } from './split'
 import { TransmutePower } from './transmute'
 import { PickpocketPower } from './pickpocket'
 import { FreezePower } from './freeze'
-// These will be implemented later
-// import { TransmutePower } from './transmute'
-// import { ShrinkPower } from './shrink'
-// import { SplitPower } from './split'
-// import { PickpocketPower } from './pickpocket'
-// import { FreezePower } from './freeze'
 
 // Create instances of the power classes
 const banishPower = new BanishPower();

@@ -1,5 +1,6 @@
 import type { Item } from '../types'
-import type { Monster, Pub, MonsterTypeId, ItemPowerId } from '../types'
+import type { Monster, Pub, MonsterTypeId, ItemPowerId, MonsterFlag } from '../types'
+import { monsterTypes } from '../data/monsterTypes'
 
 // Base abstract class for all power implementations
 export abstract class ItemPower {
@@ -12,21 +13,11 @@ export abstract class ItemPower {
     return item.targetFilters?.species || [];
   }
 
+  /**
+   * Filter monsters based on item's target filters
+   */
   targetMonsters(item: Item, monsters: Monster[]): Monster[] {
-    return monsters.filter(monster => {
-      // Only include alive monsters
-      if (!monster.alive) return false;
-      
-      // Check if monster matches the filters
-      if (item.targetFilters) {
-        // Filter by species if specified
-        if (item.targetFilters.species?.length && !item.targetFilters.species.includes(monster.type as any)) {
-          return false;
-        }
-      }
-      
-      return true;
-    });
+    return monsters.filter(monster => this.canTargetMonster(item, monster));
   }
 
   targetLocations(_item: Item, _locations: Pub[]): Pub[] {
@@ -63,7 +54,7 @@ export abstract class ItemPower {
     return this.applyToMonster(item, monsterId);
   }
 
-  // Abstract methods to be implemented by child classes
+  // Implementation methods to be overridden by child classes
   applyToType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} on all monsters of type ${type}`);
     
@@ -95,6 +86,109 @@ export abstract class ItemPower {
       success: false,
       message: 'Not implemented'
     };
+  }
+
+  /**
+   * Checks if a monster meets the targeting criteria for an item
+   */
+  canTargetMonster(item: Item, monster: Monster): boolean {
+    // Check if monster is alive
+    if (!monster.alive) {
+      return false;
+    }
+    
+    // Find the monster type definition
+    const monsterType = monsterTypes.find(mt => mt.id === monster.type);
+    if (!monsterType) {
+      return false;
+    }
+    
+    // Handle power-specific targeting restrictions in subclasses
+    if (!this.canTargetMonsterType(monsterType)) {
+      return false;
+    }
+    
+    // Check target filters from the item
+    if (item.targetFilters) {
+      // Check level restrictions
+      if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
+        if (!item.targetFilters.levels.includes(monsterType.level)) {
+          return false;
+        }
+      }
+      
+      // Check species restrictions
+      if (item.targetFilters.species && item.targetFilters.species.length > 0) {
+        if (!item.targetFilters.species.includes(monsterType.species)) {
+          return false;
+        }
+      }
+      
+      // Check flag restrictions
+      if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
+        const hasValidFlag = monsterType.flags.some((flag: MonsterFlag) => 
+          item.targetFilters?.flags?.includes(flag)
+        );
+        if (!hasValidFlag) {
+          return false;
+        }
+      }
+    }
+    
+    return true;
+  }
+
+  /**
+   * Power-specific logic for targeting monster types
+   * Override in subclasses for special targeting restrictions
+   */
+  protected canTargetMonsterType(monsterType: any): boolean {
+    return true;
+  }
+
+  /**
+   * Get all valid monster types that can be targeted
+   */
+  getValidMonsterTypes(item: Item, monsters: Monster[]): string[] {
+    if (!monsters || !monsters.length) {
+      return [];
+    }
+    
+    // Get all valid monsters first
+    const validMonsters = this.targetMonsters(item, monsters);
+    
+    // Extract unique monster types
+    const validTypes = new Set<string>();
+    
+    validMonsters.forEach(monster => {
+      validTypes.add(monster.type);
+    });
+    
+    return Array.from(validTypes);
+  }
+
+  /**
+   * Get a human-readable description of an item's targeting mode
+   */
+  getTargetingDescription(item: Item): string {
+    if (!item.target) {
+      return "Targets a random monster";
+    }
+
+    switch (item.target) {
+      case 'random':
+        return "Targets a random monster";
+      case 'pick':
+        return "Choose a monster to target";
+      case 'random_type':
+        return "Targets all monsters of a random type";
+      case 'pick_type':
+        return "Choose a monster type to target";
+      case 'location':
+        return "Targets the current location";
+      default:
+        return "Unknown targeting mode";
+    }
   }
 }
 
