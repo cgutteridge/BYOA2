@@ -40,6 +40,7 @@
 - Prefer async/await over promise chains
 - Use computed properties over methods where appropriate
 - Prefer const over let, never use var
+- Prefer to use the never nester pattern
 
 # Documentation
 - Use JSDoc for exported functions and interfaces
