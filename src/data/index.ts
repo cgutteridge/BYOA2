@@ -11,8 +11,3 @@ export {
   monsterTypesById 
 } from './monsterTypesLoader';
 
-// Export item types (compatibility layer)
-export { 
-  itemTypes,
-  itemTypesByPower
-} from './itemTypes'; 

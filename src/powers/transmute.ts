@@ -1,5 +1,5 @@
-import type { Item, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult } from './abstractItemPower'
+import type {Item, Monster  } from '../types'
+import { ItemPower } from './abstractItemPower'
 
 /**
  * Transmute power implementation
@@ -16,6 +16,10 @@ export class TransmutePower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = true;
-  readonly levelRestrictions = null; // Can target any level
+  readonly levelRestrictions = null;
+
+  applyEffect(_item: Item, _monster: Monster): boolean {
+    return false;
+  } // Can target any level
 
 } 

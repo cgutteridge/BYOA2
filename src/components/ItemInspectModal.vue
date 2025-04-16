@@ -136,10 +136,8 @@ import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
 import {getValidTargets} from '../quest/itemUtils.ts'
 import {
-  getMonsterCountBySpecies,
   getMonsterLevel,
   getMonsterSpecies,
-  getUniqueMonsterSpecies,
   getUniqueMonsterTypes
 } from '../quest/monsterUtils.ts'
 import {monsterTypes} from '../data/monsterTypes.ts'

@@ -18,7 +18,7 @@ export class SpyPower extends ItemPower {
   readonly canHaveResultRestriction = false;
   readonly levelRestrictions = null;
 
-  applyEffect(item: Item, monster: Monster): boolean {
+  applyEffect(_item: Item, _monster: Monster): boolean {
     return false;
   } // Can target any level
 

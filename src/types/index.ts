@@ -124,11 +124,3 @@ export type ScreenId =
 export type QuestState = 'no_quest' | 'active' | 'completed'
 
 export type GPSStatus = 'initializing' | 'loading' | 'success' | 'error' 
-
-// Backward compatibility interface - data is derived from powers directory classes
-export interface ItemType {
-  id: ItemPowerId
-  title: string
-  power: ItemPowerId
-  level: number
-} 
