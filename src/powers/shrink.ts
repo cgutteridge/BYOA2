@@ -1,24 +1,23 @@
-import type { Item, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult, PowerConstants } from './types'
+import type { Item, MonsterTypeId, MonsterLevel } from '../types'
+import { ItemPower, PowerResult } from './types'
 
 /**
  * Shrink power implementation - converts boss monsters to elite and elite to grunt
  * Can also convert grunts to minions
  */
 export class ShrinkPower extends ItemPower {
+  // UI properties
   readonly displayName = "Shrink";
   readonly icon = "📏";
   readonly glowColor = "rgba(255, 192, 203, 0.8)"; // Pink glow
   
-  // Power constants for item generation
-  readonly constants: PowerConstants = {
-    baseCost: 2,
-    canHaveTargetRestriction: true,
-    supportsTypeTargeting: true,
-    defaultTargetMode: 'random',
-    canHaveResultRestriction: false,
-    levelRestrictions: ['grunt', 'elite', 'boss'] // Can work on grunts, elites, and bosses
-  };
+  // Item generation constants
+  readonly baseCost = 2;
+  readonly canHaveTargetRestriction = true;
+  readonly supportsTypeTargeting = true;
+  readonly defaultTargetMode = 'random';
+  readonly canHaveResultRestriction = false;
+  readonly levelRestrictions: MonsterLevel[] = ['grunt', 'elite', 'boss']; // Can work on grunts, elites, and bosses
 
   applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method

@@ -1,6 +1,6 @@
 import type { Item } from '../types/item'
-import type { Monster, Pub, MonsterTypeId, ItemPowerId } from '../types'
-import type { PowerResult, PowerConstants } from './types'
+import type { Monster, Pub, MonsterTypeId, ItemPowerId, MonsterLevel, TargetMode } from '../types'
+import type { PowerResult } from './types'
 import { ItemPower } from './types'
 import { BanishPower } from './banish'
 import { KillPower } from './kill'
@@ -64,33 +64,65 @@ export const powerFactory = {
   },
   
   /**
-   * Get power constants for the given power type
-   */
-  getConstants: (powerName: ItemPowerId): PowerConstants | undefined => {
-    const power = powerInstances[powerName];
-    return power?.constants;
-  },
-  
-  /**
    * Get power base cost
    */
   getBaseCost: (powerName: ItemPowerId): number => {
     const power = powerInstances[powerName];
-    return power?.constants?.baseCost || 1;
+    return power?.baseCost || 1;
+  },
+  
+  /**
+   * Get level restrictions for a power
+   */
+  getLevelRestrictions: (powerName: ItemPowerId): MonsterLevel[] | null => {
+    const power = powerInstances[powerName];
+    return power?.levelRestrictions || null;
+  },
+  
+  /**
+   * Get default target mode for a power
+   */
+  getDefaultTargetMode: (powerName: ItemPowerId): TargetMode => {
+    const power = powerInstances[powerName];
+    return power?.defaultTargetMode || 'random';
+  },
+  
+  /**
+   * Get all power constants as a single object for a given power
+   */
+  getPowerConstants: (powerName: ItemPowerId): Record<string, any> | undefined => {
+    const power = powerInstances[powerName];
+    if (!power) return undefined;
+    
+    return {
+      baseCost: power.baseCost,
+      canHaveTargetRestriction: power.canHaveTargetRestriction,
+      supportsTypeTargeting: power.supportsTypeTargeting,
+      defaultTargetMode: power.defaultTargetMode,
+      canHaveResultRestriction: power.canHaveResultRestriction,
+      levelRestrictions: power.levelRestrictions
+    };
   },
   
   /**
    * Get all power constants for all registered powers
    */
-  getAllConstants: (): Record<ItemPowerId, PowerConstants> => {
-    const constants: Partial<Record<ItemPowerId, PowerConstants>> = {};
+  getAllConstants: (): Record<ItemPowerId, Record<string, any>> => {
+    const allConstants: Record<ItemPowerId, Record<string, any>> = {} as any;
     
     // Build constants object from all power instances
     Object.entries(powerInstances).forEach(([powerName, power]) => {
-      constants[powerName as ItemPowerId] = power.constants;
+      allConstants[powerName as ItemPowerId] = {
+        baseCost: power.baseCost,
+        canHaveTargetRestriction: power.canHaveTargetRestriction,
+        supportsTypeTargeting: power.supportsTypeTargeting,
+        defaultTargetMode: power.defaultTargetMode,
+        canHaveResultRestriction: power.canHaveResultRestriction,
+        levelRestrictions: power.levelRestrictions
+      };
     });
     
-    return constants as Record<ItemPowerId, PowerConstants>;
+    return allConstants;
   }
 }
 

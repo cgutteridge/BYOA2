@@ -43,11 +43,15 @@ export function generateRandomItem(level: number): Item {
   }
   
   const selectedPower = pickOne(availablePowers);
-  const powerConst = powerConstants[selectedPower];
-  remainingPoints -= powerConst.baseCost;
+  const power = powerFactory.getPower(selectedPower);
+  if (!power) {
+    throw new Error(`Power ${selectedPower} not found`);
+  }
+  
+  remainingPoints -= power.baseCost;
   
   // Get default target mode
-  const defaultTargetMode = powerConst.defaultTargetMode;
+  const defaultTargetMode = power.defaultTargetMode;
   
   // Initialize item with default properties
   const item: Item = {
@@ -63,15 +67,15 @@ export function generateRandomItem(level: number): Item {
   };
   
   // Apply level-specific restrictions if any
-  if (powerConst.levelRestrictions) {
+  if (power.levelRestrictions) {
     item.targetFilters = {
       ...item.targetFilters,
-      levels: powerConst.levelRestrictions
+      levels: power.levelRestrictions
     };
   }
   
   // Step 2: Apply target restrictions if applicable
-  if (powerConst.canHaveTargetRestriction && item.targetFilters) {
+  if (power.canHaveTargetRestriction && item.targetFilters) {
     // By default, add a species restriction (50%) or flag restriction (50%)
     if (Math.random() < 0.5) {
       item.targetFilters.species = [pickOne(AVAILABLE_SPECIES)];
@@ -81,7 +85,7 @@ export function generateRandomItem(level: number): Item {
   }
   
   // Step 3: Apply result restrictions if applicable
-  if (powerConst.canHaveResultRestriction) {
+  if (power.canHaveResultRestriction) {
     // Default to a restricted result
     item.result = 'random';
     
@@ -115,9 +119,9 @@ export function generateRandomItem(level: number): Item {
  */
 function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: ItemPowerId): string[] {
   const availableUpgrades: string[] = [];
-  const powerConst = powerFactory.getConstants(powerType);
+  const power = powerFactory.getPower(powerType);
   
-  if (!powerConst) return [];
+  if (!power) return [];
   
   // Add uses (+1 point for +2 uses)
   if (remainingPoints >= 1) {
@@ -137,7 +141,7 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   // Target mode upgrade path: random -> pick -> random_type -> pick_type (+1 point each)
   if (item.target === 'random' && remainingPoints >= 1) {
     availableUpgrades.push('upgrade_to_pick');
-  } else if (item.target === 'pick' && remainingPoints >= 1 && powerConst.supportsTypeTargeting) {
+  } else if (item.target === 'pick' && remainingPoints >= 1 && power.supportsTypeTargeting) {
     availableUpgrades.push('upgrade_to_random_type');
   } else if (item.target === 'random_type' && remainingPoints >= 1) {
     availableUpgrades.push('upgrade_to_pick_type');
@@ -145,10 +149,10 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   
   // Increase monster level targeting
   const currentLevels = item.targetFilters?.levels || [];
-  if (!currentLevels.includes('elite') && !powerConst.levelRestrictions) {
+  if (!currentLevels.includes('elite') && !power.levelRestrictions) {
     availableUpgrades.push('level_elite');
   }
-  if (!currentLevels.includes('boss') && currentLevels.includes('elite') && !powerConst.levelRestrictions) {
+  if (!currentLevels.includes('boss') && currentLevels.includes('elite') && !power.levelRestrictions) {
     availableUpgrades.push('level_boss');
   }
   
@@ -238,7 +242,7 @@ function generateItemName(power: ItemPowerId, targetMode?: string): string {
   const itemType = pickOne(itemTypes[power] || ["Artifact"]);
   
   // Add a quality term based on the power's level
-  const qualityTerm = getLevelQualityTerm(1);
+  const qualityTerm = getLevelQualityTerm(1); // Use level 1 quality term
   
   // Combine parts into full name
   const baseName = `${material} ${qualityTerm} ${itemType}`;
@@ -275,8 +279,8 @@ export function generateTestItems(): Item[] {
  * Generate an item with a specific power
  */
 function generateItemWithPower(power: ItemPowerId, level: number): Item {
-  const powerConst = powerFactory.getConstants(power);
-  if (!powerConst) {
+  const powerInstance = powerFactory.getPower(power);
+  if (!powerInstance) {
     // Fallback to simple item if power not found
     return {
       id: toItemId(`test_${power}_${Date.now()}`),
@@ -291,13 +295,13 @@ function generateItemWithPower(power: ItemPowerId, level: number): Item {
   
   return {
     id: toItemId(`test_${power}_${Date.now()}`),
-    name: generateItemName(power, powerConst.defaultTargetMode),
+    name: generateItemName(power, powerInstance.defaultTargetMode),
     uses: 3,
     power,
     level,
-    target: powerConst.defaultTargetMode,
+    target: powerInstance.defaultTargetMode,
     targetFilters: {
-      levels: powerConst.levelRestrictions || ['minion', 'grunt']
+      levels: powerInstance.levelRestrictions || ['minion', 'grunt']
     }
   };
 }
