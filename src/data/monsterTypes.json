@@ -49,7 +49,7 @@
     "flags": ["mortal"],
     "xp": 10,
     "lesser": "huntmaster",
-    "lesserCount": "player"
+    "lesserCount": "playerCount"
   },
   {
     "id": "lost_spirit",
@@ -79,7 +79,7 @@
     "flags": ["spirit"],
     "xp": 10,
     "lesser": "lost_spirit",
-    "lesserCount": "player"
+    "lesserCount": "playerCount"
   },
   {
     "id": "vampire",

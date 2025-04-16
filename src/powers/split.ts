@@ -86,6 +86,9 @@ export class SplitPower extends ItemPower {
       }
     }
     
+    // Ensure count is always at least 1
+    count = Math.max(1, count);
+    
     // Generate names based on count
     let names: string[] = [];
     if (count === 2) {
@@ -114,9 +117,17 @@ export class SplitPower extends ItemPower {
     }
     
     // If the original monster had an item, give it to a random new monster
-    if (originalItem) {
+    if (originalItem && newMonsters.length > 0) {
       const randomIndex = Math.floor(Math.random() * newMonsters.length);
-      newMonsters[randomIndex].item = originalItem;
+      // Double-check that the monster at randomIndex exists before assigning the item
+      if (newMonsters[randomIndex]) {
+        newMonsters[randomIndex].item = originalItem;
+      } else {
+        // Fallback: give the item to the first monster if available
+        if (newMonsters[0]) {
+          newMonsters[0].item = originalItem;
+        }
+      }
     }
     
     // Add the new monsters to the pub
