@@ -1,12 +1,36 @@
 import type { Item } from '../types'
-import type { Monster, Pub, MonsterTypeId, ItemPowerId, MonsterFlag } from '../types'
+import type { Monster, Pub, MonsterTypeId, ItemPowerId, MonsterFlag, MonsterLevel, TargetMode } from '../types'
 import { monsterTypes } from '../data/monsterTypes'
+
+// Power constants interface for item generation
+export interface PowerConstants {
+  // Base cost in points when generating items
+  readonly baseCost: number;
+  
+  // Whether the power can have target restrictions (species/flags)
+  readonly canHaveTargetRestriction: boolean;
+  
+  // Whether the power supports targeting all monsters of a type
+  readonly supportsTypeTargeting: boolean;
+  
+  // Default target mode when generating items
+  readonly defaultTargetMode: TargetMode;
+  
+  // Whether the power can have result restrictions (for transmutation)
+  readonly canHaveResultRestriction: boolean;
+  
+  // Level restrictions - which monster levels this power works on
+  readonly levelRestrictions: MonsterLevel[] | null;
+}
 
 // Base abstract class for all power implementations
 export abstract class ItemPower {
   readonly displayName: string = 'Unknown Power';
   readonly icon: string = '?';
   readonly glowColor: string = 'rgba(255, 255, 255, 0.8)';
+  
+  // Power constants for item generation
+  abstract readonly constants: PowerConstants;
 
   // Target selection methods
   targetTypes(item: Item): string[] {

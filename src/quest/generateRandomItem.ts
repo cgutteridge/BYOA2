@@ -3,79 +3,7 @@ import type { MonsterLevel, Species, MonsterFlag, ItemPowerId } from '../types';
 import { toItemId } from '../types';
 import { generateEffectDescription, getLevelQualityTerm } from './generateEffectDescription.ts';
 import pickOne from "@/utils/pickOne.ts";
-
-// Base point costs for different power types
-const POWER_BASE_COSTS: Record<ItemPowerId, number> = {
-  kill: 2,
-  transmute: 1,
-  spy: 2,  // Base cost for spying
-  shrink: 2,
-  split: 1,
-  pickpocket: 2,
-  banish: 1,
-  freeze: 2
-};
-
-// Which powers can have target restrictions
-const CAN_HAVE_TARGET_RESTRICTION: Record<ItemPowerId, boolean> = {
-  kill: true,
-  transmute: true,
-  spy: false,
-  shrink: true,
-  split: true,
-  pickpocket: true,
-  banish: true,
-  freeze: true
-};
-
-// Which powers support type targeting
-const SUPPORTS_TYPE_TARGETING: Record<ItemPowerId, boolean> = {
-  kill: true,
-  transmute: true,
-  spy: false,
-  shrink: true,
-  split: true,
-  pickpocket: true,
-  banish: true,
-  freeze: true
-};
-
-// Default target modes for each power
-const DEFAULT_TARGET_MODE: Record<ItemPowerId, TargetMode> = {
-  kill: 'random',
-  transmute: 'random',
-  spy: undefined,
-  shrink: 'random',
-  split: 'random',
-  pickpocket: 'random',
-  banish: 'random',
-  freeze: 'random'
-};
-
-// Which powers can have result restrictions
-const CAN_HAVE_RESULT_RESTRICTION: Record<ItemPowerId, boolean> = {
-  kill: false,
-  transmute: true,
-  spy: false,
-  shrink: false,
-  split: false,
-  pickpocket: false,
-  banish: false,
-  freeze: false
-};
-
-// Which powers are restricted to certain monster levels
-type LevelRestriction = MonsterLevel[] | null;
-const LEVEL_RESTRICTIONS: Record<ItemPowerId, LevelRestriction> = {
-  kill: null, // No special restrictions
-  transmute: null,
-  spy: null,
-  shrink: ['elite', 'boss'], // Shrink only works on elite and boss
-  split: ['grunt'], // Split only works on grunts
-  pickpocket: null,
-  banish: null,
-  freeze: null
-};
+import { powerFactory } from "@/powers/index.ts";
 
 // Available species for targeting
 const AVAILABLE_SPECIES: Species[] = [
@@ -101,8 +29,12 @@ export function generateRandomItem(level: number): Item {
   let remainingPoints = totalPoints;
   
   // Step 1: Pick a random power type that fits within our budget
-  const availablePowers = Object.entries(POWER_BASE_COSTS)
-    .filter(([_, cost]) => cost <= remainingPoints)
+  // Get all power constants for base costs
+  const powerConstants = powerFactory.getAllConstants();
+  
+  // Filter available powers based on cost
+  const availablePowers = Object.entries(powerConstants)
+    .filter(([_, constants]) => constants.baseCost <= remainingPoints)
     .map(([power]) => power as ItemPowerId);
     
   if (availablePowers.length === 0) {
@@ -111,10 +43,11 @@ export function generateRandomItem(level: number): Item {
   }
   
   const selectedPower = pickOne(availablePowers);
-  remainingPoints -= POWER_BASE_COSTS[selectedPower];
+  const powerConst = powerConstants[selectedPower];
+  remainingPoints -= powerConst.baseCost;
   
   // Get default target mode
-  const defaultTargetMode = DEFAULT_TARGET_MODE[selectedPower] as TargetMode;
+  const defaultTargetMode = powerConst.defaultTargetMode;
   
   // Initialize item with default properties
   const item: Item = {
@@ -130,15 +63,15 @@ export function generateRandomItem(level: number): Item {
   };
   
   // Apply level-specific restrictions if any
-  if (LEVEL_RESTRICTIONS[selectedPower]) {
+  if (powerConst.levelRestrictions) {
     item.targetFilters = {
       ...item.targetFilters,
-      levels: LEVEL_RESTRICTIONS[selectedPower] as MonsterLevel[]
+      levels: powerConst.levelRestrictions
     };
   }
   
   // Step 2: Apply target restrictions if applicable
-  if (CAN_HAVE_TARGET_RESTRICTION[selectedPower] && item.targetFilters) {
+  if (powerConst.canHaveTargetRestriction && item.targetFilters) {
     // By default, add a species restriction (50%) or flag restriction (50%)
     if (Math.random() < 0.5) {
       item.targetFilters.species = [pickOne(AVAILABLE_SPECIES)];
@@ -148,7 +81,7 @@ export function generateRandomItem(level: number): Item {
   }
   
   // Step 3: Apply result restrictions if applicable
-  if (CAN_HAVE_RESULT_RESTRICTION[selectedPower]) {
+  if (powerConst.canHaveResultRestriction) {
     // Default to a restricted result
     item.result = 'random';
     
@@ -182,6 +115,9 @@ export function generateRandomItem(level: number): Item {
  */
 function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: ItemPowerId): string[] {
   const availableUpgrades: string[] = [];
+  const powerConst = powerFactory.getConstants(powerType);
+  
+  if (!powerConst) return [];
   
   // Add uses (+1 point for +2 uses)
   if (remainingPoints >= 1) {
@@ -201,7 +137,7 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   // Target mode upgrade path: random -> pick -> random_type -> pick_type (+1 point each)
   if (item.target === 'random' && remainingPoints >= 1) {
     availableUpgrades.push('upgrade_to_pick');
-  } else if (item.target === 'pick' && remainingPoints >= 1 && SUPPORTS_TYPE_TARGETING[powerType]) {
+  } else if (item.target === 'pick' && remainingPoints >= 1 && powerConst.supportsTypeTargeting) {
     availableUpgrades.push('upgrade_to_random_type');
   } else if (item.target === 'random_type' && remainingPoints >= 1) {
     availableUpgrades.push('upgrade_to_pick_type');
@@ -209,10 +145,10 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   
   // Increase monster level targeting
   const currentLevels = item.targetFilters?.levels || [];
-  if (!currentLevels.includes('elite') && !LEVEL_RESTRICTIONS[powerType]) {
+  if (!currentLevels.includes('elite') && !powerConst.levelRestrictions) {
     availableUpgrades.push('level_elite');
   }
-  if (!currentLevels.includes('boss') && currentLevels.includes('elite') && !LEVEL_RESTRICTIONS[powerType]) {
+  if (!currentLevels.includes('boss') && currentLevels.includes('elite') && !powerConst.levelRestrictions) {
     availableUpgrades.push('level_boss');
   }
   
@@ -257,18 +193,16 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
       return remainingPoints - 1;
       
     case 'level_elite':
-      // Add elite to targetable levels
+      // Add elite monsters to targeting
       if (item.targetFilters) {
-        const currentLevels = item.targetFilters.levels || [];
-        item.targetFilters.levels = [...currentLevels, 'elite'];
+        item.targetFilters.levels = [...(item.targetFilters.levels || []), 'elite'];
       }
       return remainingPoints - 1;
       
     case 'level_boss':
-      // Add boss to targetable levels
+      // Add boss monsters to targeting
       if (item.targetFilters) {
-        const currentLevels = item.targetFilters.levels || [];
-        item.targetFilters.levels = [...currentLevels, 'boss'];
+        item.targetFilters.levels = [...(item.targetFilters.levels || []), 'boss'];
       }
       return remainingPoints - 1;
       
@@ -278,97 +212,108 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
 }
 
 /**
- * Generate a random name for the item based on its power and target mode
+ * Generate an item name based on power type and target mode
  */
 function generateItemName(power: ItemPowerId, targetMode?: string): string {
-  const prefixes = [
-    'Ancient', 'Mystical', 'Enchanted', 'Arcane', 'Magical',
-    'Cursed', 'Blessed', 'Sacred', 'Demonic', 'Celestial',
-    'Glowing', 'Whispering', 'Enigmatic', 'Shifting', 'Radiant'
+  // Base material/quality descriptors
+  const materials = [
+    "Wooden", "Stone", "Copper", "Bronze", "Iron", "Silver", "Gold", "Crystal", 
+    "Jade", "Obsidian", "Steel", "Ebony", "Glass", "Bone", "Ancient"
   ];
   
-  // Base item names
-  const baseNames: Record<ItemPowerId, string[]> = {
-    kill: ['Dagger', 'Blade', 'Sword', 'Wand', 'Staff', 'Orb of Destruction'],
-    transmute: ['Transmutation Wand', 'Alchemist\'s Stone', 'Morphing Crystal', 'Shifter Orb'],
-    spy: ['Far-seeing Glass', 'Spyglass Telescope', 'Winged Monkey', 'Scrying Orb', 'Crystal Ball', 'Astral Eye'],
-    shrink: ['Miniaturizing Ray', 'Reduction Powder', 'Shrinking Solution', 'Diminution Wand'],
-    split: ['Splitter\'s Dagger', 'Division Wand', 'Duplicator\'s Rod', 'Replicator Stone'],
-    pickpocket: ['Thief\'s Gloves', 'Shadow Hand', 'Pilferer\'s Tool', 'Sticky Fingers Charm'],
-    banish: ['Banishment Scroll', 'Ethereal Disruptor', 'Void Talisman', 'Dimensional Shifter'],
-    freeze: ['Freezing Ray', 'Ice Crystal', 'Frost Orb', 'Cryogenic Wand']
+  // Power-specific item types
+  const itemTypes: Record<ItemPowerId, string[]> = {
+    kill: ["Dagger", "Sword", "Axe", "Hammer", "Spear", "Staff", "Wand", "Bow", "Arrow"],
+    transmute: ["Amulet", "Ring", "Medallion", "Talisman", "Charm", "Jewel", "Orb"],
+    spy: ["Eyeglass", "Looking Glass", "Lens", "Scope", "Mirror", "Spyglass", "Crystal Ball"],
+    shrink: ["Potion", "Elixir", "Flask", "Vial", "Phial", "Draught", "Brew"],
+    split: ["Cleaver", "Scissors", "Shears", "Slicer", "Divider", "Splitter", "Carver"],
+    pickpocket: ["Gloves", "Lockpick", "Hook", "Claw", "Hand", "Grasp", "Grip", "Thief's Tool"],
+    banish: ["Bell", "Book", "Candle", "Scroll", "Rune", "Sigil", "Seal", "Symbol"],
+    freeze: ["Ice Crystal", "Frost Stone", "Cold Gem", "Freezing Orb", "Glacier Shard", "Winter Sphere"]
   };
   
-  // Mode modifiers
-  const modeModifiers: Record<string, string[]> = {
-    random: ['Focused', 'Precise', 'Single-Target', 'Selective'],
-    pick: ['Discerning', 'Chooser\'s', 'Hunter\'s', 'Selective'],
-    random_type: ['Type-Seeking', 'Kind-Hunting', 'Variant-Tracking', 'Species-Wide'],
-    pick_type: ['Type-Choosing', 'Group-Targeting', 'Master', 'Family-Hunting']
-  };
+  // Get a random material and item type
+  const material = pickOne(materials);
+  const itemType = pickOne(itemTypes[power] || ["Artifact"]);
   
-  const prefix = pickOne(prefixes);
-  const baseName = pickOne(baseNames[power]);
+  // Add a quality term based on the power's level
+  const qualityTerm = getLevelQualityTerm(1);
   
-  // Add mode modifier if this is a type targeting or pick mode
-  if (targetMode && targetMode !== 'random' && SUPPORTS_TYPE_TARGETING[power]) {
-    const modeModifier = pickOne(modeModifiers[targetMode]);
-    return `${prefix} ${modeModifier} ${baseName}`;
+  // Combine parts into full name
+  const baseName = `${material} ${qualityTerm} ${itemType}`;
+  
+  // Add target mode suffix if applicable
+  if (targetMode === 'pick') {
+    return `${baseName} of Precision`;
+  } else if (targetMode === 'random_type') {
+    return `${baseName} of Species`;
+  } else if (targetMode === 'pick_type') {
+    return `${baseName} of Selective Species`;
   }
   
-  return `${prefix} ${baseName}`;
+  return baseName;
 }
 
 /**
- * Generate test items for each level (1-6)
- * For debugging and testing purposes
+ * Generate a set of test items, one for each power
  */
 export function generateTestItems(): Item[] {
   const items: Item[] = [];
   
-  for (let level = 1; level <= 6; level++) {
-    // Generate 3 items for each level
-    for (let i = 0; i < 3; i++) {
-      items.push(generateRandomItem(level));
-    }
-  }
+  // Generate one item for each power type
+  const powers: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze'];
+  
+  powers.forEach(power => {
+    items.push(generateItemWithPower(power, 3));
+  });
   
   return items;
 }
 
 /**
- * Log details about a generated item
- * For debugging purposes
+ * Generate an item with a specific power
+ */
+function generateItemWithPower(power: ItemPowerId, level: number): Item {
+  const powerConst = powerFactory.getConstants(power);
+  if (!powerConst) {
+    // Fallback to simple item if power not found
+    return {
+      id: toItemId(`test_${power}_${Date.now()}`),
+      name: `Test ${power} Item`,
+      uses: 3,
+      power,
+      level,
+      target: 'random',
+      targetFilters: { levels: ['minion', 'grunt'] }
+    };
+  }
+  
+  return {
+    id: toItemId(`test_${power}_${Date.now()}`),
+    name: generateItemName(power, powerConst.defaultTargetMode),
+    uses: 3,
+    power,
+    level,
+    target: powerConst.defaultTargetMode,
+    targetFilters: {
+      levels: powerConst.levelRestrictions || ['minion', 'grunt']
+    }
+  };
+}
+
+/**
+ * Log item details for debugging
  */
 export function logItemDetails(item: Item): void {
-  console.log(`==== Item: ${item.name} ====`);
-  console.log(`Quality: ${getLevelQualityTerm(item.level)} (Level ${item.level})`);
+  console.log('Item Details:');
+  console.log(`Name: ${item.name}`);
   console.log(`Power: ${item.power}`);
-  console.log(`Uses: ${item.uses || 1}`);
-  console.log(`Effect: ${generateEffectDescription(item)}`);
-  console.log(`Target mode: ${item.target || 'none'}`);
-  
-  if (item.targetFilters) {
-    if (item.targetFilters.levels) {
-      console.log(`Target levels: ${item.targetFilters.levels.join(', ')}`);
-    }
-    if (item.targetFilters.species) {
-      console.log(`Target species: ${item.targetFilters.species.join(', ')}`);
-    }
-    if (item.targetFilters.flags) {
-      console.log(`Target flags: ${item.targetFilters.flags.join(', ')}`);
-    }
-  }
-  
-  if (item.result) {
-    console.log(`Result mode: ${item.result}`);
-    if (item.resultLevel) {
-      console.log(`Result level: ${item.resultLevel}`);
-    }
-    if (item.resultSpecies) {
-      console.log(`Result species: ${item.resultSpecies}`);
-    }
-  }
-  
-  console.log('============================');
+  console.log(`Level: ${item.level}`);
+  console.log(`Uses: ${item.uses}`);
+  console.log(`Target Mode: ${item.target}`);
+  console.log(`Target Filters: ${JSON.stringify(item.targetFilters, null, 2)}`);
+  console.log(`Result Mode: ${item.result}`);
+  console.log(`Result Level: ${item.resultLevel}`);
+  console.log(`Result Species: ${item.resultSpecies}`);
 } 

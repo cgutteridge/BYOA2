@@ -1,5 +1,5 @@
 import type { Item, MonsterTypeId } from '../types';
-import { ItemPower, PowerResult } from './types';
+import { ItemPower, PowerResult, PowerConstants } from './types';
 
 /**
  * Kill power implementation
@@ -8,6 +8,16 @@ export class KillPower extends ItemPower {
   readonly displayName = "Kill";
   readonly icon = "⚔️";
   readonly glowColor = "rgba(255, 0, 0, 0.8)";
+  
+  // Power constants for item generation
+  readonly constants: PowerConstants = {
+    baseCost: 2,
+    canHaveTargetRestriction: true,
+    supportsTypeTargeting: true,
+    defaultTargetMode: 'random',
+    canHaveResultRestriction: false,
+    levelRestrictions: null // Can target any level
+  };
 
   applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method

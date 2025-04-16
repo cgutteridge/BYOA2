@@ -1,5 +1,5 @@
 import type { Item, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult } from './types'
+import { ItemPower, PowerResult, PowerConstants } from './types'
 
 /**
  * Transmute power implementation - transforms monsters into different types
@@ -8,6 +8,16 @@ export class TransmutePower extends ItemPower {
   readonly displayName = "Transmute";
   readonly icon = "✨";
   readonly glowColor = "rgba(138, 43, 226, 0.8)";
+  
+  // Power constants for item generation
+  readonly constants: PowerConstants = {
+    baseCost: 1,
+    canHaveTargetRestriction: true,
+    supportsTypeTargeting: true,
+    defaultTargetMode: 'random',
+    canHaveResultRestriction: true, // Only transmute has result restrictions
+    levelRestrictions: null // Can target any level
+  };
 
   applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method

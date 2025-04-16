@@ -1,6 +1,6 @@
 import type { Item } from '../types/item'
 import type { Monster, Pub, MonsterTypeId, ItemPowerId } from '../types'
-import type { PowerResult } from './types'
+import type { PowerResult, PowerConstants } from './types'
 import { ItemPower } from './types'
 import { BanishPower } from './banish'
 import { KillPower } from './kill'
@@ -61,6 +61,36 @@ export const powerFactory = {
   getDisplayName: (powerName: ItemPowerId): string => {
     const power = powerInstances[powerName];
     return power?.displayName || powerName || defaultPowerProperties.displayName;
+  },
+  
+  /**
+   * Get power constants for the given power type
+   */
+  getConstants: (powerName: ItemPowerId): PowerConstants | undefined => {
+    const power = powerInstances[powerName];
+    return power?.constants;
+  },
+  
+  /**
+   * Get power base cost
+   */
+  getBaseCost: (powerName: ItemPowerId): number => {
+    const power = powerInstances[powerName];
+    return power?.constants?.baseCost || 1;
+  },
+  
+  /**
+   * Get all power constants for all registered powers
+   */
+  getAllConstants: (): Record<ItemPowerId, PowerConstants> => {
+    const constants: Partial<Record<ItemPowerId, PowerConstants>> = {};
+    
+    // Build constants object from all power instances
+    Object.entries(powerInstances).forEach(([powerName, power]) => {
+      constants[powerName as ItemPowerId] = power.constants;
+    });
+    
+    return constants as Record<ItemPowerId, PowerConstants>;
   }
 }
 

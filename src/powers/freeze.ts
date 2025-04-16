@@ -1,5 +1,5 @@
-import type { Item, MonsterTypeId, Monster } from '../types'
-import { ItemPower, PowerResult } from './types'
+import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
+import { ItemPower, PowerResult, PowerConstants } from './types'
 import { monsterTypes } from '../data/monsterTypes'
 import { useQuestStore } from '@/stores/questStore'
 import { toMonsterTypeId } from '../types'
@@ -13,6 +13,16 @@ export class FreezePower extends ItemPower {
   readonly displayName = "Freeze";
   readonly icon = "❄️";
   readonly glowColor = "rgba(0, 191, 255, 0.8)";
+  
+  // Power constants for item generation
+  readonly constants: PowerConstants = {
+    baseCost: 2,
+    canHaveTargetRestriction: true,
+    supportsTypeTargeting: true,
+    defaultTargetMode: 'random',
+    canHaveResultRestriction: false,
+    levelRestrictions: ['minion', 'grunt', 'elite'] // Can't target bosses
+  };
 
   applyToMonster(item: Item, monsterId: string): PowerResult {
     // Find the actual monster object from the current pub

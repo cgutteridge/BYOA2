@@ -1,13 +1,23 @@
 import type { Item, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult } from './types'
+import { ItemPower, PowerResult, PowerConstants } from './types'
 
 /**
- * Split power implementation - splits monsters into multiple smaller monsters
+ * Split power implementation - splits a monster into multiple weaker ones
  */
 export class SplitPower extends ItemPower {
   readonly displayName = "Split";
-  readonly icon = "👬";
-  readonly glowColor = "rgba(255, 215, 0, 0.8)";
+  readonly icon = "🔪";
+  readonly glowColor = "rgba(153, 102, 204, 0.8)";
+  
+  // Power constants for item generation
+  readonly constants: PowerConstants = {
+    baseCost: 1,
+    canHaveTargetRestriction: true,
+    supportsTypeTargeting: true,
+    defaultTargetMode: 'random',
+    canHaveResultRestriction: false,
+    levelRestrictions: ['grunt'] // Can only target grunts
+  };
 
   applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
@@ -15,7 +25,7 @@ export class SplitPower extends ItemPower {
     
     return {
       success,
-      message: success ? `${item.name} split the monster into multiples!` : `${item.name} failed to split the monster.`
+      message: success ? `${item.name} split the monster into multiple smaller ones!` : `${item.name} failed to split the monster.`
     };
   }
 
@@ -24,7 +34,7 @@ export class SplitPower extends ItemPower {
     
     return {
       success: true,
-      message: `${item.name} split all ${type}s into multiples!`
+      message: `${item.name} split all ${type}s into multiple smaller ones!`
     };
   }
 
@@ -33,9 +43,8 @@ export class SplitPower extends ItemPower {
     
     // In real implementation:
     // 1. Find the monster with the given ID
-    // 2. Get the monster type to find what it splits into
-    // 3. Create multiple instances of the split monster
-    // 4. Add them to the encounter
+    // 2. Check if it has a "splits" property defining what it splits into
+    // 3. If successful, replace it with multiple monsters of that type
     
     // For now, we'll just return success
     return true;
