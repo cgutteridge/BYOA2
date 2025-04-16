@@ -12,7 +12,6 @@ import type {Location, Pub} from '../types'
 import {usePubStore} from "../stores/pubStore";
 import {useAppStore} from "../stores/appStore";
 import {locationTypesById} from "@/data/locationTypes.ts";
-import {useQuestStore} from "../stores/questStore";
 import PubPopup from '@/components/PubPopup.vue'
 
 // Configuration constants
@@ -87,17 +86,15 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
     // After the Vue component has rendered, update popup position to ensure proper positioning
     setTimeout(() => {
       if (map.value && popup.isOpen()) {
-        popup._updatePosition();
+        //popup._updatePosition();
         try {
           // Get map size
           const mapSize = map.value.getSize();
-          
+
           // We want the marker at position X,Y where:
           // Y is BOTTOM_OFFSET from bottom of screen
           // X follows our rules for horizontal positioning
-          
-          // Get the geographic coordinate that will appear at the center of the screen
-          const currentCenter = map.value.getCenter();
+
           
           // Get current popup position in pixels
           const markerPoint = map.value.latLngToContainerPoint(marker.getLatLng());
