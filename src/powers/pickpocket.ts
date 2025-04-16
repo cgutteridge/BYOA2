@@ -1,10 +1,10 @@
 import type { Item } from '../types/item'
 import type { Monster } from '../types'
-import type { PowerFunction } from './types'
+import type { ItemPower } from './types'
 import { isMonster, canTarget, getValidTargets } from './utils'
 
 // Pickpocket power implementation
-export const pickpocket: PowerFunction = {
+export const pickpocket: ItemPower = {
   execute: (item: Item, target: Monster | string) => {
     // Handle individual monster targeting
     if (isMonster(target)) {

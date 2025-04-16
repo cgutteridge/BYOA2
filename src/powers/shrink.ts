@@ -1,6 +1,6 @@
 import type { Item } from '../types/item'
 import type { Monster } from '../types'
-import type { PowerFunction } from './types'
+import type { ItemPower } from './types'
 import { isMonster, canTarget, getValidTargets } from './utils'
 
 // Function to get the next lower monster level
@@ -16,7 +16,7 @@ function getLowerLevel(currentLevel: string): string | null {
 }
 
 // Shrink power implementation - turns a boss/elite monster into a weaker version
-export const shrink: PowerFunction = {
+export const shrink: ItemPower = {
   execute: (item: Item, target: Monster | string) => {
     // Handle individual monster targeting
     if (isMonster(target)) {

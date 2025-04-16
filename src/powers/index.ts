@@ -1,26 +1,28 @@
 import type { Item } from '../types/item'
 import type { Monster, Pub } from '../types'
-import type { PowerFunction, PowerResult, PowerFactory } from './types'
-import { banish } from './banish'
-import { kill } from './kill'
-import { spy } from './spy'
-import { transmute } from './transmute'
-import { shrink } from './shrink'
-import { split } from './split'
-import { pickpocket } from './pickpocket'
-import { freeze } from './freeze'
+import type { PowerResult } from './types'
+import { ItemPower } from './types'
+import { BanishPower } from './banish'
+import { KillPower } from './kill'
+import { SpyPower } from './spy'
+// These will be implemented later
+// import { TransmutePower } from './transmute'
+// import { ShrinkPower } from './shrink'
+// import { SplitPower } from './split'
+// import { PickpocketPower } from './pickpocket'
+// import { FreezePower } from './freeze'
 
 // Register all power implementations
-const powerFunctions: Record<string, PowerFunction> = {
-  banish,
-  kill,  // Use the consolidated kill implementation
-  spy,
-  transmute,
-  shrink,
-  split,
-  pickpocket,
-  freeze
-  // Other power implementations will be added here
+const powerClasses: Record<string, typeof ItemPower> = {
+  banish: BanishPower,
+  kill: KillPower,
+  spy: SpyPower,
+  // These will be implemented later
+  // transmute: TransmutePower,
+  // shrink: ShrinkPower,
+  // split: SplitPower,
+  // pickpocket: PickpocketPower,
+  // freeze: FreezePower
 }
 
 // Default power UI properties
@@ -33,24 +35,24 @@ const defaultPowerProperties = {
 /**
  * Power factory implementation
  */
-export const powerFactory: PowerFactory = {
-  getPowerFunction: (powerName: string): PowerFunction | undefined => {
-    return powerFunctions[powerName]
+export const powerFactory = {
+  getPower: (powerName: string): typeof ItemPower | undefined => {
+    return powerClasses[powerName];
   },
   
   getIcon: (powerName: string): string => {
-    const powerFunction = powerFunctions[powerName]
-    return powerFunction?.icon || defaultPowerProperties.icon
+    const PowerClass = powerClasses[powerName];
+    return PowerClass?.icon || defaultPowerProperties.icon;
   },
   
   getGlowColor: (powerName: string): string => {
-    const powerFunction = powerFunctions[powerName]
-    return powerFunction?.glowColor || defaultPowerProperties.glowColor
+    const PowerClass = powerClasses[powerName];
+    return PowerClass?.glowColor || defaultPowerProperties.glowColor;
   },
   
   getDisplayName: (powerName: string): string => {
-    const powerFunction = powerFunctions[powerName]
-    return powerFunction?.displayName || powerName || defaultPowerProperties.displayName
+    const PowerClass = powerClasses[powerName];
+    return PowerClass?.displayName || powerName || defaultPowerProperties.displayName;
   }
 }
 
@@ -76,31 +78,41 @@ export function executePower(
   }
   
   // Check if power exists and execute it
-  const powerFunction = powerFunctions[item.power]
-  if (powerFunction) {
-    if (powerFunction.canTarget(item, target)) {
-      try {
-        powerFunction.execute(item, target)
-        return {
-          success: true,
-          message: `Successfully used ${item.name}.`
+  const PowerClass = powerClasses[item.power];
+  if (PowerClass) {
+    try {
+      // Determine type of target and apply appropriate method
+      if (typeof target === 'string') {
+        // Check if it's a monster ID or type
+        if (target.startsWith('monster_')) {
+          return PowerClass.applyToMonster(item, target);
+        } else if (target.startsWith('location_')) {
+          return PowerClass.applyToLocation(item, target);
+        } else {
+          return PowerClass.applyToType(item, target);
         }
-      } catch (error) {
-        return {
-          success: false,
-          message: `Error using ${item.name}: ${error}`
-        }
+      } else if (target && 'id' in target && 'type' in target && 'alive' in target) {
+        // It's a monster object
+        return PowerClass.applyToMonster(item, target.id);
+      } else if (target && 'id' in target && 'monsters' in target) {
+        // It's a location/pub object
+        return PowerClass.applyToLocation(item, target.id);
       }
-    } else {
+      
       return {
         success: false,
         message: `Invalid target for ${item.name}.`
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Error using ${item.name}: ${error}`
       }
     }
   }
   
   // Power not found
-  return defaultResult
+  return defaultResult;
 }
 
 /**
@@ -110,14 +122,24 @@ export function canTargetWith(
   item: Item, 
   target?: Monster | Pub | string | any
 ): boolean {
-  if (!item.power) return false
+  if (!item.power) return false;
   
-  const powerFunction = powerFunctions[item.power]
-  if (powerFunction) {
-    return powerFunction.canTarget(item, target)
+  const PowerClass = powerClasses[item.power];
+  if (!PowerClass) return false;
+  
+  // Determine type of target
+  if (typeof target === 'string') {
+    // It's either a monster ID, location ID, or monster type
+    return true; // The specific Power class will handle detailed validation
+  } else if (target && 'type' in target && 'alive' in target) {
+    // It's a monster object
+    return target.alive; // Basic check - can only target alive monsters
+  } else if (target && 'monsters' in target) {
+    // It's a location/pub object
+    return true;
   }
   
-  return false
+  return false;
 }
 
 /**
@@ -127,14 +149,26 @@ export function getValidTargets(
   item: Item,
   targets: Monster[] | Pub[] | any[]
 ): Monster[] | Pub[] | string[] | any[] {
-  if (!item.power) return []
+  if (!item.power) return [];
   
-  const powerFunction = powerFunctions[item.power]
-  if (powerFunction) {
-    return powerFunction.getValidTargets(item, targets)
+  const PowerClass = powerClasses[item.power];
+  if (PowerClass) {
+    // Determine what type of targets we're dealing with
+    if (targets.length > 0) {
+      if ('type' in targets[0] && 'alive' in targets[0]) {
+        // It's a monster array
+        return PowerClass.targetMonsters(item, targets as Monster[]);
+      } else if ('monsters' in targets[0]) {
+        // It's a locations array
+        return PowerClass.targetLocations(item, targets as Pub[]);
+      }
+    }
+    
+    // Default to empty array if we couldn't determine target type
+    return [];
   }
   
-  return []
+  return [];
 }
 
 // Export an empty register function to be filled in later stages

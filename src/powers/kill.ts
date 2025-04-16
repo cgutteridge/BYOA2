@@ -1,40 +1,56 @@
-import type { Item } from '../types/item'
-import type { Monster } from '../types'
-import type { PowerFunction } from './types'
-import { toggleMonsterStatus } from '../quest/combat.ts'
-import { isMonster, canTarget, getValidTargets } from './utils'
+import type { Item } from '../types/item';
+import type { Monster } from '../types';
+import { ItemPower, PowerResult } from './types';
 
-// Kill power implementation
-export const kill: PowerFunction = {
-  execute: (item: Item, target: Monster | string) => {
-    // Handle individual monster targeting
-    if (isMonster(target)) {
-      console.log(`Using ${item.name} to kill ${target.name}`)
+/**
+ * Kill power implementation
+ */
+export class KillPower extends ItemPower {
+  static displayName = "Kill";
+  static icon = "⚔️";
+  static glowColor = "rgba(255, 0, 0, 0.8)";
+
+  static targetTypes(item: Item): string[] {
+    return item.targetFilters?.species || [];
+  }
+
+  static targetMonsters(item: Item, monsters: Monster[]): Monster[] {
+    return monsters.filter(monster => {
+      if (!monster.alive) return false;
       
-      // Toggle the monster status to defeat it
-      if (target.alive) {
-        toggleMonsterStatus(target)
+      if (item.targetFilters) {
+        if (item.targetFilters.species?.length && !item.targetFilters.species.includes(monster.type as any)) {
+          return false;
+        }
       }
-    } 
-    // Handle type targeting
-    else if (typeof target === 'string') {
-      console.log(`Using ${item.name} to kill all monsters of type ${target}`)
       
-      // TODO: Find all monsters matching the target type
-      // and mark them all as defeated (in the actual game implementation)
-      // This would be implemented in a later stage to:
-      // 1. Find all monsters matching the target type
-      // 2. Mark them all as defeated
-      // 3. Award XP to the player
-      // 4. Maybe trigger special effects
-    }
-  },
-  
-  canTarget,
-  getValidTargets,
-  
-  // UI properties
-  displayName: "Kill",
-  icon: "⚔️",
-  glowColor: "rgba(255, 0, 0, 0.8)"
+      return true;
+    });
+  }
+
+  static hasInputs(item: Item): { target: boolean; result: boolean } {
+    return { target: true, result: false };
+  }
+
+  static applyToMonster(item: Item, monsterId: string): PowerResult {
+    console.log(`Using ${item.name} to kill monster ${monsterId}`);
+    
+    this.reduceUses(item);
+    
+    return {
+      success: true,
+      message: `${item.name} killed the monster!`
+    };
+  }
+
+  static applyToType(item: Item, type: string): PowerResult {
+    console.log(`Using ${item.name} to kill all monsters of type ${type}`);
+    
+    this.reduceUses(item);
+    
+    return {
+      success: true,
+      message: `${item.name} killed all ${type}s!`
+    };
+  }
 } 

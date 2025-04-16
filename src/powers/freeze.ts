@@ -1,10 +1,10 @@
 import type { Item } from '../types/item'
 import type { Monster } from '../types'
-import type { PowerFunction } from './types'
+import type { ItemPower } from './types'
 import { isMonster, canTarget, getValidTargets } from './utils'
 
 // Freeze power implementation
-export const freeze: PowerFunction = {
+export const freeze: ItemPower = {
   execute: (item: Item, target: Monster | string) => {
     // Handle individual monster targeting
     if (isMonster(target)) {
