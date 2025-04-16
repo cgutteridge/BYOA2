@@ -5,11 +5,11 @@ import { ItemPower, PowerResult } from './types'
  * Transmute power implementation - transforms monsters into different types
  */
 export class TransmutePower extends ItemPower {
-  static displayName = "Transmute";
-  static icon = "✨";
-  static glowColor = "rgba(138, 43, 226, 0.8)";
+  readonly displayName = "Transmute";
+  readonly icon = "✨";
+  readonly glowColor = "rgba(138, 43, 226, 0.8)";
 
-  static applyToMonster(item: Item, monsterId: string): PowerResult {
+  applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
     const success = this.applyEffect(item, monsterId);
     
@@ -19,7 +19,7 @@ export class TransmutePower extends ItemPower {
     };
   }
 
-  static applyToType(item: Item, type: MonsterTypeId): PowerResult {
+  applyToType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} to transmute all monsters of type ${type}`);
     
     return {
@@ -28,7 +28,7 @@ export class TransmutePower extends ItemPower {
     };
   }
 
-  static applyEffect(item: Item, monsterId: string): boolean {
+  applyEffect(item: Item, monsterId: string): boolean {
     console.log(`Using ${item.name} to transmute monster ${monsterId}`);
     
     // In real implementation:

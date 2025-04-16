@@ -5,11 +5,11 @@ import { ItemPower, PowerResult } from './types'
  * Freeze power implementation - immobilizes monsters
  */
 export class FreezePower extends ItemPower {
-  static displayName = "Freeze";
-  static icon = "❄️";
-  static glowColor = "rgba(0, 191, 255, 0.8)";
+  readonly displayName = "Freeze";
+  readonly icon = "❄️";
+  readonly glowColor = "rgba(0, 191, 255, 0.8)";
 
-  static applyToMonster(item: Item, monsterId: string): PowerResult {
+  applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
     const success = this.applyEffect(item, monsterId);
     
@@ -19,7 +19,7 @@ export class FreezePower extends ItemPower {
     };
   }
 
-  static applyToType(item: Item, type: MonsterTypeId): PowerResult {
+  applyToType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} to freeze all monsters of type ${type}`);
     
     return {
@@ -28,7 +28,7 @@ export class FreezePower extends ItemPower {
     };
   }
 
-  static applyEffect(item: Item, monsterId: string): boolean {
+  applyEffect(item: Item, monsterId: string): boolean {
     console.log(`Using ${item.name} to freeze monster ${monsterId}`);
     
     // In real implementation:

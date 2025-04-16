@@ -3,16 +3,16 @@ import type { Monster, Pub, MonsterTypeId, ItemPowerId } from '../types'
 
 // Base abstract class for all power implementations
 export abstract class ItemPower {
-  static displayName: string = 'Unknown Power';
-  static icon: string = '?';
-  static glowColor: string = 'rgba(255, 255, 255, 0.8)';
+  readonly displayName: string = 'Unknown Power';
+  readonly icon: string = '?';
+  readonly glowColor: string = 'rgba(255, 255, 255, 0.8)';
 
   // Target selection methods
-  static targetTypes(item: Item): string[] {
+  targetTypes(item: Item): string[] {
     return item.targetFilters?.species || [];
   }
 
-  static targetMonsters(item: Item, monsters: Monster[]): Monster[] {
+  targetMonsters(item: Item, monsters: Monster[]): Monster[] {
     return monsters.filter(monster => {
       // Only include alive monsters
       if (!monster.alive) return false;
@@ -29,23 +29,23 @@ export abstract class ItemPower {
     });
   }
 
-  static targetLocations(_item: Item, _locations: Pub[]): Pub[] {
+  targetLocations(_item: Item, _locations: Pub[]): Pub[] {
     return [];
   }
 
-  static hasInputs(_item: Item): { target: boolean; result: boolean } {
+  hasInputs(_item: Item): { target: boolean; result: boolean } {
     return { target: true, result: false };
   }
 
   // Execution methods
-  static reduceUses(item: Item): void {
+  protected reduceUses(item: Item): void {
     if (item.uses > 0) {
       item.uses--;
     }
   }
 
   // These methods will be used by child classes
-  static useOnType(item: Item, type: MonsterTypeId): PowerResult {
+  useOnType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} on all monsters of type ${type}`);
     
     this.reduceUses(item);
@@ -54,7 +54,7 @@ export abstract class ItemPower {
     return this.applyToType(item, type);
   }
 
-  static useOnMonster(item: Item, monsterId: string): PowerResult {
+  useOnMonster(item: Item, monsterId: string): PowerResult {
     console.log(`Using ${item.name} on monster ${monsterId}`);
     
     this.reduceUses(item);
@@ -64,7 +64,7 @@ export abstract class ItemPower {
   }
 
   // Abstract methods to be implemented by child classes
-  static applyToType(item: Item, type: MonsterTypeId): PowerResult {
+  applyToType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} on all monsters of type ${type}`);
     
     return {
@@ -73,7 +73,7 @@ export abstract class ItemPower {
     };
   }
 
-  static applyToMonster(item: Item, monsterId: string): PowerResult {
+  applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
     const success = this.applyEffect(item, monsterId);
     
@@ -88,11 +88,9 @@ export abstract class ItemPower {
 
   // Abstract method to apply the power's effect to a monster
   // Returns true if the effect was successfully applied, false otherwise
-  static applyEffect(_item: Item, _monsterId: string): boolean {
-    return false; // Default implementation returns failure
-  }
+  abstract applyEffect(item: Item, monsterId: string): boolean;
 
-  static applyToLocation(_item: Item, _locationId: string): PowerResult {
+  applyToLocation(_item: Item, _locationId: string): PowerResult {
     return {
       success: false,
       message: 'Not implemented'
@@ -102,7 +100,7 @@ export abstract class ItemPower {
 
 // Power factory to provide UI properties and functionality
 export interface PowerFactory {
-  getPower: (powerName: ItemPowerId) => typeof ItemPower | undefined;
+  getPower: (powerName: ItemPowerId) => ItemPower | undefined;
   getIcon: (powerName: ItemPowerId) => string;
   getGlowColor: (powerName: ItemPowerId) => string;
   getDisplayName: (powerName: ItemPowerId) => string;

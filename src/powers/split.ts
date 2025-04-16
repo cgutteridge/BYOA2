@@ -5,11 +5,11 @@ import { ItemPower, PowerResult } from './types'
  * Split power implementation - splits monsters into multiple smaller monsters
  */
 export class SplitPower extends ItemPower {
-  static displayName = "Split";
-  static icon = "👬";
-  static glowColor = "rgba(255, 215, 0, 0.8)";
+  readonly displayName = "Split";
+  readonly icon = "👬";
+  readonly glowColor = "rgba(255, 215, 0, 0.8)";
 
-  static applyToMonster(item: Item, monsterId: string): PowerResult {
+  applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
     const success = this.applyEffect(item, monsterId);
     
@@ -19,7 +19,7 @@ export class SplitPower extends ItemPower {
     };
   }
 
-  static applyToType(item: Item, type: MonsterTypeId): PowerResult {
+  applyToType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} to split all monsters of type ${type}`);
     
     return {
@@ -28,7 +28,7 @@ export class SplitPower extends ItemPower {
     };
   }
 
-  static applyEffect(item: Item, monsterId: string): boolean {
+  applyEffect(item: Item, monsterId: string): boolean {
     console.log(`Using ${item.name} to split monster ${monsterId}`);
     
     // In real implementation:

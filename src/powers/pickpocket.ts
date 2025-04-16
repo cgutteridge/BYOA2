@@ -5,11 +5,11 @@ import { ItemPower, PowerResult } from './types'
  * Pickpocket power implementation - steals items from monsters
  */
 export class PickpocketPower extends ItemPower {
-  static displayName = "Pickpocket";
-  static icon = "👝";
-  static glowColor = "rgba(139, 69, 19, 0.8)";
+  readonly displayName = "Pickpocket";
+  readonly icon = "👝";
+  readonly glowColor = "rgba(139, 69, 19, 0.8)";
 
-  static applyToMonster(item: Item, monsterId: string): PowerResult {
+  applyToMonster(item: Item, monsterId: string): PowerResult {
     // Call the implementation-specific effect method
     const success = this.applyEffect(item, monsterId);
     
@@ -19,7 +19,7 @@ export class PickpocketPower extends ItemPower {
     };
   }
 
-  static applyToType(item: Item, type: MonsterTypeId): PowerResult {
+  applyToType(item: Item, type: MonsterTypeId): PowerResult {
     console.log(`Using ${item.name} to pickpocket all monsters of type ${type}`);
     
     return {
@@ -28,7 +28,7 @@ export class PickpocketPower extends ItemPower {
     };
   }
 
-  static applyEffect(item: Item, monsterId: string): boolean {
+  applyEffect(item: Item, monsterId: string): boolean {
     console.log(`Using ${item.name} to pickpocket monster ${monsterId}`);
     
     // In real implementation:
