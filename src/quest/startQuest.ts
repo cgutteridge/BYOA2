@@ -4,7 +4,7 @@ import {usePubStore} from "@/stores/pubStore.ts";
 import initialiseLocation from "@/quest/initialiseLocation.ts";
 import { useInventoryStore } from "@/stores/inventoryStore.ts";
 import { generateRandomItem } from "@/quest/generateRandomItem.ts";
-import type { Item, ItemPowerId } from "@/types/item.ts";
+import type { Item, ItemPowerId } from "@/types";
 import { toItemId } from '@/types';
 
 // Function to create unrestricted debug items with pick and pick_type for each power

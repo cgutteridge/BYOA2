@@ -1,5 +1,5 @@
 import type { Item, MonsterTypeId, MonsterLevel } from '../types'
-import { ItemPower, PowerResult } from './types'
+import { ItemPower, PowerResult } from './abstractItemPower'
 
 /**
  * Shrink power implementation - converts boss monsters to elite and elite to grunt

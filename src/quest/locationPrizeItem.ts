@@ -1,6 +1,5 @@
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
-import {Item} from "@/types/item.ts";
-import {LocationDifficulty} from "@/types";
+import {Item, LocationDifficulty} from "@/types";
 
 /**
  * Generate a prize item based on location difficulty

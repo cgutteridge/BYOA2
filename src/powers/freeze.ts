@@ -1,5 +1,5 @@
 import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
-import { ItemPower, PowerResult } from './types'
+import { ItemPower, PowerResult } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
 import { useQuestStore } from '@/stores/questStore'
 import { toMonsterTypeId } from '../types'

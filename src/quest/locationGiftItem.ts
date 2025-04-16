@@ -1,5 +1,4 @@
-import {LocationDifficulty} from "@/types";
-import {Item} from "@/types/item.ts";
+import {LocationDifficulty, Item} from "@/types";
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
 
 /**

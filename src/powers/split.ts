@@ -1,5 +1,5 @@
 import type { Item, MonsterTypeId } from '../types'
-import { ItemPower, PowerResult } from './types'
+import { ItemPower, PowerResult } from './abstractItemPower'
 
 /**
  * Split power implementation

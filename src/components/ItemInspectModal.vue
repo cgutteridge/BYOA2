@@ -130,8 +130,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Item } from '../types/item'
-import type { Monster } from '../types'
+import type { Item, Monster } from '../types'
 import { getTargetDescription, generateEffectDescription } from '../quest/generateEffectDescription.ts'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'

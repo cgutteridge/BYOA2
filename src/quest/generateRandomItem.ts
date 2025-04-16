@@ -1,5 +1,4 @@
-import type { Item } from '../types/item.ts';
-import type { MonsterLevel, Species, MonsterFlag, ItemPowerId } from '../types';
+import type { Item, MonsterLevel, Species, MonsterFlag, ItemPowerId } from '../types';
 import { toItemId } from '../types';
 import { getLevelQualityTerm } from './generateEffectDescription.ts';
 import pickOne from "@/utils/pickOne.ts";

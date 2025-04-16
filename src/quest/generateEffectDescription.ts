@@ -1,4 +1,4 @@
-import type { Item } from '../types/item.ts';
+import type { Item } from '../types';
 
 /**
  * Convert item level to descriptive quality term

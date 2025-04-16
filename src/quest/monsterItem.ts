@@ -1,6 +1,6 @@
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
 import {monsterTypes} from "@/data/monsterTypes.ts";
-import {Item} from "@/types/item.ts";
+import {Item} from "@/types";
 
 /**
  * Generate an item for a monster unit based on its level

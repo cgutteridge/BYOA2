@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
 import type {GPSStatus, Location, PubId, ScreenId} from '../types'
-import type { Item } from '../types/item'
+import type { Item } from '../types'
 import {usePubStore} from "../stores/pubStore";
 
 // Notification interface

@@ -1,5 +1,5 @@
 import type { ItemPowerId } from '../types'
-import { ItemPower } from './types'
+import { ItemPower } from './abstractItemPower'
 import { BanishPower } from './banish'
 import { KillPower } from './kill'
 import { SpyPower } from './spy'

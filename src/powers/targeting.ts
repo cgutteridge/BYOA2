@@ -1,5 +1,4 @@
-import type { Item } from '../types/item'
-import type { Monster } from '../types'
+import type { Item, Monster } from '../types'
 import { powerFactory } from './index'
 
 /**
