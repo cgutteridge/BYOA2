@@ -115,6 +115,7 @@ export interface Monster {
 export type ScreenId =
   | 'start_quest'
   | 'intro'
+  | 'info' // remove later
   | 'map'
   | 'location'
   | 'victory'
