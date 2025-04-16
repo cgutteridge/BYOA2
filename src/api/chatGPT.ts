@@ -76,9 +76,9 @@ export class ChatGPTAPI {
         For each item, create a unique name and a story description that ties it to the location and challenge.  
         Do not promise additional rewards. 
         You may retitle the location in an amusing way maybe combining the real name with the fantasy theme. 
-        The description field in the JSON response must describe ALL OF the location, 
+        The description field in the JSON response is in the 2nd person and must describe ALL OF the location, 
         ${giftItemPower ? "the item available and why, ":""}, the challenge, and the prize as the situation lies when the
-        players arrive.
+        players arrive. Pick a really random theme but stick to it from grimdark to kids tv show to nature documentary to 80s sitcom. 
         
         ${extraInstructions}
 
