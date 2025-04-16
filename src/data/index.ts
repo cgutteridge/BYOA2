@@ -11,8 +11,8 @@ export {
   monsterTypesById 
 } from './monsterTypesLoader';
 
-// Export item powers (replacing itemTypes)
+// Export item types (compatibility layer)
 export { 
-  itemPowers,
-  itemPowersById
-} from './itemPowersLoader'; 
+  itemTypes,
+  itemTypesByPower
+} from './itemTypes'; 

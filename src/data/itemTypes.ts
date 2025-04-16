@@ -1,24 +1,36 @@
-// This file is now a re-export wrapper for backwards compatibility
-// All data is loaded from JSON using the itemPowers loader
-import { itemPowers, itemPowersById } from './itemPowersLoader';
-import { ItemType, ItemPower, ItemPowerMetadata } from '../types';
+// This file is a compatibility layer that uses the powers directory
+// as the source of truth for item power data
+import { powerFactory } from '../powers';
+import { ItemType, ItemPower } from '../types';
+
+// Build a list of all available power keys
+// These are the keys used in the powerClasses record in powers/index.ts
+const powerKeys: ItemPower[] = [
+  'kill',
+  'spy',
+  'banish',
+  'transmute',
+  'shrink',
+  'split',
+  'pickpocket',
+  'freeze'
+];
 
 // Compatibility layer to maintain backward compatibility
-export const itemTypes: ItemType[] = itemPowers.map((power: ItemPowerMetadata) => ({
-  id: power.id,
-  title: power.title,
-  power: power.id, // Map id to power for backward compatibility
-  level: power.level
+export const itemTypes: ItemType[] = powerKeys.map(powerKey => ({
+  id: powerKey,
+  title: powerFactory.getDisplayName(powerKey),
+  power: powerKey,
+  level: 1 // Default level is 1
 }));
 
 // Backward compatibility map
-export const itemTypesByPower: Record<ItemPower, ItemType> = Object.entries(itemPowersById)
-  .reduce((acc, [key, value]) => {
-    acc[key as ItemPower] = {
-      id: value.id,
-      title: value.title,
-      power: value.id,
-      level: value.level
-    };
-    return acc;
-  }, {} as Record<ItemPower, ItemType>); 
+export const itemTypesByPower: Record<ItemPower, ItemType> = powerKeys.reduce((acc, powerKey) => {
+  acc[powerKey] = {
+    id: powerKey,
+    title: powerFactory.getDisplayName(powerKey),
+    power: powerKey,
+    level: 1 // Default level is 1
+  };
+  return acc;
+}, {} as Record<ItemPower, ItemType>); 
