@@ -232,6 +232,7 @@ function formatUnits(value: number): string {
   cursor: pointer;
   position: relative;
   transition: all 0.2s;
+  color: #555;
 }
 
 .interface-modal__tab:hover:not(:disabled) {
@@ -239,7 +240,7 @@ function formatUnits(value: number): string {
 }
 
 .interface-modal__tab--active {
-  color: #4a8;
+  color: #226644;
   font-weight: 600;
 }
 
@@ -250,12 +251,12 @@ function formatUnits(value: number): string {
   right: 0;
   bottom: -16px;
   height: 3px;
-  background-color: #4a8;
+  background-color: #226644;
   border-radius: 3px 3px 0 0;
 }
 
 .interface-modal__tab:disabled {
-  color: #aaa;
+  color: #777;
   cursor: not-allowed;
 }
 
