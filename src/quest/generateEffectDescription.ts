@@ -7,7 +7,7 @@ export function getLevelQualityTerm(level: number): string {
   switch (level) {
     case 1: return "crap";
     case 2: return "mediocre";
-    case 3: return "half decent";
+    case 3: return "decent";
     case 4: return "superior";
     case 5: return "excellent";
     case 6: return "legendary";
