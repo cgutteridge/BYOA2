@@ -131,3 +131,21 @@ console.log( monsterType )
 
   return monsterType.booze * multiplier;
 }
+
+/**
+ * Get the monster soft drink value, accounting for player count scaling if applicable
+ * @returns The Soft drink value
+ * @param monsterTypeId
+ */
+export function getMonsterSoft(monsterTypeId: MonsterTypeId): number {
+  const questStore = useQuestStore();
+
+  // Find the monster type definition
+  const monsterType = monsterTypesById[monsterTypeId]
+  if (!monsterType) return 0
+
+  // Apply player count scaling if applicable
+  const multiplier = monsterType.lesserCount === "playerCount" ? 1 : questStore.playerCount;
+
+  return monsterType.soft * multiplier;
+}

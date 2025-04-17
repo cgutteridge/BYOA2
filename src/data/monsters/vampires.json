@@ -7,7 +7,8 @@
     "species": "vampire",
     "flags": ["undead"],
     "xp": 1.8,
-    "booze": 1.0
+    "booze": 1.0,
+    "soft": 0
   },
   {
     "id": "vampire",
@@ -18,6 +19,7 @@
     "flags": ["undead","magic-user"],
     "xp": 3.5,
     "booze": 2.5,
+    "soft": 0,
     "lesser": "thrall_vampire"
   },
   {
@@ -29,6 +31,7 @@
     "flags": ["undead","magic-user"],
     "xp": 10.0,
     "booze": 9.0,
+    "soft": 0,
     "lesser": "vampire",
     "lesserCount": 3
   }

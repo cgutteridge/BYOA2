@@ -7,7 +7,8 @@
     "species": "demonoid",
     "flags": ["magic-user"],
     "xp": 1.0,
-    "booze": 1.0
+    "booze": 1.0,
+    "soft": 0
   },
   {
     "id": "sand_titan",
@@ -18,6 +19,7 @@
     "flags": ["mortal", "magic-user"],
     "xp": 2.0,
     "booze": 2.0,
+    "soft": 0,
     "lesser": "desert_wyrm"
   },
   {
@@ -28,7 +30,8 @@
     "species": "elemental",
     "flags": ["spirit"],
     "xp": 1.0,
-    "booze": 1.0
+    "booze": 1.0,
+    "soft": 0
   },
   {
     "id": "azure_flame_elemental",
@@ -39,6 +42,7 @@
     "flags": ["spirit", "magic-user"],
     "xp": 2.0,
     "booze": 2.0,
+    "soft": 0,
     "lesser": "fire_phantom"
   },
   {
@@ -49,7 +53,8 @@
     "species": "elemental",
     "flags": ["spirit"],
     "xp": 1.0,
-    "booze": 1.0
+    "booze": 1.0,
+    "soft": 0
   },
   {
     "id": "mountain_guardian",
@@ -60,6 +65,7 @@
     "flags": ["spirit", "magic-user"],
     "xp": 2.0,
     "booze": 2.0,
+    "soft": 0,
     "lesser": "earth_shaper"
   },
   {
@@ -70,7 +76,8 @@
     "species": "fey",
     "flags": ["spirit"],
     "xp": 1.0,
-    "booze": 1.0
+    "booze": 1.0,
+    "soft": 0
   },
   {
     "id": "spectral_soldier",
@@ -80,7 +87,8 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 1.0,
-    "booze": 1.0
+    "booze": 1.0,
+    "soft": 0
   },
   {
     "id": "desert_wisp",
@@ -90,7 +98,8 @@
     "species": "fey",
     "flags": ["spirit"],
     "xp": 1.0,
-    "booze": 1.0
+    "booze": 1.0,
+    "soft": 0
   },
   {
     "id": "imp",
@@ -100,7 +109,8 @@
     "species": "demonoid",
     "flags": ["magic-user"],
     "xp": 1.0,
-    "booze": 1.0
+    "booze": 1.0,
+    "soft": 0
   },
   {
     "id": "dryad",
@@ -110,6 +120,7 @@
     "species": "fey",
     "flags": ["spirit"],
     "xp": 2.0,
+    "soft": 0,
     "lesser": "hedge_spirit"
   },
   {
@@ -120,6 +131,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.0,
+    "soft": 0,
     "lesser": "spectral_soldier"
   },
   {
@@ -129,7 +141,8 @@
     "level": "minion",
     "species": "ghost",
     "flags": ["spirit"],
-    "xp": 1.0
+    "xp": 1.0,
+    "soft": 0
   },
   {
     "id": "wrathful_revenant",
@@ -139,6 +152,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.0,
+    "soft": 0,
     "lesser": "wrathful_wraith"
   },
   {
@@ -148,7 +162,8 @@
     "level": "minion",
     "species": "ghost",
     "flags": ["spirit"],
-    "xp": 1.0
+    "xp": 1.0,
+    "soft": 0
   },
   {
     "id": "ghostly_buccaneer",
@@ -158,6 +173,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.0,
+    "soft": 0,
     "lesser": "desert_wisp"
   },
   {
@@ -168,6 +184,7 @@
     "species": "demonoid",
     "flags": ["magic-user"],
     "xp": 2.0,
+    "soft": 0,
     "lesser": "imp"
   },
   {
@@ -178,6 +195,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.8,
+    "soft": 0,
     "lesser": "ancient_spirit"
   }
 ]

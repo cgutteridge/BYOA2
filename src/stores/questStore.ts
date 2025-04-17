@@ -19,7 +19,8 @@ export const useQuestStore = defineStore('quest', () => {
   const difficulty = ref<number>(1)
   const xp = ref<number>(0)
   const booze = ref<number>(0) // Track alcohol booze consumed
-  const persist = ref(['title', 'description', 'status', 'startPubId', 'endPubId', 'currentPubId', 'playerCount', 'xp', 'booze'])
+  const soft = ref<number>(0) // Track soft drinks/water consumed
+  const persist = ref(['title', 'description', 'status', 'startPubId', 'endPubId', 'currentPubId', 'playerCount', 'xp', 'booze', 'soft'])
 
   const setTitle = (newTitle: string) => {
     title.value = newTitle
@@ -64,6 +65,14 @@ export const useQuestStore = defineStore('quest', () => {
   const addBooze = (amount: number) => {
     booze.value += amount
   }
+
+  const setSoft = (newSoft: number) => {
+    soft.value = newSoft
+  }
+  
+  const addSoft = (amount: number) => {
+    soft.value += amount
+  }
   
   /**
    * Updates both XP and booze with a notification message
@@ -71,25 +80,36 @@ export const useQuestStore = defineStore('quest', () => {
    * 
    * @param xpAmount - Amount of XP to add (can be 0)
    * @param boozeAmount - Amount of booze to add (can be 0)
+   * @param softAmount - Amount of soft drinks to add (can be 0)
    * @param actionDesc - Description of the action (e.g., "defeating water boss")
    */
-  const updateStats = (xpAmount: number, boozeAmount: number, actionDesc: string) => {
+  const updateStats = (xpAmount: number, boozeAmount: number, softAmount: number, actionDesc: string) => {
     // Update the stats
     if (xpAmount !== 0) xp.value += xpAmount;
     if (boozeAmount !== 0) booze.value += boozeAmount;
+    if (softAmount !== 0) soft.value += softAmount;
     
-    // Format booze without decimal for whole numbers
+    // Format booze, soft without decimal for whole numbers
     const boozeDisplay = formatNumber(boozeAmount)
+    const softDisplay = formatNumber(softAmount)
 
     // Create appropriate notification message based on what changed
     let message = '';
     
-    if (xpAmount !== 0 && boozeAmount !== 0) {
+    if (xpAmount !== 0 && boozeAmount !== 0 && softAmount !== 0) {
+      message = `Gained ${xpAmount} XP, ${boozeDisplay} booze, and ${softDisplay} soft for ${actionDesc}`;
+    } else if (xpAmount !== 0 && boozeAmount !== 0) {
       message = `Gained ${xpAmount} XP and ${boozeDisplay} booze for ${actionDesc}`;
+    } else if (xpAmount !== 0 && softAmount !== 0) {
+      message = `Gained ${xpAmount} XP and ${softDisplay} soft for ${actionDesc}`;
+    } else if (boozeAmount !== 0 && softAmount !== 0) {
+      message = `Gained ${boozeDisplay} booze and ${softDisplay} soft for ${actionDesc}`;
     } else if (xpAmount !== 0) {
       message = `Gained ${xpAmount} XP for ${actionDesc}`;
     } else if (boozeAmount !== 0) {
       message = `Gained ${boozeDisplay} booze for ${actionDesc}`;
+    } else if (softAmount !== 0) {
+      message = `Gained ${softDisplay} soft for ${actionDesc}`;
     }
     
     // Show notification if something changed
@@ -97,7 +117,7 @@ export const useQuestStore = defineStore('quest', () => {
       appStore.addNotification(message, 'success');
     }
     
-    return { xpAdded: xpAmount, boozeAdded: boozeAmount };
+    return { xpAdded: xpAmount, boozeAdded: boozeAmount, softAdded: softAmount };
   };
   
   const endQuest = () => {
@@ -135,6 +155,7 @@ export const useQuestStore = defineStore('quest', () => {
     difficulty,
     xp,
     booze,
+    soft,
     setStartPubId,
     setEndPubId,
     setCurrentPub,
@@ -149,6 +170,8 @@ export const useQuestStore = defineStore('quest', () => {
     addXP,
     setBooze,
     addBooze,
+    setSoft,
+    addSoft,
     updateStats,
     persist
   }
