@@ -39,7 +39,7 @@
               <div class="monster-info">
                 <div class="monster-title">{{ getMonsterTitle(group.type) }}</div>
                 <div class="monster-subinfo">{{ getMonsterSpecies(group.type) }} {{ getMonsterLevel(group.type) }}{{ getMonsterTraits(group.type) }}</div>
-                <div class="monster-xp">{{ getMonsterXP(group.type) }} XP / {{ getMonsterUnits(group.type) }} Units</div>
+                <div class="monster-xp">{{ getMonsterXP(group.type) }} XP / {{ formatNumber(getMonsterBooze(group.type)) }} Units</div>
                 <div class="monster-details">
                   <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(group.type) }}</div>
                 </div>
@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Pub, Monster, LocationType } from '../types'
+import type {Pub, Monster, LocationType, MonsterTypeId} from '../types'
 import { useAppStore } from "../stores/appStore"
 import { locationTypesById } from '@/data/locationTypes'
 import { monsterTypes } from '../data/monsterTypes'
@@ -80,7 +80,8 @@ import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
 import '../styles/monsterStyles.css'
 import {useQuestStore} from "@/stores/questStore.ts";
-import { getMonsterXP, getMonsterUnits } from '@/quest/combat.ts';
+import formatNumber from "@/utils/formatNumber.ts";
+import {getMonsterBooze, getMonsterXP} from "../quest/monsterUtils.ts";
 
 const props = defineProps<{
   pub: Pub
@@ -117,7 +118,7 @@ const groupedMonsters = computed(() => {
   
   // Group undefeated monsters by type
   const monstersByType = new Map<string, {
-    type: string,
+    type: MonsterTypeId,
     monsters: Monster[]
   }>();
   
@@ -221,9 +222,8 @@ async function scoutPub(event: MouseEvent) {
   event.stopPropagation()
   await scoutLocation(props.pub)
   
-  // Award XP for scouting a location through the UI
-  questStore.addXP(1);
-  appStore.addNotification("Location scouted: +1 XP", "success");
+  // Award XP for scouting a location through the UI (using updateStats)
+  questStore.updateStats(1, 0, "scouting this location");
 }
 
 function enterPub(event: MouseEvent) {
@@ -231,9 +231,8 @@ function enterPub(event: MouseEvent) {
   questStore.setCurrentPub(props.pub.id)
   appStore.setScreen('location')
   
-  // Award XP for arriving at a location
-  questStore.addXP(2);
-  appStore.addNotification("Location entered: +2 XP", "success");
+  // Award XP for arriving at a location (using updateStats)
+  questStore.updateStats(2, 0, "entering this location");
 }
 
 </script>

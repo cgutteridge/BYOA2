@@ -7,7 +7,7 @@
     "species": "demonoid",
     "flags": ["magic-user"],
     "xp": 1.0,
-    "units": 1.0
+    "booze": 1.0
   },
   {
     "id": "sand_titan",
@@ -17,7 +17,7 @@
     "species": "demonoid",
     "flags": ["mortal", "magic-user"],
     "xp": 2.0,
-    "units": 2.0,
+    "booze": 2.0,
     "lesser": "desert_wyrm"
   },
   {
@@ -28,7 +28,7 @@
     "species": "elemental",
     "flags": ["spirit"],
     "xp": 1.0,
-    "units": 1.0
+    "booze": 1.0
   },
   {
     "id": "azure_flame_elemental",
@@ -38,7 +38,7 @@
     "species": "elemental",
     "flags": ["spirit", "magic-user"],
     "xp": 2.0,
-    "units": 2.0,
+    "booze": 2.0,
     "lesser": "fire_phantom"
   },
   {
@@ -49,7 +49,7 @@
     "species": "elemental",
     "flags": ["spirit"],
     "xp": 1.0,
-    "units": 1.0
+    "booze": 1.0
   },
   {
     "id": "mountain_guardian",
@@ -59,7 +59,7 @@
     "species": "elemental",
     "flags": ["spirit", "magic-user"],
     "xp": 2.0,
-    "units": 2.0,
+    "booze": 2.0,
     "lesser": "earth_shaper"
   },
   {
@@ -70,7 +70,7 @@
     "species": "fey",
     "flags": ["spirit"],
     "xp": 1.0,
-    "units": 1.0
+    "booze": 1.0
   },
   {
     "id": "spectral_soldier",
@@ -80,7 +80,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 1.0,
-    "units": 1.0
+    "booze": 1.0
   },
   {
     "id": "desert_wisp",
@@ -90,7 +90,7 @@
     "species": "fey",
     "flags": ["spirit"],
     "xp": 1.0,
-    "units": 1.0
+    "booze": 1.0
   },
   {
     "id": "imp",
@@ -100,7 +100,7 @@
     "species": "demonoid",
     "flags": ["magic-user"],
     "xp": 1.0,
-    "units": 1.0
+    "booze": 1.0
   },
   {
     "id": "dryad",

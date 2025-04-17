@@ -2,9 +2,12 @@ import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
 import type { PubId, QuestState} from '@/types'
 import {usePubStore} from './pubStore'
+import {useAppStore} from './appStore'
+import formatNumber from "@/utils/formatNumber.ts";
 
 export const useQuestStore = defineStore('quest', () => {
   const pubStore = usePubStore()
+  const appStore = useAppStore()
 
   const title = ref<string>('foo')
   const description = ref<string>('foo')
@@ -15,8 +18,8 @@ export const useQuestStore = defineStore('quest', () => {
   const playerCount = ref<number>(3)
   const difficulty = ref<number>(1)
   const xp = ref<number>(0)
-  const units = ref<number>(0) // Track alcohol units consumed
-  const persist = ref(['title', 'description', 'status', 'startPubId', 'endPubId', 'currentPubId', 'playerCount', 'xp', 'units'])
+  const booze = ref<number>(0) // Track alcohol booze consumed
+  const persist = ref(['title', 'description', 'status', 'startPubId', 'endPubId', 'currentPubId', 'playerCount', 'xp', 'booze'])
 
   const setTitle = (newTitle: string) => {
     title.value = newTitle
@@ -54,13 +57,48 @@ export const useQuestStore = defineStore('quest', () => {
     xp.value += amount
   }
   
-  const setUnits = (newUnits: number) => {
-    units.value = newUnits
+  const setBooze = (newBooze: number) => {
+    booze.value = newBooze
   }
   
-  const addUnits = (amount: number) => {
-    units.value += amount
+  const addBooze = (amount: number) => {
+    booze.value += amount
   }
+  
+  /**
+   * Updates both XP and booze with a notification message
+   * Only mentions stats that actually changed
+   * 
+   * @param xpAmount - Amount of XP to add (can be 0)
+   * @param boozeAmount - Amount of booze to add (can be 0)
+   * @param actionDesc - Description of the action (e.g., "defeating water boss")
+   */
+  const updateStats = (xpAmount: number, boozeAmount: number, actionDesc: string) => {
+    // Update the stats
+    if (xpAmount !== 0) xp.value += xpAmount;
+    if (boozeAmount !== 0) booze.value += boozeAmount;
+    
+    // Format booze without decimal for whole numbers
+    const boozeDisplay = formatNumber(boozeAmount)
+
+    // Create appropriate notification message based on what changed
+    let message = '';
+    
+    if (xpAmount !== 0 && boozeAmount !== 0) {
+      message = `Gained ${xpAmount} XP and ${boozeDisplay} booze for ${actionDesc}`;
+    } else if (xpAmount !== 0) {
+      message = `Gained ${xpAmount} XP for ${actionDesc}`;
+    } else if (boozeAmount !== 0) {
+      message = `Gained ${boozeDisplay} booze for ${actionDesc}`;
+    }
+    
+    // Show notification if something changed
+    if (message) {
+      appStore.addNotification(message, 'success');
+    }
+    
+    return { xpAdded: xpAmount, boozeAdded: boozeAmount };
+  };
   
   const endQuest = () => {
     setStatus('no_quest')
@@ -96,7 +134,7 @@ export const useQuestStore = defineStore('quest', () => {
     playerCount,
     difficulty,
     xp,
-    units,
+    booze,
     setStartPubId,
     setEndPubId,
     setCurrentPub,
@@ -109,8 +147,9 @@ export const useQuestStore = defineStore('quest', () => {
     setDifficulty,
     setXP,
     addXP,
-    setUnits,
-    addUnits,
+    setBooze,
+    addBooze,
+    updateStats,
     persist
   }
 }) 

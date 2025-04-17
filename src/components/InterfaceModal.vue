@@ -59,7 +59,7 @@
                 
                 <div class="stat-group">
                   <div class="stat-label">Alcohol Units:</div>
-                  <div class="stat-value">{{ questStore.units.toFixed(1) }}</div>
+                  <div class="stat-value">{{ formatUnits(questStore.booze) }}</div>
                 </div>
                 
                 <div class="stat-group">
@@ -166,6 +166,11 @@ function close() {
 function handleQuit() {
   appStore.setScreen('start_quest')
   appStore.closeInventory()
+}
+
+// Helper function to format booze without decimal for whole numbers
+function formatUnits(value: number): string {
+  return value % 1 === 0 ? value.toString() : value.toFixed(1);
 }
 </script>
 

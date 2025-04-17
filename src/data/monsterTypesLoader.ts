@@ -17,7 +17,7 @@ interface RawMonsterData {
   species: Species;
   flags: MonsterFlag[];
   xp: number;
-  units: number;
+  booze: number;
   lesser?: string;
   lesserCount?: number | "playerCount";
 }

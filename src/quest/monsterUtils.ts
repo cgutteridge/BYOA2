@@ -1,5 +1,6 @@
-import type { Monster, MonsterTypeId } from '../types'
-import { monsterTypes } from '../data/monsterTypes.ts'
+import type {Monster, MonsterTypeId} from '../types'
+import {useQuestStore} from '@/stores/questStore.ts';
+import {monsterTypes, monsterTypesById} from "@/data";
 
 /**
  * Get unique monster species from available monsters
@@ -82,4 +83,51 @@ export function getMonsterSpecies(monsterTypeId: string): string {
   
   // Capitalize the species
   return monsterType.species.charAt(0).toUpperCase() + monsterType.species.slice(1)
-} 
+}
+
+/**
+ * Check if all monsters in an array are defeated
+ * @param monsters - Array of monsters to check
+ * @returns true if all monsters are defeated, false otherwise
+ */
+export function areAllMonstersDefeated(monsters: Monster[]): boolean {
+  if (!monsters || monsters.length === 0) return false;
+  return monsters.every(monster => !monster.alive);
+}
+
+/**
+ * Get the monster XP value, accounting for player count scaling if applicable
+ * @returns The XP value
+ * @param monsterTypeId
+ */
+export function getMonsterXP(monsterTypeId: MonsterTypeId): number {
+  const questStore = useQuestStore();
+
+  // Find the monster type definition
+  const monsterType = monsterTypesById[monsterTypeId]
+  if (!monsterType) return 0
+
+  // Apply player count scaling if applicable
+  const multiplier = monsterType.lesserCount === "playerCount" ? 1 : questStore.playerCount;
+
+  return monsterType.xp * multiplier;
+}
+
+
+/**
+ * Get the monster alchol Units, accounting for player count scaling if applicable
+ * @returns The Booze value
+ * @param monsterTypeId
+ */
+export function getMonsterBooze(monsterTypeId: MonsterTypeId): number {
+  const questStore = useQuestStore();
+
+  // Find the monster type definition
+  const monsterType = monsterTypesById[monsterTypeId]
+  if (!monsterType) return 0
+console.log( monsterType )
+  // Apply player count scaling if applicable
+  const multiplier = monsterType.lesserCount === "playerCount" ? 1 : questStore.playerCount;
+
+  return monsterType.booze * multiplier;
+}

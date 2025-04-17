@@ -72,7 +72,7 @@
                   >
                     <span class="toggle-icon">{{ isMonsterDying(monster.id) ? '❌' : (monster.alive ? '☠️' : '🔄') }}</span>
                     {{ isMonsterDying(monster.id) ? 'Cancel' : (monster.alive ? 'Defeat' : 'Revive') }}
-                    <span class="xp-text">{{ getMonsterXP(monster.type) }} XP / {{ getMonsterUnits(monster.type) }} Units</span>
+                    <span class="xp-text">{{ getMonsterXP(monster.type) }}&nbsp;XP / {{ formatNumber(getMonsterBooze(monster.type)) }}&nbsp;Units</span>
                   </button>
                 </div>
               </div>
@@ -122,11 +122,12 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {Monster} from "../types";
-import {areAllMonstersDefeated, getMonsterXP, getMonsterUnits} from "../quest/combat.ts";
 import '../styles/monsterStyles.css';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
 import ItemCard from "../components/ItemCard.vue";
+import {areAllMonstersDefeated, getMonsterBooze, getMonsterXP} from "../quest/monsterUtils.ts";
+import formatNumber from "../utils/formatNumber.ts";
 
 // Constants
 const MONSTER_DEFEAT_DELAY_MS = 1000; // 2 seconds
@@ -281,14 +282,11 @@ function claimItem(monster: Monster) {
   // Add the item to inventory
   inventoryStore.addItem(monster.item);
   
-  // Award XP for gaining an item
-  questStore.addXP(3);
+  // Award XP for gaining an item (using updateStats)
+  questStore.updateStats(3, 0, `claiming ${monster.item.name}`);
   
   // Remove the item from the monster
   questStore.currentPub.monsters[monsterIndex].item = undefined;
-  
-  // Show notification
-  appStore.addNotification(`Claimed ${monster.item.name}! +3 XP`, 'success');
 }
 
 function claimPrizeItem() {
@@ -379,15 +377,18 @@ function defeatMonster(monster: Monster) {
   // Find the monster in the pub
   const monsterIndex = questStore.currentPub.monsters.findIndex(m => m.id === monster.id);
   if (monsterIndex === -1) return;
-  
+
+  // Update stats
+  const xpToAdd = getMonsterXP(monster.type)
+  const unitsToAdd = getMonsterBooze(monster.type)
+  questStore.updateStats(xpToAdd, unitsToAdd, `defeating ${monster.name}`);
   // Set alive to false
   questStore.currentPub.monsters[monsterIndex].alive = false;
   
   // Check if this was the last monster to defeat for quest completion
   if (areAllMonstersDefeated(questStore.currentPub.monsters)) {
-    // Award XP for completing all monsters in a location
-    questStore.addXP(5);
-    appStore.addNotification(`All monsters defeated! +5 XP. Prize unlocked!`, 'success');
+    // Award XP for completing all monsters in a location (using updateStats)
+    questStore.updateStats(5, 0, "clearing all monsters from this location");
   }
 }
 

@@ -1,7 +1,6 @@
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
-import type {GPSStatus, Location, PubId, ScreenId} from '../types'
-import type { Item } from '../types'
+import type {GPSStatus, Item, Location, PubId, ScreenId} from '../types'
 import {usePubStore} from "../stores/pubStore";
 
 // Notification interface
@@ -86,7 +85,7 @@ export const useAppStore = defineStore('app', () => {
   ): void => {
     const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
     notifications.value.push({ id, message, type, timeout });
-    
+    console.log("NOTIFICATION: " + message)
     // Auto-remove after timeout
     if (timeout > 0) {
       setTimeout(() => removeNotification(id), timeout);

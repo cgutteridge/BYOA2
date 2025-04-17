@@ -11,6 +11,7 @@ import VictoryScreen from './screens/VictoryScreen.vue'
 import InterfaceModal from './components/InterfaceModal.vue'
 import ItemInspectModal from './components/ItemInspectModal.vue'
 import NotificationSystem from './components/NotificationSystem.vue'
+import formatNumber from "@/utils/formatNumber.ts";
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
@@ -109,6 +110,8 @@ function toggleInterface() {
   appStore.toggleInventory()
 }
 
+
+
 onMounted(() => {
   console.log('App mounted, initializing GPS...')
   initializeGPS()
@@ -149,7 +152,7 @@ onUnmounted(() => {
     
     <div class="debug-overlay" v-if="appStore.playerLocation">
       <div>COORDS: {{ appStore.playerLocation.lat.toFixed(5) }}, {{ appStore.playerLocation.lng.toFixed(5) }}</div>
-      <div>XP: {{ questStore.xp }} | Units: {{ questStore.units.toFixed(1) }}</div>
+      <div>XP: {{ questStore.xp }} | Units: {{ formatNumber(questStore.booze) }}</div>
     </div>
     
     <div v-if="appStore.gpsStatus === 'initializing'" class="gps-status">

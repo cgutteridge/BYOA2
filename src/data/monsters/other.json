@@ -8,7 +8,7 @@
     "species": "human",
     "flags": ["mortal"],
     "xp": 1,
-    "units": 1.0
+    "booze": 1.0
   },
   {
     "id": "huntmaster",
@@ -18,7 +18,7 @@
     "species": "human",
     "flags": ["mortal"],
     "xp": 2,
-    "units": 1.5,
+    "booze": 1.5,
     "lesser": "huntsman"
   },
   {
@@ -29,7 +29,7 @@
     "species": "human",
     "flags": ["mortal"],
     "xp": 3,
-    "units": 1.5,
+    "booze": 1.5,
     "lesser": "huntmaster",
     "lesserCount": "playerCount"
   },
@@ -41,7 +41,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 1,
-    "units": 1.0
+    "booze": 1.0
   },
   {
     "id": "hungry_ghost",
@@ -51,7 +51,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2,
-    "units": 2.0,
+    "booze": 2.0,
     "lesser": "lost_spirit"
   },
   {
@@ -62,7 +62,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 3,
-    "units": 1.0,
+    "booze": 1.0,
     "lesser": "lost_spirit",
     "lesserCount": "playerCount"
   },
@@ -77,7 +77,7 @@
     "species": "human",
     "flags": ["mortal","magic-user"],
     "xp": 3,
-    "units": 2.0,
+    "booze": 2.0,
     "lesser": "peasant"
   },
   {
@@ -89,7 +89,7 @@
     "species": "human",
     "flags": ["mortal","magic-user"],
     "xp": 2,
-    "units": 0.9,
+    "booze": 0.9,
     "lesser": "peasant"
   },
   {
@@ -101,7 +101,7 @@
     "species": "human",
     "flags": ["mortal","magic-user"],
     "xp": 3,
-    "units": 3.3,
+    "booze": 3.3,
     "lesser": "peasant"
   },
 
@@ -114,7 +114,7 @@
     "species": "chameleonoid",
     "flags": ["mortal"],
     "xp": 2,
-    "units": 1.5,
+    "booze": 1.5,
     "lesser": "mimic"
   },
   {
@@ -125,7 +125,7 @@
     "species": "human",
     "flags": ["group","undead"],
     "xp": 3,
-    "units": 3.5,
+    "booze": 3.5,
     "lesser": "mimic"
   },
 
@@ -138,7 +138,7 @@
     "species": "demonoid",
     "flags": ["magic-user"],
     "xp": 2,
-    "units": 2.0,
+    "booze": 2.0,
     "lesser": "imp"
   },
   {
@@ -149,7 +149,7 @@
     "species": "fey",
     "flags": ["group"],
     "xp": 2,
-    "units": 2.3,
+    "booze": 2.3,
     "lesser": "mimic"
   },
   {
@@ -161,7 +161,7 @@
     "species": "special",
     "flags": ["group"],
     "xp": 2,
-    "units": 1.1,
+    "booze": 1.1,
     "lesser": "deserter",
     "lesserCount": "playerCount"
   },
@@ -174,7 +174,7 @@
     "species": "special",
     "flags": ["group"],
     "xp": 3,
-    "units": 2.3,
+    "booze": 2.3,
     "lesser": "rabble"
   },
   {
@@ -185,7 +185,7 @@
     "species": "special",
     "flags": [],
     "xp": 1,
-    "units": 1.1
+    "booze": 1.1
   },
 
   {

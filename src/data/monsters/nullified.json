@@ -7,7 +7,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "units": 0.0
+    "booze": 0.0
   },
   {
     "id": "frozen_grunt",
@@ -17,7 +17,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 2.0,
-    "units": 0.0,
+    "booze": 0.0,
     "lesser": "frost_minion",
     "lesserCount": 3
   },
@@ -29,7 +29,7 @@
     "species": "nullified",
     "flags": ["magic-user"],
     "xp": 3.0,
-    "units": 0.0,
+    "booze": 0.0,
     "lesser": "frost_grunt"
   },
   {
@@ -40,7 +40,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "units": 0.0
+    "booze": 0.0
   },
   {
     "id": "passive_grunt",
@@ -50,7 +50,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "units": 0.0,
+    "booze": 0.0,
     "lesser": "passive_minion"
   },
   {
@@ -61,7 +61,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "units": 0.0,
+    "booze": 0.0,
     "lesser": "passive_grunt"
   },
   {
