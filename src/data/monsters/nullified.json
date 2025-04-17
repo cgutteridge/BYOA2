@@ -239,7 +239,7 @@
   },
   {
     "id": "distracted_minion",
-    "title": "Vegetated Minion",
+    "title": "Distracted Minion",
     "drink": "Small Glass of Cola",
     "level": "minion",
     "species": "nullified",
@@ -254,7 +254,7 @@
   },
   {
     "id": "distracted_grunt",
-    "title": "Pacified Grunt",
+    "title": "Distracted Grunt",
     "drink": "Glass of Cola",
     "level": "grunt",
     "species": "nullified",
