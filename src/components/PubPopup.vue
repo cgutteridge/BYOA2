@@ -70,17 +70,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type {Pub, Monster, LocationType, MonsterTypeId} from '../types'
-import { useAppStore } from "../stores/appStore"
-import { locationTypesById } from '@/data/locationTypes'
-import { monsterTypes } from '../data/monsterTypes'
-import { scoutLocation } from '@/quest/scoutLocation.ts'
+import {computed} from 'vue'
+import type {LocationType, Monster, MonsterTypeId, Pub} from '../types'
+import {useAppStore} from "../stores/appStore"
+import {locationTypesById} from '@/data/locationTypes'
+import {monsterTypes} from '../data/monsterTypes'
+import {scoutLocation} from '@/quest/scoutLocation.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
 import {useQuestStore} from "@/stores/questStore.ts";
-import formatNumber from "@/utils/formatNumber.ts";
-import {getMonsterBooze, getMonsterSoft, getMonsterXP} from "../quest/monsterUtils.ts";
+import {getMonsterXP} from "../quest/monsterUtils.ts";
 
 const props = defineProps<{
   pub: Pub
