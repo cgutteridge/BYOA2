@@ -8,7 +8,12 @@
     "flags": ["undead"],
     "xp": 1.8,
     "booze": 1.0,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #480708 0%, #710b0d 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#FF0000"
+    }
   },
   {
     "id": "vampire",
@@ -20,7 +25,13 @@
     "xp": 3.5,
     "booze": 2.5,
     "soft": 0,
-    "lesser": "thrall_vampire"
+    "lesser": "thrall_vampire",
+    "style": {
+      "background": "linear-gradient(135deg, #480708 0%, #710b0d 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#FF0000",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)"
+    }
   },
   {
     "id": "vampire_lord",
@@ -33,6 +44,12 @@
     "booze": 9.0,
     "soft": 0,
     "lesser": "vampire",
-    "lesserCount": 3
+    "lesserCount": 3,
+    "style": {
+      "background": "linear-gradient(135deg, #480708 0%, #710b0d 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#FF0000",
+      "boxShadow": "0 0 15px rgba(255, 215, 0, 0.5)"
+    }
   }
 ]

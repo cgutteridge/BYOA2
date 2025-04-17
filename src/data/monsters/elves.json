@@ -8,7 +8,12 @@
     "flags": ["mortal"],
     "xp": 1.5,
     "booze": 1.0,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #0d47a1 0%, #2196f3 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#7CFC00"
+    }
   },
   {
     "id": "plains_elf",
@@ -20,7 +25,12 @@
     "xp": 2.1,
     "booze": 1.5,
     "soft": 0,
-    "lesser": "forest_elf"
+    "lesser": "forest_elf",
+    "style": {
+      "background": "linear-gradient(135deg, #0d47a1 0%, #2196f3 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#7CFC00"
+    }
   },
   {
     "id": "high_elf",
@@ -32,7 +42,13 @@
     "xp": 3.0,
     "booze": 2.0,
     "soft": 0,
-    "lesser": "forest_elf"
+    "lesser": "forest_elf",
+    "style": {
+      "background": "linear-gradient(135deg, #0d47a1 0%, #2196f3 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#7CFC00",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)"
+    }
   },
   {
     "id": "elf_queen",
@@ -45,6 +61,12 @@
     "booze": 9.0,
     "soft": 0,
     "lesser": "high_elf",
-    "lesserCount": 3
+    "lesserCount": 3,
+    "style": {
+      "background": "linear-gradient(135deg, #0d47a1 0%, #2196f3 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#7CFC00",
+      "boxShadow": "0 0 15px rgba(255, 215, 0, 0.5)"
+    }
   }
 ]

@@ -9,7 +9,12 @@
     "flags": ["mortal"],
     "xp": 1,
     "booze": 1.0,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
   {
     "id": "huntmaster",
@@ -21,7 +26,12 @@
     "xp": 2,
     "booze": 1.5,
     "soft": 0.5,
-    "lesser": "huntsman"
+    "lesser": "huntsman",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
   {
     "id": "royal_hunt",
@@ -35,7 +45,13 @@
     "booze": 1.5,
     "soft": 0.5,
     "lesser": "huntmaster",
-    "lesserCount": "playerCount"
+    "lesserCount": "playerCount",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D",
+      "boxShadow": "0 0 15px rgba(255, 215, 0, 0.5)"
+    }
   },
   {
     "id": "lost_spirit",
@@ -46,7 +62,12 @@
     "flags": ["spirit"],
     "xp": 1,
     "booze": 1.0,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #2d3a4a 0%, #3f51b5 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A6C9E2"
+    }
   },
   {
     "id": "hungry_ghost",
@@ -58,7 +79,12 @@
     "xp": 2,
     "booze": 2.0,
     "soft": 0,
-    "lesser": "lost_spirit"
+    "lesser": "lost_spirit",
+    "style": {
+      "background": "linear-gradient(135deg, #2d3a4a 0%, #3f51b5 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A6C9E2"
+    }
   },
   {
     "id": "spirit_vortex",
@@ -71,7 +97,13 @@
     "booze": 1.0,
     "soft": 0,
     "lesser": "lost_spirit",
-    "lesserCount": "playerCount"
+    "lesserCount": "playerCount",
+    "style": {
+      "background": "linear-gradient(135deg, #2d3a4a 0%, #3f51b5 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A6C9E2",
+      "boxShadow": "0 0 15px rgba(255, 215, 0, 0.5)"
+    }
   },
 
 
@@ -86,7 +118,13 @@
     "xp": 3,
     "booze": 2.0,
     "soft": 0,
-    "lesser": "peasant"
+    "lesser": "peasant",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)"
+    }
   },
   {
     "id": "bog_witch",
@@ -99,7 +137,12 @@
     "xp": 2,
     "booze": 0.9,
     "soft": 0,
-    "lesser": "peasant"
+    "lesser": "peasant",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
   {
     "id": "mage_and_familiar",
@@ -112,7 +155,13 @@
     "xp": 3,
     "booze": 3.3,
     "soft": 0,
-    "lesser": "peasant"
+    "lesser": "peasant",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)"
+    }
   },
 
 
@@ -126,7 +175,12 @@
     "xp": 2,
     "booze": 1.5,
     "soft": 0,
-    "lesser": "mimic"
+    "lesser": "mimic",
+    "style": {
+      "background": "linear-gradient(135deg, #1b5e20 0%, #4caf50 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#4B0082"
+    }
   },
   {
     "id": "zombie_horde",
@@ -138,7 +192,12 @@
     "xp": 3,
     "booze": 3.5,
     "soft": 0,
-    "lesser": "mimic"
+    "lesser": "mimic",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
 
   {
@@ -152,7 +211,12 @@
     "xp": 2,
     "booze": 2.0,
     "soft": 0,
-    "lesser": "imp"
+    "lesser": "imp",
+    "style": {
+      "background": "linear-gradient(135deg, #bf360c 0%, #ff5722 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#FF4500"
+    }
   },
   {
     "id": "changeling",
@@ -164,7 +228,12 @@
     "xp": 2,
     "booze": 2.3,
     "soft": 0,
-    "lesser": "mimic"
+    "lesser": "mimic",
+    "style": {
+      "background": "linear-gradient(135deg, #00695c 0%, #009688 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#00FFFF"
+    }
   },
   {
     "id": "rabble",
@@ -178,7 +247,13 @@
     "booze": 1.1,
     "soft": 0,
     "lesser": "routed_rabble",
-    "lesserCount": "playerCount"
+    "lesserCount": "playerCount",
+    "style": {
+      "background": "linear-gradient(135deg, #311b92 0%, #673ab7 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#9932CC",
+      "boxShadow": "0 0 15px rgba(255, 215, 0, 0.5)"
+    }
   },
   {
     "id": "army",
@@ -192,7 +267,13 @@
     "booze": 2.3,
     "soft": 0,
     "lesser": "deserter",
-    "lesserCount": "playerCount"
+    "lesserCount": "playerCount",
+    "style": {
+      "background": "linear-gradient(135deg, #311b92 0%, #673ab7 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#9932CC",
+      "boxShadow": "0 0 15px rgba(255, 215, 0, 0.5)"
+    }
   },
   {
     "id": "routed_rabble",
@@ -204,7 +285,12 @@
     "flags": [],
     "xp": 1,
     "booze": 1.1,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #311b92 0%, #673ab7 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#9932CC"
+    }
   },
   {
     "id": "deserter",
@@ -216,7 +302,12 @@
     "flags": [],
     "xp": 2,
     "booze": 2.2,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #311b92 0%, #673ab7 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#9932CC"
+    }
   },
 
   {
@@ -229,7 +320,12 @@
     "xp": 2.0,
     "booze": 2.3,
     "soft": 0,
-    "lesser": "mimic"
+    "lesser": "mimic",
+    "style": {
+      "background": "linear-gradient(135deg, #1b5e20 0%, #4caf50 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#4B0082"
+    }
   },
   {
     "id": "mimic_copy",
@@ -240,7 +336,12 @@
     "flags": [],
     "xp": 1.2,
     "booze": 1.1,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #1b5e20 0%, #4caf50 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#4B0082"
+    }
   },
 
 
@@ -253,7 +354,12 @@
     "flags": ["magic-user"],
     "xp": 1.5,
     "booze": 1.5,
-    "soft": 0.5
+    "soft": 0.5,
+    "style": {
+      "background": "linear-gradient(135deg, #00695c 0%, #009688 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#00FFFF"
+    }
   },
 
 
@@ -266,7 +372,14 @@
     "flags": ["magic-user"],
     "xp": 0.5,
     "booze": 0.0,
-    "soft": 0.5
+    "soft": 0.5,
+    "style": {
+      "background": "linear-gradient(135deg, #045c8c 0%, #03a9f4 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "water-flow",
+      "additionalClasses": ["water-monster"]
+    }
   },
   {
     "id": "tidal_guardian",
@@ -278,7 +391,14 @@
     "xp": 0.5,
     "booze": 0.0,
     "soft": 1.0,
-    "lesser": "water_sprite"
+    "lesser": "water_sprite",
+    "style": {
+      "background": "linear-gradient(135deg, #045c8c 0%, #03a9f4 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "water-flow",
+      "additionalClasses": ["water-monster"]
+    }
   },
 
 
@@ -292,7 +412,14 @@
     "flags": [],
     "xp": 0.5,
     "booze": 0.0,
-    "soft": 0.1
+    "soft": 0.1,
+    "style": {
+      "background": "linear-gradient(135deg, #a5d6f7 0%, #0288d1 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "ice-shimmer",
+      "additionalClasses": ["ice-monster"]
+    }
   },
   {
     "id": "frost_golem",
@@ -305,7 +432,14 @@
     "booze": 0.0,
     "soft": 0.25,
     "lesser": "ice_shard",
-    "lesserCount": 6
+    "lesserCount": 6,
+    "style": {
+      "background": "linear-gradient(135deg, #a5d6f7 0%, #0288d1 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "ice-shimmer",
+      "additionalClasses": ["ice-monster"]
+    }
   },
   {
     "id": "glacial_titan",
@@ -317,7 +451,15 @@
     "xp": 3.0,
     "booze": 0.0,
     "soft": 0.5,
-    "lesser": "frost_golem"
+    "lesser": "frost_golem",
+    "style": {
+      "background": "linear-gradient(135deg, #a5d6f7 0%, #0288d1 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "ice-shimmer",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)",
+      "additionalClasses": ["ice-monster"]
+    }
   }
 
 

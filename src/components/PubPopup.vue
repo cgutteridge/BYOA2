@@ -78,7 +78,6 @@ import { monsterTypes } from '../data/monsterTypes'
 import { scoutLocation } from '@/quest/scoutLocation.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
-import '../styles/monsterStyles.css'
 import {useQuestStore} from "@/stores/questStore.ts";
 import formatNumber from "@/utils/formatNumber.ts";
 import {getMonsterBooze, getMonsterSoft, getMonsterXP} from "../quest/monsterUtils.ts";

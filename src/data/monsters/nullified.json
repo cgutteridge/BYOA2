@@ -8,7 +8,14 @@
     "flags": [],
     "xp": 0.5,
     "booze": 0.0,
-    "soft": 0.1
+    "soft": 0.1,
+    "style": {
+      "background": "linear-gradient(135deg, #a5d6f7 0%, #0288d1 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "ice-shimmer",
+      "additionalClasses": ["ice-monster"]
+    }
   },
   {
     "id": "frozen_grunt",
@@ -21,7 +28,14 @@
     "booze": 0.0,
     "soft": 0.2,
     "lesser": "frost_minion",
-    "lesserCount": 3
+    "lesserCount": 3,
+    "style": {
+      "background": "linear-gradient(135deg, #a5d6f7 0%, #0288d1 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "ice-shimmer",
+      "additionalClasses": ["ice-monster"]
+    }
   },
   {
     "id": "frozen_elite",
@@ -33,7 +47,15 @@
     "xp": 3.0,
     "booze": 0.0,
     "soft": 0.4,
-    "lesser": "frost_grunt"
+    "lesser": "frost_grunt",
+    "style": {
+      "background": "linear-gradient(135deg, #a5d6f7 0%, #0288d1 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "ice-shimmer",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)",
+      "additionalClasses": ["ice-monster"]
+    }
   },
   {
     "id": "passive_minion",
@@ -44,7 +66,14 @@
     "flags": [],
     "xp": 0.5,
     "booze": 0.0,
-    "soft": 0.5
+    "soft": 0.5,
+    "style": {
+      "background": "linear-gradient(135deg, #045c8c 0%, #03a9f4 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "water-flow",
+      "additionalClasses": ["water-monster"]
+    }
   },
   {
     "id": "passive_grunt",
@@ -56,7 +85,14 @@
     "xp": 0.5,
     "booze": 0.0,
     "soft": 0.75,
-    "lesser": "passive_minion"
+    "lesser": "passive_minion",
+    "style": {
+      "background": "linear-gradient(135deg, #045c8c 0%, #03a9f4 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "water-flow",
+      "additionalClasses": ["water-monster"]
+    }
   },
   {
     "id": "passive_elite",
@@ -68,7 +104,15 @@
     "xp": 0.5,
     "booze": 0.0,
     "soft": 1,
-    "lesser": "passive_grunt"
+    "lesser": "passive_grunt",
+    "style": {
+      "background": "linear-gradient(135deg, #045c8c 0%, #03a9f4 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#29B6F6",
+      "animation": "water-flow",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)",
+      "additionalClasses": ["water-monster"]
+    }
   },
   {
     "id": "veg_minion",
@@ -78,7 +122,12 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "soft": 0.5
+    "soft": 0.5,
+    "style": {
+      "background": "linear-gradient(135deg, #1b5e20 0%, #4caf50 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#4B0082"
+    }
   },
   {
     "id": "veg_grunt",
@@ -89,7 +138,12 @@
     "flags": [],
     "xp": 0.5,
     "soft": 0.75,
-    "lesser": "passive_minion"
+    "lesser": "passive_minion",
+    "style": {
+      "background": "linear-gradient(135deg, #1b5e20 0%, #4caf50 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#4B0082"
+    }
   },
   {
     "id": "veg_elite",
@@ -100,7 +154,13 @@
     "flags": [],
     "xp": 0.5,
     "soft": 1,
-    "lesser": "veg_grunt"
+    "lesser": "veg_grunt",
+    "style": {
+      "background": "linear-gradient(135deg, #1b5e20 0%, #4caf50 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#4B0082",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)"
+    }
   },
   {
     "id": "enemy_shard",
@@ -110,7 +170,14 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "soft": 0.0
+    "soft": 0.0,
+    "style": {
+      "background": "linear-gradient(135deg, #1a1a1a 0%, #333333 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A9A9A9",
+      "animation": "obsidian-pulse",
+      "additionalClasses": ["obsidian-monster"]
+    }
   },
   {
     "id": "petrified_minion",
@@ -122,7 +189,14 @@
     "xp": 0.5,
     "soft": 0.0,
     "lesser": "enemy_shard",
-    "lesserCount": "playerCount"
+    "lesserCount": "playerCount",
+    "style": {
+      "background": "linear-gradient(135deg, #1a1a1a 0%, #333333 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A9A9A9",
+      "animation": "obsidian-pulse",
+      "additionalClasses": ["obsidian-monster"]
+    }
   },
   {
     "id": "petrified_grunt",
@@ -134,7 +208,14 @@
     "xp": 0.5,
     "soft": 0.0,
     "lesser": "enemy_shard",
-    "lesserCount": "playerCount"
+    "lesserCount": "playerCount",
+    "style": {
+      "background": "linear-gradient(135deg, #1a1a1a 0%, #333333 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A9A9A9",
+      "animation": "obsidian-pulse",
+      "additionalClasses": ["obsidian-monster"]
+    }
   },
   {
     "id": "petrified_elite",
@@ -146,7 +227,15 @@
     "xp": 0.5,
     "soft": 0.0,
     "lesser": "enemy_shard",
-    "lesserCount": "playerCount"
+    "lesserCount": "playerCount",
+    "style": {
+      "background": "linear-gradient(135deg, #1a1a1a 0%, #333333 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A9A9A9",
+      "animation": "obsidian-pulse",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)",
+      "additionalClasses": ["obsidian-monster"]
+    }
   },
   {
     "id": "distracted_minion",
@@ -156,7 +245,12 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "soft": 0.5
+    "soft": 0.5,
+    "style": {
+      "background": "linear-gradient(135deg, #311b92 0%, #673ab7 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#9932CC"
+    }
   },
   {
     "id": "distracted_grunt",
@@ -167,7 +261,12 @@
     "flags": [],
     "xp": 0.5,
     "soft": 0.75,
-    "lesser": "distracted_minion"
+    "lesser": "distracted_minion",
+    "style": {
+      "background": "linear-gradient(135deg, #311b92 0%, #673ab7 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#9932CC"
+    }
   },
   {
     "id": "distracted_elite",
@@ -178,7 +277,13 @@
     "flags": [],
     "xp": 0.5,
     "soft": 1,
-    "lesser": "distracted_grunt"
+    "lesser": "distracted_grunt",
+    "style": {
+      "background": "linear-gradient(135deg, #311b92 0%, #673ab7 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#9932CC",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)"
+    }
   },
   {
     "id": "stunned_minion",
@@ -188,7 +293,12 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "soft": 0.5
+    "soft": 0.5,
+    "style": {
+      "background": "linear-gradient(135deg, #f57f17 0%, #ffeb3b 100%)",
+      "color": "#333333",
+      "borderColor": "#FFC107"
+    }
   },
   {
     "id": "stunned_grunt",
@@ -199,7 +309,12 @@
     "flags": [],
     "xp": 0.5,
     "soft": 0.75,
-    "lesser": "stunned_minion"
+    "lesser": "stunned_minion",
+    "style": {
+      "background": "linear-gradient(135deg, #f57f17 0%, #ffeb3b 100%)",
+      "color": "#333333",
+      "borderColor": "#FFC107"
+    }
   },
   {
     "id": "stunned_elite",
@@ -210,6 +325,12 @@
     "flags": [],
     "xp": 0.5,
     "soft": 1,
-    "lesser": "stunned_grunt"
+    "lesser": "stunned_grunt",
+    "style": {
+      "background": "linear-gradient(135deg, #f57f17 0%, #ffeb3b 100%)",
+      "color": "#333333",
+      "borderColor": "#FFC107",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)"
+    }
   }
 ]

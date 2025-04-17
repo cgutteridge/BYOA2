@@ -11,7 +11,12 @@
     "xp": 2,
     "booze": 2.3,
     "soft": 0,
-    "lesser": "shadow_warrior"
+    "lesser": "shadow_warrior",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
   {
     "id": "shadow_warrior",
@@ -24,7 +29,12 @@
     ],
     "xp": 1,
     "booze": 1.2,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
   {
     "id": "dark_knight",
@@ -36,7 +46,13 @@
     "xp": 3,
     "booze": 3.4,
     "soft": 0,
-    "lesser": "knight"
+    "lesser": "knight",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D",
+      "boxShadow": "0 0 10px rgba(255, 255, 255, 0.5)"
+    }
   },
 
   {
@@ -50,7 +66,12 @@
     ],
     "xp": 1,
     "booze": 1.1,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #52433a 0%, #8d6e63 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A9A9A9"
+    }
   },
   {
     "id": "peasant",
@@ -63,7 +84,12 @@
     ],
     "xp": 1,
     "booze": 1.1,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
   {
     "id": "knight",
@@ -76,7 +102,12 @@
     ],
     "xp": 1,
     "booze": 1.5,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
   {
     "id": "goblin",
@@ -89,7 +120,12 @@
     ],
     "xp": 1,
     "booze": 1.4,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #1b4d1b 0%, #388e3c 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#006400"
+    }
   },
   {
     "id": "ork",
@@ -103,7 +139,12 @@
     "xp": 2,
     "booze": 2.8,
     "soft": 0,
-    "lesser": "goblin"
+    "lesser": "goblin",
+    "style": {
+      "background": "linear-gradient(135deg, #1b4d1b 0%, #388e3c 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#006400"
+    }
   },
   {
     "id": "human_fighter",
@@ -117,7 +158,12 @@
     "xp": 2,
     "booze": 2.3,
     "soft": 0,
-    "lesser": "peasant"
+    "lesser": "peasant",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
   {
     "id": "mounted_knight",
@@ -131,7 +177,12 @@
     "xp": 2,
     "booze": 3.0,
     "soft": 0,
-    "lesser": "knight"
+    "lesser": "knight",
+    "style": {
+      "background": "linear-gradient(135deg, #4a3932 0%, #795548 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A0522D"
+    }
   },
   {
     "id": "dwarf_miner",
@@ -144,7 +195,12 @@
     ],
     "xp": 1,
     "booze": 1.1,
-    "soft": 0
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #52433a 0%, #8d6e63 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A9A9A9"
+    }
   },
   {
     "id": "dwarf_warrior",
@@ -158,6 +214,11 @@
     "xp": 2,
     "booze": 2.2,
     "soft": 0,
-    "lesser": "dwarf"
+    "lesser": "dwarf",
+    "style": {
+      "background": "linear-gradient(135deg, #52433a 0%, #8d6e63 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#A9A9A9"
+    }
   }
 ]

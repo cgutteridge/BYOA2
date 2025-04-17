@@ -39,6 +39,7 @@
                 'dying': isMonsterDying(monster.id)
               }
             ]"
+            :style="monster.alive ? getMonsterStyle(monster.type) : {}"
           >
             <!-- Monster view (only shown when alive) -->
             <template v-if="monster.alive">
@@ -124,7 +125,7 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {Monster} from "../types";
-import '../styles/monsterStyles.css';
+import '../styles/monsterAnimations.css';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
 import ItemCard from "../components/ItemCard.vue";
@@ -223,24 +224,39 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
   const monster = monsterTypes.find(m => m.id === monsterId)
   if (!monster) return {}
   
-  const classes = {
-    [`monster-${monster.species}`]: true,
+  const classes: Record<string, boolean> = {
     [`monster-${monster.level}`]: true
   }
   
-  // Add special classes for themed monsters
-  if (monster.id.includes('desert') || monster.id.includes('sand')) {
-    classes['desert-monster'] = true
-  } else if (monster.id.includes('flame') || monster.id.includes('fire')) {
-    classes['flame-monster'] = true
-  } else if (monster.id.includes('earth') || monster.id.includes('mountain')) {
-    classes['earth-monster'] = true
-  } else if (monster.id.includes('water') || monster.id.includes('tidal')) {
-    classes['water-monster'] = true
-  } else if (monster.id.includes('ice') || monster.id.includes('frost') || monster.id.includes('glacial')) {
-    classes['ice-monster'] = true
-  } else if (monster.id.includes('obsidian')) {
-    classes['obsidian-monster'] = true
+  // Add additional classes from monster style
+  if (monster.style?.additionalClasses) {
+    monster.style.additionalClasses.forEach(className => {
+      classes[className] = true
+    })
+  }
+  
+  // If the monster has an animation defined but no classes, add the appropriate class
+  if (monster.style?.animation && !monster.style.additionalClasses) {
+    switch (monster.style.animation) {
+      case 'desert-shimmer':
+        classes['desert-monster'] = true
+        break
+      case 'elemental-pulse':
+        classes['flame-monster'] = true
+        break
+      case 'earth-rumble':
+        classes['earth-monster'] = true
+        break
+      case 'water-flow':
+        classes['water-monster'] = true
+        break
+      case 'ice-shimmer':
+        classes['ice-monster'] = true
+        break
+      case 'obsidian-pulse':
+        classes['obsidian-monster'] = true
+        break
+    }
   }
   
   return classes
@@ -415,6 +431,22 @@ function reviveMonster(monster: Monster) {
 function isMonsterDying(monsterId: string): boolean {
   return !!monstersDying.value[monsterId];
 }
+
+function getMonsterStyle(monsterId: string): Record<string, string> {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster || !monster.style) return {}
+  
+  const style: Record<string, string> = {}
+  
+  if (monster.style.background) style.background = monster.style.background
+  if (monster.style.color) style.color = monster.style.color
+  if (monster.style.borderColor) style.borderColor = monster.style.borderColor
+  if (monster.style.boxShadow) style.boxShadow = monster.style.boxShadow
+  
+  // Animation will be handled via classes
+  
+  return style
+}
 </script>
 
 <style scoped>
@@ -554,59 +586,7 @@ function isMonsterDying(monsterId: string): boolean {
   overflow: hidden;
 }
 
-/* Colored backgrounds based on monster species */
-.monster-vampire {
-  background: linear-gradient(135deg, #480708 0%, #710b0d 100%);
-}
-
-.monster-ghost {
-  background: linear-gradient(135deg, #2d3a4a 0%, #3f51b5 100%);
-}
-
-.monster-human {
-  background: linear-gradient(135deg, #4a3932 0%, #795548 100%);
-}
-
-.monster-chameleonoid {
-  background: linear-gradient(135deg, #1b5e20 0%, #4caf50 100%);
-}
-
-.monster-goblinoid {
-  background: linear-gradient(135deg, #1b4d1b 0%, #388e3c 100%);
-}
-
-.monster-elf {
-  background: linear-gradient(135deg, #0d47a1 0%, #2196f3 100%);
-}
-
-.monster-demonoid {
-  background: linear-gradient(135deg, #bf360c 0%, #ff5722 100%);
-}
-
-.monster-dwarf {
-  background: linear-gradient(135deg, #52433a 0%, #8d6e63 100%);
-}
-
-.monster-special {
-  background: linear-gradient(135deg, #311b92 0%, #673ab7 100%);
-}
-
-.monster-fey {
-  background: linear-gradient(135deg, #00695c 0%, #009688 100%);
-}
-
-.monster-elemental {
-  background: linear-gradient(135deg, #045c8c 0%, #03a9f4 100%);
-}
-
-/* Darker backgrounds for boss and elite monsters */
-.monster-boss {
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-}
-
-.monster-elite {
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
+/* Colored backgrounds based on monster species - removed, now in JSON */
 
 .monster-card.defeated {
   opacity: 0.5;

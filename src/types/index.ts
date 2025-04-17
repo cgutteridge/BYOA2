@@ -105,6 +105,15 @@ export interface MonsterType {
   soft: number // Soft drink consumption (water/soda) 
   lesser?: MonsterTypeId  // ID of monster that this monster splits into (smaller version of same species)
   lesserCount?: number | "playerCount"  // Number of lesser monsters created when splitting (defaults to 2)
+  // CSS styling properties
+  style?: {
+    background?: string          // Background gradient or color
+    color?: string               // Text color
+    borderColor?: string         // Border color
+    animation?: string           // Animation name if any
+    boxShadow?: string           // Box shadow
+    additionalClasses?: string[] // Any additional classes
+  }
 }
 
 export interface Monster {

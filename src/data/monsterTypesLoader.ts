@@ -18,8 +18,17 @@ interface RawMonsterData {
   flags: MonsterFlag[];
   xp: number;
   booze: number;
+  soft?: number;
   lesser?: string;
   lesserCount?: number | "playerCount";
+  style?: {
+    background?: string;
+    color?: string;
+    borderColor?: string;
+    animation?: string;
+    boxShadow?: string;
+    additionalClasses?: string[];
+  };
 }
 
 // Import all monster type files
