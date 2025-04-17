@@ -97,24 +97,22 @@
           </div>
         </template>
       </div>
-      
+
       <!-- Prize item section -->
-      <div v-if="questStore.currentPub.prizeItem" class="prize-item-section">
-        <div class="prize-item-container">
-          <h3>Quest Prize:</h3>
-          <div class="prize-item-wrapper">
-            <div v-if="!allMonstersDefeated" class="monster-item-locked">
-              <span class="lock-icon">🔒</span>
-            </div>
-            <ItemCard 
+      <template v-if="questStore.currentPub.prizeItem">
+        <h3>Quest Prize:</h3>
+        <div class="prize-item-wrapper">
+          <div v-if="!allMonstersDefeated" class="monster-item-locked">
+            <span class="lock-icon">🔒</span>
+          </div>
+          <ItemCard
               :item="questStore.currentPub.prizeItem"
               variant="prize"
               :show-details="true"
               @action="claimPrizeItem"
-            />
-          </div>
+          />
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -126,7 +124,7 @@ import {monsterTypes} from "../data/monsterTypes";
 import {Monster} from "../types";
 import {areAllMonstersDefeated, claimMonsterItem} from "../quest/combat.ts";
 import '../styles/monsterStyles.css';
-import {computed, ref, onMounted, onUnmounted} from 'vue';
+import {computed, onMounted, onUnmounted, ref} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
 import ItemCard from "../components/ItemCard.vue";
 
