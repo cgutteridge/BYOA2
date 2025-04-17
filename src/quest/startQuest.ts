@@ -109,7 +109,8 @@ export async function startQuest(
         inventoryStore.addItem(item);
     });
 
-    scoutLocation(questStore.startPub as Pub);
+    await scoutLocation(questStore.startPub as Pub);
+    questStore.setCurrentPub(startPub.id)
 
     questStore.setStatus('active');
 

@@ -14,7 +14,6 @@ const questStore = useQuestStore();
 const appStore = useAppStore()
 
 function start() {
-  questStore.setCurrentPub(questStore.startPub.id)
   appStore.setScreen('location')
 }
 </script>
