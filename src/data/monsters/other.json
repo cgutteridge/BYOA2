@@ -25,7 +25,8 @@
   },
   {
     "id": "royal_hunt",
-    "title": "Royal Hunt",
+    "title": "The entire Royal Hunt",
+    "plural": "Entire Royal Hunts",
     "drink": "Jägerbomb for every player",
     "level": "boss",
     "species": "human",
@@ -61,7 +62,7 @@
   },
   {
     "id": "spirit_vortex",
-    "title": "Spirit Vortex",
+    "title": "Spirit Vortex combining many spirit enemies",
     "drink": "Shot (of their choice) for every player",
     "level": "boss",
     "species": "ghost",
@@ -167,8 +168,8 @@
   },
   {
     "id": "rabble",
-    "title": "Rabble",
-    "plural": "Armies",
+    "title": "Rabble of Enemies",
+    "plural": "Rabbles of Enemies",
     "drink": "A half-pint for every player (all the same drink)",
     "level": "boss",
     "species": "special",
@@ -181,8 +182,8 @@
   },
   {
     "id": "army",
-    "title": "Army",
-    "plural": "Armies",
+    "title": "Entire Army",
+    "plural": "Entire Armies",
     "drink": "A pint for every player (all the same drink)",
     "level": "boss",
     "species": "special",

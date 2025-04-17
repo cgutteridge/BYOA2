@@ -120,6 +120,7 @@
     "species": "fey",
     "flags": ["spirit"],
     "xp": 2.0,
+    "booze": 2.0,
     "soft": 0,
     "lesser": "hedge_spirit"
   },
@@ -131,6 +132,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.0,
+    "booze": 2.0,
     "soft": 0,
     "lesser": "spectral_soldier"
   },
@@ -142,6 +144,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 1.0,
+    "booze": 1.0,
     "soft": 0
   },
   {
@@ -152,6 +155,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.0,
+    "booze": 2.0,
     "soft": 0,
     "lesser": "wrathful_wraith"
   },
@@ -163,6 +167,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 1.0,
+    "booze": 1.0,
     "soft": 0
   },
   {
@@ -173,6 +178,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.0,
+    "booze": 2.0,
     "soft": 0,
     "lesser": "desert_wisp"
   },
@@ -184,6 +190,7 @@
     "species": "demonoid",
     "flags": ["magic-user"],
     "xp": 2.0,
+    "booze": 2.0,
     "soft": 0,
     "lesser": "imp"
   },
@@ -195,6 +202,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2.8,
+    "booze": 2.0,
     "soft": 0,
     "lesser": "ancient_spirit"
   }

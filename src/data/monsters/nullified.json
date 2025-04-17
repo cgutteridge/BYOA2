@@ -203,6 +203,7 @@
   },
   {
     "id": "stunned_elite",
+    "title": "Pacified Elite",
     "drink": "Large Glass of Lemonade",
     "level": "elite",
     "species": "nullified",
