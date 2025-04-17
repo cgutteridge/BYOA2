@@ -128,12 +128,8 @@ export class ChatGPTAPI {
           Do not add the type of monster to the name. Do not write "Lord Vlad the Vampire" just "Lord Vlad".
           It is OK to add other qualifiers to the name to make it more interesting or funny.
           
-          Respond in JSON format as an array with arrays of names for each group:
-          [
-            ["Monster 1 name", "Monster 2 name", ...etc for group 1],
-            ["Monster 1 name", "Monster 2 name", ...etc for group 2],
-            ...etc for each monster group
-          ]
+          Respond in JSON format in a 2 dimensional array. The outer array is groups, and item is an array of 
+          strings, one for each monster in the group.
         `
       }
     ]
