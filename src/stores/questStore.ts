@@ -69,7 +69,7 @@ export const useQuestStore = defineStore('quest', () => {
   const setSoft = (newSoft: number) => {
     soft.value = newSoft
   }
-  
+
   const addSoft = (amount: number) => {
     soft.value += amount
   }
@@ -88,37 +88,21 @@ export const useQuestStore = defineStore('quest', () => {
     if (xpAmount !== 0) xp.value += xpAmount;
     if (boozeAmount !== 0) booze.value += boozeAmount;
     if (softAmount !== 0) soft.value += softAmount;
-    
+
     // Format booze, soft without decimal for whole numbers
     const boozeDisplay = formatNumber(boozeAmount)
-    const softDisplay = formatNumber(softAmount)
 
-    // Create appropriate notification message based on what changed
-    let message = '';
-    
-    if (xpAmount !== 0 && boozeAmount !== 0 && softAmount !== 0) {
-      message = `Gained ${xpAmount} XP, ${boozeDisplay} booze, and ${softDisplay} soft for ${actionDesc}`;
-    } else if (xpAmount !== 0 && boozeAmount !== 0) {
-      message = `Gained ${xpAmount} XP and ${boozeDisplay} booze for ${actionDesc}`;
-    } else if (xpAmount !== 0 && softAmount !== 0) {
-      message = `Gained ${xpAmount} XP and ${softDisplay} soft for ${actionDesc}`;
-    } else if (boozeAmount !== 0 && softAmount !== 0) {
-      message = `Gained ${boozeDisplay} booze and ${softDisplay} soft for ${actionDesc}`;
-    } else if (xpAmount !== 0) {
-      message = `Gained ${xpAmount} XP for ${actionDesc}`;
-    } else if (boozeAmount !== 0) {
-      message = `Gained ${boozeDisplay} booze for ${actionDesc}`;
-    } else if (softAmount !== 0) {
-      message = `Gained ${softDisplay} soft for ${actionDesc}`;
+    const parts : string[] = []
+    if( xpAmount !== 0 ) {
+      parts.push(`${xpAmount} XP`)
     }
-    
-    // Show notification if something changed
-    if (message) {
-      appStore.addNotification(message, 'success');
+    if( boozeAmount !== 0 ) {
+      parts.push(`${boozeDisplay} Booze`)
     }
-    
-    return { xpAdded: xpAmount, boozeAdded: boozeAmount, softAdded: softAmount };
-  };
+    if( parts.length ===0 ) {
+    parts.push("nothing")}
+    appStore.addNotification( `Gained ${parts.join(' and ')} for ${actionDesc}`)
+  }
   
   const endQuest = () => {
     setStatus('no_quest')

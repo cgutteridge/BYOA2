@@ -152,7 +152,7 @@ onUnmounted(() => {
     
     <div class="debug-overlay" v-if="appStore.playerLocation">
       <div>COORDS: {{ appStore.playerLocation.lat.toFixed(5) }}, {{ appStore.playerLocation.lng.toFixed(5) }}</div>
-      <div>XP: {{ questStore.xp }} | Units: {{ formatNumber(questStore.booze) }}</div>
+      <div>XP: {{ questStore.xp }} | Booze: {{ formatNumber(questStore.booze) }} | Soft: {{ formatNumber(questStore.soft) }}</div>
     </div>
     
     <div v-if="appStore.gpsStatus === 'initializing'" class="gps-status">
@@ -215,14 +215,6 @@ body {
   padding: 0;
   font-family: Arial, sans-serif;
   overflow-x: hidden;
-}
-
-.screen-container {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
 }
 
 .interface-button {

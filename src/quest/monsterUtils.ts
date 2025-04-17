@@ -108,7 +108,7 @@ export function getMonsterXP(monsterTypeId: MonsterTypeId): number {
   if (!monsterType) return 0
 
   // Apply player count scaling if applicable
-  const multiplier = monsterType.lesserCount === "playerCount" ? 1 : questStore.playerCount;
+  const multiplier = monsterType.lesserCount === "playerCount" ? questStore.playerCount : 1;
 
   return monsterType.xp * multiplier;
 }
@@ -125,10 +125,9 @@ export function getMonsterBooze(monsterTypeId: MonsterTypeId): number {
   // Find the monster type definition
   const monsterType = monsterTypesById[monsterTypeId]
   if (!monsterType) return 0
-console.log( monsterType )
-  // Apply player count scaling if applicable
-  const multiplier = monsterType.lesserCount === "playerCount" ? 1 : questStore.playerCount;
 
+  // Apply player count scaling if applicable
+  const multiplier = monsterType.lesserCount === "playerCount" ? questStore.playerCount : 1;
   return monsterType.booze * multiplier;
 }
 
@@ -145,7 +144,7 @@ export function getMonsterSoft(monsterTypeId: MonsterTypeId): number {
   if (!monsterType) return 0
 
   // Apply player count scaling if applicable
-  const multiplier = monsterType.lesserCount === "playerCount" ? 1 : questStore.playerCount;
+  const multiplier = monsterType.lesserCount === "playerCount" ? questStore.playerCount : 1;
 
   return monsterType.soft * multiplier;
 }

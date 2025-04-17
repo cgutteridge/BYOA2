@@ -7,7 +7,8 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "booze": 0.0
+    "booze": 0.0,
+    "soft": 0.1
   },
   {
     "id": "frozen_grunt",
@@ -18,6 +19,7 @@
     "flags": [],
     "xp": 2.0,
     "booze": 0.0,
+    "soft": 0.2,
     "lesser": "frost_minion",
     "lesserCount": 3
   },
@@ -30,6 +32,7 @@
     "flags": ["magic-user"],
     "xp": 3.0,
     "booze": 0.0,
+    "soft": 0.4,
     "lesser": "frost_grunt"
   },
   {
@@ -40,7 +43,8 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
-    "booze": 0.0
+    "booze": 0.0,
+    "soft": 0.5
   },
   {
     "id": "passive_grunt",
@@ -51,6 +55,7 @@
     "flags": [],
     "xp": 0.5,
     "booze": 0.0,
+    "soft": 0.75,
     "lesser": "passive_minion"
   },
   {
@@ -62,6 +67,7 @@
     "flags": [],
     "xp": 0.5,
     "booze": 0.0,
+    "soft": 1,
     "lesser": "passive_grunt"
   },
   {
@@ -71,7 +77,8 @@
     "level": "minion",
     "species": "nullified",
     "flags": [],
-    "xp": 0.5
+    "xp": 0.5,
+    "soft": 0.5
   },
   {
     "id": "veg_grunt",
@@ -81,6 +88,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
+    "soft": 0.75,
     "lesser": "passive_minion"
   },
   {
@@ -91,6 +99,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
+    "soft": 1,
     "lesser": "veg_grunt"
   },
   {
@@ -100,7 +109,8 @@
     "level": "minion",
     "species": "nullified",
     "flags": [],
-    "xp": 0.5
+    "xp": 0.5,
+    "soft": 0.0
   },
   {
     "id": "petrified_minion",
@@ -110,6 +120,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
+    "soft": 0.0,
     "lesser": "enemy_shard",
     "lesserCount": "playerCount"
   },
@@ -121,6 +132,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
+    "soft": 0.0,
     "lesser": "enemy_shard",
     "lesserCount": "playerCount"
   },
@@ -132,6 +144,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
+    "soft": 0.0,
     "lesser": "enemy_shard",
     "lesserCount": "playerCount"
   },
@@ -142,7 +155,8 @@
     "level": "minion",
     "species": "nullified",
     "flags": [],
-    "xp": 0.5
+    "xp": 0.5,
+    "soft": 0.5
   },
   {
     "id": "distracted_grunt",
@@ -152,6 +166,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
+    "soft": 0.75,
     "lesser": "distracted_minion"
   },
   {
@@ -162,6 +177,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
+    "soft": 1,
     "lesser": "distracted_grunt"
   },
   {
@@ -171,7 +187,8 @@
     "level": "minion",
     "species": "nullified",
     "flags": [],
-    "xp": 0.5
+    "xp": 0.5,
+    "soft": 0.5
   },
   {
     "id": "stunned_grunt",
@@ -181,6 +198,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
+    "soft": 0.75,
     "lesser": "stunned_minion"
   },
   {
@@ -190,6 +208,7 @@
     "species": "nullified",
     "flags": [],
     "xp": 0.5,
+    "soft": 1,
     "lesser": "stunned_grunt"
   }
 ]

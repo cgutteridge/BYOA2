@@ -39,7 +39,7 @@
               <div class="monster-info">
                 <div class="monster-title">{{ getMonsterTitle(group.type) }}</div>
                 <div class="monster-subinfo">{{ getMonsterSpecies(group.type) }} {{ getMonsterLevel(group.type) }}{{ getMonsterTraits(group.type) }}</div>
-                <div class="monster-xp">{{ getMonsterXP(group.type) }} XP / {{ formatNumber(getMonsterBooze(group.type)) }} Units</div>
+                <div class="monster-xp">{{ getMonsterXP(group.type) }} XP / {{ formatNumber(getMonsterBooze(group.type)) }} Units / {{ formatNumber(getMonsterSoft(group.type)) }} Soft</div>
                 <div class="monster-details">
                   <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(group.type) }}</div>
                 </div>
@@ -81,7 +81,7 @@ import ItemCard from './ItemCard.vue'
 import '../styles/monsterStyles.css'
 import {useQuestStore} from "@/stores/questStore.ts";
 import formatNumber from "@/utils/formatNumber.ts";
-import {getMonsterBooze, getMonsterXP} from "../quest/monsterUtils.ts";
+import {getMonsterBooze, getMonsterSoft, getMonsterXP} from "../quest/monsterUtils.ts";
 
 const props = defineProps<{
   pub: Pub
