@@ -140,6 +140,8 @@ export const useQuestStore = defineStore('quest', () => {
     xp,
     booze,
     soft,
+    startPubId,
+    endPubId,
     setStartPubId,
     setEndPubId,
     setCurrentPub,

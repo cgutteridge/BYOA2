@@ -58,29 +58,34 @@
                 </div>
                 
                 <div class="stat-group">
-                  <div class="stat-label">Alcohol Units:</div>
+                  <div class="stat-label">Approximate Alcohol Units:</div>
                   <div class="stat-value">{{ formatUnits(questStore.booze) }}</div>
                 </div>
                 
                 <div class="stat-group">
-                  <div class="stat-label">Player Count:</div>
+                  <div class="stat-label">Approximate Soft Drinks:</div>
+                  <div class="stat-value">{{ formatUnits(questStore.soft) }}</div>
+                </div>
+                
+                <div class="stat-group">
+                  <div class="stat-label">Approximate Player Count:</div>
                   <div class="stat-value">{{ questStore.playerCount }}</div>
                 </div>
               </div>
               
               <div class="quest-locations">
                 <div class="location">
-                  <div class="location-label">Start Location:</div>
+                  <div class="location-label">Start Pub:</div>
                   <div class="location-value">{{ questStore.startPub?.name || 'Unknown' }}</div>
                 </div>
                 
                 <div class="location">
-                  <div class="location-label">Current Location:</div>
-                  <div class="location-value">{{ questStore.currentPub?.name || 'Not in a location' }}</div>
+                  <div class="location-label">Current Pub:</div>
+                  <div class="location-value">{{ questStore.currentPub?.name || 'Not in a pub' }}</div>
                 </div>
                 
                 <div class="location">
-                  <div class="location-label">Target Location:</div>
+                  <div class="location-label">Final Pub:</div>
                   <div class="location-value">{{ questStore.endPub?.name || 'Unknown' }}</div>
                 </div>
               </div>
