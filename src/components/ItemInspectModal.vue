@@ -25,7 +25,7 @@
             </div>
             
             <!-- Target selection (when in pub) -->
-            <div v-if="isInPub && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish' || item.power === 'freeze')" class="item-inspect-modal__target-section">
+            <div v-if="isInPub && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish' || item.power === 'freeze' || item.power === 'petrify' || item.power === 'pacify' || item.power === 'distract' || item.power === 'vegetate' || item.power === 'stun')" class="item-inspect-modal__target-section">
               <h3>{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
               <p class="target-description">{{ getTargetDescription(item) }}</p>
               
@@ -225,7 +225,7 @@ const isUseButtonDisabled = computed(() => {
   if (!isInPub.value) return false
   
   // For powers that need targets
-  if (['kill', 'transmute', 'shrink', 'split', 'pickpocket', 'banish', 'freeze'].includes(item.value.power || '')) {
+  if (['kill', 'transmute', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun'].includes(item.value.power || '')) {
     // Choice-based targeting requires selection
     if (isChoiceTarget.value) {
       if (targetMode.value === 'type') {

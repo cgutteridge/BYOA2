@@ -142,6 +142,36 @@ export function generateEffectDescription(item: Item): string {
       effect += " into an ice monster of the same level.";
       break;
       
+    case 'petrify':
+      effect = `This ${qualityTerm} item transforms `;
+      effect += getTargetDescription(item);
+      effect += " into a stone monster of the same level.";
+      break;
+      
+    case 'pacify':
+      effect = `This ${qualityTerm} item transforms `;
+      effect += getTargetDescription(item);
+      effect += " into a water-based pacified monster of the same level.";
+      break;
+      
+    case 'distract':
+      effect = `This ${qualityTerm} item transforms `;
+      effect += getTargetDescription(item);
+      effect += " into a distracted monster of the same level.";
+      break;
+      
+    case 'vegetate':
+      effect = `This ${qualityTerm} item transforms `;
+      effect += getTargetDescription(item);
+      effect += " into a vegetated monster of the same level.";
+      break;
+      
+    case 'stun':
+      effect = `This ${qualityTerm} item transforms `;
+      effect += getTargetDescription(item);
+      effect += " into a stunned monster of the same level.";
+      break;
+      
     default:
       effect = `This ${qualityTerm} item has unknown effects.`;
   }

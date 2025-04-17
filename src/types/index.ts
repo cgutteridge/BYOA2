@@ -22,6 +22,11 @@ export type ItemPowerId =
   | 'pickpocket'
   | 'banish'
   | 'freeze'
+  | 'petrify'
+  | 'pacify'
+  | 'distract'
+  | 'vegetate'
+  | 'stun'
 
 // Target modes - how the target is selected
 export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'location' | undefined

@@ -29,7 +29,7 @@ export function generateRandomItem(level: number): Item {
   
   // Step 1: Pick a random power type that fits within our budget
   // Get all available powers
-  const availablePowerIds: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze'];
+  const availablePowerIds: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun'];
   
   // Filter available powers based on cost
   const affordablePowers = availablePowerIds
@@ -234,7 +234,12 @@ function generateItemName(power: ItemPowerId, targetMode?: string): string {
     split: ["Cleaver", "Scissors", "Shears", "Slicer", "Divider", "Splitter", "Carver"],
     pickpocket: ["Gloves", "Lockpick", "Hook", "Claw", "Hand", "Grasp", "Grip", "Thief's Tool"],
     banish: ["Bell", "Book", "Candle", "Scroll", "Rune", "Sigil", "Seal", "Symbol"],
-    freeze: ["Ice Crystal", "Frost Stone", "Cold Gem", "Freezing Orb", "Glacier Shard", "Winter Sphere"]
+    freeze: ["Ice Crystal", "Frost Stone", "Cold Gem", "Freezing Orb", "Glacier Shard", "Winter Sphere"],
+    petrify: ["Stone Gaze", "Petrifying Rune", "Gorgon Scale", "Basilisk Eye", "Stone Sphere", "Medusa Lock"],
+    pacify: ["Water Vial", "Calming Spray", "Peace Pendant", "Tranquil Mist", "Serene Orb", "Still Water Crystal"],
+    distract: ["Cola Bomb", "Fizzing Stone", "Bubble Gem", "Carbonated Crystal", "Sparkling Sphere", "Effervescent Orb"],
+    vegetate: ["Juice Box", "Fruit Extract", "Plant Seed", "Green Elixir", "Growth Potion", "Verdant Crystal"],
+    stun: ["Lemon Drop", "Sour Crystal", "Citrus Orb", "Zesty Sphere", "Tangy Gem", "Acidic Stone"]
   };
   
   // Get a random material and item type
@@ -266,7 +271,7 @@ export function generateTestItems(): Item[] {
   const items: Item[] = [];
   
   // Generate one item for each power type
-  const powers: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze'];
+  const powers: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun'];
   
   powers.forEach(power => {
     items.push(generateItemWithPower(power, 3));

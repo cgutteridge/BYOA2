@@ -19,7 +19,12 @@ function createDebugItems(): Item[] {
     'split', 
     'pickpocket',
     'banish',
-    'freeze'
+    'freeze',
+    'petrify',
+    'pacify',
+    'distract',
+    'vegetate',
+    'stun'
   ];
   
   const items: Item[] = [];
