@@ -22,7 +22,18 @@ export default function generateMonsters(pub: Pub): Monster[] {
 
     encounter.forEach((unitSpec) => {
         // pick a monster
-        const possibleMonsters = monsterTypes.filter((monster) => monster.level === unitSpec.level)
+        let possibleMonsters = monsterTypes.filter((monster) => 
+            monster.level === unitSpec.level && 
+            monster.species !== 'nullified'
+        )
+        
+        // Fallback if no monsters are available after filtering
+        if (possibleMonsters.length === 0) {
+            possibleMonsters = monsterTypes.filter((monster) => 
+                monster.level === unitSpec.level
+            )
+        }
+        
         const monsterType = pickOne(possibleMonsters)
 
         // decide how many monsters of this type to create
