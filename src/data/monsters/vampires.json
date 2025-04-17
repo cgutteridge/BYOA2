@@ -1,0 +1,32 @@
+[
+  {
+    "id": "thrall_vampire",
+    "title": "Thrall Vampire",
+    "drink": "Small Red Wine",
+    "level": "minion",
+    "species": "vampire",
+    "flags": ["undead"],
+    "xp": 1.8
+  },
+  {
+    "id": "vampire",
+    "title": "Vampire",
+    "drink": "Large Red Wine",
+    "level": "elite",
+    "species": "vampire",
+    "flags": ["undead","magic-user"],
+    "xp": 3.5,
+    "lesser": "thrall_vampire"
+  },
+  {
+    "id": "vampire_lord",
+    "title": "Vampire Lord",
+    "drink": "Bottle of Red Wine",
+    "level": "boss",
+    "species": "vampire",
+    "flags": ["undead","magic-user"],
+    "xp": 10.0,
+    "lesser": "vampire",
+    "lesserCount": 3
+  }
+]

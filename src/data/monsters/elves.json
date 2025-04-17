@@ -1,0 +1,43 @@
+
+[
+  {
+    "id": "forest_elf",
+    "title": "Forest Elf",
+    "drink": "Small White Wine",
+    "level": "minion",
+    "species": "elf",
+    "flags": ["mortal"],
+    "xp": 1.5
+  },
+  {
+    "id": "plains_elf",
+    "title": "Plains Elf",
+    "drink": "Medium White Wine",
+    "level": "grunt",
+    "species": "elf",
+    "flags": ["mortal"],
+    "xp": 2.1,
+    "lesser": "forest_elf"
+  },
+  {
+    "id": "high_elf",
+    "title": "High Elf",
+    "drink": "Large White Wine",
+    "level": "elite",
+    "species": "elf",
+    "flags": ["mortal"],
+    "xp": 3.0,
+    "lesser": "forest_elf"
+  },
+  {
+    "id": "elf_queen",
+    "title": "Elf Queen",
+    "drink": "Bottle of White Wine",
+    "level": "boss",
+    "species": "elf",
+    "flags": ["mortal"],
+    "xp": 9.0,
+    "lesser": "high_elf",
+    "lesserCount": 3
+  }
+]

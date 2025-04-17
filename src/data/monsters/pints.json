@@ -1,0 +1,139 @@
+[
+  {
+    "id": "shadow_knight",
+    "title": "Shadow Knight",
+    "drink": "Pint of Guinness",
+    "level": "grunt",
+    "species": "human",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 2.3,
+    "lesser": "shadow_warrior"
+  },
+  {
+    "id": "shadow_warrior",
+    "title": "Shadow Warrior",
+    "drink": "Half Pint of Guinness",
+    "level": "minion",
+    "species": "human",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 1.2
+  },
+  {
+    "id": "dark_knight",
+    "title": "Dark Knight",
+    "drink": "Pint of 6%+ Ale",
+    "level": "elite",
+    "species": "human",
+    "flags": ["mortal"],
+    "xp": 3.4,
+    "lesser": "knight"
+  },
+
+  {
+    "id": "dwarf",
+    "title": "Dwarf",
+    "drink": "Half pint of Ale",
+    "level": "minion",
+    "species": "dwarf",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 1.1
+  },
+  {
+    "id": "peasant",
+    "title": "Peasant",
+    "drink": "Half Pint Lager",
+    "level": "minion",
+    "species": "human",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 1.1
+  },
+  {
+    "id": "knight",
+    "title": "Knight",
+    "drink": "Half Pint of Strong Lager (5%)",
+    "level": "minion",
+    "species": "human",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 1.5
+  },
+  {
+    "id": "goblin",
+    "title": "Goblin",
+    "drink": "Half Pint Cider",
+    "level": "minion",
+    "species": "goblinoid",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 1.4
+  },
+  {
+    "id": "ork",
+    "title": "Ork",
+    "drink": "Pint of Cider",
+    "level": "grunt",
+    "species": "goblinoid",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 2.8,
+    "lesser": "goblin"
+  },
+  {
+    "id": "human_fighter",
+    "title": "Human Fighter",
+    "drink": "Pint of Non-Lager",
+    "level": "grunt",
+    "species": "human",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 2.3,
+    "lesser": "peasant"
+  },
+  {
+    "id": "mounted_knight",
+    "title": "Mounted Knight",
+    "drink": "Pint of Strong (5%) Lager",
+    "level": "grunt",
+    "species": "human",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 3.0,
+    "lesser": "knight"
+  },
+  {
+    "id": "dwarf_miner",
+    "title": "Dwarf Miner",
+    "drink": "Half Pint Pale Ale",
+    "level": "minion",
+    "species": "dwarf",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 1.1
+  },
+  {
+    "id": "dwarf_warrior",
+    "title": "Dwarf Warrior",
+    "drink": "Ale",
+    "level": "grunt",
+    "species": "dwarf",
+    "flags": [
+      "mortal"
+    ],
+    "xp": 2.2,
+    "lesser": "dwarf"
+  }
+]

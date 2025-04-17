@@ -1,0 +1,187 @@
+[
+  {
+    "id": "frozen_minion",
+    "title": "Frozen Minion",
+    "drink": "One Ice Cube",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "frozen_grunt",
+    "title": "Frost Golem",
+    "drink": "3 Ice Cubes",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 2.0,
+    "lesser": "frost_minion",
+    "lesserCount": 3
+  },
+  {
+    "id": "frozen_elite",
+    "title": "Frozen Elite",
+    "drink": "6 Ice Cubes",
+    "level": "elite",
+    "species": "nullified",
+    "flags": ["magic-user"],
+    "xp": 3.0,
+    "lesser": "frost_grunt"
+  },
+  {
+    "id": "passive_minion",
+    "title": "Pacified Minion",
+    "drink": "Small Glass of Water",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "passive_grunt",
+    "title": "Pacified Grunt",
+    "drink": "Glass of Water",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "passive_minion"
+  },
+  {
+    "id": "passive_elite",
+    "title": "Pacified Elite",
+    "drink": "Large Glass of Water",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "passive_grunt"
+  },
+  {
+    "id": "veg_minion",
+    "title": "Vegetated Minion",
+    "drink": "Small Glass of Juice",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "veg_grunt",
+    "title": "Vegetated Grunt",
+    "drink": "Glass of Juice",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "passive_minion"
+  },
+  {
+    "id": "veg_elite",
+    "title": "Vegetated Elite",
+    "drink": "Large Glass of Juice",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "veg_grunt"
+  },
+  {
+    "id": "enemy_shard",
+    "title": "Shard of Shattered Enemy",
+    "drink": "Single Salty Snack",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "petrified_minion",
+    "title": "Petrified Minion",
+    "drink": "Packet of Salty Snacks",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "enemy_shard",
+    "lesserCount": "playerCount"
+  },
+  {
+    "id": "petrified_grunt",
+    "title": "Petrified Grunt",
+    "drink": "Packet of Salty Snacks",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "enemy_shard",
+    "lesserCount": "playerCount"
+  },
+  {
+    "id": "petrified_elite",
+    "drink": "Packet of Salty Snacks",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "enemy_shard",
+    "lesserCount": "playerCount"
+  },
+  {
+    "id": "distracted_minion",
+    "title": "Vegetated Minion",
+    "drink": "Small Glass of Cola",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "distracted_grunt",
+    "title": "Pacified Grunt",
+    "drink": "Glass of Cola",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "distracted_minion"
+  },
+  {
+    "id": "distracted_elite",
+    "drink": "Large Glass of Cola",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "distracted_grunt"
+  },
+  {
+    "id": "stunned_minion",
+    "title": "Vegetated Minion",
+    "drink": "Small Glass of Lemonade",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "stunned_grunt",
+    "title": "Pacified Grunt",
+    "drink": "Glass of Lemonade",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "stunned_minion"
+  },
+  {
+    "id": "stunned_elite",
+    "drink": "Large Glass of Lemonade",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "stunned_grunt"
+  }
+]

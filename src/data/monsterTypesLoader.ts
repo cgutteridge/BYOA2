@@ -1,4 +1,3 @@
-import monstersData from './monsterTypes.json';
 import { 
   MonsterType, 
   MonsterTypeId, 
@@ -22,8 +21,26 @@ interface RawMonsterData {
   lesserCount?: number | "playerCount";
 }
 
+// Import all monster type files
+import vampiresData from './monsters/vampires.json';
+import elvesData from './monsters/elves.json';
+import pintsData from './monsters/pints.json';
+import spiritsData from './monsters/spirits.json';
+import nullifiedData from './monsters/nullified.json';
+import otherData from './monsters/other.json';
+
+// Combine all monster data
+const monstersData: RawMonsterData[] = [
+  ...vampiresData,
+  ...elvesData,
+  ...pintsData,
+  ...spiritsData,
+  ...nullifiedData,
+  ...otherData
+];
+
 // Parse the JSON data and apply the proper branded type to each ID
-export const monsterTypes: MonsterType[] = (monstersData as RawMonsterData[]).map(monster => {
+export const monsterTypes: MonsterType[] = monstersData.map(monster => {
   // Create a copy without the lesser property
   const { lesser, ...rest } = monster;
   

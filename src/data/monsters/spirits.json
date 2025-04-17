@@ -1,0 +1,173 @@
+[
+  {
+    "id": "desert_wyrm",
+    "title": "Desert Wyrm",
+    "drink": "Single Tequila",
+    "level": "minion",
+    "species": "demonoid",
+    "flags": ["magic-user"],
+    "xp": 1.0
+  },
+  {
+    "id": "sand_titan",
+    "title": "Sand Titan",
+    "drink": "Double Tequila",
+    "level": "grunt",
+    "species": "demonoid",
+    "flags": ["mortal", "magic-user"],
+    "xp": 2.0,
+    "lesser": "desert_wyrm"
+  },
+  {
+    "id": "fire_phantom",
+    "title": "Fire Phantom",
+    "drink": "Single Sambuca",
+    "level": "minion",
+    "species": "elemental",
+    "flags": ["spirit"],
+    "xp": 1.0
+  },
+  {
+    "id": "azure_flame_elemental",
+    "title": "Azure Flame Elemental",
+    "drink": "Double Sambuca",
+    "level": "grunt",
+    "species": "elemental",
+    "flags": ["spirit", "magic-user"],
+    "xp": 2.0,
+    "lesser": "fire_phantom"
+  },
+  {
+    "id": "earth_shaper",
+    "title": "Earth Shaper",
+    "drink": "Single Brandy",
+    "level": "minion",
+    "species": "elemental",
+    "flags": ["spirit"],
+    "xp": 1.0
+  },
+  {
+    "id": "mountain_guardian",
+    "title": "Mountain Guardian",
+    "drink": "Double Brandy",
+    "level": "grunt",
+    "species": "elemental",
+    "flags": ["spirit", "magic-user"],
+    "xp": 2.0,
+    "lesser": "earth_shaper"
+  },
+  {
+    "id": "hedge_spirit",
+    "title": "Hedge Sprite",
+    "drink": "Gin",
+    "level": "minion",
+    "species": "fey",
+    "flags": ["spirit"],
+    "xp": 1.0
+  },
+  {
+    "id": "spectral_soldier",
+    "title": "Spectral Soldier",
+    "drink": "House Whisky",
+    "level": "minion",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 1.0
+  },
+  {
+    "id": "desert_wisp",
+    "title": "Desert Wisp",
+    "drink": "Light Rum",
+    "level": "minion",
+    "species": "fey",
+    "flags": ["spirit"],
+    "xp": 1.0
+  },
+  {
+    "id": "imp",
+    "title": "Imp",
+    "drink": "Dark Rum",
+    "level": "minion",
+    "species": "demonoid",
+    "flags": ["magic-user"],
+    "xp": 1.0
+  },
+  {
+    "id": "dryad",
+    "title": "Dryad",
+    "drink": "Double Gin",
+    "level": "grunt",
+    "species": "fey",
+    "flags": ["spirit"],
+    "xp": 2.0,
+    "lesser": "hedge_spirit"
+  },
+  {
+    "id": "ghostly_warrior",
+    "title": "Ghostly Warrior",
+    "drink": "Double House Whisky",
+    "level": "grunt",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 2.0,
+    "lesser": "spectral_soldier"
+  },
+  {
+    "id": "ancient_spirit",
+    "title": "Ancient Spirit",
+    "drink": "Fancy Whisky",
+    "level": "minion",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 1.0
+  },
+  {
+    "id": "wrathful_revenant",
+    "title": "Wrathful Revenant",
+    "drink": "Double Bourbon",
+    "level": "grunt",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 2.0,
+    "lesser": "wrathful_wraith"
+  },
+  {
+    "id": "wrathful_wraith",
+    "title": "Wrathful Wraith",
+    "drink": "Bourbon",
+    "level": "minion",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 1.0
+  },
+  {
+    "id": "ghostly_buccaneer",
+    "title": "Ghostly Buccaneer",
+    "drink": "Double Light Rum",
+    "level": "grunt",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 2.0,
+    "lesser": "desert_wisp"
+  },
+  {
+    "id": "demon",
+    "title": "Demon",
+    "drink": "Double Dark Rum",
+    "level": "grunt",
+    "species": "demonoid",
+    "flags": ["magic-user"],
+    "xp": 2.0,
+    "lesser": "imp"
+  },
+  {
+    "id": "highland_wraith",
+    "title": "Highland Wraith",
+    "drink": "Double Fancy Whisky",
+    "level": "elite",
+    "species": "ghost",
+    "flags": ["spirit"],
+    "xp": 2.8,
+    "lesser": "ancient_spirit"
+  }
+]
