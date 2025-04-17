@@ -8,7 +8,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 2.3,
+    "xp": 2,
+    "units": 2.3,
     "lesser": "shadow_warrior"
   },
   {
@@ -20,7 +21,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1.2
+    "xp": 1,
+    "units": 1.2
   },
   {
     "id": "dark_knight",
@@ -29,7 +31,8 @@
     "level": "elite",
     "species": "human",
     "flags": ["mortal"],
-    "xp": 3.4,
+    "xp": 3,
+    "units": 3.4,
     "lesser": "knight"
   },
 
@@ -42,7 +45,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1.1
+    "xp": 1,
+    "units": 1.1
   },
   {
     "id": "peasant",
@@ -53,7 +57,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1.1
+    "xp": 1,
+    "units": 1.1
   },
   {
     "id": "knight",
@@ -64,7 +69,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1.5
+    "xp": 1,
+    "units": 1.5
   },
   {
     "id": "goblin",
@@ -75,7 +81,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1.4
+    "xp": 1,
+    "units": 1.4
   },
   {
     "id": "ork",
@@ -86,7 +93,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 2.8,
+    "xp": 2,
+    "units": 2.8,
     "lesser": "goblin"
   },
   {
@@ -98,7 +106,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 2.3,
+    "xp": 2,
+    "units": 2.3,
     "lesser": "peasant"
   },
   {
@@ -110,7 +119,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 3.0,
+    "xp": 2,
+    "units": 3.0,
     "lesser": "knight"
   },
   {
@@ -122,7 +132,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1.1
+    "xp": 1,
+    "units": 1.1
   },
   {
     "id": "dwarf_warrior",
@@ -133,7 +144,8 @@
     "flags": [
       "mortal"
     ],
-    "xp": 2.2,
+    "xp": 2,
+    "units": 2.2,
     "lesser": "dwarf"
   }
 ]

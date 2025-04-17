@@ -15,7 +15,8 @@ export const useQuestStore = defineStore('quest', () => {
   const playerCount = ref<number>(3)
   const difficulty = ref<number>(1)
   const xp = ref<number>(0)
-  const persist = ref(['title', 'description', 'status', 'startPubId', 'endPubId', 'currentPubId', 'playerCount', 'xp'])
+  const units = ref<number>(0) // Track alcohol units consumed
+  const persist = ref(['title', 'description', 'status', 'startPubId', 'endPubId', 'currentPubId', 'playerCount', 'xp', 'units'])
 
   const setTitle = (newTitle: string) => {
     title.value = newTitle
@@ -53,6 +54,14 @@ export const useQuestStore = defineStore('quest', () => {
     xp.value += amount
   }
   
+  const setUnits = (newUnits: number) => {
+    units.value = newUnits
+  }
+  
+  const addUnits = (amount: number) => {
+    units.value += amount
+  }
+  
   const endQuest = () => {
     setStatus('no_quest')
   }
@@ -87,6 +96,7 @@ export const useQuestStore = defineStore('quest', () => {
     playerCount,
     difficulty,
     xp,
+    units,
     setStartPubId,
     setEndPubId,
     setCurrentPub,
@@ -99,6 +109,8 @@ export const useQuestStore = defineStore('quest', () => {
     setDifficulty,
     setXP,
     addXP,
+    setUnits,
+    addUnits,
     persist
   }
 }) 

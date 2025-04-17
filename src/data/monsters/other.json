@@ -7,7 +7,8 @@
     "level": "minion",
     "species": "human",
     "flags": ["mortal"],
-    "xp": 1.5
+    "xp": 1,
+    "units": 1.0
   },
   {
     "id": "huntmaster",
@@ -16,7 +17,8 @@
     "level": "grunt",
     "species": "human",
     "flags": ["mortal"],
-    "xp": 1.5,
+    "xp": 2,
+    "units": 1.5,
     "lesser": "huntsman"
   },
   {
@@ -26,7 +28,8 @@
     "level": "boss",
     "species": "human",
     "flags": ["mortal"],
-    "xp": 10,
+    "xp": 3,
+    "units": 1.5,
     "lesser": "huntmaster",
     "lesserCount": "playerCount"
   },
@@ -37,7 +40,8 @@
     "level": "minion",
     "species": "ghost",
     "flags": ["spirit"],
-    "xp": 1
+    "xp": 1,
+    "units": 1.0
   },
   {
     "id": "hungry_ghost",
@@ -47,6 +51,7 @@
     "species": "ghost",
     "flags": ["spirit"],
     "xp": 2,
+    "units": 2.0,
     "lesser": "lost_spirit"
   },
   {
@@ -56,7 +61,8 @@
     "level": "boss",
     "species": "ghost",
     "flags": ["spirit"],
-    "xp": 10,
+    "xp": 3,
+    "units": 1.0,
     "lesser": "lost_spirit",
     "lesserCount": "playerCount"
   },
@@ -70,7 +76,8 @@
     "level": "elite",
     "species": "human",
     "flags": ["mortal","magic-user"],
-    "xp": 2.0,
+    "xp": 3,
+    "units": 2.0,
     "lesser": "peasant"
   },
   {
@@ -81,7 +88,8 @@
     "level": "grunt",
     "species": "human",
     "flags": ["mortal","magic-user"],
-    "xp": 1.5,
+    "xp": 2,
+    "units": 0.9,
     "lesser": "peasant"
   },
   {
@@ -92,7 +100,8 @@
     "level": "elite",
     "species": "human",
     "flags": ["mortal","magic-user"],
-    "xp": 3.0,
+    "xp": 3,
+    "units": 3.3,
     "lesser": "peasant"
   },
 
@@ -104,7 +113,8 @@
     "level": "grunt",
     "species": "chameleonoid",
     "flags": ["mortal"],
-    "xp": 2.0,
+    "xp": 2,
+    "units": 1.5,
     "lesser": "mimic"
   },
   {
@@ -114,7 +124,8 @@
     "level": "grunt",
     "species": "human",
     "flags": ["group","undead"],
-    "xp": 3.5,
+    "xp": 3,
+    "units": 3.5,
     "lesser": "mimic"
   },
 
@@ -126,7 +137,8 @@
     "level": "grunt",
     "species": "demonoid",
     "flags": ["magic-user"],
-    "xp": 2.5,
+    "xp": 2,
+    "units": 2.0,
     "lesser": "imp"
   },
   {
@@ -136,7 +148,8 @@
     "level": "grunt",
     "species": "fey",
     "flags": ["group"],
-    "xp": 2.3,
+    "xp": 2,
+    "units": 2.3,
     "lesser": "mimic"
   },
   {
@@ -147,7 +160,8 @@
     "level": "boss",
     "species": "special",
     "flags": ["group"],
-    "xp": 5,
+    "xp": 2,
+    "units": 1.1,
     "lesser": "deserter",
     "lesserCount": "playerCount"
   },
@@ -159,7 +173,8 @@
     "level": "boss",
     "species": "special",
     "flags": ["group"],
-    "xp": 10,
+    "xp": 3,
+    "units": 2.3,
     "lesser": "rabble"
   },
   {
@@ -169,7 +184,8 @@
     "level": "minion",
     "species": "special",
     "flags": [],
-    "xp": 1.2
+    "xp": 1,
+    "units": 1.1
   },
 
   {

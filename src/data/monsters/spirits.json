@@ -6,7 +6,8 @@
     "level": "minion",
     "species": "demonoid",
     "flags": ["magic-user"],
-    "xp": 1.0
+    "xp": 1.0,
+    "units": 1.0
   },
   {
     "id": "sand_titan",
@@ -16,6 +17,7 @@
     "species": "demonoid",
     "flags": ["mortal", "magic-user"],
     "xp": 2.0,
+    "units": 2.0,
     "lesser": "desert_wyrm"
   },
   {
@@ -25,7 +27,8 @@
     "level": "minion",
     "species": "elemental",
     "flags": ["spirit"],
-    "xp": 1.0
+    "xp": 1.0,
+    "units": 1.0
   },
   {
     "id": "azure_flame_elemental",
@@ -35,6 +38,7 @@
     "species": "elemental",
     "flags": ["spirit", "magic-user"],
     "xp": 2.0,
+    "units": 2.0,
     "lesser": "fire_phantom"
   },
   {
@@ -44,7 +48,8 @@
     "level": "minion",
     "species": "elemental",
     "flags": ["spirit"],
-    "xp": 1.0
+    "xp": 1.0,
+    "units": 1.0
   },
   {
     "id": "mountain_guardian",
@@ -54,6 +59,7 @@
     "species": "elemental",
     "flags": ["spirit", "magic-user"],
     "xp": 2.0,
+    "units": 2.0,
     "lesser": "earth_shaper"
   },
   {
@@ -63,7 +69,8 @@
     "level": "minion",
     "species": "fey",
     "flags": ["spirit"],
-    "xp": 1.0
+    "xp": 1.0,
+    "units": 1.0
   },
   {
     "id": "spectral_soldier",
@@ -72,7 +79,8 @@
     "level": "minion",
     "species": "ghost",
     "flags": ["spirit"],
-    "xp": 1.0
+    "xp": 1.0,
+    "units": 1.0
   },
   {
     "id": "desert_wisp",
@@ -81,7 +89,8 @@
     "level": "minion",
     "species": "fey",
     "flags": ["spirit"],
-    "xp": 1.0
+    "xp": 1.0,
+    "units": 1.0
   },
   {
     "id": "imp",
@@ -90,7 +99,8 @@
     "level": "minion",
     "species": "demonoid",
     "flags": ["magic-user"],
-    "xp": 1.0
+    "xp": 1.0,
+    "units": 1.0
   },
   {
     "id": "dryad",

@@ -39,7 +39,7 @@
               <div class="monster-info">
                 <div class="monster-title">{{ getMonsterTitle(group.type) }}</div>
                 <div class="monster-subinfo">{{ getMonsterSpecies(group.type) }} {{ getMonsterLevel(group.type) }}{{ getMonsterTraits(group.type) }}</div>
-                <div class="monster-xp">{{ getMonsterXP(group.type) }} XP</div>
+                <div class="monster-xp">{{ getMonsterXP(group.type) }} XP / {{ getMonsterUnits(group.type) }} Units</div>
                 <div class="monster-details">
                   <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(group.type) }}</div>
                 </div>
@@ -80,6 +80,7 @@ import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
 import '../styles/monsterStyles.css'
 import {useQuestStore} from "@/stores/questStore.ts";
+import { getMonsterXP, getMonsterUnits } from '@/quest/combat.ts';
 
 const props = defineProps<{
   pub: Pub
@@ -168,11 +169,32 @@ function getMonsterDrink(monsterId: string): string {
 
 function getMonsterXP(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
-  if (monster?.xp !== undefined) {
+  if (!monster) return "0";
+  
+  // Check if monster has player count scaling
+  if (monster.lesserCount === "playerCount") {
+    const scaledXP = monster.xp * questStore.playerCount;
     // If XP is a whole number, show as integer, otherwise show one decimal place
-    return monster.xp % 1 === 0 ? monster.xp.toString() : monster.xp.toFixed(1);
+    return scaledXP % 1 === 0 ? scaledXP.toString() : scaledXP.toFixed(1);
   }
-  return "Unknown";
+  
+  // If XP is a whole number, show as integer, otherwise show one decimal place
+  return monster.xp % 1 === 0 ? monster.xp.toString() : monster.xp.toFixed(1);
+}
+
+function getMonsterUnits(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return "0";
+  
+  // Check if monster has player count scaling
+  if (monster.lesserCount === "playerCount") {
+    const scaledUnits = monster.units * questStore.playerCount;
+    // Always show one decimal place for units
+    return scaledUnits.toFixed(1);
+  }
+  
+  // Always show one decimal place for units
+  return monster.units.toFixed(1);
 }
 
 function getMonsterClasses(monsterId: string): Record<string, boolean> {
@@ -225,16 +247,23 @@ function getMonsterTraits(monsterId: string): string {
   return `, ${monster.flags.join(', ')}`
 }
 
-function scoutPub(event: MouseEvent) {
+async function scoutPub(event: MouseEvent) {
   event.stopPropagation()
-  scoutLocation(props.pub)
+  await scoutLocation(props.pub)
+  
+  // Award XP for scouting a location through the UI
+  questStore.addXP(1);
+  appStore.addNotification("Location scouted: +1 XP", "success");
 }
 
 function enterPub(event: MouseEvent) {
   event.stopPropagation()
   questStore.setCurrentPub(props.pub.id)
   appStore.setScreen('location')
-  console.log( 'enter pub' )
+  
+  // Award XP for arriving at a location
+  questStore.addXP(2);
+  appStore.addNotification("Location entered: +2 XP", "success");
 }
 
 </script>

@@ -87,6 +87,7 @@ export async function startQuest(
     questStore.setPlayerCount(players);
     questStore.setDifficulty(difficulty);
     questStore.setXP(0); // Initialize player XP to zero when starting a new quest
+    questStore.setUnits(0); // Initialize units consumed to zero when starting a new quest
 
     // Initialize pubs
     pubStore.pubs.forEach((pub) => {
@@ -113,5 +114,4 @@ export async function startQuest(
     questStore.setCurrentPub(startPub.id)
 
     questStore.setStatus('active');
-
 }

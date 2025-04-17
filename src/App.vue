@@ -149,7 +149,7 @@ onUnmounted(() => {
     
     <div class="debug-overlay" v-if="appStore.playerLocation">
       <div>COORDS: {{ appStore.playerLocation.lat.toFixed(5) }}, {{ appStore.playerLocation.lng.toFixed(5) }}</div>
-      <div>XP: {{ questStore.xp }}</div>
+      <div>XP: {{ questStore.xp }} | Units: {{ questStore.units.toFixed(1) }}</div>
     </div>
     
     <div v-if="appStore.gpsStatus === 'initializing'" class="gps-status">

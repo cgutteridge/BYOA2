@@ -46,7 +46,45 @@
           <!-- Quest Tab -->
           <div v-else-if="activeTab === 'quest'" class="interface-tab interface-tab--quest">
             <h2>Current Quest</h2>
-            <p>Quest details will be displayed here in a future update.</p>
+            
+            <div class="quest-details">
+              <div class="quest-title">{{ questStore.title }}</div>
+              <div class="quest-description">{{ questStore.description }}</div>
+              
+              <div class="quest-stats">
+                <div class="stat-group">
+                  <div class="stat-label">Experience Points:</div>
+                  <div class="stat-value">{{ questStore.xp }}</div>
+                </div>
+                
+                <div class="stat-group">
+                  <div class="stat-label">Alcohol Units:</div>
+                  <div class="stat-value">{{ questStore.units.toFixed(1) }}</div>
+                </div>
+                
+                <div class="stat-group">
+                  <div class="stat-label">Player Count:</div>
+                  <div class="stat-value">{{ questStore.playerCount }}</div>
+                </div>
+              </div>
+              
+              <div class="quest-locations">
+                <div class="location">
+                  <div class="location-label">Start Location:</div>
+                  <div class="location-value">{{ questStore.startPub?.name || 'Unknown' }}</div>
+                </div>
+                
+                <div class="location">
+                  <div class="location-label">Current Location:</div>
+                  <div class="location-value">{{ questStore.currentPub?.name || 'Not in a location' }}</div>
+                </div>
+                
+                <div class="location">
+                  <div class="location-label">Target Location:</div>
+                  <div class="location-value">{{ questStore.endPub?.name || 'Unknown' }}</div>
+                </div>
+              </div>
+            </div>
           </div>
           
           <!-- Log Tab (disabled for now) -->
@@ -76,11 +114,13 @@
 import { computed } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore'
 import { useAppStore } from '../stores/appStore'
+import { useQuestStore } from '../stores/questStore'
 import ItemCard from './ItemCard.vue'
 
 // Stores
 const inventoryStore = useInventoryStore()
 const appStore = useAppStore()
+const questStore = useQuestStore()
 
 const isOpen = computed(()=>appStore.isInterfaceOpen)
 
@@ -264,5 +304,78 @@ function handleQuit() {
 
 .quit-button:hover {
   background-color: #d44;
+}
+
+.quest-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.quest-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.quest-description {
+  font-style: italic;
+  color: #555;
+  line-height: 1.4;
+}
+
+.quest-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.stat-group {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.stat-label {
+  font-weight: bold;
+  color: #555;
+}
+
+.stat-value {
+  color: #333;
+  font-weight: 600;
+}
+
+.quest-locations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.location {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.location-label {
+  font-weight: bold;
+  color: #555;
+}
+
+.location-value {
+  color: #333;
+  font-weight: 600;
 }
 </style> 

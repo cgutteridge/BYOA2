@@ -72,7 +72,7 @@
                   >
                     <span class="toggle-icon">{{ isMonsterDying(monster.id) ? '❌' : (monster.alive ? '☠️' : '🔄') }}</span>
                     {{ isMonsterDying(monster.id) ? 'Cancel' : (monster.alive ? 'Defeat' : 'Revive') }}
-                    <span class="xp-text">{{ getMonsterXP(monster.type) }} XP</span>
+                    <span class="xp-text">{{ getMonsterXP(monster.type) }} XP / {{ getMonsterUnits(monster.type) }} Units</span>
                   </button>
                 </div>
               </div>
@@ -122,7 +122,7 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {Monster} from "../types";
-import {areAllMonstersDefeated, claimMonsterItem} from "../quest/combat.ts";
+import {areAllMonstersDefeated, claimMonsterItem, getMonsterXP, getMonsterUnits} from "../quest/combat.ts";
 import '../styles/monsterStyles.css';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
@@ -218,11 +218,32 @@ function getMonsterDrink(monsterId: string): string {
 
 function getMonsterXP(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
-  if (monster?.xp !== undefined) {
+  if (!monster) return "0";
+  
+  // Check if monster has player count scaling
+  if (monster.lesserCount === "playerCount") {
+    const scaledXP = monster.xp * questStore.playerCount;
     // If XP is a whole number, show as integer, otherwise show one decimal place
-    return monster.xp % 1 === 0 ? monster.xp.toString() : monster.xp.toFixed(1);
+    return scaledXP % 1 === 0 ? scaledXP.toString() : scaledXP.toFixed(1);
   }
-  return "Unknown";
+  
+  // If XP is a whole number, show as integer, otherwise show one decimal place
+  return monster.xp % 1 === 0 ? monster.xp.toString() : monster.xp.toFixed(1);
+}
+
+function getMonsterUnits(monsterId: string): string {
+  const monster = monsterTypes.find(m => m.id === monsterId)
+  if (!monster) return "0";
+  
+  // Check if monster has player count scaling
+  if (monster.lesserCount === "playerCount") {
+    const scaledUnits = monster.units * questStore.playerCount;
+    // Always show one decimal place for units
+    return scaledUnits.toFixed(1);
+  }
+  
+  // Always show one decimal place for units
+  return monster.units.toFixed(1);
 }
 
 function getMonsterClasses(monsterId: string): Record<string, boolean> {
@@ -281,14 +302,23 @@ function leavePub() {
 }
 
 function claimItem(monster: Monster) {
-  if (monster.item) {
-    const itemName = monster.item.name;
-    const success = claimMonsterItem(monster);
-    
-    if (success) {
-      appStore.addNotification(`${itemName} added to inventory!`, 'success');
-    }
-  }
+  if (!monster.item || !questStore.currentPub?.monsters) return;
+  
+  // Find the monster in the pub's monsters
+  const monsterIndex = questStore.currentPub.monsters.findIndex(m => m.id === monster.id);
+  if (monsterIndex === -1) return;
+  
+  // Add the item to inventory
+  inventoryStore.addItem(monster.item);
+  
+  // Award XP for gaining an item
+  questStore.addXP(3);
+  
+  // Remove the item from the monster
+  questStore.currentPub.monsters[monsterIndex].item = undefined;
+  
+  // Show notification
+  appStore.addNotification(`Claimed ${monster.item.name}! +3 XP`, 'success');
 }
 
 function claimPrizeItem() {
@@ -385,7 +415,9 @@ function defeatMonster(monster: Monster) {
   
   // Check if this was the last monster to defeat for quest completion
   if (areAllMonstersDefeated(questStore.currentPub.monsters)) {
-    appStore.addNotification(`All monsters defeated! Prize unlocked!`, 'success');
+    // Award XP for completing all monsters in a location
+    questStore.addXP(5);
+    appStore.addNotification(`All monsters defeated! +5 XP. Prize unlocked!`, 'success');
   }
 }
 
