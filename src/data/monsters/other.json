@@ -115,7 +115,7 @@
     "species": "human",
     "flags": ["group","undead"],
     "xp": 3.5,
-    "lesser": "swarm"
+    "lesser": "mimic"
   },
 
   {
@@ -137,16 +137,7 @@
     "species": "fey",
     "flags": ["group"],
     "xp": 2.3,
-    "lesser": "swarm"
-  },
-  {
-    "id": "mimic",
-    "title": "Mimic",
-    "drink": "Half pint of your choice",
-    "level": "minion",
-    "species": "chameleonoid",
-    "flags": [],
-    "xp": 1.2
+    "lesser": "mimic"
   },
   {
     "id": "rabble",
@@ -192,8 +183,8 @@
     "lesser": "mimic"
   },
   {
-    "id": "mimic",
-    "title": "Mimic",
+    "id": "mimic_copy",
+    "title": "Mimic Copy",
     "drink": "Half pint of your bartender's choice",
     "level": "minion",
     "species": "chameleonoid",

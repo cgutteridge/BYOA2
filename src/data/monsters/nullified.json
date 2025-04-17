@@ -120,6 +120,7 @@
   },
   {
     "id": "petrified_elite",
+    "title": "Petrified Elite",
     "drink": "Packet of Salty Snacks",
     "level": "elite",
     "species": "nullified",
@@ -149,6 +150,7 @@
   },
   {
     "id": "distracted_elite",
+    "title": "Distracted Elite",
     "drink": "Large Glass of Cola",
     "level": "elite",
     "species": "nullified",

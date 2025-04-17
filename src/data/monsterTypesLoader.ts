@@ -29,14 +29,14 @@ import spiritsData from './monsters/spirits.json';
 import nullifiedData from './monsters/nullified.json';
 import otherData from './monsters/other.json';
 
-// Combine all monster data
+// Combine all monster data with explicit type assertion
 const monstersData: RawMonsterData[] = [
-  ...vampiresData,
-  ...elvesData,
-  ...pintsData,
-  ...spiritsData,
-  ...nullifiedData,
-  ...otherData
+  ...(vampiresData as RawMonsterData[]),
+  ...(elvesData as RawMonsterData[]),
+  ...(pintsData as RawMonsterData[]),
+  ...(spiritsData as RawMonsterData[]),
+  ...(nullifiedData as RawMonsterData[]),
+  ...(otherData as RawMonsterData[])
 ];
 
 // Parse the JSON data and apply the proper branded type to each ID
