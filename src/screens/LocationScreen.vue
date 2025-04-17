@@ -128,79 +128,6 @@ import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
 import ItemCard from "../components/ItemCard.vue";
 
-// History manipulation to prevent accidental navigation
-const historyFragments = ['location-state-1', 'location-state-2', 'location-state-3'];
-let currentFragmentIndex = 0;
-
-// Setup history state on mount
-onMounted(() => {
-  // Initialize with base history entries - put multiple entries in the history stack
-  const initialFragment = `#${historyFragments[0]}`;
-  
-  // First, replace the current history entry
-  history.replaceState({ fragment: initialFragment }, '', initialFragment);
-  
-  // Then push additional history entries to create a buffer
-  for (let i = 1; i < historyFragments.length; i++) {
-    const fragment = `#${historyFragments[i]}`;
-    history.pushState({ fragment }, '', fragment);
-  }
-  
-  // Set current index to the last pushed fragment
-  currentFragmentIndex = historyFragments.length - 1;
-  
-  // Listen for popstate events (back/forward navigation)
-  window.addEventListener('popstate', handlePopState);
-  
-  // Check if we already have dying monsters when component mounts
-  if (Object.keys(monstersDying.value).length > 0) {
-    startProgressAnimation();
-  }
-});
-
-// Clean up event listeners on unmount
-onUnmounted(() => {
-  window.removeEventListener('popstate', handlePopState);
-  
-  // Clean up animation frame
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId);
-    animationFrameId = null;
-  }
-  
-  // Clear any remaining timeouts for monsters
-  Object.keys(monstersDying.value).forEach(monsterId => {
-    if (monstersDying.value[monsterId]) {
-      window.clearTimeout(monstersDying.value[monsterId].timeoutId);
-    }
-  });
-});
-
-// Handle browser back/forward navigation
-function handlePopState(event: PopStateEvent) {
-  // A back navigation occurred - we need to prevent actual navigation away
-  
-  // Update our index in the fragment array
-  currentFragmentIndex = (currentFragmentIndex - 1 + historyFragments.length) % historyFragments.length;
-  
-  // If we reached the first fragment, we need to push more history states to maintain the buffer
-  if (currentFragmentIndex === 0) {
-    // Close modals if open
-    if (appStore.isInterfaceOpen) {
-      appStore.closeInventory();
-    } else if (appStore.inspectedItem) {
-      appStore.closeItemInspectModal();
-    }
-    
-    // Repopulate the history stack
-    for (let i = 1; i < historyFragments.length; i++) {
-      const fragment = `#${historyFragments[i]}`;
-      history.pushState({ fragment }, '', fragment);
-    }
-    currentFragmentIndex = historyFragments.length - 1;
-  }
-}
-
 // Constants
 const MONSTER_DEFEAT_DELAY_MS = 1000; // 2 seconds
 
@@ -239,6 +166,28 @@ function startProgressAnimation() {
     animationFrameId = requestAnimationFrame(updateDyingProgress);
   }
 }
+
+// Cancel the animation loop when component is unmounted
+onMounted(() => {
+  // Check if we already have dying monsters when component mounts
+  if (Object.keys(monstersDying.value).length > 0) {
+    startProgressAnimation();
+  }
+});
+
+onUnmounted(() => {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+  
+  // Clear any remaining timeouts
+  Object.keys(monstersDying.value).forEach(monsterId => {
+    if (monstersDying.value[monsterId]) {
+      window.clearTimeout(monstersDying.value[monsterId].timeoutId);
+    }
+  });
+});
 
 // Keep monsters in their original order rather than sorting based on alive status
 const sortedMonsters = computed(() => {
