@@ -532,9 +532,161 @@
     "level": "grunt",
     "species": "elemental",
     "flags": ["magic-user"],
-    "xp": 2.0,
+    "xp": 0.5,
     "lesser": "water_sprite"
   },
+  {
+    "id": "passive_minion",
+    "title": "Pacified Minion",
+    "drink": "Small Glass of Water",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "passive_grunt",
+    "title": "Pacified Grunt",
+    "drink": "Glass of Water",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "passive_minion"
+  },
+  {
+    "id": "passive_elite",
+    "title": "Pacified Elite",
+    "drink": "Large Glass of Water",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "passive_grunt"
+  },
+  {
+    "id": "veg_minion",
+    "title": "Vegetated Minion",
+    "drink": "Small Glass of Juice",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "veg_grunt",
+    "title": "Vegetated Grunt",
+    "drink": "Glass of Juice",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "passive_minion"
+  },
+  {
+    "id": "veg_elite",
+    "title": "Vegetated Elite",
+    "drink": "Large Glass of Juice",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "veg_grunt"
+  },
+
+  {
+    "id": "petrified_minion",
+    "title": "Petrified Minion",
+    "drink": "Small Glass of Juice",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "petrified_grunt",
+    "title": "Petrified Grunt",
+    "drink": "Glass of Juice",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "passive_minion"
+  },
+  {
+    "id": "petrified_elite",
+    "drink": "Large Glass of Juice",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "veg_grunt"
+  },
+
+  {
+    "id": "veg_minion",
+    "title": "Vegetated Minion",
+    "drink": "Small Glass of Juice",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "veg_grunt",
+    "title": "Pacified Grunt",
+    "drink": "Glass of Juice",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "passive_minion"
+  },
+  {
+    "id": "veg_elite",
+    "drink": "Large Glass of Juice",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "veg_grunt"
+  },
+
+  {
+    "id": "veg_minion",
+    "title": "Vegetated Minion",
+    "drink": "Small Glass of Juice",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "veg_grunt",
+    "title": "Pacified Grunt",
+    "drink": "Glass of Juice",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "passive_minion"
+  },
+  {
+    "id": "veg_elite",
+    "drink": "Large Glass of Juice",
+    "level": "elite",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5,
+    "lesser": "veg_grunt"
+  },
+
+
+
+
+
+
+
   {
     "id": "ice_shard",
     "title": "Ice Shard",
@@ -547,12 +699,13 @@
   {
     "id": "frost_golem",
     "title": "Frost Golem",
-    "drink": "Three Ice Cubes",
+    "drink": "Half Pint of Ice Cubes",
     "level": "grunt",
     "species": "elemental",
     "flags": [],
     "xp": 2.0,
-    "lesser": "ice_shard"
+    "lesser": "ice_shard",
+    "lesserCount": 6
   },
   {
     "id": "glacial_titan",
@@ -563,6 +716,36 @@
     "flags": ["magic-user"],
     "xp": 3.0,
     "lesser": "frost_golem"
+  },
+  {
+    "id": "frozen_minion",
+    "title": "Frozen Minion",
+    "drink": "One Ice Cube",
+    "level": "minion",
+    "species": "nullified",
+    "flags": [],
+    "xp": 0.5
+  },
+  {
+    "id": "frozen_grunt",
+    "title": "Frost Golem",
+    "drink": "3 Ice Cubes",
+    "level": "grunt",
+    "species": "nullified",
+    "flags": [],
+    "xp": 2.0,
+    "lesser": "frost_minion",
+    "lesserCount": 3
+  },
+  {
+    "id": "frozen_elite",
+    "title": "Frozen Elite",
+    "drink": "6 Ice Cubes",
+    "level": "elite",
+    "species": "nullified",
+    "flags": ["magic-user"],
+    "xp": 3.0,
+    "lesser": "frost_grunt"
   },
   {
     "id": "shadow_knight",

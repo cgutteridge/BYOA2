@@ -1,4 +1,4 @@
-import type { Item, Monster } from '../types'
+import type {Item, Monster, MonsterLevel} from '../types'
 import { ItemPower } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
 import { useQuestStore } from '@/stores/questStore.ts'
@@ -18,7 +18,7 @@ export class ShrinkPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly levelRestrictions = null; // Can target any level
+  readonly levelRestrictions: MonsterLevel[] = ['grunt','elite']
 
   // Funny name patterns for shrunken monsters
   private readonly shrinkNames = [
