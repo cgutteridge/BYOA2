@@ -31,8 +31,6 @@ pinia.use(({store}) => {
     // @ts-ignore
     store.$subscribe((mutation, state) => {
         // Save properties
-        console.log( `STORYING ${store.$id})`)
-        console.log(state)
         const stateToSave: Record<string, any> = {}
         state.persist.map((key: any) => {
             
