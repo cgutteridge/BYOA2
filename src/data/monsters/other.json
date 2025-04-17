@@ -177,7 +177,7 @@
     "xp": 2,
     "booze": 1.1,
     "soft": 0,
-    "lesser": "deserter",
+    "lesser": "routed_rabble",
     "lesserCount": "playerCount"
   },
   {
@@ -191,17 +191,31 @@
     "xp": 3,
     "booze": 2.3,
     "soft": 0,
-    "lesser": "rabble"
+    "lesser": "deserter",
+    "lesserCount": "playerCount"
   },
   {
-    "id": "deserter",
-    "title": "Deserter",
+    "id": "routed_rabble",
+    "title": "Member of a Routed Rabble",
+    "plural": "Members of a Routed Rabble",
     "drink": "Half pint of your bartender's choice",
     "level": "minion",
     "species": "special",
     "flags": [],
     "xp": 1,
     "booze": 1.1,
+    "soft": 0
+  },
+  {
+    "id": "deserter",
+    "title": "Deserter from an Army",
+    "plural": "Deserters from an Army",
+    "drink": "Pint of your bartender's choice",
+    "level": "minion",
+    "species": "special",
+    "flags": [],
+    "xp": 2,
+    "booze": 2.2,
     "soft": 0
   },
 

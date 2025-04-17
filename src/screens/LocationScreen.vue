@@ -73,7 +73,7 @@
                     <span class="toggle-icon">{{ isMonsterDying(monster.id) ? '❌' : (monster.alive ? '☠️' : '🔄') }}</span>
                     {{ isMonsterDying(monster.id) ? 'Cancel' : (monster.alive ? 'Defeat' : 'Revive') }}
                     <span class="xp-text">{{ getMonsterXP(monster.type) }}&nbsp;XP
-                      <template v-if="getMonsterBooze(monster.type)!=0">/ {{ formatNumber(getMonsterBooze(monster.type)) }}&nbsp;Units</template>
+                      <template v-if="getMonsterBooze(monster.type)>0">/ {{ formatNumber(getMonsterBooze(monster.type)) }}&nbsp;Booze</template>
                     </span>
                   </button>
                 </div>
