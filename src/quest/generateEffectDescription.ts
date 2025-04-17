@@ -115,9 +115,9 @@ export function generateEffectDescription(item: Item): string {
       break;
       
     case 'split':
-      effect = `This ${qualityTerm} item creates lesser versions of `;
+      effect = `This ${qualityTerm} item splits `;
       effect += getTargetDescription(item);
-      effect += ".";
+      effect += " into multiple but weaker enemies.";
       break;
       
     case 'pickpocket':

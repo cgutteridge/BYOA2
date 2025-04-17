@@ -92,42 +92,63 @@ export function claimMonsterItem(monster: Monster): boolean {
 
 /**
  * Get the monster XP value, accounting for player count scaling if applicable
- * @param monster - The monster to get XP for
- * @returns The XP value, scaled if needed
+ * @param monster - The monster to get XP for or a monster type ID
+ * @returns The XP value as a formatted string, scaled if needed
  */
-export function getMonsterXP(monster: Monster): number {
+export function getMonsterXP(monsterOrTypeId: Monster | string): string {
   const questStore = useQuestStore();
+  let typeId: string;
   
-  // Find the monster type definition
-  const monsterType = monsterTypes.find(type => type.id === monster.type);
-  if (!monsterType) return 1;
-  
-  // Apply player count scaling if applicable
-  if (monsterType.lesserCount === "playerCount") {
-    return monsterType.xp * questStore.playerCount;
+  // Check if we received a Monster object or a type ID
+  if (typeof monsterOrTypeId === 'string') {
+    typeId = monsterOrTypeId;
+  } else {
+    typeId = monsterOrTypeId.type;
   }
   
-  // Return regular XP value
-  return monsterType.xp;
+  // Find the monster type definition
+  const monsterType = monsterTypes.find(type => type.id === typeId);
+  if (!monsterType) return "0";
+  
+  // Apply player count scaling if applicable
+  let xpValue = monsterType.xp;
+  if (monsterType.lesserCount === "playerCount") {
+    xpValue = monsterType.xp * questStore.playerCount;
+  }
+  
+  // Format the value - if it's a whole number, show as integer, otherwise show one decimal place
+  return xpValue % 1 === 0 ? xpValue.toString() : xpValue.toFixed(1);
 }
 
 /**
  * Get the monster Units value, accounting for player count scaling if applicable
- * @param monster - The monster to get Units for
- * @returns The Units value, scaled if needed
+ * @param monster - The monster to get Units for or a monster type ID
+ * @returns The Units value as a formatted string, scaled if needed
  */
-export function getMonsterUnits(monster: Monster): number {
+export function getMonsterUnits(monsterOrTypeId: Monster | string): string {
   const questStore = useQuestStore();
+  let typeId: string;
   
-  // Find the monster type definition
-  const monsterType = monsterTypes.find(type => type.id === monster.type);
-  if (!monsterType) return 1;
-  
-  // Apply player count scaling if applicable
-  if (monsterType.lesserCount === "playerCount") {
-    return monsterType.units * questStore.playerCount;
+  // Check if we received a Monster object or a type ID
+  if (typeof monsterOrTypeId === 'string') {
+    typeId = monsterOrTypeId;
+  } else {
+    typeId = monsterOrTypeId.type;
   }
   
-  // Return regular Units value
-  return monsterType.units;
+  // Find the monster type definition
+  const monsterType = monsterTypes.find(type => type.id === typeId);
+  if (!monsterType) return "0";
+  
+  // Check if the monster type has the units property, if not return 0
+  if (monsterType.units === undefined) return "0";
+  
+  // Apply player count scaling if applicable
+  let unitsValue = monsterType.units;
+  if (monsterType.lesserCount === "playerCount") {
+    unitsValue = monsterType.units * questStore.playerCount;
+  }
+  
+  // Always show one decimal place for units
+  return unitsValue.toFixed(1);
 } 

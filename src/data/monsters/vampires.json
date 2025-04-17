@@ -6,7 +6,8 @@
     "level": "minion",
     "species": "vampire",
     "flags": ["undead"],
-    "xp": 1.8
+    "xp": 1.8,
+    "units": 1.0
   },
   {
     "id": "vampire",
@@ -16,6 +17,7 @@
     "species": "vampire",
     "flags": ["undead","magic-user"],
     "xp": 3.5,
+    "units": 2.5,
     "lesser": "thrall_vampire"
   },
   {
@@ -26,6 +28,7 @@
     "species": "vampire",
     "flags": ["undead","magic-user"],
     "xp": 10.0,
+    "units": 9.0,
     "lesser": "vampire",
     "lesserCount": 3
   }

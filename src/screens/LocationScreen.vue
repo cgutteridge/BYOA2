@@ -122,7 +122,7 @@ import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {Monster} from "../types";
-import {areAllMonstersDefeated, claimMonsterItem, getMonsterXP, getMonsterUnits} from "../quest/combat.ts";
+import {areAllMonstersDefeated, getMonsterXP, getMonsterUnits} from "../quest/combat.ts";
 import '../styles/monsterStyles.css';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
@@ -214,36 +214,6 @@ function getMonsterTitle(monsterId: string): string {
 function getMonsterDrink(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   return monster?.drink || "Unknown"
-}
-
-function getMonsterXP(monsterId: string): string {
-  const monster = monsterTypes.find(m => m.id === monsterId)
-  if (!monster) return "0";
-  
-  // Check if monster has player count scaling
-  if (monster.lesserCount === "playerCount") {
-    const scaledXP = monster.xp * questStore.playerCount;
-    // If XP is a whole number, show as integer, otherwise show one decimal place
-    return scaledXP % 1 === 0 ? scaledXP.toString() : scaledXP.toFixed(1);
-  }
-  
-  // If XP is a whole number, show as integer, otherwise show one decimal place
-  return monster.xp % 1 === 0 ? monster.xp.toString() : monster.xp.toFixed(1);
-}
-
-function getMonsterUnits(monsterId: string): string {
-  const monster = monsterTypes.find(m => m.id === monsterId)
-  if (!monster) return "0";
-  
-  // Check if monster has player count scaling
-  if (monster.lesserCount === "playerCount") {
-    const scaledUnits = monster.units * questStore.playerCount;
-    // Always show one decimal place for units
-    return scaledUnits.toFixed(1);
-  }
-  
-  // Always show one decimal place for units
-  return monster.units.toFixed(1);
 }
 
 function getMonsterClasses(monsterId: string): Record<string, boolean> {

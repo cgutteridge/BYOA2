@@ -1,4 +1,3 @@
-
 [
   {
     "id": "forest_elf",
@@ -7,7 +6,8 @@
     "level": "minion",
     "species": "elf",
     "flags": ["mortal"],
-    "xp": 1.5
+    "xp": 1.5,
+    "units": 1.0
   },
   {
     "id": "plains_elf",
@@ -17,6 +17,7 @@
     "species": "elf",
     "flags": ["mortal"],
     "xp": 2.1,
+    "units": 1.5,
     "lesser": "forest_elf"
   },
   {
@@ -27,6 +28,7 @@
     "species": "elf",
     "flags": ["mortal"],
     "xp": 3.0,
+    "units": 2.0,
     "lesser": "forest_elf"
   },
   {
@@ -37,6 +39,7 @@
     "species": "elf",
     "flags": ["mortal"],
     "xp": 9.0,
+    "units": 9.0,
     "lesser": "high_elf",
     "lesserCount": 3
   }
