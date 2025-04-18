@@ -182,9 +182,6 @@ onUnmounted(() => {
               appStore.screen !== 'intro' && 
               appStore.screen !== 'victory')"
         class="interface-button"
-        :class="{
-          'with-debug-banner': isDebugMode
-        }"
         @click="toggleInterface"
         title="Open Interface (I)"
       >
@@ -282,10 +279,10 @@ body {
 
 .debug-banner {
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
-  background-color: #f00;
+  background-color: rgba(200, 50, 50, 0.85);
   color: white;
   text-align: center;
   padding: 5px;
