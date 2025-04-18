@@ -4,14 +4,14 @@
       <h2>{{ questStore.currentPub?.name }}</h2>
     </div>
 
-    <button class="leave-button" @click="leavePub">Leave</button>
-
     <!-- Location description section -->
     <div class="location-description-section" v-if="questStore.currentPub?.description">
       <div class="location-description">
         {{ questStore.currentPub.description }}
       </div>
     </div>
+
+    <button class="leave-button" @click="leavePub">Leave Location</button>
 
     <div class="gift-item-section" v-if="questStore.currentPub?.giftItem">
       <div class="gift-item-container">
