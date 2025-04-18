@@ -40,9 +40,15 @@ onMounted(() => {
         setTimeout(() => {
           const notificationEl = document.querySelector(`[data-notification-id="${notification.id}"]`) as HTMLElement;
           if (notificationEl && typeof notification.centerIndex === 'number') {
+            // Calculate offset with padding between notifications
+            // The offset is calculated based on the index and a fixed padding
+            const padding = 20; // Padding between notifications
+            const baseHeight = 70; // Estimated base height of a notification with reduced padding
+            const offset = notification.centerIndex * (baseHeight + padding);
+            
             // Set custom properties for positioning
             notificationEl.style.setProperty('--notification-index', notification.centerIndex.toString());
-            notificationEl.style.setProperty('--notification-offset', `${notification.centerIndex * 70}px`);
+            notificationEl.style.setProperty('--notification-offset', `${offset}px`);
           }
         }, 0);
       }
@@ -57,7 +63,7 @@ onMounted(() => {
       setTimeout(() => {
         // Call the store method to exit the center animation
         appStore.exitCenterAnimation(notification.id);
-      }, 1000); // Match animation duration
+      }, 2000); // Match animation duration
     });
   });
 });
@@ -79,7 +85,7 @@ onMounted(() => {
 .notification {
   background: rgba(0, 0, 0, 0.8);
   border-radius: 8px;
-  padding: 12px 16px;
+  padding: 8px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -95,7 +101,7 @@ onMounted(() => {
 /* Styles for the initial center position */
 .notification-entering {
   position: fixed;
-  top: calc(30vh + var(--notification-offset, 0));
+  top: calc(20vh + var(--notification-offset, 0));
   left: 50%;
   transform: translate(-50%, -50%) scale(1);
   z-index: calc(10000 - var(--notification-index, 0)); /* Higher z-index for earlier notifications */
@@ -104,7 +110,7 @@ onMounted(() => {
 }
 
 .notification-entering {
-  animation: poof-animation 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: poof-animation 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes poof-animation {
@@ -112,11 +118,14 @@ onMounted(() => {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.2);
   }
-  25% {
+  15% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(3);
   }
-  50% {
+  30% {
+    transform: translate(-50%, -50%) scale(2.5);
+  }
+  90% {
     transform: translate(-50%, -50%) scale(2.5);
   }
   100% {

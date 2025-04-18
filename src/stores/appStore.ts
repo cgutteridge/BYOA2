@@ -118,13 +118,24 @@ export const useAppStore = defineStore('app', () => {
   const exitCenterAnimation = (id: string): void => {
     const index = notifications.value.findIndex(n => n.id === id);
     if (index !== -1 && notifications.value[index].isEntering) {
+      // Store the centerIndex that's being removed
+      const removedIndex = notifications.value[index].centerIndex;
+      
+      // Mark notification as no longer entering
       notifications.value[index].isEntering = false;
       
-      // Decrement center notification count after a brief delay
-      // to ensure smooth stacking transitions
-      setTimeout(() => {
-        centerNotificationCount.value = Math.max(0, centerNotificationCount.value - 1);
-      }, 100);
+      // Decrement center notification count
+      centerNotificationCount.value = Math.max(0, centerNotificationCount.value - 1);
+      
+      // Adjust centerIndex for all remaining notifications that were below this one
+      if (removedIndex !== undefined) {
+        notifications.value.forEach(notification => {
+          if (notification.isEntering && notification.centerIndex !== undefined && notification.centerIndex > removedIndex) {
+            // Reduce index by 1 for notifications that were below this one
+            notification.centerIndex--;
+          }
+        });
+      }
     }
   };
 
