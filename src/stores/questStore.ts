@@ -1,28 +1,28 @@
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
-import type {LocationId, QuestState} from '@/types'
+import type {GameLocationId, QuestState} from '@/types'
 import {useLocationStore} from './locationStore'
 import {useAppStore} from './appStore'
 import formatNumber from "@/utils/formatNumber.ts";
 
 export const useQuestStore = defineStore('quest', () => {
-  const locationStore = useLocationStore()
+  const gameLocationStore = useLocationStore()
   const appStore = useAppStore()
 
   const title = ref<string>('foo')
   const description = ref<string>('foo')
   const status = ref<QuestState>('no_quest')
-  const startLocationId = ref<LocationId | undefined>()
-  const endLocationId = ref<LocationId | undefined>()
-  const currentLocationId = ref<LocationId | undefined>()
+  const startGameLocationId = ref<GameLocationId | undefined>()
+  const endGameLocationId = ref<GameLocationId | undefined>()
+  const currentGameLocationId = ref<GameLocationId | undefined>()
   const playerCount = ref<number>(3)
   const difficulty = ref<number>(1)
   const xp = ref<number>(0)
   const booze = ref<number>(0) // Track alcohol booze consumed
   const soft = ref<number>(0) // Track soft drinks/water consumed
-  const persist = ref(['title', 'description', 'status', 'startLocation' +
-  'Id', 'endLocation' +
-  'Id', 'currentLocation' +
+  const persist = ref(['title', 'description', 'status', 'startGameLocation' +
+  'Id', 'endGameLocation' +
+  'Id', 'currentGameLocation' +
   'Id', 'playerCount', 'xp', 'booze', 'soft'])
 
   const setTitle = (newTitle: string) => {
@@ -34,11 +34,11 @@ export const useQuestStore = defineStore('quest', () => {
   const setStatus = (newStatus: QuestState) => {
     status.value = newStatus
   }
-  const setCurrentLocation = (locationId: LocationId) => {
-    currentLocationId.value = locationId
+  const setCurrentGameLocation = (gameLocationId: GameLocationId) => {
+    currentGameLocationId.value = gameLocationId
   }
-  const unsetCurrentLocation = () => {
-    currentLocationId.value = undefined
+  const unsetCurrentGameLocation = () => {
+    currentGameLocationId.value = undefined
   }
   const setPlayerCount = (count: number) => {
     playerCount.value = count
@@ -46,11 +46,11 @@ export const useQuestStore = defineStore('quest', () => {
   const setDifficulty = (questDifficulty: number) => {
     difficulty.value = questDifficulty
   }
-  const setStartLocationId = (id: LocationId) => {
-    startLocationId.value = id
+  const setStartGameLocationId = (id: GameLocationId) => {
+    startGameLocationId.value = id
   }
-  const setEndLocationId = (id: LocationId) => {
-    endLocationId.value = id
+  const setEndGameLocationId = (id: GameLocationId) => {
+    endGameLocationId.value = id
   }
   
   const setXP = (newXP: number) => {
@@ -111,44 +111,44 @@ export const useQuestStore = defineStore('quest', () => {
     setStatus('no_quest')
   }
 
-  const startLocation = computed(() => {
-    if (startLocationId.value === undefined) {
+  const startGameLocation = computed(() => {
+    if (startGameLocationId.value === undefined) {
       return undefined
     }
-    return locationStore.location(startLocationId.value)
+    return gameLocationStore.gameLocation(startGameLocationId.value)
   })
-  const endLocation = computed(() => {
-    if (endLocationId.value === undefined) {
+  const endGameLocation = computed(() => {
+    if (endGameLocationId.value === undefined) {
       return undefined
     }
-    return locationStore.location(endLocationId.value)
+    return gameLocationStore.gameLocation(endGameLocationId.value)
   })
-  const currentLocation = computed(() => {
-    if (currentLocationId.value === undefined) {
+  const currentGameLocation = computed(() => {
+    if (currentGameLocationId.value === undefined) {
       return undefined
     }
-    return locationStore.location(currentLocationId.value)
+    return gameLocationStore.gameLocation(currentGameLocationId.value)
   })
 
   return {
-    startLocation,
-    endLocation,
-    currentLocationId,
+    startGameLocation,
+    endGameLocation,
+    currentGameLocationId,
     status,
     title,
     description,
-    currentLocation,
+    currentGameLocation,
     playerCount,
     difficulty,
     xp,
     booze,
     soft,
-    startLocationId,
-    endLocationId,
-    setStartLocationId,
-    setEndLocationId,
-    setCurrentLocation,
-    unsetCurrentLocation,
+    startGameLocationId,
+    endGameLocationId,
+    setStartGameLocationId,
+    setEndGameLocationId,
+    setCurrentGameLocation,
+    unsetCurrentGameLocation,
     endQuest,
     setStatus,
     setTitle,

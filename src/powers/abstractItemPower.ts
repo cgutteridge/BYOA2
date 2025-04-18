@@ -1,4 +1,13 @@
-import type {Item, ItemPowerId, Monster, MonsterFlag, MonsterLevel, MonsterTypeId, TargetMode} from '../types'
+import type {
+    GameLocation,
+    Item,
+    ItemPowerId,
+    Monster,
+    MonsterFlag,
+    MonsterLevel,
+    MonsterTypeId,
+    TargetMode
+} from '../types'
 import {monsterTypes} from '../data/monsterTypes'
 import {useQuestStore} from "@/stores/questStore.ts";
 
@@ -43,7 +52,7 @@ export abstract class ItemPower {
     }
 
     // @ts-ignore - May be unused in base class, implemented by subclasses
-    targetLocations(_item: Item, _locations: Location[]): Location[] {
+    targetGameLocations(_item: Item, _gameLocations: GameLocation[]): GameLocation[] {
         return [];
     }
 
@@ -60,7 +69,7 @@ export abstract class ItemPower {
     }
 
     // @ts-ignore - May be unused in base class, implemented by subclasses
-    useOnLocation(item: Item, locationId: string): PowerResult {
+    useOnGameLocation(item: Item, gameLocationId: string): PowerResult {
         return {message: "this should be subclassed!", success: false}
     }
 
@@ -115,16 +124,16 @@ export abstract class ItemPower {
      */
     getValidTargets(
         item: Item,
-        targets: Monster[] | Location[] | MonsterTypeId[]
-    ): Monster[] | Location[] | MonsterTypeId[] {
+        targets: Monster[] | GameLocation[] | MonsterTypeId[]
+    ): Monster[] | GameLocation[] | MonsterTypeId[] {
         // Determine what type of targets we're dealing with
         if (targets.length > 0) {
             if ('type' in targets[0] && 'alive' in targets[0]) {
                 // It's a monster array
                 return this.targetMonsters(item, targets as Monster[]);
             } else if ('monsters' in targets[0]) {
-                // It's a locations array
-                return this.targetLocations(item, targets as Location[]);
+                // It's a gameLocations array
+                return this.targetGameLocations(item, targets as GameLocation[]);
             }
         }
 
@@ -191,14 +200,14 @@ export abstract class ItemPower {
         // Get the quest store
         const questStore = useQuestStore();
 
-        // Get the current location's monsters
-        const location = questStore.currentLocation;
-        if (!location || !location.monsters) {
+        // Get the current gameLocation's monsters
+        const gameLocation = questStore.currentGameLocation;
+        if (!gameLocation || !gameLocation.monsters) {
             return 0
         }
 
         // Find all monsters of the specified type
-        const monstersOfType = location.monsters.filter(
+        const monstersOfType = gameLocation.monsters.filter(
             (monster: Monster) => monster.type === type && monster.alive
         );
 
@@ -225,6 +234,6 @@ export interface PowerFactory {
 export interface PowerResult {
     success: boolean;
     message: string;
-    targets?: Monster[] | Location[] | MonsterTypeId[];
+    targets?: Monster[] | GameLocation[] | MonsterTypeId[];
     affectedItems?: Item[];
 } 

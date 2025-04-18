@@ -14,7 +14,7 @@ const questStore = useQuestStore();
 const appStore = useAppStore()
 
 function start() {
-  appStore.setScreen('location')
+  appStore.setScreen('gameLocation')
 }
 </script>
 

@@ -3,15 +3,15 @@
     <h2>{{ questStore.title }}</h2>
     <p class="description">{{ questStore.description }}</p>
     
-    <div class="pub-info">
-      <div class="start-pub">
-        <h3>Start Pub</h3>
-        <p>{{ questStore.startLocation?.name || 'Not selected' }}</p>
+    <div class="gameLocation-info">
+      <div class="start-gameLocation">
+        <h3>Start GameLocation</h3>
+        <p>{{ questStore.startGameLocation?.name || 'Not selected' }}</p>
       </div>
       
-      <div class="end-pub">
-        <h3>End Pub</h3>
-        <p>{{ questStore.endLocation?.name || 'Not selected' }}</p>
+      <div class="end-gameLocation">
+        <h3>End GameLocation</h3>
+        <p>{{ questStore.endGameLocation?.name || 'Not selected' }}</p>
       </div>
     </div>
   </div>
@@ -38,14 +38,14 @@ const questStore = useQuestStore()
   line-height: 1.6;
 }
 
-.pub-info {
+.gameLocation-info {
   display: flex;
   justify-content: space-around;
   margin-top: 2rem;
   gap: 2rem;
 }
 
-.start-pub, .end-pub {
+.start-gameLocation, .end-gameLocation {
   flex: 1;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.1);

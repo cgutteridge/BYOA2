@@ -1,8 +1,8 @@
-// Export location types
+// Export gameLocation types
 export { 
-  locationTypes, 
-  locationTypesList, 
-  locationTypesById 
+  locationTypes,
+  locationTypesList,
+  locationTypesById
 } from './locationTypesLoader';
 
 // Export monster types

@@ -1,7 +1,7 @@
 // Default configuration
-import {Encounter, LocationDifficulty, WeightedList} from "@/types";
+import {Encounter, GameLocationDifficulty, WeightedList} from "@/types";
 
-export const encounterTable: Record<LocationDifficulty, WeightedList<Encounter>> = {
+export const encounterTable: Record<GameLocationDifficulty, WeightedList<Encounter>> = {
     'start': [
         {
             value: [{level: 'grunt', count: 1}],

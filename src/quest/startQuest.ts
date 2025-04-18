@@ -1,12 +1,11 @@
-import type {Pub} from '@/types'
+import type {GameLocation} from '@/types'
 import {useQuestStore} from "@/stores/questStore.ts";
-import {useLocationStore} from "@/stores/locationStore.ts";
-import {usePubStore} from "@/stores/pubStore.ts";
-import initialiseLocation from "@/quest/initialiseLocation.ts";
 import { useInventoryStore } from "@/stores/inventoryStore.ts";
 import { generateRandomItem } from "@/quest/generateRandomItem.ts";
 import type { Item, ItemPowerId } from "@/types";
 import { toItemId } from '@/types';
+import {useLocationStore} from "@/stores/locationStore.ts";
+import initialiseGameLocation from "@/quest/initialiseLocation.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 
 // Function to create unrestricted debug items with pick and pick_type for each power
@@ -76,29 +75,29 @@ function createDebugItems(): Item[] {
 
 export async function startQuest(
     title: string,
-    startPub: Pub,
-    endPub: Pub,
+    startGameLocation: GameLocation,
+    endGameLocation: GameLocation,
     difficulty: number,
     players: number,
 ): Promise<void> {
     const questStore = useQuestStore()
-    const pubStore = usePubStore()
+    const locationStore = useLocationStore()
     const inventoryStore = useInventoryStore()
 
     questStore.setStatus('init');
     questStore.setTitle(title);
-    questStore.setDescription(`Your quest is to reach ${endPub.name}`);
-    questStore.setStartLocationId(startPub.id);
-    questStore.setEndLocationId(endPub.id);
+    questStore.setDescription(`Your quest is to reach ${endGameLocation.name}`);
+    questStore.setStartGameLocationId(startGameLocation.id);
+    questStore.setEndGameLocationId(endGameLocation.id);
     questStore.setPlayerCount(players);
     questStore.setDifficulty(difficulty);
     questStore.setXP(0); // Initialize player XP to zero when starting a new quest
     questStore.setBooze(0); // Initialize booze consumed to zero when starting a new quest
     questStore.setSoft(0); // Initialize soft drinks consumed to zero when starting a new quest
 
-    // Initialize pubs
-    pubStore.pubs.forEach((pub) => {
-        initialiseLocation(pub)
+    // Initialize gameLocations
+    locationStore.locations.forEach((gameLocation:GameLocation) => {
+        initialiseGameLocation(gameLocation)
     })
     
     // Clear any existing inventory items
@@ -117,8 +116,8 @@ export async function startQuest(
         inventoryStore.addItem(item);
     });
 
-    await scoutLocation(questStore.startLocation as Pub);
-    questStore.setCurrentLocation(startPub.id)
+    await scoutLocation(questStore.startGameLocation as GameLocation);
+    questStore.setCurrentGameLocation(startGameLocation.id)
 
     questStore.setStatus('active');
 }

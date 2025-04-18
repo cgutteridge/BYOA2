@@ -8,7 +8,7 @@
 import {computed, createApp, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import type {Coordinates, Location} from '../types'
+import type {Coordinates, GameLocation} from '../types'
 import {useLocationStore} from "../stores/locationStore";
 import {useAppStore} from "../stores/appStore";
 import {locationTypesById} from "@/data/locationTypes.ts";
@@ -23,25 +23,25 @@ const locationStore = useLocationStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
-const locationMarkers = ref<L.Marker[]>([])
+const gameLocationMarkers = ref<L.Marker[]>([])
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])
 
 // Computed properties
 const playerCoordinates = computed(() => appStore.playerCoordinates)
-const locations = computed(() => locationStore.locations)
+const gameLocations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
 
-function createLocationMarker(location: Location, mapInstance: L.Map): L.Marker {
+function createGameLocationMarker(gameLocation: GameLocation, mapInstance: L.Map): L.Marker {
   if (!mapInstance) {
     throw new Error('No map instance provided for marker creation')
   }
 
-  const locationType = locationTypesById[location.locationType]
-  const iconPath = `./icons/${locationType.filename}`
+  const gameLocationType = locationTypesById[gameLocation.gameLocationType]
+  const iconPath = `./icons/${gameLocationType.filename}`
 
-  const marker = L.marker([location.lat, location.lng], {
+  const marker = L.marker([gameLocation.lat, gameLocation.lng], {
     icon: L.icon({
       iconUrl: iconPath,
       iconSize: [67, 83],
@@ -53,9 +53,9 @@ function createLocationMarker(location: Location, mapInstance: L.Map): L.Marker 
     })
   }).addTo(mapInstance)
 
-  // Create popup for this location
+  // Create popup for this gameLocation
   const popup = L.popup({
-    className: 'location-info-popup',
+    className: 'gameLocation-info-popup',
     maxWidth: 500,
     minWidth: 320,
     closeButton: false,
@@ -72,7 +72,7 @@ function createLocationMarker(location: Location, mapInstance: L.Map): L.Marker 
     container.className = 'popup-vue-container'
     
     // Create a new Vue app with our component
-    const app = createApp(LocationPopup, {location})
+    const app = createApp(LocationPopup, {gameLocation})
     
     // Mount the app to our container
     app.mount(container)
@@ -168,14 +168,14 @@ function cleanupMap(): void {
   if (map.value) {
     try {
       // Remove markers first
-      locationMarkers.value.forEach(marker => {
+      gameLocationMarkers.value.forEach(marker => {
         try {
           if (marker) marker.remove()
         } catch (error) {
           console.error('Error removing marker:', error)
         }
       })
-      locationMarkers.value = []
+      gameLocationMarkers.value = []
       
       // Then remove map
       map.value.off()
@@ -204,27 +204,27 @@ function initializeMap(): void {
       document.querySelector('.map-container')?.appendChild(mapContainer)
     }
 
-    // Use stored map position, fall back to player location or default
-    let location: Location
+    // Use stored map position, fall back to player gameLocation or default
+    let gameLocation: Coordinates
     let zoom: number
 
     if (mapPosition.value) {
-      location = mapPosition.value
+      gameLocation = mapPosition.value
       zoom = mapZoom.value || 16
     } else if (playerCoordinates.value) {
-      location = playerCoordinates.value
+      gameLocation = playerCoordinates.value
       zoom = 16
     } else {
-      location = { lat: 51.505, lng: -0.09 }
+      gameLocation = { lat: 51.505, lng: -0.09 }
       zoom = 13
     }
     
-    console.log('Using location for map:', location, 'zoom:', zoom)
+    console.log('Using gameLocation for map:', gameLocation, 'zoom:', zoom)
 
     const mapInstance = L.map('map', {
       preferCanvas: true,
       zoomControl: false  // Disable the default zoom control
-    }).setView([location.lat, location.lng], zoom)
+    }).setView([gameLocation.lat, gameLocation.lng], zoom)
 
     // Add event listeners for map movement and zoom
     mapInstance.on('moveend', () => {
@@ -285,16 +285,16 @@ function initializeMap(): void {
     new CenterControl().addTo(mapInstance);
 
     map.value = mapInstance
-    console.log('Map initialized successfully with location:', location)
+    console.log('Map initialized successfully with gameLocation:', gameLocation)
 
 
-    // Add player marker if location is available
+    // Add player marker if gameLocation is available
     if (playerCoordinates.value) {
       updatePlayerMarker(playerCoordinates.value)
     }
 
-    // Generate location markers
-    generateLocationMarkers()
+    // Generate gameLocation markers
+    generateGameLocationMarkers()
 
 
   } catch (error) {
@@ -330,10 +330,10 @@ onUnmounted(() => {
   }
 })
 
-// Watch for location changes
-watch(playerCoordinates, (newLocation) => {
-  if (newLocation && map.value) {
-    updatePlayerMarker(newLocation)
+// Watch for gameLocation changes
+watch(playerCoordinates, (newGameLocation) => {
+  if (newGameLocation && map.value) {
+    updatePlayerMarker(newGameLocation)
   }
 }, { immediate: true })
 
@@ -346,24 +346,24 @@ watch(() => appStore.screen, (newMode, oldMode) => {
   }
 }, { immediate: true })
 
-function generateLocationMarkers(): void {
+function generateGameLocationMarkers(): void {
   if (!map.value) return;
   
   // Clear existing markers
-  locationMarkers.value.forEach(marker => marker.remove());
-  locationMarkers.value = [];
+  gameLocationMarkers.value.forEach(marker => marker.remove());
+  gameLocationMarkers.value = [];
 
   // Create new markers
-  locations.value.forEach((location: Location) => {
-    const marker = createLocationMarker(location, map.value as L.Map)
-    locationMarkers.value.push(marker)
+  gameLocations.value.forEach((gameLocation: GameLocation) => {
+    const marker = createGameLocationMarker(gameLocation, map.value as L.Map)
+    gameLocationMarkers.value.push(marker)
     return marker
   })
 
-  console.log('Total markers created:', locationMarkers.value.length)
+  console.log('Total markers created:', gameLocationMarkers.value.length)
 }
 
-function updatePlayerMarker(location: Location): void {
+function updatePlayerMarker(coords: Coordinates): void {
   const theMap = map.value as L.Map
   if (!theMap) return
 
@@ -373,7 +373,7 @@ function updatePlayerMarker(location: Location): void {
   }
 
   // Create new marker with a clear icon
-  playerMarker.value = L.marker([location.lat, location.lng], {
+  playerMarker.value = L.marker([coords.lat, coords.lng], {
     icon: L.divIcon({
       className: 'player-marker',
       html: '<div class="player-dot"></div>',
@@ -459,23 +459,23 @@ button {
 }
 
 /* Popup styles */
-:deep(.location-info-popup) {
+:deep(.gameLocation-info-popup) {
   max-width: 90vw !important;
 }
 
-:deep(.location-info-popup .leaflet-popup-content-wrapper) {
+:deep(.gameLocation-info-popup .leaflet-popup-content-wrapper) {
   background: rgba(30, 30, 30, 0.95);
   border-radius: 12px;
   box-shadow: 0 3px 20px rgba(0, 0, 0, 0.7);
   padding: 5px;
 }
 
-:deep(.location-info-popup .leaflet-popup-tip) {
+:deep(.gameLocation-info-popup .leaflet-popup-tip) {
   background: rgba(30, 30, 30, 0.95);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
 }
 
-:deep(.location-info-popup .leaflet-popup-content) {
+:deep(.gameLocation-info-popup .leaflet-popup-content) {
   margin: 0;
   width: auto !important;
   max-height: 75vh;
@@ -496,11 +496,11 @@ button {
 }
 
 @media screen and (max-width: 600px) {
-  :deep(.location-info-popup) {
+  :deep(.gameLocation-info-popup) {
     max-width: 95vw !important;
   }
   
-  :deep(.location-info-popup .leaflet-popup-content) {
+  :deep(.gameLocation-info-popup .leaflet-popup-content) {
     max-height: 70vh;
   }
 }

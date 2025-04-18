@@ -1,8 +1,8 @@
 <template>
-  <div class="pub-view">
-    <h1>{{ questStore.currentLocation.name }}</h1>
-    <p>Welcome to the pub! More content coming soon...</p>
-    <button @click="exitPub">Exit Pub</button>
+  <div class="gameLocation-view">
+    <h1>{{ questStore.currentGameLocation.name }}</h1>
+    <p>Welcome to the gameLocation! More content coming soon...</p>
+    <button @click="exitGameLocation">Exit GameLocation</button>
   </div>
 </template>
 
@@ -11,13 +11,13 @@ import { useQuestStore } from '../stores/questStore.js'
 
 const questStore = useQuestStore()
 
-function exitPub() {
+function exitGameLocation() {
   questStore.setGameMode('map')
 }
 </script>
 
 <style>
-.pub-view {
+.gameLocation-view {
   width: 100%;
   height: 100vh;
   display: flex;

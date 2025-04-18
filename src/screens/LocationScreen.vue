@@ -1,29 +1,29 @@
 <template>
-  <div class="location-screen">
-    <div class="location-header">
-      <h2>{{ questStore.currentLocation?.name }}</h2>
+  <div class="gameLocation-screen">
+    <div class="gameLocation-header">
+      <h2>{{ questStore.currentGameLocation?.name }}</h2>
     </div>
 
-    <!-- Location description section -->
-    <div class="location-description-section" v-if="questStore.currentLocation?.description">
-      <div class="location-description">
-        {{ questStore.currentLocation.description }}
+    <!-- GameLocation description section -->
+    <div class="gameLocation-description-section" v-if="questStore.currentGameLocation?.description">
+      <div class="gameLocation-description">
+        {{ questStore.currentGameLocation.description }}
       </div>
     </div>
 
-    <button class="leave-button" @click="leaveLocation">Leave Location</button>
+    <button class="leave-button" @click="leaveGameLocation">Leave GameLocation</button>
 
-    <div class="gift-item-section" v-if="questStore.currentLocation?.giftItem">
+    <div class="gift-item-section" v-if="questStore.currentGameLocation?.giftItem">
       <h3><span class="icon">🎁</span> Gift Item Available!</h3>
       <ItemCard 
-        :item="questStore.currentLocation.giftItem"
+        :item="questStore.currentGameLocation.giftItem"
         variant="gift"
         :show-details="true"
         @action="claimGiftItem"
       />
     </div>
 
-    <div class="combat-container" v-if="questStore.currentLocation?.monsters">
+    <div class="combat-container" v-if="questStore.currentGameLocation?.monsters">
       <!-- All monsters in a 3-column flex layout with active ones first -->
       <div class="monsters-container">
         <template v-for="monster in sortedMonsters" :key="monster.id">
@@ -100,14 +100,14 @@
       </div>
       
       <!-- Prize item section -->
-      <div v-if="questStore.currentLocation.prizeItem" class="prize-item-section">
+      <div v-if="questStore.currentGameLocation.prizeItem" class="prize-item-section">
         <h3><span class="icon">🏆</span> Quest Prize:</h3>
         <div class="prize-item-wrapper">
           <div v-if="!allMonstersDefeated" class="monster-item-locked">
             <span class="lock-icon">🔒</span>
           </div>
           <ItemCard 
-            :item="questStore.currentLocation.prizeItem"
+            :item="questStore.currentGameLocation.prizeItem"
             variant="prize"
             :show-details="true"
             @action="claimPrizeItem"
@@ -193,18 +193,18 @@ onUnmounted(() => {
 
 // Keep monsters in their original order rather than sorting based on alive status
 const sortedMonsters = computed(() => {
-  if (!questStore.currentLocation?.monsters || !questStore.currentLocation.monsters.length) {
+  if (!questStore.currentGameLocation?.monsters || !questStore.currentGameLocation.monsters.length) {
     return [];
   }
   
   // Simply return the monsters array without reordering
-  return [...questStore.currentLocation.monsters];
+  return [...questStore.currentGameLocation.monsters];
 });
 
 // Compute whether all monsters are defeated here
 const allMonstersDefeated = computed(() => {
-  return questStore.currentLocation?.monsters
-    ? areAllMonstersDefeated(questStore.currentLocation.monsters)
+  return questStore.currentGameLocation?.monsters
+    ? areAllMonstersDefeated(questStore.currentGameLocation.monsters)
     : false
 })
 
@@ -286,9 +286,9 @@ function getMonsterFlags(monsterId: string): string[] {
   return monster.flags
 }
 
-function leaveLocation() {
+function leaveGameLocation() {
   appStore.setScreen('map')
-  questStore.unsetCurrentLocation()
+  questStore.unsetCurrentGameLocation()
 }
 
 function claimItem(monster: Monster) {
@@ -307,18 +307,18 @@ function claimItem(monster: Monster) {
   }
   
   // Clear the item from the monster
-  if (questStore.currentLocation?.monsters) {
-    const monsterIndex = questStore.currentLocation.monsters.findIndex(m => m.id === monster.id);
+  if (questStore.currentGameLocation?.monsters) {
+    const monsterIndex = questStore.currentGameLocation.monsters.findIndex(m => m.id === monster.id);
     if (monsterIndex !== -1) {
       // Clear the item
-      questStore.currentLocation.monsters[monsterIndex].item = undefined;
+      questStore.currentGameLocation.monsters[monsterIndex].item = undefined;
     }
   }
 }
 
 function claimPrizeItem() {
-  if (allMonstersDefeated.value && questStore.currentLocation?.prizeItem) {
-    const prizeItem = questStore.currentLocation.prizeItem;
+  if (allMonstersDefeated.value && questStore.currentGameLocation?.prizeItem) {
+    const prizeItem = questStore.currentGameLocation.prizeItem;
     
     // Add to inventory
     inventoryStore.addItem(prizeItem);
@@ -329,19 +329,19 @@ function claimPrizeItem() {
       questStore.updateStats(xpToAward, 0, 0, `claiming prize ${prizeItem.name}`);
     }
     
-    // Remove from location
-    delete questStore.currentLocation.prizeItem;
+    // Remove from gameLocation
+    delete questStore.currentGameLocation.prizeItem;
   } else {
     // Only show the description if not all monsters are defeated
-    if (questStore.currentLocation?.prizeItem) {
-      appStore.openItemInspectModal(questStore.currentLocation.prizeItem);
+    if (questStore.currentGameLocation?.prizeItem) {
+      appStore.openItemInspectModal(questStore.currentGameLocation.prizeItem);
     }
   }
 }
 
 function claimGiftItem() {
-  if (questStore.currentLocation?.giftItem) {
-    const giftItem = questStore.currentLocation.giftItem;
+  if (questStore.currentGameLocation?.giftItem) {
+    const giftItem = questStore.currentGameLocation.giftItem;
     
     // Add to inventory
     inventoryStore.addItem(giftItem);
@@ -352,8 +352,8 @@ function claimGiftItem() {
       questStore.updateStats(xpToAward, 0, 0, `claiming gift ${giftItem.name}`);
     }
     
-    // Remove from Location
-    delete questStore.currentLocation.giftItem;
+    // Remove from GameLocation
+    delete questStore.currentGameLocation.giftItem;
   }
 }
 
@@ -412,10 +412,10 @@ function cancelDefeatCountdown(monster: Monster) {
 
 // Actually defeat the monster
 function defeatMonster(monster: Monster) {
-  if (!questStore.currentLocation?.monsters) return;
+  if (!questStore.currentGameLocation?.monsters) return;
   
-  // Find the monster in the location
-  const monsterIndex = questStore.currentLocation.monsters.findIndex(m => m.id === monster.id);
+  // Find the monster in the gameLocation
+  const monsterIndex = questStore.currentGameLocation.monsters.findIndex(m => m.id === monster.id);
   if (monsterIndex === -1) return;
 
   // Update stats
@@ -424,25 +424,25 @@ function defeatMonster(monster: Monster) {
   const softToAdd = getMonsterSoft(monster.type)
   questStore.updateStats(xpToAdd, unitsToAdd, softToAdd, `defeating ${monster.name}`);
   // Set alive to false
-  questStore.currentLocation.monsters[monsterIndex].alive = false;
+  questStore.currentGameLocation.monsters[monsterIndex].alive = false;
   
   // Check if this was the last monster to defeat for quest completion
-  if (areAllMonstersDefeated(questStore.currentLocation.monsters)) {
-    // Award XP for completing all monsters in a location (using updateStats)
-    questStore.updateStats(5, 0, 0, "clearing all monsters from this location");
+  if (areAllMonstersDefeated(questStore.currentGameLocation.monsters)) {
+    // Award XP for completing all monsters in a gameLocation (using updateStats)
+    questStore.updateStats(5, 0, 0, "clearing all monsters from this gameLocation");
   }
 }
 
 // Revive a monster
 function reviveMonster(monster: Monster) {
-  if (!questStore.currentLocation?.monsters) return;
+  if (!questStore.currentGameLocation?.monsters) return;
   
-  // Find the monster in the location
-  const monsterIndex = questStore.currentLocation.monsters.findIndex(m => m.id === monster.id);
+  // Find the monster in the gameLocation
+  const monsterIndex = questStore.currentGameLocation.monsters.findIndex(m => m.id === monster.id);
   if (monsterIndex === -1) return;
   
   // Set alive to true
-  questStore.currentLocation.monsters[monsterIndex].alive = true;
+  questStore.currentGameLocation.monsters[monsterIndex].alive = true;
 }
 
 // Check if a monster is currently dying (in countdown)
@@ -468,7 +468,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
 </script>
 
 <style scoped>
-.location-screen {
+.gameLocation-screen {
   min-height: 100vh;
   padding: 2rem;
   background: linear-gradient(135deg, #1a1a1a 0%, #666666 100%);
@@ -477,13 +477,13 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   text-align: center;
 }
 
-.location-header {
+.gameLocation-header {
   justify-content: space-between;
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
-.location-header h2 {
+.gameLocation-header h2 {
   display: inline-block;
   margin: 0;
   font-size: 2rem;
@@ -501,7 +501,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   cursor: pointer;
 }
 
-.location-description-section {
+.gameLocation-description-section {
   max-width: 800px;
   margin: 1rem auto 2rem;
   padding: 1.5rem;
@@ -510,7 +510,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.location-description {
+.gameLocation-description {
   font-size: 1.1rem;
   line-height: 1.6;
   color: #f0f0f0;

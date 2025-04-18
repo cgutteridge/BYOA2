@@ -1,14 +1,14 @@
-import {Location} from "@/types";
+import {GameLocation} from "@/types";
 
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter'
 ]
 
-export default async function fetchNearbyLocations(lat: number, lng: number, radius: number = 5000): Promise<Location[]> {
+export default async function fetchNearbyGameLocations(lat: number, lng: number, radius: number = 5000): Promise<GameLocation[]> {
   const overpassQuery = `
     [out:json][timeout:100];
-    nwr["amenity"~"^(pub|bar)$"]["name"](around:${radius},${lat},${lng});
+    nwr["amenity"~"^(gameLocation|bar)$"]["name"](around:${radius},${lat},${lng});
     out center;
   `
   let lastError: Error | null = null
@@ -20,22 +20,22 @@ export default async function fetchNearbyLocations(lat: number, lng: number, rad
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch locations: ${response.status} ${response.statusText}`)
+        throw new Error(`Failed to fetch gameLocations: ${response.status} ${response.statusText}`)
       }
 
       const data = await response.json()
-      const locations: Location[] = data.elements
+      const gameLocations: GameLocation[] = data.elements
         .filter((element: any) => element.tags && element.tags.name)
         .map((element: any) => ({
           id: element.id.toString(),
           name: element.tags.name,
           lat: element.lat ?? element.center.lat,
           lng: element.lon ?? element.center.lon,
-          locationType: 'pub', // Default type, will be randomized later
+          gameLocationType: 'gameLocation', // Default type, will be randomized later
           scouted: false,
         }))
 
-      return locations
+      return gameLocations
     } catch (error) {
       console.warn(`Failed to fetch from ${endpoint}:`, error)
       lastError = error as Error

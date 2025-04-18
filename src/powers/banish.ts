@@ -1,6 +1,6 @@
-import type { Item, Monster } from '../types'
-import { ItemPower } from './abstractItemPower'
-import { useQuestStore } from '@/stores/questStore.ts'
+import type {Item, Monster} from '../types'
+import {ItemPower} from './abstractItemPower'
+import {useQuestStore} from '@/stores/questStore.ts'
 
 /**
  * Banish power implementation
@@ -24,31 +24,31 @@ export class BanishPower extends ItemPower {
     if (!monster || !monster.alive) {
       return false;
     }
-    
-    // Get the quest store to access the current location
+
+    // Get the quest store to access the current gameLocation
     const questStore = useQuestStore();
-    const currentLocation = questStore.currentLocation;
-    
-    // Guard: check if current location exists and has monsters
-    if (!currentLocation || !currentLocation.monsters) {
-      console.log('Cannot banish monster: no current location found');
+    const currentGameLocation = questStore.currentGameLocation;
+
+    // Guard: check if current gameLocation exists and has monsters
+    if (!currentGameLocation || !currentGameLocation.monsters) {
+      console.log('Cannot banish monster: no current gameLocation found');
       return false;
     }
-    
-    // Find the monster in the current location
-    const monsterIndex = currentLocation.monsters.findIndex(m => m.id === monster.id);
+
+    // Find the monster in the current gameLocation
+    const monsterIndex = currentGameLocation.monsters.findIndex((m: Monster) => m.id === monster.id);
     
     // Guard: check if monster was found
     if (monsterIndex === -1) {
-      console.log(`Could not find monster ${monster.name} in the current location.`);
+      console.log(`Could not find monster ${monster.name} in the current gameLocation.`);
       return false;
     }
     
     // Store monster reference before removing it
-    const removedMonster = currentLocation.monsters[monsterIndex];
-    
-    // Remove the monster from the location
-    currentLocation.monsters.splice(monsterIndex, 1);
+    const removedMonster = currentGameLocation.monsters[monsterIndex];
+
+    // Remove the monster from the gameLocation
+    currentGameLocation.monsters.splice(monsterIndex, 1);
     
     // Log the banishment
     if (removedMonster.item) {

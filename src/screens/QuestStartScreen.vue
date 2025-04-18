@@ -16,35 +16,35 @@
       
       <div v-if="isLoading" class="loading-state">
         <div class="loading-spinner"></div>
-        <p>Loading locations...</p>
+        <p>Loading gameLocations...</p>
       </div>
       
       <div v-else class="quest-form">
-        <div class="location-selection">
-          <div class="location-selector">
-            <h3>Start Location</h3>
+        <div class="gameLocation-selection">
+          <div class="gameLocation-selector">
+            <h3>Start GameLocation</h3>
             <PickerComponent
               v-model="startLocationId"
               :options="locationStore.locations"
               searchable
-              placeholder="Search for a location..."
+              gameLocationholder="Search for a gameLocation..."
               value-property="id"
               display-property="name"
-              @selection-change="updateStartLocation"
+              @selection-change="updateStartGameLocation"
               :theme="currentTheme"
             />
           </div>
           
-          <div class="location-selector">
-            <h3>End Location</h3>
+          <div class="gameLocation-selector">
+            <h3>End GameLocation</h3>
             <PickerComponent
               v-model="endLocationId"
               :options="locationStore.locations"
               searchable
-              placeholder="Search for a location..."
+              gameLocationholder="Search for a gameLocation..."
               value-property="id"
               display-property="name"
-              @selection-change="updateEndLocation"
+              @selection-change="updateEndGameLocation"
               :theme="currentTheme"
             />
           </div>
@@ -54,7 +54,7 @@
           <input 
             v-model="questTitle" 
             type="text" 
-            placeholder="Quest Title" 
+            gameLocationholder="Quest Title" 
             class="quest-input"
           />
           
@@ -102,14 +102,14 @@ import { startQuest } from "@/quest/startQuest.ts"
 import PickerComponent from '@/components/PickerComponent.vue'
 import ButtonPickerComponent from '@/components/ButtonPickerComponent.vue'
 import CounterPickerComponent from '@/components/CounterPickerComponent.vue'
+import {GameLocation} from "@/types";
 import {useLocationStore} from "@/stores/locationStore.ts";
-import {Location} from "@/types";
 
 const appStore = useAppStore()
 const locationStore = useLocationStore()
 
-const selectedStartLocation = ref<Location | null>(null)
-const selectedEndLocation = ref<Location | null>(null)
+const selectedStartLocation = ref<GameLocation | null>(null)
+const selectedEndLocation = ref<GameLocation | null>(null)
 const startLocationId = ref<string>('')
 const endLocationId = ref<string>('')
 const questTitle = ref('The ring of Badgers')
@@ -118,19 +118,19 @@ const selectedDifficulty = ref('medium')
 const playerCount = ref(3)
 const currentTheme = ref<'light' | 'dark'>('light') // Updated with proper type
 
-// Watch for locations to be loaded
+// Watch for gameLocations to be loaded
 watch(() => locationStore.locations, (newLocations) => {
   if (newLocations.length > 0) {
     isLoading.value = false
   }
 }, { immediate: true })
 
-// Watch for id changes to update the location objects
+// Watch for id changes to update the gameLocation objects
 watch([startLocationId], () => {
   if (startLocationId.value) {
-    const location = locationStore.locations.find(p => p.id === startLocationId.value)
-    if (location) {
-      selectedStartLocation.value = location
+    const gameLocation = locationStore.locations.find((p:GameLocation) => p.id === startLocationId.value)
+    if (gameLocation) {
+      selectedStartLocation.value = gameLocation
     }
   } else {
     selectedStartLocation.value = null
@@ -139,9 +139,9 @@ watch([startLocationId], () => {
 
 watch([endLocationId], () => {
   if (endLocationId.value) {
-    const location = locationStore.locations.find(p => p.id === endLocationId.value)
-    if (location) {
-      selectedEndLocation.value = location
+    const gameLocation = locationStore.locations.find((p:GameLocation) => p.id === endLocationId.value)
+    if (gameLocation) {
+      selectedEndLocation.value = gameLocation
     }
   } else {
     selectedEndLocation.value = null
@@ -151,66 +151,66 @@ watch([endLocationId], () => {
 const canStartQuest = computed(() => {
   // Debug log
   console.log('Checking if can start quest:', {
-    selectedStartLocation: selectedStartLocation.value,
-    selectedEndLocation: selectedEndLocation.value,
-    startLocationId: startLocationId.value,
-    endLocationId: endLocationId.value,
+    selectedStartGameLocation: selectedStartLocation.value,
+    selectedEndGameLocation: selectedEndLocation.value,
+    startGameLocationId: startLocationId.value,
+    endGameLocationId: endLocationId.value,
     questTitle: questTitle.value
   })
   
-  // We have locations selected either via objects or IDs
+  // We have gameLocations selected either via objects or IDs
   const hasStartLocation = !!(selectedStartLocation.value || startLocationId.value)
   const hasEndLocation = !!(selectedEndLocation.value || endLocationId.value)
   
-  // The locations are different
-  const differentLocations =
+  // The gameLocations are different
+  const differentGameLocations =
     (selectedStartLocation.value?.id !== selectedEndLocation.value?.id) &&
     (startLocationId.value !== endLocationId.value)
   
   // We have a quest title
   const hasTitle = questTitle.value.trim() !== ''
   
-  return hasStartLocation && hasEndLocation && differentLocations && hasTitle
+  return hasStartLocation && hasEndLocation && differentGameLocations && hasTitle
 })
 
 // Helper functions for the PickerComponent
-function updateStartLocation(location: Location | string) {
-  console.log('Setting start location:', location)
+function updateStartGameLocation(gameLocation: GameLocation | string) {
+  console.log('Setting start gameLocation:', gameLocation)
   
-  // If we're getting an ID instead of a Location object
-  if (typeof location === 'string') {
-    startLocationId.value = location
-    const found = locationStore.locations.find(p => p.id === location)
+  // If we're getting an ID instead of a GameLocation object
+  if (typeof gameLocation === 'string') {
+    startLocationId.value = gameLocation
+    const found = locationStore.locations.find((p:GameLocation) => p.id === gameLocation)
     if (found) {
       selectedStartLocation.value = found
     }
   } else {
-    selectedStartLocation.value = location
-    startLocationId.value = location.id
+    selectedStartLocation.value = gameLocation
+    startLocationId.value = gameLocation.id
   }
 }
 
-function updateEndLocation(location: Location | string) {
-  console.log('Setting end location:', location)
+function updateEndGameLocation(gameLocation: GameLocation | string) {
+  console.log('Setting end gameLocation:', gameLocation)
   
-  // If we're getting an ID instead of a Location object
-  if (typeof location === 'string') {
-    endLocationId.value = location
-    const found = locationStore.locations.find(p => p.id === location)
+  // If we're getting an ID instead of a GameLocation object
+  if (typeof gameLocation === 'string') {
+    endLocationId.value = gameLocation
+    const found = locationStore.locations.find((p:GameLocation) => p.id === gameLocation)
     if (found) {
       selectedEndLocation.value = found
     }
   } else {
-    selectedEndLocation.value = location
-    endLocationId.value = location.id
+    selectedEndLocation.value = gameLocation
+    endLocationId.value = gameLocation.id
   }
 }
 
-// Watch for changes in selected location and quest title to help debug
+// Watch for changes in selected gameLocation and quest title to help debug
 watch([selectedStartLocation, selectedEndLocation, questTitle], () => {
   console.log('Quest state updated:', {
-    startLocation: selectedStartLocation.value,
-    endLocation: selectedEndLocation.value,
+    startGameLocation: selectedStartLocation.value,
+    endGameLocation: selectedEndLocation.value,
     title: questTitle.value,
     canStart: canStartQuest.value
   })
@@ -225,22 +225,22 @@ async function callStartQuest() {
   if (canStartQuest.value) {
     console.log('Starting quest...')
     
-    // Make sure we have the full location objects
-    let startLocation = selectedStartLocation.value
-    let endLocation = selectedEndLocation.value
+    // Make sure we have the full gameLocation objects
+    let startGameLocation = selectedStartLocation.value
+    let endGameLocation = selectedEndLocation.value
     
-    // If we only have IDs, find the full location objects
-    if (!startLocation && startLocationId.value) {
-      startLocation = locationStore.locations.find(p => p.id === startLocationId.value) || null
+    // If we only have IDs, find the full gameLocation objects
+    if (!startGameLocation && startLocationId.value) {
+      startGameLocation = locationStore.locations.find((p:GameLocation) => p.id === startLocationId.value) || null
     }
     
-    if (!endLocation && endLocationId.value) {
-      endLocation = locationStore.locations.find(p => p.id === endLocationId.value) || null
+    if (!endGameLocation && endLocationId.value) {
+      endGameLocation = locationStore.locations.find((p:GameLocation) => p.id === endLocationId.value) || null
     }
     
-    // Check that we have valid location objects
-    if (!startLocation || !endLocation) {
-      console.error('Failed to find locations', { startLocationId: startLocationId.value, endLocationId: endLocationId.value })
+    // Check that we have valid gameLocation objects
+    if (!startGameLocation || !endGameLocation) {
+      console.error('Failed to find gameLocations', { startGameLocationId: startLocationId.value, endGameLocationId: endLocationId.value })
       return
     }
     
@@ -253,18 +253,18 @@ async function callStartQuest() {
     
     await startQuest(
       questTitle.value,
-      startLocation as Location,
-      endLocation as Location,
+      startGameLocation as GameLocation,
+      endGameLocation as GameLocation,
       difficulty,
       playerCount.value
     );
   }
 }
 
-// Load locations when the component is mounted
+// Load gameLocations when the component is mounted
 onMounted(() => {
   console.log('mounted QuestStartScreen')
-  locationStore.fetchNearbyLocations()
+  locationStore.fetchNearbyGameLocations()
 })
 </script>
 
@@ -309,13 +309,13 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.3);
 }
 
-.location-selection {
+.gameLocation-selection {
   display: flex;
   gap: 2rem;
   margin: 2rem 0;
 }
 
-.location-selector {
+.gameLocation-selector {
   flex: 1;
   position: relative;
 }

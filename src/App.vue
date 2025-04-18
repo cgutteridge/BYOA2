@@ -49,7 +49,7 @@ async function initializeGPS() {
     if (isDebugMode.value ) {
       const debugCoordinates = {lat: 50.91018, lng: -1.40419 } //southampton
       //const debugCoordinates = {lat: 49.0434, lng: 3.9562}// epernay
-      console.log('DEBUG MODE: Using fixed GPS location:', debugCoordinates)
+      console.log('DEBUG MODE: Using fixed GPS gameLocation:', debugCoordinates)
       appStore.setPlayerCoordinates(debugCoordinates)
       appStore.setGPSStatus('success')
       return
@@ -63,7 +63,7 @@ async function initializeGPS() {
 
     appStore.setGPSStatus('loading')
     
-    // Set up continuous watching of location
+    // Set up continuous watching of gameLocation
     startContinuousTracking()
   } catch (error) {
     console.error('GPS error:', error)
@@ -84,7 +84,7 @@ function startContinuousTracking() {
     return
   }
  
-  // In normal mode, use geolocation.watchPosition
+  // In normal mode, use geogameLocation.watchPosition
   watchId.value = navigator.geolocation.watchPosition(
     (position) => {
       const coordinates = {
@@ -174,10 +174,10 @@ onUnmounted(() => {
     </div>
     <div v-else-if="appStore.gpsStatus === 'loading'" class="gps-status">
       <div class="loading-spinner"></div>
-      <p>Getting your location...</p>
+      <p>Getting your gameLocation...</p>
     </div>
     <div v-else-if="appStore.gpsStatus === 'error'" class="gps-error">
-      <p>Unable to get your location. Please enable GPS and refresh the page.</p>
+      <p>Unable to get your gameLocation. Please enable GPS and refresh the page.</p>
       <p>
         <a href="#DEBUG">Enable Debug Mode</a></p>
     </div>
@@ -186,7 +186,7 @@ onUnmounted(() => {
       <QuestStartScreen v-if="appStore.screen === 'start_quest'" />
       <IntroScreen v-else-if="appStore.screen === 'intro'" />
       <MapScreen v-else-if="appStore.screen === 'map'" />
-      <LocationScreen v-else-if="appStore.screen === 'location'" />
+      <LocationScreen v-else-if="appStore.screen === 'gameLocation'" />
       <VictoryScreen v-else-if="appStore.screen === 'victory'" />
 
       <!-- Interface Button (only show during gameplay) -->

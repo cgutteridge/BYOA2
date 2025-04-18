@@ -33,8 +33,8 @@
               <p>{{ generateEffectDescription(item) }}</p>
             </div>
             
-            <!-- Target selection (when in pub) -->
-            <div v-if="isInPub && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish' || item.power === 'freeze' || item.power === 'petrify' || item.power === 'pacify' || item.power === 'distract' || item.power === 'vegetate' || item.power === 'stun')" class="item-inspect-modal__target-section">
+            <!-- Target selection (when in gameLocation) -->
+            <div v-if="isInGameLocation && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish' || item.power === 'freeze' || item.power === 'petrify' || item.power === 'pacify' || item.power === 'distract' || item.power === 'vegetate' || item.power === 'stun')" class="item-inspect-modal__target-section">
               <h3>{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
               <p class="target-description">{{ getTargetDescription(item) }}</p>
               
@@ -72,12 +72,12 @@
               </div>
               
               <p v-else class="no-targets">
-                No valid targets available for this item in current location.
+                No valid targets available for this item in current gameLocation.
               </p>
             </div>
             
             <!-- Result selection for transmute -->
-            <div v-if="isInPub && item.power === 'transmute'" class="item-inspect-modal__result-section">
+            <div v-if="isInGameLocation && item.power === 'transmute'" class="item-inspect-modal__result-section">
               <h3>{{ item.result === 'pick' ? 'Choose Result' : 'Possible Results' }}</h3>
               
               <div class="result-list">
@@ -171,12 +171,12 @@ const item = computed(() => appStore.inspectedItem || {} as Item)
 
 // Determine context based on app state
 const context = computed(() => {
-  const hasCurrentLocation = !!questStore.currentLocation
+  const hasCurrentGameLocation = !!questStore.currentGameLocation
   const isInventoryOpen = appStore.isInterfaceOpen
   
-  if (hasCurrentLocation && isInventoryOpen) return 'inventory_in_pub'
-  if (hasCurrentLocation && !isInventoryOpen) return 'item_in_pub'
-  if (!hasCurrentLocation && isInventoryOpen) return 'inventory'
+  if (hasCurrentGameLocation && isInventoryOpen) return 'inventory_in_gameLocation'
+  if (hasCurrentGameLocation && !isInventoryOpen) return 'item_in_gameLocation'
+  if (!hasCurrentGameLocation && isInventoryOpen) return 'inventory'
   return 'item'
 })
 
@@ -198,12 +198,12 @@ function toggleTheme() {
 // Computed properties
 const showUseButton = computed(() => {
   // Only show use button in inventory contexts
-  return context.value === 'inventory' || context.value === 'inventory_in_pub'
+  return context.value === 'inventory' || context.value === 'inventory_in_gameLocation'
 })
 
-const isInPub = computed(() => {
-  // Check if the player is in a pub (any context with "pub")
-  return context.value === 'inventory_in_pub' || context.value === 'item_in_pub'
+const isInGameLocation = computed(() => {
+  // Check if the player is in a gameLocation (any context with "gameLocation")
+  return context.value === 'inventory_in_gameLocation' || context.value === 'item_in_gameLocation'
 })
 
 const targetMode = computed(() => {
@@ -221,8 +221,8 @@ const isChoiceTarget = computed(() => {
 
 // Use the powers helper function to get valid targets
 const potentialTargetMonsters = computed(() => {
-  if (!questStore.currentLocation?.monsters) return []
-  return getValidTargets(item.value, questStore.currentLocation.monsters) as Monster[]
+  if (!questStore.currentGameLocation?.monsters) return []
+  return getValidTargets(item.value, questStore.currentGameLocation.monsters) as Monster[]
 })
 
 const potentialTargetMonsterTypes = computed(() => {
@@ -239,12 +239,12 @@ const possibleResults = computed(() => {
   // For transmute, determine possible result types
   if (item.value.power !== 'transmute') return []
   
-  // Could be fetched from a data source; using placeholder for now
+  // Could be fetched from a data source; using gameLocationholder for now
   return ['ghost', 'vampire', 'human', 'goblinoid', 'demonoid', 'elemental']
 })
 
 const isUseButtonDisabled = computed(() => {
-  if (!isInPub.value) return false
+  if (!isInGameLocation.value) return false
   
   // For powers that need targets
   if (['kill', 'transmute', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun'].includes(item.value.power || '')) {
@@ -272,7 +272,7 @@ const isUseButtonDisabled = computed(() => {
 // Helper function to get monster count by type
 function getMonsterCountByType(type: string): number {
   // Count monsters of the exact type
-  const monsters : Monster[] = questStore.currentLocation?.monsters || []
+  const monsters : Monster[] = questStore.currentGameLocation?.monsters || []
   return monsters.filter(monster => monster.type === type && monster.alive).length
 }
 
@@ -642,7 +642,7 @@ function getMonsterTitle(typeId: string): string {
   gap: 10px;
 }
 
-.placeholder-message {
+.gameLocationholder-message {
   color: #777;
   font-style: italic;
   text-align: center;

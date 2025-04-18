@@ -47,10 +47,10 @@ const appStore = useAppStore()
 
 if (questStore.status === 'active') {
     console.log(questStore)
-    if (questStore.currentLocation === undefined) {
+    if (questStore.currentGameLocation === undefined) {
         appStore.setScreen('map')
     } else {
-        appStore.setScreen('location')
+        appStore.setScreen('gameLocation')
     }
 } else {
     appStore.setScreen('start_quest')

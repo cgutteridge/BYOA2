@@ -73,20 +73,20 @@
                 </div>
               </div>
               
-              <div class="quest-locations">
-                <div class="location">
-                  <div class="location-label">Start Pub:</div>
-                  <div class="location-value">{{ questStore.startLocation?.name || 'Unknown' }}</div>
+              <div class="quest-gameLocations">
+                <div class="gameLocation">
+                  <div class="gameLocation-label">Start GameLocation:</div>
+                  <div class="gameLocation-value">{{ questStore.startGameLocation?.name || 'Unknown' }}</div>
                 </div>
                 
-                <div class="location">
-                  <div class="location-label">Current Pub:</div>
-                  <div class="location-value">{{ questStore.currentLocation?.name || 'Not in a pub' }}</div>
+                <div class="gameLocation">
+                  <div class="gameLocation-label">Current GameLocation:</div>
+                  <div class="gameLocation-value">{{ questStore.currentGameLocation?.name || 'Not in a gameLocation' }}</div>
                 </div>
                 
-                <div class="location">
-                  <div class="location-label">Final Pub:</div>
-                  <div class="location-value">{{ questStore.endLocation?.name || 'Unknown' }}</div>
+                <div class="gameLocation">
+                  <div class="gameLocation-label">Final GameLocation:</div>
+                  <div class="gameLocation-value">{{ questStore.endGameLocation?.name || 'Unknown' }}</div>
                 </div>
               </div>
             </div>
@@ -363,7 +363,7 @@ function formatUnits(value: number): string {
   font-weight: 600;
 }
 
-.quest-locations {
+.quest-gameLocations {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -373,19 +373,19 @@ function formatUnits(value: number): string {
   border-radius: 8px;
 }
 
-.location {
+.gameLocation {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem;
   border-bottom: 1px solid #eee;
 }
 
-.location-label {
+.gameLocation-label {
   font-weight: bold;
   color: #555;
 }
 
-.location-value {
+.gameLocation-value {
   color: #333;
   font-weight: 600;
 }

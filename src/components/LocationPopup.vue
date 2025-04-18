@@ -1,19 +1,19 @@
 <template>
-  <div class="location-popup">
-    <h2>{{ location.name }}<template v-if="!location.scouted"> ({{ locationType.title }})</template></h2>
+  <div class="gameLocation-popup">
+    <h2>{{ gameLocation.name }}<template v-if="!gameLocation.scouted"> ({{ gameLocationType.title }})</template></h2>
     <div class="distance-info" v-if="playerDistance !== null">
       <span>{{ Math.round(playerDistance) }}m away</span>
     </div>
     <div class="action-buttons">
-      <button v-if="!location.scouted && !isLoading" @click="scoutLocationAction" class="scout-button">Scout Location</button>
-      <button @click="enterLocation" v-if="location.scouted && isNearby" class="enter-button">Enter Location</button>
+      <button v-if="!gameLocation.scouted && !isLoading" @click="scoutGameLocationAction" class="scout-button">Scout GameLocation</button>
+      <button @click="enterGameLocation" v-if="gameLocation.scouted && isNearby" class="enter-button">Enter GameLocation</button>
     </div>
-    <div class="location-details">
-      <div v-if="location.scouted && location.description">
-        <div v-if="location.giftItem" class="gift-info">
+    <div class="gameLocation-details">
+      <div v-if="gameLocation.scouted && gameLocation.description">
+        <div v-if="gameLocation.giftItem" class="gift-info">
           <h3>Gift:</h3>
           <ItemCard 
-            :item="location.giftItem"
+            :item="gameLocation.giftItem"
             variant="gift"
             :show-details="true"
           />
@@ -48,10 +48,10 @@
           </div>
         </div>
         
-        <div v-if="location.prizeItem" class="prize-info">
+        <div v-if="gameLocation.prizeItem" class="prize-info">
           <h3>Reward:</h3>
           <ItemCard 
-            :item="location.prizeItem"
+            :item="gameLocation.prizeItem"
             variant="prize"
             :show-details="true"
           />
@@ -61,7 +61,7 @@
       <!-- Loading state when scouting -->
       <div v-else-if="isLoading" class="loading-state">
         <div class="loading-spinner"></div>
-        <p>Scouting location...</p>
+        <p>Scouting gameLocation...</p>
       </div>
 
     </div>
@@ -71,18 +71,18 @@
 
 <script setup lang="ts">
 import {computed} from 'vue'
-import type {LocationType, Monster, MonsterTypeId, Location} from '../types'
+import type {GameLocationType, Monster, MonsterTypeId, GameLocation} from '../types'
 import {useAppStore} from "../stores/appStore"
-import {locationTypesById} from '@/data/locationTypes'
 import {monsterTypes} from '../data/monsterTypes'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
+import {locationTypesById} from "@/data/locationTypes.ts";
 
 const props = defineProps<{
-  location: Location
+  gameLocation: GameLocation
 }>()
 
 const emit = defineEmits(['close'])
@@ -90,7 +90,7 @@ const emit = defineEmits(['close'])
 const appStore = useAppStore()
 const questStore = useQuestStore()
 
-const locationType = computed((): LocationType => locationTypesById[props.location.locationType])
+const gameLocationType = computed((): GameLocationType => locationTypesById[props.gameLocation.gameLocationType])
 
 const playerDistance = computed(() => {
   if (!appStore.playerCoordinates) return null;
@@ -98,19 +98,19 @@ const playerDistance = computed(() => {
   return calculateDistance(
     appStore.playerCoordinates.lat,
     appStore.playerCoordinates.lng,
-    props.location.lat,
-    props.location.lng
+    props.gameLocation.lat,
+    props.gameLocation.lng
   );
 });
 
-// Check if player is within range to interact with the location
+// Check if player is within range to interact with the gameLocation
 const isNearby = computed(() => {
   return playerDistance.value !== null && playerDistance.value < 50000; // 50000 meters range
 });
 
 // Group undefeated monsters by type for display
 const groupedMonsters = computed(() => {
-  if (!props.location?.monsters || !props.location.monsters.length) {
+  if (!props.gameLocation?.monsters || !props.gameLocation.monsters.length) {
     return [];
   }
   
@@ -121,7 +121,7 @@ const groupedMonsters = computed(() => {
   }>();
   
   // Only include monsters that are still alive
-  props.location.monsters.forEach(monster => {
+  props.gameLocation.monsters.forEach(monster => {
     // Skip defeated monsters
     if (!monster.alive) return;
     
@@ -145,15 +145,15 @@ const groupedMonsters = computed(() => {
 
 // Check if all monsters are defeated
 const allMonstersDefeated = computed(() => {
-  if (!props.location?.monsters || props.location.monsters.length === 0) {
+  if (!props.gameLocation?.monsters || props.gameLocation.monsters.length === 0) {
     return false;
   }
   
-  return props.location.monsters.every(monster => !monster.alive);
+  return props.gameLocation.monsters.every(monster => !monster.alive);
 });
 
 const isLoading = computed(() => {
-  return props.location.scouted && !props.location.description;
+  return props.gameLocation.scouted && !props.gameLocation.description;
 })
 
 function getMonsterTitle(monsterId: string): string {
@@ -216,27 +216,27 @@ function getMonsterTraits(monsterId: string): string {
   return `, ${monster.flags.join(', ')}`
 }
 
-async function scoutLocationAction(event: MouseEvent) {
+async function scoutGameLocationAction(event: MouseEvent) {
   event.stopPropagation()
-  await scoutLocation(props.location)
+  await scoutLocation(props.gameLocation)
   
-  // Award XP for scouting a location through the UI (using updateStats)
-  questStore.updateStats(1, 0, 0, "scouting this location");
+  // Award XP for scouting a gameLocation through the UI (using updateStats)
+  questStore.updateStats(1, 0, 0, "scouting this gameLocation");
 }
 
-function enterLocation(event: MouseEvent) {
+function enterGameLocation(event: MouseEvent) {
   event.stopPropagation()
-  questStore.setCurrentLocation(props.location.id)
-  appStore.setScreen('location')
+  questStore.setCurrentGameLocation(props.gameLocation.id)
+  appStore.setScreen('gameLocation')
   
-  // Award XP for arriving at a location (using updateStats)
-  questStore.updateStats(2, 0, 0, "entering this location");
+  // Award XP for arriving at a gameLocation (using updateStats)
+  questStore.updateStats(2, 0, 0, "entering this gameLocation");
 }
 
 </script>
 
 <style scoped>
-.location-popup {
+.gameLocation-popup {
   color: white;
   padding: 5px;
   max-width: 100%;
@@ -259,7 +259,7 @@ h2 {
   font-weight: bold;
 }
 
-.location-details {
+.gameLocation-details {
   margin: 1rem 0;
 }
 

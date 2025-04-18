@@ -62,16 +62,16 @@ export class SplitPower extends ItemPower {
     // Get the quest store to modify monsters
     const questStore = useQuestStore();
     
-    // Make sure we have access to the current location
-    const location = questStore.currentLocation;
-    if (!location || !location.monsters) return false;
+    // Make sure we have access to the current gameLocation
+    const gameLocation = questStore.currentGameLocation;
+    if (!gameLocation || !gameLocation.monsters) return false;
     
     // Find the original monster
-    const monsterIndex = location.monsters.findIndex(m => m.id === monster.id);
+    const monsterIndex = gameLocation.monsters.findIndex(m => m.id === monster.id);
     if (monsterIndex === -1) return false;
     
     // Save its item if it has one
-    const originalItem = location.monsters[monsterIndex].item;
+    const originalItem = gameLocation.monsters[monsterIndex].item;
     
     // Determine how many lesser monsters to create
     let count = 2; // Default is 2
@@ -96,7 +96,7 @@ export class SplitPower extends ItemPower {
       const randomPairIndex = Math.floor(Math.random() * this.namePairs.length);
       const namePair = this.namePairs[randomPairIndex];
       names = [
-        namePair[0].replace('{name}', monster.name), 
+        namePair[0].replace('{name}', monster.name),
         namePair[1].replace('{name}', monster.name)
       ];
     } else {
@@ -130,11 +130,11 @@ export class SplitPower extends ItemPower {
       }
     }
     
-    // Add the new monsters to the location
-    location.monsters.push(...newMonsters);
+    // Add the new monsters to the gameLocation
+    gameLocation.monsters.push(...newMonsters);
     
     // Remove the original monster
-    location.monsters.splice(monsterIndex, 1);
+    gameLocation.monsters.splice(monsterIndex, 1);
     
     return true;
   }

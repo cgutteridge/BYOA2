@@ -1,13 +1,13 @@
 // Branded types to make string IDs incompatible with regular strings and each other
-export type LocationId = string & { __brand: 'LocationId' }
+export type GameLocationId = string & { __brand: 'GameLocationId' }
 export type MonsterId = string & { __brand: 'MonsterId' }
 export type MonsterTypeId = string & { __brand: 'MonsterTypeId' }
-export type LocationTypeId = string & { __brand: 'LocationTypeId' }
+export type GameLocationTypeId = string & { __brand: 'GameLocationTypeId' }
 export type ItemId = string & { __brand: 'ItemId' }
 
 // Helper functions to cast string to branded types
-export const toLocationId = (id: string): LocationId => id as LocationId
-export const toLocationTypeId = (id: string): LocationTypeId => id as LocationTypeId
+export const toGameLocationId = (id: string): GameLocationId => id as GameLocationId
+export const toGameLocationTypeId = (id: string): GameLocationTypeId => id as GameLocationTypeId
 export const toMonsterId = (id: string): MonsterId => id as MonsterId
 export const toMonsterTypeId = (id: string): MonsterTypeId => id as MonsterTypeId
 export const toItemId = (id: string): ItemId => id as ItemId
@@ -29,7 +29,7 @@ export type ItemPowerId =
   | 'stun'
 
 // Target modes - how the target is selected
-export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'location' | undefined
+export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'gameLocation' | undefined
 
 // Result modes
 export type ResultMode = 'random' | 'pick' | 'random_type' | 'chosen_type' | undefined
@@ -60,22 +60,22 @@ export interface Coordinates {
   lng: number
 }
 
-export interface Location {
-  id: LocationId
+export interface GameLocation {
+  id: GameLocationId
   name: string
   description?: string
   lat: number
   lng: number
-  locationType: LocationTypeId
-  difficulty?: LocationDifficulty
+  gameLocationType: GameLocationTypeId
+  difficulty?: GameLocationDifficulty
   monsters?: Monster[]
   scouted: boolean
   giftItem?: Item
   prizeItem?: Item
 }
 
-export interface LocationType {
-  id: LocationTypeId
+export interface GameLocationType {
+  id: GameLocationTypeId
   title: string
   filename: string
   description?: string
@@ -95,7 +95,7 @@ export type Encounter = {
 export type Species = "vampire"|"ghost"|"human"|"chameleonoid"|"goblinoid"|"elf"|"demonoid"|"dwarf"|"special"|"fey"|"elemental"|"nullified"
 export type MonsterLevel  = "minion"|"grunt"|"elite"|"boss"
 export type MonsterFlag = "spirit"|"undead"|"mortal"|"magic-user"|"group"|"fey"
-export type LocationDifficulty = "start" | "easy" | "medium" | "hard" | "end"
+export type GameLocationDifficulty = "start" | "easy" | "medium" | "hard" | "end"
 
 export interface MonsterType {
   id: MonsterTypeId
@@ -133,7 +133,7 @@ export type ScreenId =
   | 'start_quest'
   | 'intro'
   | 'map'
-  | 'location'
+  | 'gameLocation'
   | 'victory'
 
 export type QuestState = 'no_quest' | 'init' | 'active' | 'completed'

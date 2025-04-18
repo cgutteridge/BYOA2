@@ -1,88 +1,86 @@
 import {defineStore} from 'pinia'
 import {ref} from 'vue'
-import type {LocationTypeId, Location, LocationId} from '../types'
-import {LocationDifficulty} from '../types'
+import type {GameLocationTypeId, GameLocation, GameLocationId} from '../types'
+import {GameLocationDifficulty} from '../types'
 import {useAppStore} from './appStore'
-import fetchNearbyLocations from "../api/overpass.ts"
-import {scoutLocation} from '../quest/scoutLocation.ts'
+import fetchNearbyGameLocations from "../api/overpass.ts"
 import calculateDistance from '../utils/calculateDistance.ts'
 
-export const useLocationStore = defineStore('location', () => {
+export const useLocationStore = defineStore('locations', () => {
   const appStore = useAppStore()
   const persist = ref(['locations'])
 
-  const locations = ref<Location[]>([])
+  const locations = ref<GameLocation[]>([])
 
-  const setLocations = (newLocations: Location[]) => {
+  const setLocations = (newLocations: GameLocation[]) => {
     locations.value = newLocations
   }
 
-  // Set difficulty for a specific location
-  const setLocationDifficulty = (locationId: LocationId, difficulty: LocationDifficulty) => {
-    const targetLocation = location(locationId)
-    targetLocation.difficulty = difficulty
+  // Set difficulty for a specific gameLocation
+  const setGameLocationDifficulty = (gameLocationId: GameLocationId, difficulty: GameLocationDifficulty) => {
+    const targetGameLocation = gameLocation(gameLocationId)
+    targetGameLocation.difficulty = difficulty
   }
 
-  // Set type for a specific location
-  const setLocationType = (locationId: LocationId, type: LocationTypeId) => {
-    const targetLocation = location(locationId)
-    targetLocation.locationType = type
+  // Set type for a specific gameLocation
+  const setGameLocationType = (gameLocationId: GameLocationId, type: GameLocationTypeId) => {
+    const targetGameLocation = gameLocation(gameLocationId)
+    targetGameLocation.gameLocationType = type
   }
 
-  // Check if a location can be scouted based on player's distance to it (within 50 meters)
-  const canScout = (locationId: LocationId): boolean => {
+  // Check if a gameLocation can be scouted based on player's distance to it (within 50 meters)
+  const canScout = (gameLocationId: GameLocationId): boolean => {
     if (!appStore.playerCoordinates) return false
     
     try {
-      const targetLocation = location(locationId)
+      const targetGameLocation = gameLocation(gameLocationId)
       const distance = calculateDistance(
         appStore.playerCoordinates.lat,
         appStore.playerCoordinates.lng,
-        targetLocation.lat,
-        targetLocation.lng
+        targetGameLocation.lat,
+        targetGameLocation.lng
       )
       
       return distance <= 20000
     } catch (error) {
-      console.error(`Error checking if location can be scouted: ${error}`)
+      console.error(`Error checking if gameLocation can be scouted: ${error}`)
       return false
     }
   }
 
-  const fetchNearbyLocationsFromAPI = async () => {
+  const fetchNearbyGameLocationsFromAPI = async () => {
     if (!appStore.playerCoordinates) return
     
-    appStore.isFetchingLocations = true
+    appStore.isFetchingGameLocations = true
     try {
       const { lat, lng } = appStore.playerCoordinates
-      const newLocations = await fetchNearbyLocations(lat, lng, 3000)
-      setLocations(newLocations)
+      const newGameLocations = await fetchNearbyGameLocations(lat, lng, 3000)
+      setLocations(newGameLocations)
     } catch (error) {
       console.error('Error fetching locations:', error)
       // Set empty locations array on error
       setLocations([])
     } finally {
-      appStore.isFetchingLocations = false
+      appStore.isFetchingGameLocations = false
     }
   }
 
-  const location = (locationId: LocationId): Location => {
-    const foundLocation = locations.value.find(p => p.id === locationId)
-    if (!foundLocation) {
-      throw new Error(`Location with ID ${locationId} not found`)
+  const gameLocation = (gameLocationId: GameLocationId): GameLocation => {
+    const foundGameLocation = locations.value.find(p => p.id === gameLocationId)
+    if (!foundGameLocation) {
+      throw new Error(`GameLocation with ID ${gameLocationId} not found`)
     }
-    return foundLocation
+    return foundGameLocation
   }
 
   return {
     locations,
-    setLocations,
-    fetchNearbyLocations: fetchNearbyLocationsFromAPI,
-    scoutLocation: scoutLocation,
-    location,
+    setGameLocations: setLocations,
+    fetchNearbyGameLocations: fetchNearbyGameLocationsFromAPI,
+    gameLocation,
     canScout,
-    setLocationDifficulty,
-    setLocationType,
+    setGameLocationDifficulty,
+    setGameLocationType,
     persist
   }
 }) 

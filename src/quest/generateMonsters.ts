@@ -1,5 +1,5 @@
-// generate the monsters for a location based on it's attributes.
-import { Monster, Pub, MonsterLevel, LocationDifficulty, Item, toMonsterId, Encounter } from '../types'
+// generate the monsters for a gameLocation based on it's attributes.
+import { Monster, GameLocation, MonsterLevel, GameLocationDifficulty, Item, toMonsterId, Encounter } from '../types'
 import { monsterTypes } from '../data'
 import { monsterItem } from './monsterItem'
 import { useQuestStore } from '../stores/questStore'
@@ -7,17 +7,17 @@ import pickOne from "../utils/pickOne"
 import pickWeightedOne from "../utils/pickWeightedOne"
 import {encounterTable} from "../data/encounterTable"
 
-export default function generateMonsters(pub: Pub): Monster[] {
-    // If the pub already has monsters, return them
-    if (pub.monsters && pub.monsters.length > 0) {
-        return pub.monsters
+export default function generateMonsters(gameLocation: GameLocation): Monster[] {
+    // If the gameLocation already has monsters, return them
+    if (gameLocation.monsters && gameLocation.monsters.length > 0) {
+        return gameLocation.monsters
     }
 
     // Otherwise, generate new monsters
     const monsters: Monster[] = []
 
     // step one is to pick a pattern
-    const encounter: Encounter = pickWeightedOne(encounterTable[pub.difficulty ?? 'medium'])
+    const encounter: Encounter = pickWeightedOne(encounterTable[gameLocation.difficulty ?? 'medium'])
     console.log("encounter", encounter)
 
     encounter.forEach((unitSpec) => {
@@ -37,12 +37,12 @@ export default function generateMonsters(pub: Pub): Monster[] {
         const monsterType = pickOne(possibleMonsters)
 
         // decide how many monsters of this type to create
-        const monsterCount = calculateMonsterCount(unitSpec.level, pub.difficulty ?? 'medium')
+        const monsterCount = calculateMonsterCount(unitSpec.level, gameLocation.difficulty ?? 'medium')
         console.log("monsterCount", monsterCount)
         console.log("monster level", unitSpec.level)
-        console.log("pub difficulty", pub.difficulty)
+        console.log("gameLocation difficulty", gameLocation.difficulty)
 
-        // Create individual monsters with placeholder names that will be replaced by AI
+        // Create individual monsters with gameLocationholder names that will be regameLocationd by AI
         for (let i = 0; i < monsterCount; i++) {
             const monsterName = monsterCount > 1
                 ? `${monsterType.title} ${i + 1}`
@@ -52,7 +52,7 @@ export default function generateMonsters(pub: Pub): Monster[] {
             monsters.push({
                 id: toMonsterId(`monster_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`),
                 type: monsterType.id,
-                name: monsterName, // This will be replaced with AI-generated name
+                name: monsterName, // This will be regameLocationd with AI-generated name
                 alive: true,
                 item: item
             })
@@ -63,7 +63,7 @@ export default function generateMonsters(pub: Pub): Monster[] {
     return monsters
 }
 
-function calculateMonsterCount(monsterLevel: MonsterLevel, pubLevel: LocationDifficulty) {
+function calculateMonsterCount(monsterLevel: MonsterLevel, gameLocationLevel: GameLocationDifficulty) {
     const questStore = useQuestStore()
     const players = questStore.playerCount
     console.log({players})
@@ -73,7 +73,7 @@ function calculateMonsterCount(monsterLevel: MonsterLevel, pubLevel: LocationDif
         return 1
     }
     if (monsterLevel === 'elite') {
-        if (pubLevel === 'hard') {
+        if (gameLocationLevel === 'hard') {
             return diffMod(players)
         }
         return 1;

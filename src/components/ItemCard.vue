@@ -29,10 +29,10 @@ import { computed } from 'vue'
 import type { Item, ItemPowerId } from '../types'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
-import { useLocationStore } from '../stores/locationStore'
 import { powerFactory } from '../powers'
 import { getValidTargets } from '../quest/itemUtils.ts'
 import { generateEffectDescription } from '../quest/generateEffectDescription.ts'
+import {useLocationStore} from "@/stores/locationStore.ts";
 
 // Get the stores
 const appStore = useAppStore()
@@ -64,12 +64,12 @@ const isSelected = computed(() => {
   return appStore.inspectedItem?.id === props.item.id
 })
 
-// Determine if we're in a location with the inventory open
-const isInPubWithInventory = computed(() => {
-  return !!questStore.currentLocation && appStore.isInterfaceOpen
+// Determine if we're in a gameLocation with the inventory open
+const isInLocationWithInventory = computed(() => {
+  return !!questStore.currentGameLocation && appStore.isInterfaceOpen
 })
 
-// Check if this item has valid targets in the current location
+// Check if this item has valid targets in the current gameLocation
 const hasValidTargets = computed(() => {
   // Only check for inventory variant
   if (props.variant !== 'inventory' && props.variant !== undefined) {
@@ -83,16 +83,16 @@ const hasValidTargets = computed(() => {
   
   // Different handling for spy vs monster targeting items
   if (props.item.power === 'spy') {
-    // For spy items, check if there are unscouted locations
-    return locationStore.locations.some(pub => !pub.scouted)
+    // For spy items, check if there are unscouted gameLocations
+    return locationStore.locations.some(gameLocation => !gameLocation.scouted)
   } else {
-    // For monster targeting items, check if we're in a location with valid monster targets
-    if (!isInPubWithInventory.value || !questStore.currentLocation?.monsters) {
+    // For monster targeting items, check if we're in a gameLocation with valid monster targets
+    if (!isInLocationWithInventory.value || !questStore.currentGameLocation?.monsters) {
       return false
     }
     
     // Check if there are valid targets for this item
-    const targets = getValidTargets(props.item, questStore.currentLocation.monsters)
+    const targets = getValidTargets(props.item, questStore.currentGameLocation.monsters)
     return targets.length > 0
   }
 })

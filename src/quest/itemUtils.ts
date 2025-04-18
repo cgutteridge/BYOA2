@@ -1,13 +1,13 @@
-import type {Item, Monster, MonsterTypeId, Pub} from '../types'
+import type {Item, Monster, MonsterTypeId, GameLocation} from '../types'
 import {powerFactory} from '../powers'
 
 /**
  * Get targets for an item based on its targeting mode
  * @param item The item to get targets for
- * @param potentialTargets Array of potential targets (monsters, locations, etc)
+ * @param potentialTargets Array of potential targets (monsters, gameLocations, etc)
  * @returns Array of valid targets
  */
-export function getTargetsForItem(item: Item, potentialTargets: Monster[]): Pub[] | MonsterTypeId[] | Monster[] {
+export function getTargetsForItem(item: Item, potentialTargets: Monster[]): GameLocation[] | MonsterTypeId[] | Monster[] {
   const power = powerFactory.getPower(item.power);
   if (power) {
     return power.getValidTargets(item, potentialTargets);
