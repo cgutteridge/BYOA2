@@ -64,3 +64,6 @@
 - Keep PRs focused on single concerns
 - Update tests when changing functionality
 - Always check for type errors before committing 
+
+# Updating Rules
+- If it seems a rule is wrong immediately ask if it should be changed before continuing with any other task
