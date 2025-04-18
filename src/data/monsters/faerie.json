@@ -1,0 +1,59 @@
+[
+
+  {
+    "id": "sprite",
+    "title": "Sprite",
+    "drink": "Small Glass of Sparkling Wine",
+    "level": "grunt",
+    "species": "fey",
+    "flags": ["magic-user"],
+    "xp": 2.2,
+    "booze": 1.6,
+    "soft": 0,
+    "style": {
+      "background": "linear-gradient(135deg, #ff80ab 0%, #f48fb1 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#FFD700",
+      "animation": "sparkle-pulse"
+    }
+  },
+  {
+    "id": "sylph",
+    "title": "Sylph",
+    "drink": "Large Glass of Sparkling Wine",
+    "level": "elite",
+    "species": "fey",
+    "flags": ["magic-user"],
+    "xp": 3.5,
+    "booze": 2.0,
+    "soft": 0,
+    "lesser": "sprite",
+    "style": {
+      "background": "linear-gradient(135deg, #ff80ab 0%, #f48fb1 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#FFD700",
+      "boxShadow": "0 0 10px rgba(255, 215, 0, 0.6)",
+      "animation": "sparkle-pulse"
+    }
+  },
+  {
+    "id": "faerie_queen",
+    "title": "Faerie Queen",
+    "drink": "Bottle of Sparkling Wine",
+    "level": "boss",
+    "species": "fey",
+    "flags": ["magic-user"],
+    "xp": 10.0,
+    "booze": 10.0,
+    "soft": 0,
+    "lesser": "sylph",
+    "lesserCount": 3,
+    "style": {
+      "background": "linear-gradient(135deg, #ff80ab 0%, #f48fb1 100%)",
+      "color": "#FFFFFF",
+      "borderColor": "#FFD700",
+      "boxShadow": "0 0 15px rgba(255, 215, 0, 0.7)",
+      "animation": "sparkle-pulse"
+    }
+  }
+] 

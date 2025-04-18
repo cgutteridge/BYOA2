@@ -254,6 +254,9 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
       case 'obsidian-pulse':
         classes['obsidian-monster'] = true
         break
+      case 'sparkle-pulse':
+        classes['sparkle-monster'] = true
+        break
     }
   }
   

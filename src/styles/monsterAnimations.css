@@ -99,6 +99,24 @@
   }
 }
 
+@keyframes sparkle-pulse {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  }
+  25% {
+    box-shadow: 0 0 15px rgba(255, 192, 203, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+  }
+  75% {
+    box-shadow: 0 0 15px rgba(255, 192, 203, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  }
+}
+
 /* Animation classes for monsters */
 .desert-monster {
   animation: desert-shimmer 3s infinite alternate;
@@ -132,6 +150,12 @@
 
 .obsidian-monster {
   animation: obsidian-pulse 3s infinite alternate;
+  position: relative;
+  overflow: hidden;
+}
+
+.sparkle-monster {
+  animation: sparkle-pulse 4s infinite;
   position: relative;
   overflow: hidden;
 } 
