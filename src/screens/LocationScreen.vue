@@ -297,12 +297,16 @@ function claimItem(monster: Monster) {
   // Add item to inventory
   inventoryStore.addItem(monster.item);
   
+  // Award XP based on item level
+  if (monster.item.level) {
+    const xpToAward = monster.item.level * 2; // 2 XP per item level
+    questStore.updateStats(xpToAward, 0, 0, `claiming ${monster.item.name}`);
+  }
+  
   // Clear the item from the monster
   if (questStore.currentPub?.monsters) {
     const monsterIndex = questStore.currentPub.monsters.findIndex(m => m.id === monster.id);
     if (monsterIndex !== -1) {
-      // Award XP for gaining an item (using updateStats)
-      questStore.updateStats(3, 0, 0, `claiming ${monster.item.name}`);
       // Clear the item
       questStore.currentPub.monsters[monsterIndex].item = undefined;
     }
@@ -311,11 +315,21 @@ function claimItem(monster: Monster) {
 
 function claimPrizeItem() {
   if (allMonstersDefeated.value && questStore.currentPub?.prizeItem) {
-    inventoryStore.addItem(questStore.currentPub.prizeItem);
+    const prizeItem = questStore.currentPub.prizeItem;
+    
+    // Add to inventory
+    inventoryStore.addItem(prizeItem);
+    
+    // Award XP based on item level
+    if (prizeItem.level) {
+      const xpToAward = prizeItem.level * 3; // 3 XP per level for prize items
+      questStore.updateStats(xpToAward, 0, 0, `claiming prize ${prizeItem.name}`);
+    }
+    
+    // Remove from location
     delete questStore.currentPub.prizeItem;
-    appStore.addNotification('Prize item added to your inventory!', 'success');
   } else {
-    // Just show the description if not all monsters are defeated
+    // Only show the description if not all monsters are defeated
     if (questStore.currentPub?.prizeItem) {
       appStore.openItemInspectModal(questStore.currentPub.prizeItem);
     }
@@ -329,11 +343,14 @@ function claimGiftItem() {
     // Add to inventory
     inventoryStore.addItem(giftItem);
     
+    // Award XP based on item level
+    if (giftItem.level) {
+      const xpToAward = giftItem.level * 2; // 2 XP per level for gift items
+      questStore.updateStats(xpToAward, 0, 0, `claiming gift ${giftItem.name}`);
+    }
+    
     // Remove from pub
     delete questStore.currentPub.giftItem;
-    
-    // Show notification
-    appStore.addNotification(`Gift ${giftItem.name} added to inventory!`, 'success');
   }
 }
 

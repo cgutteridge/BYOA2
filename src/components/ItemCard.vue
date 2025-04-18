@@ -102,8 +102,7 @@ function handleClick() {
   // If the item is a prize, gift, or drop, try to take it
   if (props.variant === 'prize' || props.variant === 'gift' || props.variant === 'drop') {
     emit('action', props.item)
-    // After taking the item, show its description
-    appStore.openItemInspectModal(props.item)
+    // Don't open modal after taking the item - let the action handler decide what to do
   } else {
     // For inventory items or undefined variant, just show the description
     appStore.openItemInspectModal(props.item)
