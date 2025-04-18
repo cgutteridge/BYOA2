@@ -93,7 +93,7 @@ export const useAppStore = defineStore('app', () => {
   const addNotification = (
     message: string, 
     type: 'success' | 'error' | 'info' | 'warning' = 'info',
-    timeout = 3000
+    timeout = 10000
   ): void => {
     const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
     const centerIndex = centerNotificationCount.value;
@@ -138,30 +138,6 @@ export const useAppStore = defineStore('app', () => {
       }
     }
   };
-
-  const addToCenterRegistry = (id: string, height: number): number => {
-    // Get next index (how many notifications are already in center)
-    const index = centerNotifications.value.length;
-    
-    // Add to registry
-    centerNotifications.value.push({ id, height, index });
-    
-    return index;
-  }
-  
-  const removeCenterNotification = (id: string): void => {
-    const index = centerNotifications.value.findIndex(n => n.id === id);
-    if (index !== -1) {
-      centerNotifications.value.splice(index, 1);
-      
-      // Update indices for remaining notifications
-      centerNotifications.value.forEach((n, i) => {
-        if (i >= index) {
-          n.index = i;
-        }
-      });
-    }
-  }
 
   // Item inspection actions
   const openItemInspectModal = (item: Item): void => {
@@ -211,8 +187,6 @@ export const useAppStore = defineStore('app', () => {
     addNotification,
     removeNotification,
     exitCenterAnimation,
-    addToCenterRegistry,
-    removeCenterNotification,
     openItemInspectModal,
     closeItemInspectModal
   }

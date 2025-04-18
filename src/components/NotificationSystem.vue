@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { useAppStore } from '@/stores/appStore';
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted } from 'vue';
 
 const appStore = useAppStore();
 
@@ -42,7 +42,7 @@ onMounted(() => {
           if (notificationEl && typeof notification.centerIndex === 'number') {
             // Calculate offset with padding between notifications
             // The offset is calculated based on the index and a fixed padding
-            const padding = 60; // Increased padding between notifications
+            const padding = 60; // Padding between notifications
             const baseHeight = 70; // Estimated base height of a notification with reduced padding
             const offset = notification.centerIndex * (baseHeight + padding);
             
