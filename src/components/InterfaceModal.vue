@@ -76,17 +76,17 @@
               <div class="quest-locations">
                 <div class="location">
                   <div class="location-label">Start Pub:</div>
-                  <div class="location-value">{{ questStore.startPub?.name || 'Unknown' }}</div>
+                  <div class="location-value">{{ questStore.startLocation?.name || 'Unknown' }}</div>
                 </div>
                 
                 <div class="location">
                   <div class="location-label">Current Pub:</div>
-                  <div class="location-value">{{ questStore.currentPub?.name || 'Not in a pub' }}</div>
+                  <div class="location-value">{{ questStore.currentLocation?.name || 'Not in a pub' }}</div>
                 </div>
                 
                 <div class="location">
                   <div class="location-label">Final Pub:</div>
-                  <div class="location-value">{{ questStore.endPub?.name || 'Unknown' }}</div>
+                  <div class="location-value">{{ questStore.endLocation?.name || 'Unknown' }}</div>
                 </div>
               </div>
             </div>

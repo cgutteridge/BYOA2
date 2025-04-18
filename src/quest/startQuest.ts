@@ -88,8 +88,8 @@ export async function startQuest(
     questStore.setStatus('init');
     questStore.setTitle(title);
     questStore.setDescription(`Your quest is to reach ${endPub.name}`);
-    questStore.setStartPubId(startPub.id);
-    questStore.setEndPubId(endPub.id);
+    questStore.setStartLocationId(startPub.id);
+    questStore.setEndLocationId(endPub.id);
     questStore.setPlayerCount(players);
     questStore.setDifficulty(difficulty);
     questStore.setXP(0); // Initialize player XP to zero when starting a new quest
@@ -117,8 +117,8 @@ export async function startQuest(
         inventoryStore.addItem(item);
     });
 
-    await scoutLocation(questStore.startPub as Pub);
-    questStore.setCurrentPub(startPub.id)
+    await scoutLocation(questStore.startLocation as Pub);
+    questStore.setCurrentLocation(startPub.id)
 
     questStore.setStatus('active');
 }

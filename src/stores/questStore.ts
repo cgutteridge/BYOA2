@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
-import type { PubId, QuestState} from '@/types'
+import type {LocationId, QuestState} from '@/types'
 import {useLocationStore} from './locationStore'
 import {useAppStore} from './appStore'
 import formatNumber from "@/utils/formatNumber.ts";
@@ -12,15 +12,18 @@ export const useQuestStore = defineStore('quest', () => {
   const title = ref<string>('foo')
   const description = ref<string>('foo')
   const status = ref<QuestState>('no_quest')
-  const startPubId = ref<PubId | undefined>()
-  const endPubId = ref<PubId | undefined>()
-  const currentPubId = ref<PubId | undefined>()
+  const startLocationId = ref<LocationId | undefined>()
+  const endLocationId = ref<LocationId | undefined>()
+  const currentLocationId = ref<LocationId | undefined>()
   const playerCount = ref<number>(3)
   const difficulty = ref<number>(1)
   const xp = ref<number>(0)
   const booze = ref<number>(0) // Track alcohol booze consumed
   const soft = ref<number>(0) // Track soft drinks/water consumed
-  const persist = ref(['title', 'description', 'status', 'startPubId', 'endPubId', 'currentPubId', 'playerCount', 'xp', 'booze', 'soft'])
+  const persist = ref(['title', 'description', 'status', 'startLocation' +
+  'Id', 'endLocation' +
+  'Id', 'currentLocation' +
+  'Id', 'playerCount', 'xp', 'booze', 'soft'])
 
   const setTitle = (newTitle: string) => {
     title.value = newTitle
@@ -31,11 +34,11 @@ export const useQuestStore = defineStore('quest', () => {
   const setStatus = (newStatus: QuestState) => {
     status.value = newStatus
   }
-  const setCurrentPub = (pubId: PubId) => {
-    currentPubId.value = pubId
+  const setCurrentLocation = (locationId: LocationId) => {
+    currentLocationId.value = locationId
   }
-  const unsetCurrentPub = () => {
-    currentPubId.value = undefined
+  const unsetCurrentLocation = () => {
+    currentLocationId.value = undefined
   }
   const setPlayerCount = (count: number) => {
     playerCount.value = count
@@ -43,11 +46,11 @@ export const useQuestStore = defineStore('quest', () => {
   const setDifficulty = (questDifficulty: number) => {
     difficulty.value = questDifficulty
   }
-  const setStartPubId = (id: PubId) => {
-    startPubId.value = id
+  const setStartLocationId = (id: LocationId) => {
+    startLocationId.value = id
   }
-  const setEndPubId = (id: PubId) => {
-    endPubId.value = id
+  const setEndLocationId = (id: LocationId) => {
+    endLocationId.value = id
   }
   
   const setXP = (newXP: number) => {
@@ -108,44 +111,44 @@ export const useQuestStore = defineStore('quest', () => {
     setStatus('no_quest')
   }
 
-  const startPub = computed(() => {
-    if (startPubId.value === undefined) {
+  const startLocation = computed(() => {
+    if (startLocationId.value === undefined) {
       return undefined
     }
-    return locationStore.pub(startPubId.value)
+    return locationStore.location(startLocationId.value)
   })
-  const endPub = computed(() => {
-    if (endPubId.value === undefined) {
+  const endLocation = computed(() => {
+    if (endLocationId.value === undefined) {
       return undefined
     }
-    return locationStore.pub(endPubId.value)
+    return locationStore.location(endLocationId.value)
   })
-  const currentPub = computed(() => {
-    if (currentPubId.value === undefined) {
+  const currentLocation = computed(() => {
+    if (currentLocationId.value === undefined) {
       return undefined
     }
-    return locationStore.pub(currentPubId.value)
+    return locationStore.location(currentLocationId.value)
   })
 
   return {
-    startPub,
-    endPub,
-    currentPubId,
+    startLocation,
+    endLocation,
+    currentLocationId,
     status,
     title,
     description,
-    currentPub,
+    currentLocation,
     playerCount,
     difficulty,
     xp,
     booze,
     soft,
-    startPubId,
-    endPubId,
-    setStartPubId,
-    setEndPubId,
-    setCurrentPub,
-    unsetCurrentPub,
+    startLocationId,
+    endLocationId,
+    setStartLocationId,
+    setEndLocationId,
+    setCurrentLocation,
+    unsetCurrentLocation,
     endQuest,
     setStatus,
     setTitle,

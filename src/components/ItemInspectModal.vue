@@ -171,7 +171,7 @@ const item = computed(() => appStore.inspectedItem || {} as Item)
 
 // Determine context based on app state
 const context = computed(() => {
-  const hasCurrentLocation = !!questStore.currentPub
+  const hasCurrentLocation = !!questStore.currentLocation
   const isInventoryOpen = appStore.isInterfaceOpen
   
   if (hasCurrentLocation && isInventoryOpen) return 'inventory_in_pub'
@@ -221,8 +221,8 @@ const isChoiceTarget = computed(() => {
 
 // Use the powers helper function to get valid targets
 const potentialTargetMonsters = computed(() => {
-  if (!questStore.currentPub?.monsters) return []
-  return getValidTargets(item.value, questStore.currentPub.monsters) as Monster[]
+  if (!questStore.currentLocation?.monsters) return []
+  return getValidTargets(item.value, questStore.currentLocation.monsters) as Monster[]
 })
 
 const potentialTargetMonsterTypes = computed(() => {
@@ -272,7 +272,7 @@ const isUseButtonDisabled = computed(() => {
 // Helper function to get monster count by type
 function getMonsterCountByType(type: string): number {
   // Count monsters of the exact type
-  const monsters = questStore.currentPub?.monsters || []
+  const monsters : Monster[] = questStore.currentLocation?.monsters || []
   return monsters.filter(monster => monster.type === type && monster.alive).length
 }
 

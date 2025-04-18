@@ -5,7 +5,7 @@
       <span>{{ Math.round(playerDistance) }}m away</span>
     </div>
     <div class="action-buttons">
-      <button v-if="!location.scouted && !isLoading" @click="scoutLocation" class="scout-button">Scout Location</button>
+      <button v-if="!location.scouted && !isLoading" @click="scoutLocationAction" class="scout-button">Scout Location</button>
       <button @click="enterLocation" v-if="location.scouted && isNearby" class="enter-button">Enter Location</button>
     </div>
     <div class="location-details">
@@ -75,11 +75,11 @@ import type {LocationType, Monster, MonsterTypeId, Location} from '../types'
 import {useAppStore} from "../stores/appStore"
 import {locationTypesById} from '@/data/locationTypes'
 import {monsterTypes} from '../data/monsterTypes'
-import {scoutLocation} from '@/quest/scoutLocation.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
+import {scoutLocation} from "@/quest/scoutLocation.ts";
 
 const props = defineProps<{
   location: Location
@@ -216,7 +216,7 @@ function getMonsterTraits(monsterId: string): string {
   return `, ${monster.flags.join(', ')}`
 }
 
-async function scoutLocation(event: MouseEvent) {
+async function scoutLocationAction(event: MouseEvent) {
   event.stopPropagation()
   await scoutLocation(props.location)
   

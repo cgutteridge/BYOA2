@@ -20,31 +20,31 @@
       </div>
       
       <div v-else class="quest-form">
-        <div class="pub-selection">
-          <div class="pub-selector">
-            <h3>Start Pub</h3>
+        <div class="location-selection">
+          <div class="location-selector">
+            <h3>Start Location</h3>
             <PickerComponent
-              v-model="startPubId"
-              :options="pubStore.pubs"
+              v-model="startLocationId"
+              :options="locationStore.locations"
               searchable
-              placeholder="Search for a pub..."
+              placeholder="Search for a location..."
               value-property="id"
               display-property="name"
-              @selection-change="updateStartPub"
+              @selection-change="updateStartLocation"
               :theme="currentTheme"
             />
           </div>
           
-          <div class="pub-selector">
-            <h3>End Pub</h3>
+          <div class="location-selector">
+            <h3>End Location</h3>
             <PickerComponent
-              v-model="endPubId"
-              :options="pubStore.pubs"
+              v-model="endLocationId"
+              :options="locationStore.locations"
               searchable
-              placeholder="Search for a pub..."
+              placeholder="Search for a location..."
               value-property="id"
               display-property="name"
-              @selection-change="updateEndPub"
+              @selection-change="updateEndLocation"
               :theme="currentTheme"
             />
           </div>
@@ -97,122 +97,120 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { usePubStore } from '../stores/pubStore'
 import { useAppStore } from '../stores/appStore'
-import { useLocationStore } from '../stores/locationStore'
-import type { Pub } from "../types"
 import { startQuest } from "@/quest/startQuest.ts"
 import PickerComponent from '@/components/PickerComponent.vue'
 import ButtonPickerComponent from '@/components/ButtonPickerComponent.vue'
 import CounterPickerComponent from '@/components/CounterPickerComponent.vue'
+import {useLocationStore} from "@/stores/locationStore.ts";
+import {Location} from "@/types";
 
-const pubStore = usePubStore()
 const appStore = useAppStore()
 const locationStore = useLocationStore()
 
-const selectedStartPub = ref<Pub | null>(null)
-const selectedEndPub = ref<Pub | null>(null)
-const startPubId = ref<string>('')
-const endPubId = ref<string>('')
+const selectedStartLocation = ref<Location | null>(null)
+const selectedEndLocation = ref<Location | null>(null)
+const startLocationId = ref<string>('')
+const endLocationId = ref<string>('')
 const questTitle = ref('The ring of Badgers')
 const isLoading = ref(true)
 const selectedDifficulty = ref('medium')
 const playerCount = ref(3)
 const currentTheme = ref<'light' | 'dark'>('light') // Updated with proper type
 
-// Watch for pubs to be loaded
-watch(() => pubStore.pubs, (newPubs) => {
-  if (newPubs.length > 0) {
+// Watch for locations to be loaded
+watch(() => locationStore.locations, (newLocations) => {
+  if (newLocations.length > 0) {
     isLoading.value = false
   }
 }, { immediate: true })
 
-// Watch for id changes to update the Pub objects
-watch([startPubId], () => {
-  if (startPubId.value) {
-    const pub = pubStore.pubs.find(p => p.id === startPubId.value)
-    if (pub) {
-      selectedStartPub.value = pub
+// Watch for id changes to update the location objects
+watch([startLocationId], () => {
+  if (startLocationId.value) {
+    const location = locationStore.locations.find(p => p.id === startLocationId.value)
+    if (location) {
+      selectedStartLocation.value = location
     }
   } else {
-    selectedStartPub.value = null
+    selectedStartLocation.value = null
   }
 }, { immediate: true })
 
-watch([endPubId], () => {
-  if (endPubId.value) {
-    const pub = pubStore.pubs.find(p => p.id === endPubId.value)
-    if (pub) {
-      selectedEndPub.value = pub
+watch([endLocationId], () => {
+  if (endLocationId.value) {
+    const location = locationStore.locations.find(p => p.id === endLocationId.value)
+    if (location) {
+      selectedEndLocation.value = location
     }
   } else {
-    selectedEndPub.value = null
+    selectedEndLocation.value = null
   }
 }, { immediate: true })
 
 const canStartQuest = computed(() => {
   // Debug log
   console.log('Checking if can start quest:', {
-    selectedStartPub: selectedStartPub.value,
-    selectedEndPub: selectedEndPub.value,
-    startPubId: startPubId.value,
-    endPubId: endPubId.value,
+    selectedStartLocation: selectedStartLocation.value,
+    selectedEndLocation: selectedEndLocation.value,
+    startLocationId: startLocationId.value,
+    endLocationId: endLocationId.value,
     questTitle: questTitle.value
   })
   
-  // We have pubs selected either via objects or IDs
-  const hasStartPub = !!(selectedStartPub.value || startPubId.value)
-  const hasEndPub = !!(selectedEndPub.value || endPubId.value)
+  // We have locations selected either via objects or IDs
+  const hasStartLocation = !!(selectedStartLocation.value || startLocationId.value)
+  const hasEndLocation = !!(selectedEndLocation.value || endLocationId.value)
   
-  // The pubs are different
-  const differentPubs = 
-    (selectedStartPub.value?.id !== selectedEndPub.value?.id) &&
-    (startPubId.value !== endPubId.value)
+  // The locations are different
+  const differentLocations =
+    (selectedStartLocation.value?.id !== selectedEndLocation.value?.id) &&
+    (startLocationId.value !== endLocationId.value)
   
   // We have a quest title
   const hasTitle = questTitle.value.trim() !== ''
   
-  return hasStartPub && hasEndPub && differentPubs && hasTitle
+  return hasStartLocation && hasEndLocation && differentLocations && hasTitle
 })
 
 // Helper functions for the PickerComponent
-function updateStartPub(pub: Pub | string) {
-  console.log('Setting start pub:', pub)
+function updateStartLocation(location: Location | string) {
+  console.log('Setting start location:', location)
   
-  // If we're getting an ID instead of a Pub object
-  if (typeof pub === 'string') {
-    startPubId.value = pub
-    const found = pubStore.pubs.find(p => p.id === pub)
+  // If we're getting an ID instead of a Location object
+  if (typeof location === 'string') {
+    startLocationId.value = location
+    const found = locationStore.locations.find(p => p.id === location)
     if (found) {
-      selectedStartPub.value = found
+      selectedStartLocation.value = found
     }
   } else {
-    selectedStartPub.value = pub
-    startPubId.value = pub.id
+    selectedStartLocation.value = location
+    startLocationId.value = location.id
   }
 }
 
-function updateEndPub(pub: Pub | string) {
-  console.log('Setting end pub:', pub)
+function updateEndLocation(location: Location | string) {
+  console.log('Setting end location:', location)
   
-  // If we're getting an ID instead of a Pub object
-  if (typeof pub === 'string') {
-    endPubId.value = pub
-    const found = pubStore.pubs.find(p => p.id === pub)
+  // If we're getting an ID instead of a Location object
+  if (typeof location === 'string') {
+    endLocationId.value = location
+    const found = locationStore.locations.find(p => p.id === location)
     if (found) {
-      selectedEndPub.value = found
+      selectedEndLocation.value = found
     }
   } else {
-    selectedEndPub.value = pub
-    endPubId.value = pub.id
+    selectedEndLocation.value = location
+    endLocationId.value = location.id
   }
 }
 
-// Watch for changes in selected pubs and quest title to help debug
-watch([selectedStartPub, selectedEndPub, questTitle], () => {
+// Watch for changes in selected location and quest title to help debug
+watch([selectedStartLocation, selectedEndLocation, questTitle], () => {
   console.log('Quest state updated:', {
-    startPub: selectedStartPub.value,
-    endPub: selectedEndPub.value,
+    startLocation: selectedStartLocation.value,
+    endLocation: selectedEndLocation.value,
     title: questTitle.value,
     canStart: canStartQuest.value
   })
@@ -227,22 +225,22 @@ async function callStartQuest() {
   if (canStartQuest.value) {
     console.log('Starting quest...')
     
-    // Make sure we have the full pub objects
-    let startPub = selectedStartPub.value
-    let endPub = selectedEndPub.value
+    // Make sure we have the full location objects
+    let startLocation = selectedStartLocation.value
+    let endLocation = selectedEndLocation.value
     
-    // If we only have IDs, find the full pub objects
-    if (!startPub && startPubId.value) {
-      startPub = pubStore.pubs.find(p => p.id === startPubId.value) || null
+    // If we only have IDs, find the full location objects
+    if (!startLocation && startLocationId.value) {
+      startLocation = locationStore.locations.find(p => p.id === startLocationId.value) || null
     }
     
-    if (!endPub && endPubId.value) {
-      endPub = pubStore.pubs.find(p => p.id === endPubId.value) || null
+    if (!endLocation && endLocationId.value) {
+      endLocation = locationStore.locations.find(p => p.id === endLocationId.value) || null
     }
     
-    // Check that we have valid pub objects
-    if (!startPub || !endPub) {
-      console.error('Failed to find pubs', { startPubId: startPubId.value, endPubId: endPubId.value })
+    // Check that we have valid location objects
+    if (!startLocation || !endLocation) {
+      console.error('Failed to find locations', { startLocationId: startLocationId.value, endLocationId: endLocationId.value })
       return
     }
     
@@ -255,18 +253,18 @@ async function callStartQuest() {
     
     await startQuest(
       questTitle.value,
-      startPub as Pub,
-      endPub as Pub,
+      startLocation as Location,
+      endLocation as Location,
       difficulty,
       playerCount.value
     );
   }
 }
 
-// Load pubs when the component is mounted
+// Load locations when the component is mounted
 onMounted(() => {
   console.log('mounted QuestStartScreen')
-  pubStore.fetchNearbyPubs()
+  locationStore.fetchNearbyLocations()
 })
 </script>
 
@@ -311,13 +309,13 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.3);
 }
 
-.pub-selection {
+.location-selection {
   display: flex;
   gap: 2rem;
   margin: 2rem 0;
 }
 
-.pub-selector {
+.location-selector {
   flex: 1;
   position: relative;
 }

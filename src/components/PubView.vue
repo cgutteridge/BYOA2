@@ -1,6 +1,6 @@
 <template>
   <div class="pub-view">
-    <h1>{{ questStore.currentPub.name }}</h1>
+    <h1>{{ questStore.currentLocation.name }}</h1>
     <p>Welcome to the pub! More content coming soon...</p>
     <button @click="exitPub">Exit Pub</button>
   </div>

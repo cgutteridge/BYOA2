@@ -51,7 +51,7 @@ export const useAppStore = defineStore('app', () => {
     gpsStatus.value = newStatus
   }
 
-  const setPlayerLocation = (newLocation: Coordinates | null): boolean => {
+  const setPlayerCoordinates = (newLocation: Coordinates | null): boolean => {
     playerCoordinates.value = newLocation
     return true
   }
@@ -182,7 +182,7 @@ export const useAppStore = defineStore('app', () => {
     unsetFocusLocation,
     setScreen,
     setGPSStatus,
-    setPlayerLocation,
+    setPlayerCoordinates,
     setMapPosition,
     setMapZoom,
     toggleInventory,

@@ -66,7 +66,7 @@ const isSelected = computed(() => {
 
 // Determine if we're in a location with the inventory open
 const isInPubWithInventory = computed(() => {
-  return !!questStore.currentPub && appStore.isInterfaceOpen
+  return !!questStore.currentLocation && appStore.isInterfaceOpen
 })
 
 // Check if this item has valid targets in the current location
@@ -83,16 +83,16 @@ const hasValidTargets = computed(() => {
   
   // Different handling for spy vs monster targeting items
   if (props.item.power === 'spy') {
-    // For spy items, check if there are unscouted pubs
-    return locationStore.pubs.some(pub => !pub.scouted)
+    // For spy items, check if there are unscouted locations
+    return locationStore.locations.some(pub => !pub.scouted)
   } else {
     // For monster targeting items, check if we're in a location with valid monster targets
-    if (!isInPubWithInventory.value || !questStore.currentPub?.monsters) {
+    if (!isInPubWithInventory.value || !questStore.currentLocation?.monsters) {
       return false
     }
     
     // Check if there are valid targets for this item
-    const targets = getValidTargets(props.item, questStore.currentPub.monsters)
+    const targets = getValidTargets(props.item, questStore.currentLocation.monsters)
     return targets.length > 0
   }
 })

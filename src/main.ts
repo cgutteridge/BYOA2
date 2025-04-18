@@ -47,7 +47,7 @@ const appStore = useAppStore()
 
 if (questStore.status === 'active') {
     console.log(questStore)
-    if (questStore.currentPub === undefined) {
+    if (questStore.currentLocation === undefined) {
         appStore.setScreen('map')
     } else {
         appStore.setScreen('location')

@@ -61,12 +61,12 @@ export class ShrinkPower extends ItemPower {
     // Get the quest store to modify monsters
     const questStore = useQuestStore();
     
-    // Make sure we have access to the current pub
-    const pub = questStore.currentPub;
-    if (!pub || !pub.monsters) return false;
+    // Make sure we have access to the current location
+    const location = questStore.currentLocation;
+    if (!location || !location.monsters) return false;
     
     // Find the original monster
-    const monsterIndex = pub.monsters.findIndex(m => m.id === monster.id);
+    const monsterIndex = location.monsters.findIndex(m => m.id === monster.id);
     if (monsterIndex === -1) return false;
     
     // Generate a fun name for the shrunken monster
@@ -74,10 +74,10 @@ export class ShrinkPower extends ItemPower {
     const newName = this.shrinkNames[randomNameIndex].replace('{name}', monster.name);
     
     // Transform the monster into its lesser form
-    const originalMonster = pub.monsters[monsterIndex];
+    const originalMonster = location.monsters[monsterIndex];
     
     // Create the shrunken version, preserving original ID and item
-    pub.monsters[monsterIndex] = {
+    location.monsters[monsterIndex] = {
       ...originalMonster,
       type: monsterTypeDef.lesser,
       name: newName

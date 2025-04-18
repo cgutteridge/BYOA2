@@ -62,16 +62,16 @@ export class SplitPower extends ItemPower {
     // Get the quest store to modify monsters
     const questStore = useQuestStore();
     
-    // Make sure we have access to the current pub
-    const pub = questStore.currentPub;
-    if (!pub || !pub.monsters) return false;
+    // Make sure we have access to the current location
+    const location = questStore.currentLocation;
+    if (!location || !location.monsters) return false;
     
     // Find the original monster
-    const monsterIndex = pub.monsters.findIndex(m => m.id === monster.id);
+    const monsterIndex = location.monsters.findIndex(m => m.id === monster.id);
     if (monsterIndex === -1) return false;
     
     // Save its item if it has one
-    const originalItem = pub.monsters[monsterIndex].item;
+    const originalItem = location.monsters[monsterIndex].item;
     
     // Determine how many lesser monsters to create
     let count = 2; // Default is 2
@@ -130,11 +130,11 @@ export class SplitPower extends ItemPower {
       }
     }
     
-    // Add the new monsters to the pub
-    pub.monsters.push(...newMonsters);
+    // Add the new monsters to the location
+    location.monsters.push(...newMonsters);
     
     // Remove the original monster
-    pub.monsters.splice(monsterIndex, 1);
+    location.monsters.splice(monsterIndex, 1);
     
     return true;
   }

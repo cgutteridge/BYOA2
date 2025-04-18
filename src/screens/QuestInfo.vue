@@ -6,12 +6,12 @@
     <div class="pub-info">
       <div class="start-pub">
         <h3>Start Pub</h3>
-        <p>{{ questStore.startPub?.name || 'Not selected' }}</p>
+        <p>{{ questStore.startLocation?.name || 'Not selected' }}</p>
       </div>
       
       <div class="end-pub">
         <h3>End Pub</h3>
-        <p>{{ questStore.endPub?.name || 'Not selected' }}</p>
+        <p>{{ questStore.endLocation?.name || 'Not selected' }}</p>
       </div>
     </div>
   </div>

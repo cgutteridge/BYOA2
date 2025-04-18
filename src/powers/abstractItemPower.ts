@@ -1,4 +1,4 @@
-import type {Item, ItemPowerId, Monster, MonsterFlag, MonsterLevel, MonsterTypeId, Pub, TargetMode} from '../types'
+import type {Item, ItemPowerId, Monster, MonsterFlag, MonsterLevel, MonsterTypeId, TargetMode} from '../types'
 import {monsterTypes} from '../data/monsterTypes'
 import {useQuestStore} from "@/stores/questStore.ts";
 
@@ -43,7 +43,7 @@ export abstract class ItemPower {
     }
 
     // @ts-ignore - May be unused in base class, implemented by subclasses
-    targetLocations(_item: Item, _locations: Pub[]): Pub[] {
+    targetLocations(_item: Item, _locations: Location[]): Location[] {
         return [];
     }
 
@@ -115,8 +115,8 @@ export abstract class ItemPower {
      */
     getValidTargets(
         item: Item,
-        targets: Monster[] | Pub[] | MonsterTypeId[]
-    ): Monster[] | Pub[] | MonsterTypeId[] {
+        targets: Monster[] | Location[] | MonsterTypeId[]
+    ): Monster[] | Location[] | MonsterTypeId[] {
         // Determine what type of targets we're dealing with
         if (targets.length > 0) {
             if ('type' in targets[0] && 'alive' in targets[0]) {
@@ -124,7 +124,7 @@ export abstract class ItemPower {
                 return this.targetMonsters(item, targets as Monster[]);
             } else if ('monsters' in targets[0]) {
                 // It's a locations array
-                return this.targetLocations(item, targets as Pub[]);
+                return this.targetLocations(item, targets as Location[]);
             }
         }
 
@@ -192,19 +192,19 @@ export abstract class ItemPower {
         const questStore = useQuestStore();
 
         // Get the current location's monsters
-        const pub = questStore.currentPub;
-        if (!pub || !pub.monsters) {
+        const location = questStore.currentLocation;
+        if (!location || !location.monsters) {
             return 0
         }
 
         // Find all monsters of the specified type
-        const monstersOfType = pub.monsters.filter(
-            monster => monster.type === type && monster.alive
+        const monstersOfType = location.monsters.filter(
+            (monster: Monster) => monster.type === type && monster.alive
         );
 
         // Kill each monster
         let count = 0;
-        monstersOfType.forEach(monster => {
+        monstersOfType.forEach((monster:Monster) => {
             if (this.applyEffect(item, monster)) {
                 count++;
             }
@@ -225,6 +225,6 @@ export interface PowerFactory {
 export interface PowerResult {
     success: boolean;
     message: string;
-    targets?: Monster[] | Pub[] | MonsterTypeId[];
+    targets?: Monster[] | Location[] | MonsterTypeId[];
     affectedItems?: Item[];
 } 
