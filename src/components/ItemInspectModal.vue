@@ -3,8 +3,17 @@
     <div v-if="isOpen" class="item-inspect-modal">
       <div class="item-inspect-modal__backdrop" @click="close"></div>
       
-      <div class="item-inspect-modal__content">
+      <div class="item-inspect-modal__content" :class="[`theme-${currentTheme}`]">
         <button class="item-inspect-modal__close" @click="close">×</button>
+        
+        <div class="theme-toggle">
+          <button 
+            @click="toggleTheme" 
+            class="theme-button"
+          >
+            {{ currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
+          </button>
+        </div>
         
         <!-- Item view -->
         <div v-if="!showResults" class="item-modal-view">
@@ -31,26 +40,34 @@
               
               <div v-if="hasTargetableMonsters" class="target-list">
                 <div v-if="targetMode === 'type'" class="target-type-list">
-                  <div
-                      v-for="(type, index) in potentialTargetMonsterTypes"
-                    :key="index"
-                    class="target-type-item"
-                    :class="{ 'target-selected': selectedTargetTypes.includes(type) }"
-                    @click="isChoiceTarget ? toggleTargetType(type) : null"
-                  >
-                    {{ getMonsterTitle(type) }} (x{{ getMonsterCountByType(type) }})
-                  </div>
+                  <PickerComponent
+                    v-model="selectedTargetTypes"
+                    :options="potentialTargetMonsterTypes.map(type => ({
+                      id: type,
+                      name: getMonsterTitle(type),
+                      count: getMonsterCountByType(type)
+                    }))"
+                    :multiple="item.uses > 1"
+                    :max-selections="item.uses || 1"
+                    :always-show="true"
+                    :disabled="!isChoiceTarget"
+                    :theme="currentTheme"
+                  />
                 </div>
                 <div v-else class="target-monster-list">
-                  <div
-                      v-for="monster in potentialTargetMonsters"
-                    :key="monster.id"
-                    class="target-monster-item"
-                    :class="{ 'target-selected': selectedTargets.includes(monster.id) }"
-                    @click="isChoiceTarget ? toggleTarget(monster.id) : null"
-                  >
-                    {{ monster.name }} ({{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }})
-                  </div>
+                  <PickerComponent
+                    v-model="selectedTargets"
+                    :options="potentialTargetMonsters.map(monster => ({
+                      id: monster.id,
+                      name: monster.name,
+                      subtitle: `${getMonsterSpecies(monster.type)} ${getMonsterLevel(monster.type)}`
+                    }))"
+                    :multiple="item.uses > 1"
+                    :max-selections="item.uses || 1"
+                    :always-show="true"
+                    :disabled="!isChoiceTarget"
+                    :theme="currentTheme"
+                  />
                 </div>
               </div>
               
@@ -64,15 +81,13 @@
               <h3>{{ item.result === 'pick' ? 'Choose Result' : 'Possible Results' }}</h3>
               
               <div class="result-list">
-                <div 
-                  v-for="(result, index) in possibleResults" 
-                  :key="index"
-                  class="result-item"
-                  :class="{ 'result-selected': selectedResult === result }"
-                  @click="item.result === 'pick' ? selectResult(result) : null"
-                >
-                  {{ result }}
-                </div>
+                <PickerComponent
+                  v-model="selectedResult"
+                  :options="possibleResults"
+                  :always-show="true"
+                  :disabled="item.result !== 'pick'"
+                  :theme="currentTheme"
+                />
                 
                 <p v-if="possibleResults.length === 0" class="no-results">
                   No possible results available
@@ -144,6 +159,7 @@ import {monsterTypes} from '../data/monsterTypes.ts'
 import {powerFactory} from "@/powers";
 import {PowerResult} from "@/powers/abstractItemPower.ts";
 import pickOne from "@/utils/pickOne.ts";
+import PickerComponent from './PickerComponent.vue'
 
 // Stores
 const appStore = useAppStore()
@@ -172,6 +188,12 @@ const showVisualResult = ref(false)
 const selectedTargets = ref<string[]>([])
 const selectedTargetTypes = ref<string[]>([])
 const selectedResult = ref<string>('')
+const currentTheme = ref('light') // Default theme
+
+// Toggle between light and dark themes
+function toggleTheme() {
+  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
+}
 
 // Computed properties
 const showUseButton = computed(() => {
@@ -380,7 +402,6 @@ function getMonsterTitle(typeId: string): string {
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: #fff;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -388,6 +409,129 @@ function getMonsterTitle(typeId: string): string {
   text-align: center;
 }
 
+.theme-toggle {
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.theme-button {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+/* Light theme styles */
+.theme-light {
+  background-color: #fff;
+  color: #333333;
+}
+
+.theme-light .theme-button {
+  background: #f0f0f0;
+  border: 1px solid #d0d0d0;
+  color: #333;
+}
+
+.theme-light .theme-button:hover {
+  background: #e0e0e0;
+}
+
+.theme-light .item-inspect-modal__header {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #eee;
+}
+
+.theme-light .item-inspect-modal__effect,
+.theme-light .item-inspect-modal__description,
+.theme-light .item-inspect-modal__target-section,
+.theme-light .item-inspect-modal__result-section,
+.theme-light .results-content {
+  background-color: #f5f5f5;
+  border: 1px solid #eee;
+}
+
+.theme-light .target-description {
+  color: #555;
+}
+
+.theme-light .no-targets, 
+.theme-light .no-results {
+  background: rgba(0, 0, 0, 0.05);
+  color: #666;
+}
+
+/* Dark theme styles */
+.theme-dark {
+  background-color: #222;
+  color: #f0f0f0;
+}
+
+.theme-dark .theme-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.theme-dark .theme-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark .item-inspect-modal__header {
+  background-color: #333;
+  border-bottom: 1px solid #444;
+}
+
+.theme-dark .item-inspect-modal__title {
+  color: #f0f0f0;
+}
+
+.theme-dark .item-inspect-modal__level {
+  color: #ccc;
+}
+
+.theme-dark .item-inspect-modal__effect,
+.theme-dark .item-inspect-modal__description,
+.theme-dark .item-inspect-modal__target-section,
+.theme-dark .item-inspect-modal__result-section,
+.theme-dark .results-content {
+  background-color: #333;
+  border: 1px solid #444;
+}
+
+.theme-dark .item-inspect-modal__effect h3,
+.theme-dark .item-inspect-modal__description h3,
+.theme-dark .item-inspect-modal__target-section h3,
+.theme-dark .item-inspect-modal__result-section h3,
+.theme-dark .results-content h3 {
+  color: #f0f0f0;
+}
+
+.theme-dark .item-inspect-modal__effect p,
+.theme-dark .item-inspect-modal__description p,
+.theme-dark .item-modal-view p,
+.theme-dark .item-results-view p {
+  color: #f0f0f0;
+}
+
+.theme-dark .target-description {
+  color: #ccc;
+}
+
+.theme-dark .no-targets, 
+.theme-dark .no-results {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ccc;
+}
+
+.theme-dark .item-inspect-modal__footer {
+  background-color: #333;
+  border-top: 1px solid #444;
+}
+
+/* Shared styles */
 .item-inspect-modal__close {
   position: absolute;
   top: 10px;
@@ -408,8 +552,6 @@ function getMonsterTitle(typeId: string): string {
 
 .item-inspect-modal__header {
   padding: 20px;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #eee;
   position: sticky;
   top: 0;
   z-index: 5;
@@ -418,13 +560,11 @@ function getMonsterTitle(typeId: string): string {
 .item-inspect-modal__title {
   margin: 0 0 5px 0;
   font-size: 1.6rem;
-  color: #333;
   text-align: center;
 }
 
 .item-inspect-modal__level {
   font-size: 0.9rem;
-  color: #555;
   text-align: center;
 }
 
@@ -449,7 +589,6 @@ function getMonsterTitle(typeId: string): string {
 .results-content {
   margin-bottom: 20px;
   padding: 15px;
-  background-color: #f5f5f5;
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   text-align: center;
@@ -461,7 +600,6 @@ function getMonsterTitle(typeId: string): string {
 .item-inspect-modal__result-section h3,
 .results-content h3 {
   margin-top: 0;
-  color: #333;
   font-size: 1.2rem;
 }
 
@@ -492,10 +630,8 @@ function getMonsterTitle(typeId: string): string {
 
 .item-inspect-modal__footer {
   padding: 15px 20px;
-  border-top: 1px solid #eee;
   display: flex;
   justify-content: center;
-  background-color: #fff;
   position: sticky;
   bottom: 0;
   z-index: 5;
@@ -510,13 +646,13 @@ function getMonsterTitle(typeId: string): string {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-  background-color: #555;
+  background-color: #43A047;
   color: white;
 }
 
 .item-inspect-modal__use-btn:hover,
 .item-inspect-modal__close-btn:hover {
-  background-color: #444;
+  background-color: #2E7D32;
 }
 
 .item-inspect-modal__use-btn:disabled {
@@ -524,18 +660,13 @@ function getMonsterTitle(typeId: string): string {
   cursor: not-allowed;
 }
 
-.item-inspect-modal__use-btn {
-  background-color: #555;
-  color: white;
-}
-
 .item-inspect-modal__close-btn {
-  background-color: #555;
+  background-color: #757575;
   color: white;
 }
 
 .item-inspect-modal__close-btn:hover {
-  background-color: #444;
+  background-color: #616161;
 }
 
 .target-options {
@@ -600,72 +731,23 @@ function getMonsterTitle(typeId: string): string {
   100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
 }
 
-/* New target selection styles */
-.item-inspect-modal__target-section,
-.item-inspect-modal__result-section {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: #f5f5f5;
-  border-radius: 6px;
+/* Target selection styles */
+.target-list, .result-list {
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  padding-bottom: 1rem;  /* Add padding to create space below the list */
 }
 
 .target-description {
+  margin-bottom: 1rem;
   font-style: italic;
   font-size: 0.9rem;
-  color: #666;
-  margin-top: 8px;
-  margin-bottom: 12px;
 }
 
-.target-list,
-.result-list {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.target-monster-item,
-.target-type-item,
-.result-item {
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  text-align: center;
-}
-
-.target-monster-item:hover,
-.target-type-item:hover,
-.result-item:hover {
-  background-color: #f0f0f0;
-}
-
-.target-monster-item:last-child,
-.target-type-item:last-child,
-.result-item:last-child {
-  border-bottom: none;
-}
-
-.target-monster-item:active,
-.target-type-item:active,
-.result-item:active {
-  background-color: #e8e8e8;
-}
-
-.target-selected,
-.result-selected {
-  background-color: #f0f0f0;
-  border-left: 2px solid #555;
-  padding-left: 13px; /* 15px - 2px border */
-}
-
-.no-targets,
-.no-results {
-  text-align: center;
-  padding: 20px;
-  color: #777;
+.no-targets, .no-results {
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
   font-style: italic;
 }
 

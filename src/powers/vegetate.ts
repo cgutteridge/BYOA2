@@ -15,7 +15,7 @@ export class VegetatePower extends ItemPower {
   readonly glowColor = "rgba(76, 175, 80, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';

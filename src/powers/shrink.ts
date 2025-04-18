@@ -13,7 +13,7 @@ export class ShrinkPower extends ItemPower {
   readonly glowColor = "rgba(135, 206, 250, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';

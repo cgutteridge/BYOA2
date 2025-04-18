@@ -15,7 +15,7 @@ export class PacifyPower extends ItemPower {
   readonly glowColor = "rgba(0, 119, 190, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';

@@ -15,7 +15,7 @@ export class FreezePower extends ItemPower {
   readonly glowColor = "rgba(0, 191, 255, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';

@@ -11,7 +11,7 @@ export class PickpocketPower extends ItemPower {
   readonly glowColor = "rgba(255, 215, 0, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';

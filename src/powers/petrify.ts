@@ -15,7 +15,7 @@ export class PetrifyPower extends ItemPower {
   readonly glowColor = "rgba(128, 128, 128, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';

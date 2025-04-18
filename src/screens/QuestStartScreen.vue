@@ -4,6 +4,16 @@
     <div class="quest-start-content">
       <h2>Start Your Quest</h2>
       
+      <div class="theme-toggle">
+        <button 
+          @click="toggleTheme" 
+          class="theme-button"
+          :class="{ active: currentTheme === 'dark' }"
+        >
+          {{ currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
+        </button>
+      </div>
+      
       <div v-if="isLoading" class="loading-state">
         <div class="loading-spinner"></div>
         <p>Loading locations...</p>
@@ -13,48 +23,30 @@
         <div class="pub-selection">
           <div class="pub-selector">
             <h3>Start Pub</h3>
-            <input 
-              type="text" 
-              v-model="startPubSearch" 
+            <PickerComponent
+              v-model="startPubId"
+              :options="pubStore.pubs"
+              searchable
               placeholder="Search for a pub..."
-              @focus="showStartPubList = true"
-              @input="showStartPubList = true"
-              class="pub-search"
+              value-property="id"
+              display-property="name"
+              @selection-change="updateStartPub"
+              :theme="currentTheme"
             />
-            <div v-if="showStartPubList && startPubSearch && filteredStartPubs.length > 0" class="pub-list">
-              <div 
-                v-for="(pub, index) in filteredStartPubs" 
-                :key="`start-${pub.id}-${index}`" 
-                class="pub-item"
-                :class="{ selected: selectedStartPub?.id === pub.id }"
-                @click="selectStartPub(pub)"
-              >
-                {{ pub.name }}
-              </div>
-            </div>
           </div>
           
           <div class="pub-selector">
             <h3>End Pub</h3>
-            <input 
-              type="text" 
-              v-model="endPubSearch" 
+            <PickerComponent
+              v-model="endPubId"
+              :options="pubStore.pubs"
+              searchable
               placeholder="Search for a pub..."
-              @focus="showEndPubList = true"
-              @input="showEndPubList = true"
-              class="pub-search"
+              value-property="id"
+              display-property="name"
+              @selection-change="updateEndPub"
+              :theme="currentTheme"
             />
-            <div v-if="showEndPubList && endPubSearch && filteredEndPubs.length > 0" class="pub-list">
-              <div 
-                v-for="(pub, index) in filteredEndPubs" 
-                :key="`end-${pub.id}-${index}`" 
-                class="pub-item"
-                :class="{ selected: selectedEndPub?.id === pub.id }"
-                @click="selectEndPub(pub)"
-              >
-                {{ pub.name }}
-              </div>
-            </div>
           </div>
         </div>
         
@@ -67,58 +59,27 @@
           />
           
           <div class="difficulty-selector">
-            <h3>Difficulty Level</h3>
-            <div class="difficulty-options">
-              <button 
-                class="difficulty-button" 
-                :class="{ selected: selectedDifficulty === 'easy' }"
-                @click="selectDifficulty('easy')"
-              >
-                Easy
-              </button>
-              <button 
-                class="difficulty-button" 
-                :class="{ selected: selectedDifficulty === 'medium' }"
-                @click="selectDifficulty('medium')"
-              >
-                Medium
-              </button>
-              <button 
-                class="difficulty-button" 
-                :class="{ selected: selectedDifficulty === 'hard' }"
-                @click="selectDifficulty('hard')"
-              >
-                Hard
-              </button>
-            </div>
+            <ButtonPickerComponent
+              v-model="selectedDifficulty"
+              :options="[
+                { id: 'easy', name: 'Easy' },
+                { id: 'medium', name: 'Medium' },
+                { id: 'hard', name: 'Hard' }
+              ]"
+              title="Difficulty Level"
+              :theme="currentTheme"
+            />
           </div>
           
           <div class="player-count-selector">
-            <h3>Number of Players</h3>
-            <div class="player-count-control">
-              <button 
-                class="control-button" 
-                @click="decrementPlayerCount" 
-                :disabled="playerCount <= 1"
-              >
-                -
-              </button>
-              <span class="player-count">{{ playerCount }}</span>
-              <button 
-                class="control-button" 
-                @click="incrementPlayerCount"
-                :disabled="playerCount >= 6"
-              >
-                +
-              </button>
-            </div>
-            <div class="player-count-info">
-              Monsters scale with player count:<br>
-              • Minions: 2× player count<br>
-              • Grunts: 1× player count<br>
-              • Elites: Fixed (1) or scaled on hard difficulty<br>
-              • Bosses: Always 1
-            </div>
+            <CounterPickerComponent
+              v-model="playerCount"
+              title="Number of Players"
+              :min="1"
+              :max="6"
+              description="Monsters scale with player count:<br>• Minions: 2× player count<br>• Grunts: 1× player count<br>• Elites: Fixed (1) or scaled on hard difficulty<br>• Bosses: Always 1"
+              :theme="currentTheme"
+            />
           </div>
         </div>
         
@@ -135,25 +96,27 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue'
-import {usePubStore} from '../stores/pubStore'
-import {useAppStore} from '../stores/appStore'
-import {Pub} from "../types";
-import {startQuest} from "@/quest/startQuest.ts";
+import { computed, onMounted, ref, watch } from 'vue'
+import { usePubStore } from '../stores/pubStore'
+import { useAppStore } from '../stores/appStore'
+import type { Pub } from "../types"
+import { startQuest } from "@/quest/startQuest.ts"
+import PickerComponent from '@/components/PickerComponent.vue'
+import ButtonPickerComponent from '@/components/ButtonPickerComponent.vue'
+import CounterPickerComponent from '@/components/CounterPickerComponent.vue'
 
 const pubStore = usePubStore()
 const appStore = useAppStore()
 
 const selectedStartPub = ref<Pub | null>(null)
 const selectedEndPub = ref<Pub | null>(null)
-const startPubSearch = ref('')
-const endPubSearch = ref('')
-const showStartPubList = ref(false)
-const showEndPubList = ref(false)
+const startPubId = ref<string>('')
+const endPubId = ref<string>('')
 const questTitle = ref('')
 const isLoading = ref(true)
 const selectedDifficulty = ref('medium')
 const playerCount = ref(3)
+const currentTheme = ref('light') // Default theme
 
 // Watch for pubs to be loaded
 watch(() => pubStore.pubs, (newPubs) => {
@@ -162,92 +125,150 @@ watch(() => pubStore.pubs, (newPubs) => {
   }
 }, { immediate: true })
 
-const filteredStartPubs = computed(() => {
-  if (!startPubSearch.value) return []
-  const searchTerm = startPubSearch.value.toLowerCase()
-  const uniquePubs = new Set()
-  return pubStore.pubs.filter(pub => {
-    if (uniquePubs.has(pub.id)) return false
-    uniquePubs.add(pub.id)
-    return pub.name.toLowerCase().includes(searchTerm)
-  })
-})
+// Watch for id changes to update the Pub objects
+watch([startPubId], () => {
+  if (startPubId.value) {
+    const pub = pubStore.pubs.find(p => p.id === startPubId.value)
+    if (pub) {
+      selectedStartPub.value = pub
+    }
+  } else {
+    selectedStartPub.value = null
+  }
+}, { immediate: true })
 
-const filteredEndPubs = computed(() => {
-  if (!endPubSearch.value) return []
-  const searchTerm = endPubSearch.value.toLowerCase()
-  const uniquePubs = new Set()
-  return pubStore.pubs.filter(pub => {
-    if (uniquePubs.has(pub.id)) return false
-    uniquePubs.add(pub.id)
-    return pub.name.toLowerCase().includes(searchTerm)
-  })
-})
+watch([endPubId], () => {
+  if (endPubId.value) {
+    const pub = pubStore.pubs.find(p => p.id === endPubId.value)
+    if (pub) {
+      selectedEndPub.value = pub
+    }
+  } else {
+    selectedEndPub.value = null
+  }
+}, { immediate: true })
 
 const canStartQuest = computed(() => {
-  return selectedStartPub.value && 
-         selectedEndPub.value && 
-         selectedStartPub.value.id !== selectedEndPub.value.id &&
-         questTitle.value.trim() !== ''
+  // Debug log
+  console.log('Checking if can start quest:', {
+    selectedStartPub: selectedStartPub.value,
+    selectedEndPub: selectedEndPub.value,
+    startPubId: startPubId.value,
+    endPubId: endPubId.value,
+    questTitle: questTitle.value
+  })
+  
+  // We have pubs selected either via objects or IDs
+  const hasStartPub = !!(selectedStartPub.value || startPubId.value)
+  const hasEndPub = !!(selectedEndPub.value || endPubId.value)
+  
+  // The pubs are different
+  const differentPubs = 
+    (selectedStartPub.value?.id !== selectedEndPub.value?.id) &&
+    (startPubId.value !== endPubId.value)
+  
+  // We have a quest title
+  const hasTitle = questTitle.value.trim() !== ''
+  
+  return hasStartPub && hasEndPub && differentPubs && hasTitle
 })
 
-function selectStartPub(pub: Pub) {
-  selectedStartPub.value = pub
-  startPubSearch.value = pub.name
-  showStartPubList.value = false
+// Helper functions for the PickerComponent
+function updateStartPub(pub: Pub | string) {
+  console.log('Setting start pub:', pub)
+  
+  // If we're getting an ID instead of a Pub object
+  if (typeof pub === 'string') {
+    startPubId.value = pub
+    const found = pubStore.pubs.find(p => p.id === pub)
+    if (found) {
+      selectedStartPub.value = found
+    }
+  } else {
+    selectedStartPub.value = pub
+    startPubId.value = pub.id
+  }
 }
 
-function selectEndPub(pub: Pub) {
-  selectedEndPub.value = pub
-  endPubSearch.value = pub.name
-  showEndPubList.value = false
+function updateEndPub(pub: Pub | string) {
+  console.log('Setting end pub:', pub)
+  
+  // If we're getting an ID instead of a Pub object
+  if (typeof pub === 'string') {
+    endPubId.value = pub
+    const found = pubStore.pubs.find(p => p.id === pub)
+    if (found) {
+      selectedEndPub.value = found
+    }
+  } else {
+    selectedEndPub.value = pub
+    endPubId.value = pub.id
+  }
 }
+
+// Watch for changes in selected pubs and quest title to help debug
+watch([selectedStartPub, selectedEndPub, questTitle], () => {
+  console.log('Quest state updated:', {
+    startPub: selectedStartPub.value,
+    endPub: selectedEndPub.value,
+    title: questTitle.value,
+    canStart: canStartQuest.value
+  })
+}, { deep: true })
 
 function selectDifficulty(difficulty: string) {
   selectedDifficulty.value = difficulty
 }
 
-function decrementPlayerCount() {
-  playerCount.value--
-}
-
-function incrementPlayerCount() {
-  playerCount.value++
+// Toggle between light and dark themes
+function toggleTheme() {
+  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
 }
 
 async function callStartQuest() {
   if (canStartQuest.value) {
     console.log('Starting quest...')
+    
+    // Make sure we have the full pub objects
+    let startPub = selectedStartPub.value
+    let endPub = selectedEndPub.value
+    
+    // If we only have IDs, find the full pub objects
+    if (!startPub && startPubId.value) {
+      startPub = pubStore.pubs.find(p => p.id === startPubId.value) || null
+    }
+    
+    if (!endPub && endPubId.value) {
+      endPub = pubStore.pubs.find(p => p.id === endPubId.value) || null
+    }
+    
+    // Check that we have valid pub objects
+    if (!startPub || !endPub) {
+      console.error('Failed to find pubs', { startPubId: startPubId.value, endPubId: endPubId.value })
+      return
+    }
+    
+    // Change screen
     appStore.setScreen('intro')
+    
     let difficulty = 1
-    if( selectedDifficulty.value === 'hard' ) { difficulty = 1.5 }
-    if( selectedDifficulty.value === 'easy' ) { difficulty = 0.66 }
-
+    if (selectedDifficulty.value === 'hard') { difficulty = 1.5 }
+    if (selectedDifficulty.value === 'easy') { difficulty = 0.66 }
+    
     await startQuest(
-        questTitle.value,
-        selectedStartPub.value as Pub,
-        selectedEndPub.value as Pub,
-        difficulty,
-        playerCount.value
+      questTitle.value,
+      startPub as Pub,
+      endPub as Pub,
+      difficulty,
+      playerCount.value
     );
   }
 }
 
-// Close dropdowns when clicking outside
-onMounted( () => {
-  const pubStore = usePubStore()
-
+// Load pubs when the component is mounted
+onMounted(() => {
   console.log('mounted QuestStartScreen')
-
   pubStore.fetchNearbyPubs()
-  
-  document.addEventListener('click', (e) => {
-    // @ts-ignore
-    if (!e.target.closest('.pub-selector')) {
-      showStartPubList.value = false
-      showEndPubList.value = false
-    }
-  })
 })
 </script>
 
@@ -272,6 +293,26 @@ onMounted( () => {
   margin: auto;
 }
 
+.theme-toggle {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.theme-button {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 .pub-selection {
   display: flex;
   gap: 2rem;
@@ -281,44 +322,6 @@ onMounted( () => {
 .pub-selector {
   flex: 1;
   position: relative;
-}
-
-.pub-search {
-  width: 100%;
-  padding: 0.8rem;
-  margin-top: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: white;
-  font-size: 1rem;
-}
-
-.pub-list {
-  position: absolute;
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  background: rgba(30, 30, 30, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  z-index: 1000;
-  margin-top: 0.5rem;
-}
-
-.pub-item {
-  padding: 0.8rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.pub-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.pub-item.selected {
-  background: #4CAF50;
-  color: white;
 }
 
 .quest-details {
@@ -336,93 +339,9 @@ onMounted( () => {
   font-size: 1.2rem;
 }
 
-.difficulty-selector {
+.difficulty-selector, .player-count-selector {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-}
-
-.difficulty-options {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 0.5rem;
-}
-
-.difficulty-button {
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  flex: 1;
-  max-width: 120px;
-}
-
-.difficulty-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-.difficulty-button.selected {
-  background: #4CAF50;
-  color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.player-count-selector {
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.player-count-control {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 0.5rem;
-}
-
-.control-button {
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  flex: 1;
-  max-width: 120px;
-}
-
-.control-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-.control-button:disabled {
-  background: #666;
-  cursor: not-allowed;
-}
-
-.player-count {
-  font-size: 1.2rem;
-  flex: 1;
-  text-align: center;
-}
-
-.player-count-info {
-  font-size: 0.85rem;
-  text-align: center;
-  margin-top: 1rem;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.5;
-  max-width: 350px;
-  margin-left: auto;
-  margin-right: auto;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 0.8rem;
-  border-radius: 8px;
 }
 
 .start-quest-button {

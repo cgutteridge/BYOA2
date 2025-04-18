@@ -12,7 +12,7 @@ export class BanishPower extends ItemPower {
   readonly glowColor = "rgba(255, 20, 147, 0.8)"; // Deep pink
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';

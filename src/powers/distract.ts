@@ -15,7 +15,7 @@ export class DistractPower extends ItemPower {
   readonly glowColor = "rgba(139, 0, 139, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
