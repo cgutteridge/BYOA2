@@ -42,7 +42,7 @@ onMounted(() => {
           if (notificationEl && typeof notification.centerIndex === 'number') {
             // Calculate offset with padding between notifications
             // The offset is calculated based on the index and a fixed padding
-            const padding = 20; // Padding between notifications
+            const padding = 60; // Increased padding between notifications
             const baseHeight = 70; // Estimated base height of a notification with reduced padding
             const offset = notification.centerIndex * (baseHeight + padding);
             
