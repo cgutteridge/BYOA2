@@ -11,6 +11,7 @@ interface Notification {
   timeout?: number;
   isEntering: boolean;
   height?: number; // Height of notification for stacking
+  centerIndex?: number; // Index in center stack
 }
 
 // Center notification registry
@@ -40,6 +41,7 @@ export const useAppStore = defineStore('app', () => {
   // Notifications
   const notifications = ref<Notification[]>([])
   const centerNotifications = ref<CenterNotificationPosition[]>([])
+  const centerNotificationCount = ref(0)
 
   const setScreen = (newScreen: ScreenId) => {
     screen.value = newScreen
@@ -94,23 +96,37 @@ export const useAppStore = defineStore('app', () => {
     timeout = 3000
   ): void => {
     const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-    notifications.value.push({ id, message, type, timeout, isEntering: true });
-    console.log("NOTIFICATION: " + message)
+    const centerIndex = centerNotificationCount.value;
+    centerNotificationCount.value++;
+    
+    notifications.value.push({ id, message, type, timeout, isEntering: true, centerIndex });
+    console.log("NOTIFICATION: " + message);
+    
     // Auto-remove after timeout
     if (timeout > 0) {
       setTimeout(() => removeNotification(id), timeout);
     }
-  }
+  };
   
   const removeNotification = (id: string): void => {
     const index = notifications.value.findIndex(n => n.id === id);
     if (index !== -1) {
       notifications.value.splice(index, 1);
     }
-    
-    // Also remove from center registry if present
-    removeCenterNotification(id);
-  }
+  };
+  
+  const exitCenterAnimation = (id: string): void => {
+    const index = notifications.value.findIndex(n => n.id === id);
+    if (index !== -1 && notifications.value[index].isEntering) {
+      notifications.value[index].isEntering = false;
+      
+      // Decrement center notification count after a brief delay
+      // to ensure smooth stacking transitions
+      setTimeout(() => {
+        centerNotificationCount.value = Math.max(0, centerNotificationCount.value - 1);
+      }, 100);
+    }
+  };
 
   const addToCenterRegistry = (id: string, height: number): number => {
     // Get next index (how many notifications are already in center)
@@ -169,6 +185,7 @@ export const useAppStore = defineStore('app', () => {
     inspectedItem,
     notifications,
     centerNotifications,
+    centerNotificationCount,
     setFocusPub,
     unsetFocusPub,
     setScreen,
@@ -182,6 +199,7 @@ export const useAppStore = defineStore('app', () => {
     setInventoryTab,
     addNotification,
     removeNotification,
+    exitCenterAnimation,
     addToCenterRegistry,
     removeCenterNotification,
     openItemInspectModal,

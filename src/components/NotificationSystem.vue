@@ -29,21 +29,35 @@ const appStore = useAppStore();
 // Set up watcher to mark new notifications as "entering" for the animation
 // This will be automatically cleaned up when component is unmounted
 onMounted(() => {
+  // When notifications array changes
   appStore.$subscribe((_, state) => {
     const notificationsArray = state.notifications;
-    // Find notifications that still have isEntering set to true
+    
+    // Process all notifications to set their vertical position
+    notificationsArray.forEach(notification => {
+      if (notification.isEntering) {
+        // Find and update position based on centerIndex
+        setTimeout(() => {
+          const notificationEl = document.querySelector(`[data-notification-id="${notification.id}"]`) as HTMLElement;
+          if (notificationEl && typeof notification.centerIndex === 'number') {
+            // Set custom properties for positioning
+            notificationEl.style.setProperty('--notification-index', notification.centerIndex.toString());
+            notificationEl.style.setProperty('--notification-offset', `${notification.centerIndex * 70}px`);
+          }
+        }, 0);
+      }
+    });
+    
+    // Find notifications that are entering
     const newNotifications = notificationsArray.filter(n => n.isEntering === true);
     
-    // For each new notification, set up the center animation 
+    // For each new notification, set up timing to end center animation
     newNotifications.forEach(notification => {
       // Remove entering flag after animation completes
       setTimeout(() => {
-        const index = appStore.notifications.findIndex(n => n.id === notification.id);
-        if (index !== -1) {
-          // Add class for transition animation
-          appStore.notifications[index].isEntering = false;
-        }
-      }, 800); // Match animation duration
+        // Call the store method to exit the center animation
+        appStore.exitCenterAnimation(notification.id);
+      }, 1000); // Match animation duration
     });
   });
 });
@@ -81,10 +95,10 @@ onMounted(() => {
 /* Styles for the initial center position */
 .notification-entering {
   position: fixed;
-  top: 30vh;
+  top: calc(30vh + var(--notification-offset, 0));
   left: 50%;
   transform: translate(-50%, -50%) scale(1);
-  z-index: 10000; /* Higher than regular notifications */
+  z-index: calc(10000 - var(--notification-index, 0)); /* Higher z-index for earlier notifications */
   box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
   transform-origin: center;
 }
