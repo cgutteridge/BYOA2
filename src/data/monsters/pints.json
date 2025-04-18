@@ -8,7 +8,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 2,
+    "xp": 20,
     "booze": 2.3,
     "soft": 0,
     "lesser": "shadow_warrior",
@@ -27,7 +27,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1,
+    "xp": 10,
     "booze": 1.2,
     "soft": 0,
     "style": {
@@ -43,7 +43,7 @@
     "level": "elite",
     "species": "human",
     "flags": ["mortal"],
-    "xp": 3,
+    "xp": 30,
     "booze": 3.4,
     "soft": 0,
     "lesser": "knight",
@@ -64,7 +64,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1,
+    "xp": 10,
     "booze": 1.1,
     "soft": 0,
     "style": {
@@ -82,7 +82,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1,
+    "xp": 10,
     "booze": 1.1,
     "soft": 0,
     "style": {
@@ -100,7 +100,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1,
+    "xp": 10,
     "booze": 1.5,
     "soft": 0,
     "style": {
@@ -118,7 +118,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1,
+    "xp": 10,
     "booze": 1.4,
     "soft": 0,
     "style": {
@@ -136,7 +136,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 2,
+    "xp": 20,
     "booze": 2.8,
     "soft": 0,
     "lesser": "goblin",
@@ -155,7 +155,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 2,
+    "xp": 20,
     "booze": 2.3,
     "soft": 0,
     "lesser": "peasant",
@@ -174,7 +174,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 2,
+    "xp": 20,
     "booze": 3.0,
     "soft": 0,
     "lesser": "knight",
@@ -193,7 +193,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 1,
+    "xp": 10,
     "booze": 1.1,
     "soft": 0,
     "style": {
@@ -211,7 +211,7 @@
     "flags": [
       "mortal"
     ],
-    "xp": 2,
+    "xp": 20,
     "booze": 2.2,
     "soft": 0,
     "lesser": "dwarf",
