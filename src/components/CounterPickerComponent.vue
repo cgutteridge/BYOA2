@@ -5,7 +5,7 @@
       <button 
         class="counter-button decrement" 
         @click="decrement" 
-        :disabled="disabled || value <= min"
+        :disabled="disabled || value <= (min ?? 0)"
       >
         {{ decrementText || '-' }}
       </button>
@@ -13,7 +13,7 @@
       <button 
         class="counter-button increment" 
         @click="increment"
-        :disabled="disabled || value >= max"
+        :disabled="disabled || value >= (max ?? Infinity)"
       >
         {{ incrementText || '+' }}
       </button>

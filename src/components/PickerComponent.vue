@@ -112,7 +112,7 @@ const filteredOptions = computed(() => {
       option.title,
       option.label,
       option.subtitle
-    ].filter(Boolean).map(val => val.toLowerCase())
+    ].filter(Boolean).map(val => val?.toLowerCase() ?? '')
     
     return searchIn.some(text => text.includes(searchTerm))
   })
@@ -195,7 +195,7 @@ function selectOption(option: PickerOption): void {
     if (props.searchable) {
       // Update search text to match selection for searchable pickers
       const displayProperty = props.displayProperty || 'name'
-      searchText.value = typeof option === 'object' ? (option[displayProperty] || option.title || option.label || '') : option.toString()
+      searchText.value = typeof option === 'object' ? (option[displayProperty] || option.title || option.label || '') : String(option)
       showList.value = false
     }
   }
@@ -225,7 +225,7 @@ watch(() => props.modelValue, (newValue) => {
     
     if (option) {
       const displayProperty = props.displayProperty || 'name'
-      searchText.value = typeof option === 'object' ? (option[displayProperty] || option.title || option.label || '') : option.toString()
+      searchText.value = typeof option === 'object' ? (option[displayProperty] || option.title || option.label || '') : String(option)
     }
   }
 }, { immediate: true })

@@ -34,7 +34,7 @@ interface RawMonsterData {
 // Import all monster type files
 import vampiresData from './monsters/vampires.json';
 import elvesData from './monsters/elves.json';
-import fairiesData from './monsters/fairies.json';
+import faerieData from './monsters/faerie.json';
 import pintsData from './monsters/pints.json';
 import spiritsData from './monsters/spirits.json';
 import nullifiedData from './monsters/nullified.json';
@@ -44,7 +44,7 @@ import otherData from './monsters/other.json';
 const monstersData: RawMonsterData[] = [
   ...(vampiresData as RawMonsterData[]),
   ...(elvesData as RawMonsterData[]),
-  ...(fairiesData as RawMonsterData[]),
+  ...(faerieData as RawMonsterData[]),
   ...(pintsData as RawMonsterData[]),
   ...(spiritsData as RawMonsterData[]),
   ...(nullifiedData as RawMonsterData[]),

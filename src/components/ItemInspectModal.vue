@@ -188,7 +188,7 @@ const showVisualResult = ref(false)
 const selectedTargets = ref<string[]>([])
 const selectedTargetTypes = ref<string[]>([])
 const selectedResult = ref<string>('')
-const currentTheme = ref('light') // Default theme
+const currentTheme = ref<'light' | 'dark'>('light') // Default theme with proper type
 
 // Toggle between light and dark themes
 function toggleTheme() {
@@ -274,39 +274,6 @@ function getMonsterCountByType(type: string): number {
   // Count monsters of the exact type
   const monsters = questStore.currentPub?.monsters || []
   return monsters.filter(monster => monster.type === type && monster.alive).length
-}
-
-// Helper function to toggle target selection
-function toggleTarget(monsterId: string) {
-  const maxSelections = item.value.uses || 1
-  const index = selectedTargets.value.indexOf(monsterId)
-  
-  if (index >= 0) {
-    // Deselect
-    selectedTargets.value.splice(index, 1)
-  } else if (selectedTargets.value.length < maxSelections) {
-    // Select if under max
-    selectedTargets.value.push(monsterId)
-  }
-}
-
-// Helper function to toggle target type selection
-function toggleTargetType(type: string) {
-  const maxSelections = item.value.uses || 1
-  const index = selectedTargetTypes.value.indexOf(type)
-  
-  if (index >= 0) {
-    // Deselect
-    selectedTargetTypes.value.splice(index, 1)
-  } else if (selectedTargetTypes.value.length < maxSelections) {
-    // Select if under max
-    selectedTargetTypes.value.push(type)
-  }
-}
-
-// Helper function to select a result
-function selectResult(result: string) {
-  selectedResult.value = result
 }
 
 // Methods

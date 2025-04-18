@@ -116,7 +116,7 @@ const questTitle = ref('The ring of Badgers')
 const isLoading = ref(true)
 const selectedDifficulty = ref('medium')
 const playerCount = ref(3)
-const currentTheme = ref('light') // Default theme
+const currentTheme = ref<'light' | 'dark'>('light') // Updated with proper type
 
 // Watch for pubs to be loaded
 watch(() => pubStore.pubs, (newPubs) => {
@@ -215,10 +215,6 @@ watch([selectedStartPub, selectedEndPub, questTitle], () => {
     canStart: canStartQuest.value
   })
 }, { deep: true })
-
-function selectDifficulty(difficulty: string) {
-  selectedDifficulty.value = difficulty
-}
 
 // Toggle between light and dark themes
 function toggleTheme() {
