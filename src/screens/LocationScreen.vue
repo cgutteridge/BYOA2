@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <button class="leave-button" @click="leaveGameLocation">Leave GameLocation</button>
+    <button class="leave-button" @click="leaveGameLocation">Leave Location</button>
 
     <div class="gift-item-section" v-if="questStore.currentGameLocation?.giftItem">
       <h3><span class="icon">🎁</span> Gift Item Available!</h3>
@@ -422,7 +422,7 @@ function defeatMonster(monster: Monster) {
   const xpToAdd = getMonsterXP(monster.type)
   const unitsToAdd = getMonsterBooze(monster.type)
   const softToAdd = getMonsterSoft(monster.type)
-  questStore.updateStats(xpToAdd, unitsToAdd, softToAdd, `defeating ${monster.name}`);
+  questStore.updateStats(xpToAdd, unitsToAdd, softToAdd, `Defeated ${monster.name} in combat`);
   // Set alive to false
   questStore.currentGameLocation.monsters[monsterIndex].alive = false;
   
