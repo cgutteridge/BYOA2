@@ -73,7 +73,7 @@ export const useAppStore = defineStore('app', () => {
   }
   
   // Inventory UI actions
-  const toggleInventory = (): void => {
+  const toggleInterface = (): void => {
     isInterfaceOpen.value = !isInterfaceOpen.value
     // When opening the interface, always set tab to items
     if (isInterfaceOpen.value) {
@@ -81,12 +81,12 @@ export const useAppStore = defineStore('app', () => {
     }
   }
   
-  const openInventory = (tab = 'items'): void => {
+  const openInterface = (tab = 'items'): void => {
     isInterfaceOpen.value = true
     inventoryTab.value = tab
   }
   
-  const closeInventory = (): void => {
+  const closeInterface = (): void => {
     isInterfaceOpen.value = false
   }
   
@@ -185,9 +185,9 @@ export const useAppStore = defineStore('app', () => {
     setPlayerCoordinates,
     setMapPosition,
     setMapZoom,
-    toggleInventory,
-    openInventory,
-    closeInventory,
+    toggleInterface,
+    openInterface,
+    closeInterface,
     setInventoryTab,
     addNotification,
     removeNotification,

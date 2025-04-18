@@ -51,16 +51,15 @@ export class SplitPower extends ItemPower {
    * @param monster The monster to split
    * @returns Whether the operation was successful
    */
-  applyEffect(_item: Item, monster: Monster): boolean {
+  applyEffect(item: Item, monster: Monster): boolean {
+    const questStore = useQuestStore();
+
     // Get the monster's type definition
     const monsterTypeDef = monsterTypes.find(mt => mt.id === monster.type);
     if (!monsterTypeDef) return false;
     
     // Check if the monster has a lesser form defined
     if (!monsterTypeDef.lesser) return false;
-    
-    // Get the quest store to modify monsters
-    const questStore = useQuestStore();
     
     // Make sure we have access to the current gameLocation
     const gameLocation = questStore.currentGameLocation;
@@ -135,7 +134,11 @@ export class SplitPower extends ItemPower {
     
     // Remove the original monster
     gameLocation.monsters.splice(monsterIndex, 1);
-    
+
+    // Log the banishment
+    questStore.updateStats(1,0,0,
+        `${monster.name} was split into ${count} with ${item.name}`)
+
     return true;
   }
 } 

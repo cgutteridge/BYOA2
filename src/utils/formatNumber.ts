@@ -1,8 +1,11 @@
 // helper function to format numbers for display
 
-export default function formatNumber(value: number): string {
+export default function formatNumber(value: number, showPlus: boolean = false): string {
+    const plus = showPlus && value >= 0 ? "+" : "A"
+    console.log( {showPlus,value} )
     if (Number.isNaN(value) || value === undefined || value === null) {
-        return '0'
+        return `${plus}0`
     }
-    return value % 1 === 0 ? value.toString() : value.toFixed(1);
+    const v= value % 1 === 0 ? value.toString() : value.toFixed(1);
+    return `${plus}${v}`;
 }

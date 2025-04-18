@@ -2,6 +2,7 @@ import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
 import { ItemPower } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
 import { toMonsterTypeId } from '../types'
+import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Petrify power implementation - transforms monsters into stone versions
@@ -30,7 +31,9 @@ export class PetrifyPower extends ItemPower {
     'boss': toMonsterTypeId('petrified_elite'), // Fallback, but bosses can't be targeted anyway
   };
 
-  applyEffect(_item: Item, monster: Monster): boolean {
+  applyEffect(item: Item, monster: Monster): boolean {
+    const questStore = useQuestStore();
+
     // Guard: check if monster exists and is alive
     if (!monster || !monster.alive) {
       return false;
@@ -64,13 +67,17 @@ export class PetrifyPower extends ItemPower {
     // Transform the monster into a petrified version
     const originalType = monster.type;
     const originalName = monster.name;
-    
+
     // Update the monster's type and name
     monster.type = petrifiedMonsterTypeId;
     monster.name = petrifiedMonsterType.title;
     
     console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
-    
+    // Log the banishment
+    questStore.updateStats(1,0,0,
+        `${originalName} was turned to stone with ${item.name}`)
+
+
     return true;
   }
 } 

@@ -10,6 +10,9 @@ import type {
 } from '../types'
 import {monsterTypes} from '../data/monsterTypes'
 import {useQuestStore} from "@/stores/questStore.ts";
+import {useAppStore} from "@/stores/appStore.ts";
+import {useInventoryStore} from "@/stores/inventoryStore.ts";
+
 
 // Base abstract class for all power implementations
 export abstract class ItemPower {
@@ -62,15 +65,21 @@ export abstract class ItemPower {
     }
 
     // Execution methods
-    protected reduceUses(item: Item): void {
-        if (item.uses > 0) {
-            item.uses--;
+    protected reduceUses(item: Item, n: number = 1): void {
+        const inventoryStore = useInventoryStore();
+        const appStore = useAppStore()
+        item.uses = Math.max(0, item.uses - n)
+        console.log({uses: item.uses})
+        if (item.uses === 0) {
+            console.log("DUST")
+            inventoryStore.removeItem(item.id)
+            appStore.addNotification(`${item.name} crumbles to dust.`)
         }
     }
 
     // @ts-ignore - May be unused in base class, implemented by subclasses
-    useOnGameLocation(item: Item, gameLocationId: string): PowerResult {
-        return {message: "this should be subclassed!", success: false}
+    useOnGameLocation(item: Item, gameLocationId: string): boolean {
+        return false
     }
 
     /**
@@ -87,7 +96,6 @@ export abstract class ItemPower {
         if (!monsterType) {
             return false;
         }
-
 
         // Check target filters from the item
         if (item.targetFilters) {
@@ -162,40 +170,27 @@ export abstract class ItemPower {
         return Array.from(validTypes);
     }
 
-    useOnMonster(item: Item, monster: Monster): PowerResult {
-        console.log(`Using ${item.name} to ${this.displayName} monster ${monster.id}`);
-
-        // Reduce uses
-        this.reduceUses(item);
-
-        // Kill the monster using shared helper
+    useOnMonster(item: Item, monster: Monster): boolean {
         const success = this.applyEffect(item, monster);
 
-        return {
-            success,
-            message: success ? `${item.name} ${this.displayName}ed the monster!` : `${item.name} failed to ${this.displayName} the monster.`
-        };
+        if (success) {
+            this.reduceUses(item);
+        }
+
+        return success
     }
 
-    useOnType(item: Item, type: MonsterTypeId): PowerResult {
-        console.log(`Using ${item.name} to ${this.displayName} all monsters of type ${type}`);
-
-        // Reduce uses
-        this.reduceUses(item);
-
+    useOnType(item: Item, type: MonsterTypeId): boolean {
         const count = this.applyEffectToType(item, type);
 
-        // Return success if at least one monster was killed
-        return {
-            success: count > 0,
-            message: count > 0
-                ? `${item.name} ${this.displayName}ed ${count} ${type}${count > 1 ? 's' : ''}!`
-                : `${item.name} failed to ${this.displayName} any ${type}s.`
-        };
+        if (count > 0) {
+            this.reduceUses(item);
+            return true
+        }
+        return false
     }
 
-    // @ts-ignore
-    applyEffectToType(item: Item, type: string): number {
+    applyEffectToType(item: Item, type: MonsterTypeId): number {
 
         // Get the quest store
         const questStore = useQuestStore();
@@ -229,11 +224,3 @@ export abstract class ItemPower {
 export interface PowerFactory {
     getPower: (powerName: ItemPowerId) => ItemPower | undefined;
 }
-
-// Result type for power executions
-export interface PowerResult {
-    success: boolean;
-    message: string;
-    targets?: Monster[] | GameLocation[] | MonsterTypeId[];
-    affectedItems?: Item[];
-} 

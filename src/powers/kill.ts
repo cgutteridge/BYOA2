@@ -1,5 +1,6 @@
 import type {Item, Monster} from '../types';
 import {ItemPower} from './abstractItemPower';
+import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Kill power implementation
@@ -20,10 +21,17 @@ export class KillPower extends ItemPower {
 
   // @ts-ignore
   applyEffect(item: Item, monster: Monster): boolean {
-    if (monster && monster.alive) {
-      monster.alive = false;
-      return true;
+    const questStore = useQuestStore();
+
+    if (!monster || !monster.alive) {
+      return false;
     }
-    return false;
+
+    monster.alive = false;
+
+    // Log the banishment
+    questStore.updateStats(1,0,0,
+        `${monster.name} was destroyed with ${item.name}`)
+
   }
 } 

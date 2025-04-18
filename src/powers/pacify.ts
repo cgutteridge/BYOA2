@@ -2,6 +2,7 @@ import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
 import { ItemPower } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
 import { toMonsterTypeId } from '../types'
+import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Pacify power implementation - transforms monsters into pacified versions
@@ -30,7 +31,9 @@ export class PacifyPower extends ItemPower {
     'boss': toMonsterTypeId('passive_elite'), // Fallback, but bosses can't be targeted anyway
   };
 
-  applyEffect(_item: Item, monster: Monster): boolean {
+  applyEffect(item: Item, monster: Monster): boolean {
+    const questStore = useQuestStore();
+
     // Guard: check if monster exists and is alive
     if (!monster || !monster.alive) {
       return false;
@@ -67,10 +70,12 @@ export class PacifyPower extends ItemPower {
     
     // Update the monster's type and name
     monster.type = pacifiedMonsterTypeId;
-    monster.name = pacifiedMonsterType.title;
-    
+
     console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
-    
+    // Log the banishment
+    questStore.updateStats(1,0,0,
+        `${originalName} was pacified with ${item.name}`)
+
     return true;
   }
 } 

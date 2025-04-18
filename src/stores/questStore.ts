@@ -88,23 +88,23 @@ export const useQuestStore = defineStore('quest', () => {
    */
   const updateStats = (xpAmount: number, boozeAmount: number, softAmount: number, actionDesc: string) => {
     // Update the stats
-    if (xpAmount !== 0) xp.value += xpAmount;
-    if (boozeAmount !== 0) booze.value += boozeAmount;
-    if (softAmount !== 0) soft.value += softAmount;
+    if (xpAmount != 0) xp.value += xpAmount;
+    if (boozeAmount != 0) booze.value += boozeAmount;
+    if (softAmount != 0) soft.value += softAmount;
 
     // Format booze, soft without decimal for whole numbers
-    const boozeDisplay = formatNumber(boozeAmount)
-
+    const boozeDisplay = formatNumber(boozeAmount,true)
+    const xpDisplay = formatNumber(xpAmount,true)
     const parts : string[] = []
-    if( xpAmount !== 0 ) {
-      parts.push(`${xpAmount} XP`)
+    if( xpAmount != 0 && !Number.isNaN(xpAmount) ) {
+      parts.push(`${xpDisplay} XP`)
     }
-    if( boozeAmount !== 0 ) {
+    if( boozeAmount != 0 && !Number.isNaN(boozeAmount) ) {
       parts.push(`${boozeDisplay} Booze`)
     }
-    if( parts.length ===0 ) {
+    if( parts.length ==0 ) {
     parts.push("nothing")}
-    appStore.addNotification( `Gained ${parts.join(' and ')} for ${actionDesc}`)
+    appStore.addNotification( `${actionDesc} ${parts.join(', ')}`)
   }
   
   const endQuest = () => {

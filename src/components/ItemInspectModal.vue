@@ -16,7 +16,6 @@
         </div>
         
         <!-- Item view -->
-        <div v-if="!showResults" class="item-modal-view">
           <div class="item-inspect-modal__header">
             <h2 class="item-inspect-modal__title">{{ item.name }}</h2>
             <div class="item-inspect-modal__level">{{ item.uses !== undefined ? `${item.uses} use${item.uses!=1?"s":""} remaining` : 'Unlimited uses' }}</div>
@@ -47,7 +46,7 @@
                       name: getMonsterTitle(type),
                       count: getMonsterCountByType(type)
                     }))"
-                    :multiple="item.uses > 1"
+                    :multiple="true"
                     :max-selections="item.uses || 1"
                     :always-show="true"
                     :disabled="!isChoiceTarget"
@@ -62,7 +61,7 @@
                       name: monster.name,
                       subtitle: `${getMonsterSpecies(monster.type)} ${getMonsterLevel(monster.type)}`
                     }))"
-                    :multiple="item.uses > 1"
+                    :multiple="true"
                     :max-selections="item.uses || 1"
                     :always-show="true"
                     :disabled="!isChoiceTarget"
@@ -106,38 +105,6 @@
               Use Item
             </button>
           </div>
-        </div>
-        
-        <!-- Results view after item use -->
-        <div v-else class="item-results-view">
-          <div class="item-inspect-modal__header">
-            <h2 class="item-inspect-modal__title">Item Used</h2>
-          </div>
-          
-          <div class="item-inspect-modal__body">
-            <div class="results-content">
-              <h3>{{ resultsTitle }}</h3>
-              <p>{{ resultsMessage }}</p>
-              
-              <!-- Optional visual result can be shown here -->
-              <div v-if="showVisualResult" class="visual-result">
-                <div class="effect-animation">
-                  <div class="effect-circle"></div>
-                  <div class="effect-rays"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="item-inspect-modal__footer">
-            <button 
-              class="item-inspect-modal__close-btn"
-              @click="close"
-            >
-              Close
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </Teleport>
@@ -150,14 +117,9 @@ import {generateEffectDescription, getTargetDescription} from '../quest/generate
 import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
 import {getValidTargets} from '../quest/itemUtils.ts'
-import {
-  getMonsterLevel,
-  getMonsterSpecies,
-  getUniqueMonsterTypes
-} from '../quest/monsterUtils.ts'
+import {getMonsterLevel, getMonsterSpecies, getUniqueMonsterTypes} from '../quest/monsterUtils.ts'
 import {monsterTypes} from '../data/monsterTypes.ts'
 import {powerFactory} from "@/powers";
-import {PowerResult} from "@/powers/abstractItemPower.ts";
 import pickOne from "@/utils/pickOne.ts";
 import PickerComponent from './PickerComponent.vue'
 
@@ -181,10 +143,6 @@ const context = computed(() => {
 })
 
 // State
-const showResults = ref(false)
-const resultsTitle = ref('Item Effect Applied')
-const resultsMessage = ref('')
-const showVisualResult = ref(false)
 const selectedTargets = ref<string[]>([])
 const selectedTargetTypes = ref<string[]>([])
 const selectedResult = ref<string>('')
@@ -279,10 +237,6 @@ function getMonsterCountByType(type: string): number {
 // Methods
 function close() {
   // Reset state when closing
-  showResults.value = false
-  resultsTitle.value = 'Item Effect Applied'
-  resultsMessage.value = ''
-  showVisualResult.value = false
   selectedTargets.value = []
   selectedTargetTypes.value = []
   selectedResult.value = ''
@@ -291,20 +245,19 @@ function close() {
   appStore.closeItemInspectModal()
 }
 
-function applyPower(): PowerResult[] {
+function useItem(): void {
   const power = powerFactory.getPower(item.value.power);
-
-  const results: PowerResult[] = []
 
   if (item.value.target === 'pick' || item.value.target === 'random') {
     let targets: Monster[] = []
     if (item.value.target === 'pick') {
+      console.log({v: selectedTargets.value})
       targets = selectedTargets.value.map(monsterId => potentialTargetMonsters.value.find(monster => monster.id === monsterId) as Monster)
     } else {
       targets = [pickOne(potentialTargetMonsters.value)]
     }
     targets.forEach(monster => {
-      results.push(power.useOnMonster(item.value, monster))
+      power.useOnMonster(item.value, monster)
     })
   } else { // type (pick_type or random_type)
     let targets: MonsterTypeId[] = []
@@ -314,24 +267,12 @@ function applyPower(): PowerResult[] {
       targets = [toMonsterTypeId(pickOne(potentialTargetMonsterTypes.value))]
     }
     targets.forEach(monsterType => {
-      results.push(power.useOnType(item.value, monsterType))
+      power.useOnType(item.value, monsterType)
     })
   }
 
-  return results
-}
-
-function useItem() {
-  // Set random result message
-  resultsTitle.value = `${item.value?.name || 'Item'} Used!`
-
-  const results = applyPower()
-
-  // Show results view
-  showResults.value = true
-
-  resultsTitle.value = 'did a thing'
-  resultsMessage.value = results.map(result => result.message).join(', ')
+  close()
+  appStore.closeInterface()
 }
 
 // Add this function to get monster title

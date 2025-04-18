@@ -1,5 +1,6 @@
 import { ItemPower } from './abstractItemPower'
 import {Item, Monster} from "@/types";
+import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Spy power implementation
@@ -19,6 +20,12 @@ export class SpyPower extends ItemPower {
   readonly levelRestrictions = null;
 
   applyEffect(_item: Item, _monster: Monster): boolean {
+    const questStore = useQuestStore();
+
+    // Log the banishment
+    questStore.updateStats(1,0,0,
+        `todo`)
+
     return false;
   } // Can target any level
 

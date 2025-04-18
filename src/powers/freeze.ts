@@ -1,7 +1,8 @@
-import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
-import { ItemPower } from './abstractItemPower'
-import { monsterTypes } from '../data/monsterTypes'
-import { toMonsterTypeId } from '../types'
+import type {Item, Monster, MonsterLevel, MonsterTypeId} from '../types'
+import {toMonsterTypeId} from '../types'
+import {ItemPower} from './abstractItemPower'
+import {monsterTypes} from '../data/monsterTypes'
+import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Freeze power implementation - transforms monsters into ice versions
@@ -30,7 +31,9 @@ export class FreezePower extends ItemPower {
     'boss': toMonsterTypeId('glacial_titan'), // Fallback, but bosses can't be targeted anyway
   };
 
-  applyEffect(_item: Item, monster: Monster): boolean {
+  applyEffect(item: Item, monster: Monster): boolean {
+    const questStore = useQuestStore();
+
     // Guard: check if monster exists and is alive
     if (!monster || !monster.alive) {
       return false;
@@ -60,17 +63,16 @@ export class FreezePower extends ItemPower {
       console.log(`Could not find ice monster type for level ${monsterType.level}`);
       return false;
     }
-    
-    // Transform the monster into an ice version
-    const originalType = monster.type;
+
     const originalName = monster.name;
-    
+
     // Update the monster's type and name
     monster.type = iceMonsterTypeId;
-    monster.name = iceMonsterType.title;
-    
-    console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
-    
+
+    // Log the banishment
+    questStore.updateStats(1, 0, 0,
+        `${originalName} was frozen with ${item.name}`)
+
     return true;
   }
 } 

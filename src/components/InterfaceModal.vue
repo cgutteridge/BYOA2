@@ -165,12 +165,12 @@ const tabs = [
 
 // Methods
 function close() {
-  appStore.closeInventory()
+  appStore.closeInterface()
 }
 
 function handleQuit() {
   appStore.setScreen('start_quest')
-  appStore.closeInventory()
+  appStore.closeInterface()
 }
 
 // Helper function to format booze without decimal for whole numbers

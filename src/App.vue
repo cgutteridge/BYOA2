@@ -120,7 +120,7 @@ function stopContinuousTracking() {
 }
 
 function toggleInterface() {
-  appStore.toggleInventory()
+  appStore.toggleInterface()
 }
 
 
@@ -135,13 +135,7 @@ onMounted(() => {
     checkDebugMode()
     initializeGPS() // Re-initialize GPS when debug mode changes
   })
-  
-  // Add keyboard shortcut for inventory
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'i' || e.key === 'I') {
-      toggleInterface()
-    }
-  })
+
 })
 
 onUnmounted(() => {
@@ -202,7 +196,7 @@ onUnmounted(() => {
         🎒
       </button>
       
-      <!-- Inventory Modal -->
+      <!-- Interface Modal -->
       <InterfaceModal />
       
       <!-- Global ItemInspectModal -->

@@ -2,6 +2,7 @@ import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
 import { ItemPower } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
 import { toMonsterTypeId } from '../types'
+import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Distract power implementation - transforms monsters into distracted versions
@@ -30,7 +31,9 @@ export class DistractPower extends ItemPower {
     'boss': toMonsterTypeId('distracted_elite'), // Fallback, but bosses can't be targeted anyway
   };
 
-  applyEffect(_item: Item, monster: Monster): boolean {
+  applyEffect(item: Item, monster: Monster): boolean {
+    const questStore = useQuestStore();
+
     // Guard: check if monster exists and is alive
     if (!monster || !monster.alive) {
       return false;
@@ -60,17 +63,16 @@ export class DistractPower extends ItemPower {
       console.log(`Could not find distracted monster type for level ${monsterType.level}`);
       return false;
     }
-    
-    // Transform the monster into a distracted version
-    const originalType = monster.type;
-    const originalName = monster.name;
+
+    const originalName = monster.name
     
     // Update the monster's type and name
     monster.type = distractedMonsterTypeId;
-    monster.name = distractedMonsterType.title;
-    
-    console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
-    
+
+    // Log the banishment
+    questStore.updateStats(1,0,0,
+        `${originalName} was distracted with ${item.name}`)
+
     return true;
   }
 } 

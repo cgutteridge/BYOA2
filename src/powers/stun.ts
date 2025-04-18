@@ -2,6 +2,7 @@ import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
 import { ItemPower } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
 import { toMonsterTypeId } from '../types'
+import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Stun power implementation - transforms monsters into stunned versions
@@ -30,7 +31,9 @@ export class StunPower extends ItemPower {
     'boss': toMonsterTypeId('stunned_elite'), // Fallback, but bosses can't be targeted anyway
   };
 
-  applyEffect(_item: Item, monster: Monster): boolean {
+  applyEffect(item: Item, monster: Monster): boolean {
+    const questStore = useQuestStore();
+
     // Guard: check if monster exists and is alive
     if (!monster || !monster.alive) {
       return false;
@@ -67,10 +70,12 @@ export class StunPower extends ItemPower {
     
     // Update the monster's type and name
     monster.type = stunnedMonsterTypeId;
-    monster.name = stunnedMonsterType.title;
-    
+
     console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
-    
+    // Log the banishment
+    questStore.updateStats(1,0,0,
+        `${originalName} was stunned with ${item.name}`)
+
     return true;
   }
 } 

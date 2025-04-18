@@ -50,39 +50,28 @@ export class ShrinkPower extends ItemPower {
    * @param monster The monster to shrink
    * @returns Whether the operation was successful
    */
-  applyEffect(_item: Item, monster: Monster): boolean {
+  applyEffect(item: Item, monster: Monster): boolean {
+    const questStore = useQuestStore();
+
     // Get the monster's type definition
     const monsterTypeDef = monsterTypes.find(mt => mt.id === monster.type);
     if (!monsterTypeDef) return false;
     
     // Check if the monster has a lesser form defined
     if (!monsterTypeDef.lesser) return false;
-    
-    // Get the quest store to modify monsters
-    const questStore = useQuestStore();
-    
-    // Make sure we have access to the current gameLocation
-    const gameLocation = questStore.currentGameLocation;
-    if (!gameLocation || !gameLocation.monsters) return false;
-    
-    // Find the original monster
-    const monsterIndex = gameLocation.monsters.findIndex(m => m.id === monster.id);
-    if (monsterIndex === -1) return false;
-    
+
+    const originalName = monster.name
+
     // Generate a fun name for the shrunken monster
     const randomNameIndex = Math.floor(Math.random() * this.shrinkNames.length);
-    const newName = this.shrinkNames[randomNameIndex].replace('{name}', monster.name);
-    
-    // Transform the monster into its lesser form
-    const originalMonster = gameLocation.monsters[monsterIndex];
-    
-    // Create the shrunken version, preserving original ID and item
-    gameLocation.monsters[monsterIndex] = {
-      ...originalMonster,
-      type: monsterTypeDef.lesser,
-      name: newName
-    };
-    
+    monster.name = this.shrinkNames[randomNameIndex].replace('{name}', monster.name);
+
+    monster.type = monsterTypeDef.lesser
+
+    // Log the banishment
+    questStore.updateStats(1,0,0,
+        `${originalName} was shrunk down to size with ${item.name}`)
+
     return true;
   }
 } 

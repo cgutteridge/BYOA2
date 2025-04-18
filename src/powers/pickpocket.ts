@@ -1,5 +1,6 @@
 import { ItemPower } from './abstractItemPower'
 import {Item, Monster} from "@/types";
+import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Pickpocket power implementation
@@ -18,7 +19,13 @@ export class PickpocketPower extends ItemPower {
   readonly canHaveResultRestriction = false;
   readonly levelRestrictions = null;
 
-  applyEffect(_item: Item, _monster: Monster): boolean {
+  applyEffect(item: Item, monster: Monster): boolean {
+    const questStore = useQuestStore();
+
+    // Log the banishment
+    questStore.updateStats(1,0,0,
+        `${monster.name} was robbed with ${item.name}`)
+
     return false;
   } // Can target any level
 
