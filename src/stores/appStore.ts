@@ -9,6 +9,15 @@ interface Notification {
   message: string;
   type: 'success' | 'error' | 'info' | 'warning';
   timeout?: number;
+  isEntering: boolean;
+  height?: number; // Height of notification for stacking
+}
+
+// Center notification registry
+interface CenterNotificationPosition {
+  id: string;
+  height: number;
+  index: number;
 }
 
 export const useAppStore = defineStore('app', () => {
@@ -30,6 +39,7 @@ export const useAppStore = defineStore('app', () => {
 
   // Notifications
   const notifications = ref<Notification[]>([])
+  const centerNotifications = ref<CenterNotificationPosition[]>([])
 
   const setScreen = (newScreen: ScreenId) => {
     screen.value = newScreen
@@ -84,7 +94,7 @@ export const useAppStore = defineStore('app', () => {
     timeout = 3000
   ): void => {
     const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-    notifications.value.push({ id, message, type, timeout });
+    notifications.value.push({ id, message, type, timeout, isEntering: true });
     console.log("NOTIFICATION: " + message)
     // Auto-remove after timeout
     if (timeout > 0) {
@@ -96,6 +106,33 @@ export const useAppStore = defineStore('app', () => {
     const index = notifications.value.findIndex(n => n.id === id);
     if (index !== -1) {
       notifications.value.splice(index, 1);
+    }
+    
+    // Also remove from center registry if present
+    removeCenterNotification(id);
+  }
+
+  const addToCenterRegistry = (id: string, height: number): number => {
+    // Get next index (how many notifications are already in center)
+    const index = centerNotifications.value.length;
+    
+    // Add to registry
+    centerNotifications.value.push({ id, height, index });
+    
+    return index;
+  }
+  
+  const removeCenterNotification = (id: string): void => {
+    const index = centerNotifications.value.findIndex(n => n.id === id);
+    if (index !== -1) {
+      centerNotifications.value.splice(index, 1);
+      
+      // Update indices for remaining notifications
+      centerNotifications.value.forEach((n, i) => {
+        if (i >= index) {
+          n.index = i;
+        }
+      });
     }
   }
 
@@ -131,6 +168,7 @@ export const useAppStore = defineStore('app', () => {
     inventoryTab,
     inspectedItem,
     notifications,
+    centerNotifications,
     setFocusPub,
     unsetFocusPub,
     setScreen,
@@ -144,6 +182,8 @@ export const useAppStore = defineStore('app', () => {
     setInventoryTab,
     addNotification,
     removeNotification,
+    addToCenterRegistry,
+    removeCenterNotification,
     openItemInspectModal,
     closeItemInspectModal
   }
