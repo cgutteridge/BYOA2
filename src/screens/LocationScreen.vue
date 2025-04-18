@@ -470,12 +470,13 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
 }
 
 .leave-button {
-  padding: 0.5rem 1rem;
+  padding: 12px 24px;
   background: #f44336;
   color: white;
   border: none;
   border-radius: 4px;
-  margin: auto;
+  margin: 0 0 2rem 0;
+  font-size: 1rem;
   display: inline-block;
   cursor: pointer;
 }

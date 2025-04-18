@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref} from 'vue'
+import {onMounted, onUnmounted, ref, watch} from 'vue'
 import {useAppStore} from './stores/appStore'
 import {useQuestStore} from './stores/questStore'
+import {useInventoryStore} from './stores/inventoryStore'
 
 import MapScreen from './screens/MapScreen.vue'
 import QuestStartScreen from './screens/QuestStartScreen.vue'
@@ -15,8 +16,22 @@ import formatNumber from "@/utils/formatNumber.ts";
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
+const inventoryStore = useInventoryStore()
 const isDebugMode = ref(false)
 const watchId = ref<number | null>(null)
+const showButtonPulse = ref(false)
+
+// Watch for inventory changes to trigger the pulse animation
+watch(() => inventoryStore.itemCount, (newCount, oldCount) => {
+  if (newCount > oldCount) {
+    // Item was added, trigger pulse animation
+    showButtonPulse.value = true;
+    // Reset after animation completes
+    setTimeout(() => {
+      showButtonPulse.value = false;
+    }, 1000);
+  }
+});
 
 // Check if debug mode is enabled via URL fragment
 function checkDebugMode() {
@@ -32,10 +47,8 @@ async function initializeGPS() {
     
     // If in debug mode, use fixed coordinates for Southampton
     if (isDebugMode.value ) {
-      const debugLocation = {
-        lat: 50.91018,
-        lng: -1.40419
-      }
+      const debugLocation = {lat: 50.91018, lng: -1.40419 } //southampton
+      //const debugLocation = {lat: 49.0434, lng: 3.9562}// epernay
       console.log('DEBUG MODE: Using fixed GPS location:', debugLocation)
       appStore.setPlayerLocation(debugLocation)
       appStore.setGPSStatus('success')
@@ -182,6 +195,7 @@ onUnmounted(() => {
               appStore.screen !== 'intro' && 
               appStore.screen !== 'victory')"
         class="interface-button"
+        :class="{ 'pulse-animation': showButtonPulse }"
         @click="toggleInterface"
         title="Open Interface (I)"
       >
@@ -217,13 +231,13 @@ body {
 .interface-button {
   position: fixed;
   top: 20px;
-  right: 20px;
+  left: 20px;
   width: 60px;
   height: 60px;
   border-radius: 50%;
   background-color: #4a8;
   color: white;
-  font-size: 30px;
+  font-size: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -238,6 +252,26 @@ body {
 .interface-button:hover {
   transform: scale(1.1);
   background-color: #3a7;
+}
+
+/* Pulse animation for new item */
+.pulse-animation {
+  animation: pulse 1s cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px rgba(74, 136, 80, 0.8);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .gps-status, .gps-error {
