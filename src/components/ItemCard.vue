@@ -191,6 +191,21 @@ const getPowerGlowColor = (power: ItemPowerId): string => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.item-card--prize {
+  border-color: #ffd700; /* Gold */
+  background: linear-gradient(135deg, #fffcef 0%, #fff8d6 100%);
+}
+
+.item-card--gift {
+  border-color: #4caf50; /* Green */
+  background: linear-gradient(135deg, #f0fff0 0%, #e0f7e0 100%);
+}
+
+.item-card--drop {
+  border-color: #2196f3; /* Blue */
+  background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
+}
+
 .item-card__icon {
   align-self: stretch;
   width: 40px;

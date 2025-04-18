@@ -14,15 +14,13 @@
     <button class="leave-button" @click="leavePub">Leave Location</button>
 
     <div class="gift-item-section" v-if="questStore.currentPub?.giftItem">
-      <div class="gift-item-container">
-        <h3>Gift Item Available!</h3>
-        <ItemCard 
-          :item="questStore.currentPub.giftItem"
-          variant="gift"
-          :show-details="true"
-          @action="claimGiftItem"
-        />
-      </div>
+      <h3><span class="icon">🎁</span> Gift Item Available!</h3>
+      <ItemCard 
+        :item="questStore.currentPub.giftItem"
+        variant="gift"
+        :show-details="true"
+        @action="claimGiftItem"
+      />
     </div>
 
     <div class="combat-container" v-if="questStore.currentPub?.monsters">
@@ -103,19 +101,19 @@
       
       <!-- Prize item section -->
       <div v-if="questStore.currentPub.prizeItem" class="prize-item-section">
-          <h3>Quest Prize:</h3>
-          <div class="prize-item-wrapper">
-            <div v-if="!allMonstersDefeated" class="monster-item-locked">
-              <span class="lock-icon">🔒</span>
-            </div>
-            <ItemCard 
-              :item="questStore.currentPub.prizeItem"
-              variant="prize"
-              :show-details="true"
-              @action="claimPrizeItem"
-            />
+        <h3><span class="icon">🏆</span> Quest Prize:</h3>
+        <div class="prize-item-wrapper">
+          <div v-if="!allMonstersDefeated" class="monster-item-locked">
+            <span class="lock-icon">🔒</span>
           </div>
+          <ItemCard 
+            :item="questStore.currentPub.prizeItem"
+            variant="prize"
+            :show-details="true"
+            @action="claimPrizeItem"
+          />
         </div>
+      </div>
     </div>
   </div>
 </template>
@@ -503,23 +501,26 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-}
-
-.gift-item-container, .prize-item-container {
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  padding: 1.5rem;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.gift-item-container h3, .prize-item-container h3 {
+.gift-item-section h3, .prize-item-section h3 {
   color: #ffeb3b;
   margin-top: 0;
   margin-bottom: 1rem;
   font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gift-item-section .icon, .prize-item-section .icon {
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-size: 1.4rem;
 }
 
 .monster-item {
@@ -710,6 +711,17 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
 
 .prize-item-wrapper {
   position: relative;
+}
+
+.gift-item-section .item-card, 
+.prize-item-section .item-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gift-item-section .item-card:hover, 
+.prize-item-section .item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .monster-toggle-btn:hover {
