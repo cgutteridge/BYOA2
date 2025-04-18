@@ -74,6 +74,10 @@ export const useAppStore = defineStore('app', () => {
   // Inventory UI actions
   const toggleInventory = (): void => {
     isInterfaceOpen.value = !isInterfaceOpen.value
+    // When opening the interface, always set tab to items
+    if (isInterfaceOpen.value) {
+      inventoryTab.value = 'items'
+    }
   }
   
   const openInventory = (tab = 'items'): void => {
