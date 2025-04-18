@@ -1,19 +1,19 @@
 <template>
-  <div class="pub-popup">
-    <h2>{{ pub.name }}<template v-if="!pub.scouted"> ({{ locationType.title }})</template></h2>
+  <div class="location-popup">
+    <h2>{{ location.name }}<template v-if="!location.scouted"> ({{ locationType.title }})</template></h2>
     <div class="distance-info" v-if="playerDistance !== null">
       <span>{{ Math.round(playerDistance) }}m away</span>
     </div>
     <div class="action-buttons">
-      <button v-if="!pub.scouted && !isLoading" @click="scoutPub" class="scout-button">Scout Location</button>
-      <button @click="enterPub" v-if="pub.scouted && isNearby" class="enter-button">Enter Location</button>
+      <button v-if="!location.scouted && !isLoading" @click="scoutLocation" class="scout-button">Scout Location</button>
+      <button @click="enterLocation" v-if="location.scouted && isNearby" class="enter-button">Enter Location</button>
     </div>
-    <div class="pub-details">
-      <div v-if="pub.scouted && pub.description">
-        <div v-if="pub.giftItem" class="gift-info">
+    <div class="location-details">
+      <div v-if="location.scouted && location.description">
+        <div v-if="location.giftItem" class="gift-info">
           <h3>Gift:</h3>
           <ItemCard 
-            :item="pub.giftItem"
+            :item="location.giftItem"
             variant="gift"
             :show-details="true"
           />
@@ -48,10 +48,10 @@
           </div>
         </div>
         
-        <div v-if="pub.prizeItem" class="prize-info">
+        <div v-if="location.prizeItem" class="prize-info">
           <h3>Reward:</h3>
           <ItemCard 
-            :item="pub.prizeItem"
+            :item="location.prizeItem"
             variant="prize"
             :show-details="true"
           />
@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import {computed} from 'vue'
-import type {LocationType, Monster, MonsterTypeId, Pub} from '../types'
+import type {LocationType, Monster, MonsterTypeId, Location} from '../types'
 import {useAppStore} from "../stores/appStore"
 import {locationTypesById} from '@/data/locationTypes'
 import {monsterTypes} from '../data/monsterTypes'
@@ -82,7 +82,7 @@ import {useQuestStore} from "@/stores/questStore.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
 
 const props = defineProps<{
-  pub: Pub
+  location: Location
 }>()
 
 const emit = defineEmits(['close'])
@@ -90,27 +90,27 @@ const emit = defineEmits(['close'])
 const appStore = useAppStore()
 const questStore = useQuestStore()
 
-const locationType = computed((): LocationType => locationTypesById[props.pub.locationType])
+const locationType = computed((): LocationType => locationTypesById[props.location.locationType])
 
 const playerDistance = computed(() => {
-  if (!appStore.playerLocation) return null;
+  if (!appStore.playerCoordinates) return null;
   
   return calculateDistance(
-    appStore.playerLocation.lat,
-    appStore.playerLocation.lng,
-    props.pub.lat,
-    props.pub.lng
+    appStore.playerCoordinates.lat,
+    appStore.playerCoordinates.lng,
+    props.location.lat,
+    props.location.lng
   );
 });
 
-// Check if player is within range to interact with the pub
+// Check if player is within range to interact with the location
 const isNearby = computed(() => {
   return playerDistance.value !== null && playerDistance.value < 50000; // 50000 meters range
 });
 
 // Group undefeated monsters by type for display
 const groupedMonsters = computed(() => {
-  if (!props.pub?.monsters || !props.pub.monsters.length) {
+  if (!props.location?.monsters || !props.location.monsters.length) {
     return [];
   }
   
@@ -121,7 +121,7 @@ const groupedMonsters = computed(() => {
   }>();
   
   // Only include monsters that are still alive
-  props.pub.monsters.forEach(monster => {
+  props.location.monsters.forEach(monster => {
     // Skip defeated monsters
     if (!monster.alive) return;
     
@@ -145,15 +145,15 @@ const groupedMonsters = computed(() => {
 
 // Check if all monsters are defeated
 const allMonstersDefeated = computed(() => {
-  if (!props.pub?.monsters || props.pub.monsters.length === 0) {
+  if (!props.location?.monsters || props.location.monsters.length === 0) {
     return false;
   }
   
-  return props.pub.monsters.every(monster => !monster.alive);
+  return props.location.monsters.every(monster => !monster.alive);
 });
 
 const isLoading = computed(() => {
-  return props.pub.scouted && !props.pub.description;
+  return props.location.scouted && !props.location.description;
 })
 
 function getMonsterTitle(monsterId: string): string {
@@ -216,17 +216,17 @@ function getMonsterTraits(monsterId: string): string {
   return `, ${monster.flags.join(', ')}`
 }
 
-async function scoutPub(event: MouseEvent) {
+async function scoutLocation(event: MouseEvent) {
   event.stopPropagation()
-  await scoutLocation(props.pub)
+  await scoutLocation(props.location)
   
   // Award XP for scouting a location through the UI (using updateStats)
   questStore.updateStats(1, 0, 0, "scouting this location");
 }
 
-function enterPub(event: MouseEvent) {
+function enterLocation(event: MouseEvent) {
   event.stopPropagation()
-  questStore.setCurrentPub(props.pub.id)
+  questStore.setCurrentLocation(props.location.id)
   appStore.setScreen('location')
   
   // Award XP for arriving at a location (using updateStats)
@@ -236,7 +236,7 @@ function enterPub(event: MouseEvent) {
 </script>
 
 <style scoped>
-.pub-popup {
+.location-popup {
   color: white;
   padding: 5px;
   max-width: 100%;
@@ -259,7 +259,7 @@ h2 {
   font-weight: bold;
 }
 
-.pub-details {
+.location-details {
   margin: 1rem 0;
 }
 

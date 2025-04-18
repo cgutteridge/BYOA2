@@ -8,40 +8,40 @@
 import {computed, createApp, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import type {Location, Pub} from '../types'
-import {usePubStore} from "../stores/pubStore";
+import type {Coordinates, Location} from '../types'
+import {useLocationStore} from "../stores/locationStore";
 import {useAppStore} from "../stores/appStore";
 import {locationTypesById} from "@/data/locationTypes.ts";
-import PubPopup from '@/components/PubPopup.vue'
+import LocationPopup from '@/components/LocationPopup.vue'
 
 // Configuration constants
 const BOTTOM_OFFSET = 20 // Distance from bottom of screen  when opening a popup in pixels
 const EDGE_OFFSET = 300 // Minimum distance from screen edges  when opening a popup in pixels
 
 const appStore = useAppStore()
-const pubStore = usePubStore()
+const locationStore = useLocationStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
-const pubMarkers = ref<L.Marker[]>([])
+const locationMarkers = ref<L.Marker[]>([])
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])
 
 // Computed properties
-const playerLocation = computed(() => appStore.playerLocation)
-const pubs = computed(() => pubStore.pubs)
+const playerCoordinates = computed(() => appStore.playerCoordinates)
+const locations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
 
-function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
+function createLocationMarker(location: Location, mapInstance: L.Map): L.Marker {
   if (!mapInstance) {
     throw new Error('No map instance provided for marker creation')
   }
 
-  const locationType = locationTypesById[pub.locationType]
+  const locationType = locationTypesById[location.locationType]
   const iconPath = `./icons/${locationType.filename}`
 
-  const marker = L.marker([pub.lat, pub.lng], {
+  const marker = L.marker([location.lat, location.lng], {
     icon: L.icon({
       iconUrl: iconPath,
       iconSize: [67, 83],
@@ -53,9 +53,9 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
     })
   }).addTo(mapInstance)
 
-  // Create popup for this pub
+  // Create popup for this location
   const popup = L.popup({
-    className: 'pub-info-popup',
+    className: 'location-info-popup',
     maxWidth: 500,
     minWidth: 320,
     closeButton: false,
@@ -72,7 +72,7 @@ function createPubMarker(pub: Pub, mapInstance: L.Map): L.Marker {
     container.className = 'popup-vue-container'
     
     // Create a new Vue app with our component
-    const app = createApp(PubPopup, {pub})
+    const app = createApp(LocationPopup, {location})
     
     // Mount the app to our container
     app.mount(container)
@@ -168,14 +168,14 @@ function cleanupMap(): void {
   if (map.value) {
     try {
       // Remove markers first
-      pubMarkers.value.forEach(marker => {
+      locationMarkers.value.forEach(marker => {
         try {
           if (marker) marker.remove()
         } catch (error) {
           console.error('Error removing marker:', error)
         }
       })
-      pubMarkers.value = []
+      locationMarkers.value = []
       
       // Then remove map
       map.value.off()
@@ -211,8 +211,8 @@ function initializeMap(): void {
     if (mapPosition.value) {
       location = mapPosition.value
       zoom = mapZoom.value || 16
-    } else if (playerLocation.value) {
-      location = playerLocation.value
+    } else if (playerCoordinates.value) {
+      location = playerCoordinates.value
       zoom = 16
     } else {
       location = { lat: 51.505, lng: -0.09 }
@@ -289,12 +289,12 @@ function initializeMap(): void {
 
 
     // Add player marker if location is available
-    if (playerLocation.value) {
-      updatePlayerMarker(playerLocation.value)
+    if (playerCoordinates.value) {
+      updatePlayerMarker(playerCoordinates.value)
     }
 
-    // Generate pub markers
-    generatePubMarkers()
+    // Generate location markers
+    generateLocationMarkers()
 
 
   } catch (error) {
@@ -305,7 +305,7 @@ function initializeMap(): void {
 }
 
 function initWhenReady(): void {
-  if (playerLocation.value) {
+  if (playerCoordinates.value) {
     initializeMap()
   } else {
     setTimeout(initWhenReady, 100)
@@ -331,7 +331,7 @@ onUnmounted(() => {
 })
 
 // Watch for location changes
-watch(playerLocation, (newLocation) => {
+watch(playerCoordinates, (newLocation) => {
   if (newLocation && map.value) {
     updatePlayerMarker(newLocation)
   }
@@ -346,21 +346,21 @@ watch(() => appStore.screen, (newMode, oldMode) => {
   }
 }, { immediate: true })
 
-function generatePubMarkers(): void {
+function generateLocationMarkers(): void {
   if (!map.value) return;
   
   // Clear existing markers
-  pubMarkers.value.forEach(marker => marker.remove());
-  pubMarkers.value = [];
+  locationMarkers.value.forEach(marker => marker.remove());
+  locationMarkers.value = [];
 
   // Create new markers
-  pubs.value.forEach((pub: Pub) => {
-    const marker = createPubMarker(pub, map.value as L.Map)
-    pubMarkers.value.push(marker)
+  locations.value.forEach((location: Location) => {
+    const marker = createLocationMarker(location, map.value as L.Map)
+    locationMarkers.value.push(marker)
     return marker
   })
 
-  console.log('Total markers created:', pubMarkers.value.length)
+  console.log('Total markers created:', locationMarkers.value.length)
 }
 
 function updatePlayerMarker(location: Location): void {
@@ -384,10 +384,10 @@ function updatePlayerMarker(location: Location): void {
 }
 
 function centerOnPlayer(): void {
-  if (!map.value || !playerLocation.value) return
+  if (!map.value || !playerCoordinates.value) return
   
   map.value.setView(
-    [playerLocation.value.lat, playerLocation.value.lng],
+    [playerCoordinates.value.lat, playerCoordinates.value.lng],
     16,
     { animate: true }
   )
@@ -459,23 +459,23 @@ button {
 }
 
 /* Popup styles */
-:deep(.pub-info-popup) {
+:deep(.location-info-popup) {
   max-width: 90vw !important;
 }
 
-:deep(.pub-info-popup .leaflet-popup-content-wrapper) {
+:deep(.location-info-popup .leaflet-popup-content-wrapper) {
   background: rgba(30, 30, 30, 0.95);
   border-radius: 12px;
   box-shadow: 0 3px 20px rgba(0, 0, 0, 0.7);
   padding: 5px;
 }
 
-:deep(.pub-info-popup .leaflet-popup-tip) {
+:deep(.location-info-popup .leaflet-popup-tip) {
   background: rgba(30, 30, 30, 0.95);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
 }
 
-:deep(.pub-info-popup .leaflet-popup-content) {
+:deep(.location-info-popup .leaflet-popup-content) {
   margin: 0;
   width: auto !important;
   max-height: 75vh;
@@ -496,11 +496,11 @@ button {
 }
 
 @media screen and (max-width: 600px) {
-  :deep(.pub-info-popup) {
+  :deep(.location-info-popup) {
     max-width: 95vw !important;
   }
   
-  :deep(.pub-info-popup .leaflet-popup-content) {
+  :deep(.location-info-popup .leaflet-popup-content) {
     max-height: 70vh;
   }
 }

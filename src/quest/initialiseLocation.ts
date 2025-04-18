@@ -1,32 +1,31 @@
 import {locationTypesList} from "@/data/locationTypes.ts";
-import {LocationDifficulty, Pub} from "@/types";
-import pickOne from "@/utils/pickOne.ts";
+import {LocationDifficulty, Location} from "@/types";
 import {useQuestStore} from "@/stores/questStore.ts";
-import {usePubStore} from "@/stores/pubStore.ts";
+import {useLocationStore} from "@/stores/locationStore.ts";
 import calculateDistance from "@/utils/calculateDistance.ts";
+import {pickOne} from "@/utils/random.ts";
 
-
-export default function initialiseLocation(pub: Pub) {
-    const pubStore = usePubStore()
+export default function initialiseLocation(location: Location) {
+    const locationStore = useLocationStore()
     // calculate difficulty
-    pubStore.setPubDifficulty(pub.id, calculateDifficulty(pub))
+    locationStore.setLocationDifficulty(location.id, calculateDifficulty(location))
 
     // set locationType
-    pubStore.setPubType(pub.id, pickOne(locationTypesList))
+    locationStore.setLocationType(location.id, pickOne(locationTypesList))
 }
 
-function calculateDifficulty(pub: Pub) : LocationDifficulty{
+function calculateDifficulty(location: Location) : LocationDifficulty{
     const questStore = useQuestStore()
-    if( pub.id === questStore.startPub?.id) { return 'start'}
-    if( pub.id === questStore.endPub?.id) { return 'end'}
+    if(location.id === questStore.startLocation?.id) { return 'start'}
+    if(location.id === questStore.endLocation?.id) { return 'end'}
 
-    if( questStore.endPub === undefined || questStore.startPub === undefined) {
+    if(questStore.endLocation === undefined || questStore.startLocation === undefined) {
         // this should not actually happen but it keeps typescript quiet
         return 'medium'
     }
     // calculate distance to start and end location
-    const distanceFromStart = calculateDistance(questStore.startPub.lat,questStore.startPub.lng,pub.lat,pub.lng)
-    const distanceFromEnd = calculateDistance(questStore.endPub.lat,questStore.endPub.lng,pub.lat,pub.lng)
+    const distanceFromStart = calculateDistance(questStore.startLocation.lat,questStore.startLocation.lng,location.lat,location.lng)
+    const distanceFromEnd = calculateDistance(questStore.endLocation.lat,questStore.endLocation.lng,location.lat,location.lng)
     const ratio = distanceFromStart / distanceFromEnd
     if(ratio<0.3) { return 'easy'}
     if(ratio>0.7) { return 'hard'}

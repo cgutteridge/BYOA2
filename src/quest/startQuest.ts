@@ -1,5 +1,6 @@
 import type {Pub} from '@/types'
 import {useQuestStore} from "@/stores/questStore.ts";
+import {useLocationStore} from "@/stores/locationStore.ts";
 import {usePubStore} from "@/stores/pubStore.ts";
 import initialiseLocation from "@/quest/initialiseLocation.ts";
 import { useInventoryStore } from "@/stores/inventoryStore.ts";

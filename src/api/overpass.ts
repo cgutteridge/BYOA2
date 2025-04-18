@@ -1,11 +1,11 @@
-import {Pub} from "@/types";
+import {Location} from "@/types";
 
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter'
 ]
 
-export default async function fetchNearbyPubs(lat: number, lng: number, radius: number = 5000): Promise<Pub[]> {
+export default async function fetchNearbyLocations(lat: number, lng: number, radius: number = 5000): Promise<Location[]> {
   const overpassQuery = `
     [out:json][timeout:100];
     nwr["amenity"~"^(pub|bar)$"]["name"](around:${radius},${lat},${lng});
@@ -20,11 +20,11 @@ export default async function fetchNearbyPubs(lat: number, lng: number, radius: 
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch pubs: ${response.status} ${response.statusText}`)
+        throw new Error(`Failed to fetch locations: ${response.status} ${response.statusText}`)
       }
 
       const data = await response.json()
-      const pubs: Pub[] = data.elements
+      const locations: Location[] = data.elements
         .filter((element: any) => element.tags && element.tags.name)
         .map((element: any) => ({
           id: element.id.toString(),
@@ -35,7 +35,7 @@ export default async function fetchNearbyPubs(lat: number, lng: number, radius: 
           scouted: false,
         }))
 
-      return pubs
+      return locations
     } catch (error) {
       console.warn(`Failed to fetch from ${endpoint}:`, error)
       lastError = error as Error

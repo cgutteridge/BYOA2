@@ -29,7 +29,7 @@ import { computed } from 'vue'
 import type { Item, ItemPowerId } from '../types'
 import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
-import { usePubStore } from '../stores/pubStore'
+import { useLocationStore } from '../stores/locationStore'
 import { powerFactory } from '../powers'
 import { getValidTargets } from '../quest/itemUtils.ts'
 import { generateEffectDescription } from '../quest/generateEffectDescription.ts'
@@ -37,7 +37,7 @@ import { generateEffectDescription } from '../quest/generateEffectDescription.ts
 // Get the stores
 const appStore = useAppStore()
 const questStore = useQuestStore()
-const pubStore = usePubStore()
+const locationStore = useLocationStore()
 
 // Define props
 const props = defineProps<{
@@ -84,7 +84,7 @@ const hasValidTargets = computed(() => {
   // Different handling for spy vs monster targeting items
   if (props.item.power === 'spy') {
     // For spy items, check if there are unscouted pubs
-    return pubStore.pubs.some(pub => !pub.scouted)
+    return locationStore.pubs.some(pub => !pub.scouted)
   } else {
     // For monster targeting items, check if we're in a location with valid monster targets
     if (!isInPubWithInventory.value || !questStore.currentPub?.monsters) {

@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
-import type {GPSStatus, Item, Location, PubId, ScreenId} from '../types'
-import {usePubStore} from "../stores/pubStore";
+import type {GPSStatus, Item, Coordinates, LocationId, ScreenId} from '../types'
+import {useLocationStore} from "../stores/locationStore";
 
 // Notification interface
 interface Notification {
@@ -22,14 +22,14 @@ interface CenterNotificationPosition {
 }
 
 export const useAppStore = defineStore('app', () => {
-  const isFetchingPubs = ref(false)
+  const isFetchingLocations = ref(false)
   const screen = ref<ScreenId>('start_quest')
   const gpsStatus = ref<GPSStatus>('initializing')
-  const playerLocation = ref<Location | null>(null)
-  const focusPubId = ref< PubId | undefined>(undefined)
-  const mapPosition = ref<Location | null>(null)
+  const playerCoordinates = ref<Coordinates | null>(null)
+  const focusLocationId = ref<LocationId | undefined>(undefined)
+  const mapPosition = ref<Coordinates | null>(null)
   const mapZoom = ref<number | null>(null)
-  const pubStore = usePubStore()
+  const locationStore = useLocationStore()
   
   // Inventory UI state
   const isInterfaceOpen = ref(false)
@@ -51,19 +51,20 @@ export const useAppStore = defineStore('app', () => {
     gpsStatus.value = newStatus
   }
 
-  const setPlayerLocation = (newLocation: Location | null): boolean => {
-    playerLocation.value = newLocation
+  const setPlayerLocation = (newLocation: Coordinates | null): boolean => {
+    playerCoordinates.value = newLocation
     return true
   }
 
-  const setFocusPub = (pubId:PubId) =>{
-    focusPubId.value = pubId
+  const setFocusLocation = (locationId: LocationId) => {
+    focusLocationId.value = locationId
   }
-  const unsetFocusPub = () =>{
-    focusPubId.value = undefined
+  
+  const unsetFocusLocation = () => {
+    focusLocationId.value = undefined
   }
 
-  const setMapPosition = (position: Location): void => {
+  const setMapPosition = (position: Coordinates): void => {
     mapPosition.value = position
   }
 
@@ -155,30 +156,30 @@ export const useAppStore = defineStore('app', () => {
     }, 300)
   }
 
-  const focusPub = computed(() => {
-    if (focusPubId.value === undefined) {
+  const focusLocation = computed(() => {
+    if (focusLocationId.value === undefined) {
       return undefined
     }
-    return pubStore.pub(focusPubId.value)
+    return locationStore.location(focusLocationId.value)
   })
 
 
   return {
-    isFetchingPubs,
+    isFetchingLocations,
     screen,
     gpsStatus,
-    playerLocation,
+    playerCoordinates,
     mapPosition,
     mapZoom,
-    focusPub,
+    focusLocation,
     isInterfaceOpen,
     inventoryTab,
     inspectedItem,
     notifications,
     centerNotifications,
     centerNotificationCount,
-    setFocusPub,
-    unsetFocusPub,
+    setFocusLocation,
+    unsetFocusLocation,
     setScreen,
     setGPSStatus,
     setPlayerLocation,

@@ -99,6 +99,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { usePubStore } from '../stores/pubStore'
 import { useAppStore } from '../stores/appStore'
+import { useLocationStore } from '../stores/locationStore'
 import type { Pub } from "../types"
 import { startQuest } from "@/quest/startQuest.ts"
 import PickerComponent from '@/components/PickerComponent.vue'
@@ -107,6 +108,7 @@ import CounterPickerComponent from '@/components/CounterPickerComponent.vue'
 
 const pubStore = usePubStore()
 const appStore = useAppStore()
+const locationStore = useLocationStore()
 
 const selectedStartPub = ref<Pub | null>(null)
 const selectedEndPub = ref<Pub | null>(null)

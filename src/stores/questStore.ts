@@ -1,12 +1,12 @@
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
 import type { PubId, QuestState} from '@/types'
-import {usePubStore} from './pubStore'
+import {useLocationStore} from './locationStore'
 import {useAppStore} from './appStore'
 import formatNumber from "@/utils/formatNumber.ts";
 
 export const useQuestStore = defineStore('quest', () => {
-  const pubStore = usePubStore()
+  const locationStore = useLocationStore()
   const appStore = useAppStore()
 
   const title = ref<string>('foo')
@@ -112,19 +112,19 @@ export const useQuestStore = defineStore('quest', () => {
     if (startPubId.value === undefined) {
       return undefined
     }
-    return pubStore.pub(startPubId.value)
+    return locationStore.pub(startPubId.value)
   })
   const endPub = computed(() => {
     if (endPubId.value === undefined) {
       return undefined
     }
-    return pubStore.pub(endPubId.value)
+    return locationStore.pub(endPubId.value)
   })
   const currentPub = computed(() => {
     if (currentPubId.value === undefined) {
       return undefined
     }
-    return pubStore.pub(currentPubId.value)
+    return locationStore.pub(currentPubId.value)
   })
 
   return {

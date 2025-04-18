@@ -47,10 +47,10 @@ async function initializeGPS() {
     
     // If in debug mode, use fixed coordinates for Southampton
     if (isDebugMode.value ) {
-      const debugLocation = {lat: 50.91018, lng: -1.40419 } //southampton
-      //const debugLocation = {lat: 49.0434, lng: 3.9562}// epernay
-      console.log('DEBUG MODE: Using fixed GPS location:', debugLocation)
-      appStore.setPlayerLocation(debugLocation)
+      const debugCoordinates = {lat: 50.91018, lng: -1.40419 } //southampton
+      //const debugCoordinates = {lat: 49.0434, lng: 3.9562}// epernay
+      console.log('DEBUG MODE: Using fixed GPS location:', debugCoordinates)
+      appStore.setPlayerCoordinates(debugCoordinates)
       appStore.setGPSStatus('success')
       return
     }
@@ -87,13 +87,13 @@ function startContinuousTracking() {
   // In normal mode, use geolocation.watchPosition
   watchId.value = navigator.geolocation.watchPosition(
     (position) => {
-      const location = {
+      const coordinates = {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       }
       
-      console.log('GPS update:', location)
-      appStore.setPlayerLocation(location)
+      console.log('GPS update:', coordinates)
+      appStore.setPlayerCoordinates(coordinates)
       appStore.setGPSStatus('success')
     },
     (error) => {
@@ -163,8 +163,8 @@ onUnmounted(() => {
 
     <NotificationSystem />
     
-    <div class="debug-overlay" v-if="appStore.playerLocation">
-      <div>COORDS: {{ appStore.playerLocation.lat.toFixed(5) }}, {{ appStore.playerLocation.lng.toFixed(5) }}</div>
+    <div class="debug-overlay" v-if="appStore.playerCoordinates">
+      <div>COORDS: {{ appStore.playerCoordinates.lat.toFixed(5) }}, {{ appStore.playerCoordinates.lng.toFixed(5) }}</div>
       <div>XP: {{ questStore.xp }} | Booze: {{ formatNumber(questStore.booze) }} | Soft: {{ formatNumber(questStore.soft) }}</div>
     </div>
     

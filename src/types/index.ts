@@ -1,12 +1,12 @@
 // Branded types to make string IDs incompatible with regular strings and each other
-export type PubId = string & { __brand: 'PubId' }
+export type LocationId = string & { __brand: 'LocationId' }
 export type MonsterId = string & { __brand: 'MonsterId' }
 export type MonsterTypeId = string & { __brand: 'MonsterTypeId' }
 export type LocationTypeId = string & { __brand: 'LocationTypeId' }
 export type ItemId = string & { __brand: 'ItemId' }
 
 // Helper functions to cast string to branded types
-export const toPubId = (id: string): PubId => id as PubId
+export const toLocationId = (id: string): LocationId => id as LocationId
 export const toLocationTypeId = (id: string): LocationTypeId => id as LocationTypeId
 export const toMonsterId = (id: string): MonsterId => id as MonsterId
 export const toMonsterTypeId = (id: string): MonsterTypeId => id as MonsterTypeId
@@ -55,13 +55,13 @@ export interface Item {
   timestamp?: number  // To track when the item was added or updated
 }
 
-export interface Location {
+export interface Coordinates {
   lat: number
   lng: number
 }
 
-export interface Pub {
-  id: PubId
+export interface Location {
+  id: LocationId
   name: string
   description?: string
   lat: number
