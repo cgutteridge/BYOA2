@@ -34,52 +34,14 @@ onMounted(() => {
     // Find notifications that still have isEntering set to true
     const newNotifications = notificationsArray.filter(n => n.isEntering === true);
     
-    // For each new notification, set up the center animation and registry
+    // For each new notification, set up the center animation 
     newNotifications.forEach(notification => {
-      // Add to center registry (will be used for positioning)
-      // We need to get the element to measure its height
-      setTimeout(() => {
-        const notificationEl = document.querySelector(`[data-notification-id="${notification.id}"]`) as HTMLElement;
-        if (notificationEl) {
-          const height = notificationEl.offsetHeight;
-          // Register notification with height
-          const index = appStore.addToCenterRegistry(notification.id, height);
-          
-          // Apply custom positioning styles if needed
-          notificationEl.style.setProperty('--notification-center-index', index.toString());
-          
-          // Trigger a reflow to ensure the animation applies correctly
-          void notificationEl.offsetWidth;
-        }
-      }, 20);
-      
       // Remove entering flag after animation completes
       setTimeout(() => {
         const index = appStore.notifications.findIndex(n => n.id === notification.id);
         if (index !== -1) {
-          const notificationEl = document.querySelector(`[data-notification-id="${notification.id}"]`) as HTMLElement;
-          
-          if (notificationEl) {
-            // First remove animation to prevent conflict with transition
-            notificationEl.style.animation = 'none';
-            
-            // Force a reflow
-            void notificationEl.offsetWidth;
-            
-            // Now set a specific transition for moving to corner
-            notificationEl.style.transition = 'all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            
-            // Then set isEntering to false to trigger the move to corner
-            appStore.notifications[index].isEntering = false;
-          } else {
-            // Fallback if element not found
-            appStore.notifications[index].isEntering = false;
-          }
-          
-          // Remove from center registry after animation completes
-          setTimeout(() => {
-            appStore.removeCenterNotification(notification.id);
-          }, 100);
+          // Add class for transition animation
+          appStore.notifications[index].isEntering = false;
         }
       }, 800); // Match animation duration
     });
@@ -110,44 +72,51 @@ onMounted(() => {
   color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   border-left: 4px solid #ccc;
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center;
+  will-change: transform, opacity;
   pointer-events: auto; /* Restore click events for the notifications themselves */
 }
 
 /* Styles for the initial center position */
 .notification-entering {
   position: fixed;
-  top: max(100px, calc(120px + (var(--notification-center-index, 0) * 80px)));
+  top: 30vh;
   left: 50%;
-  transform: translate(-50%, 0) scale(2.5);
-  z-index: calc(10000 - var(--notification-center-index, 0)); /* Higher notifications appear on top */
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 10000; /* Higher than regular notifications */
   box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
-  animation: notification-poof 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transition: none; /* Disable transition while in center */
+  transform-origin: center;
 }
 
-@keyframes notification-poof {
+.notification-entering {
+  animation: poof-animation 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes poof-animation {
   0% {
     opacity: 0;
-    transform: translate(-50%, 0) scale(0.5);
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(3);
   }
   50% {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(2.5);
+    transform: translate(-50%, -50%) scale(2.5);
   }
   100% {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(2.5);
+    transform: translate(-50%, -50%) scale(2.5);
   }
 }
 
 /* Add a special transition for notifications going from center to corner */
 .notification-container .notification:not(.notification-entering) {
-  position: relative;
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: scale(1); /* Final scale in the corner */
+  position: relative; /* Reset position from absolute to normal flow */
   top: auto;
   left: auto;
-  transform: scale(1); /* Final scale in the corner */
-  transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .notification-success {
