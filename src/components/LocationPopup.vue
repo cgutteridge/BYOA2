@@ -67,16 +67,20 @@
         
         <div v-if="location.prizeItem" class="prize-info" :style="sectionStyle">
           <h3>Reward:</h3>
-          <ItemCard 
-            :item="location.prizeItem"
-            variant="prize"
-            :show-details="true"
-          />
-          <ItemCard
-              :item="tokenItem"
+          <div class="prize-item-wrapper">
+            <ItemCard 
+              :item="location.prizeItem"
               variant="prize"
               :show-details="true"
-          />
+            />
+          </div>
+          <div class="prize-item-wrapper" v-if="location.hasToken">
+            <ItemCard
+                :item="tokenItem"
+                variant="prize"
+                :show-details="true"
+            />
+          </div>
         </div>
 
       </div>
@@ -202,6 +206,7 @@ const isLoading = computed(() => {
 
 function getMonsterTitle(monsterId: string): string {
   const monsterType = monsterTypes.find(m => m.id === monsterId)
+
   return monsterType?.title || monsterId
 }
 
@@ -236,6 +241,11 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
     color: questStore.getTextColor('primary')
   }
 
+  // If monster has style.background, use it
+  if (monsterType.style.background) {
+    style.background = monsterType.style.background
+  }
+  
   // If monster has style.backgroundColor, use it
   if (monsterType.style.backgroundColor) {
     style.backgroundColor = monsterType.style.backgroundColor
@@ -249,6 +259,11 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   // If monster has style.color, use it
   if (monsterType.style.color) {
     style.color = monsterType.style.color
+  }
+
+  // If monster has style.boxShadow, use it
+  if (monsterType.style.boxShadow) {
+    style.boxShadow = monsterType.style.boxShadow
   }
   
   return style
@@ -363,7 +378,6 @@ function enterLocation(event?: MouseEvent) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1rem;
-  margin-bottom: 1.5rem;
 }
 
 .monster-card {
@@ -371,19 +385,23 @@ function enterLocation(event?: MouseEvent) {
   border: 1px solid;
   overflow: hidden;
   display: flex;
-  padding: 1rem;
+  padding: 0;
 }
 
 .monster-count {
   font-size: 1.5rem;
   font-weight: bold;
-  margin-right: 1rem;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  min-width: 3rem;
 }
 
 .monster-info {
   flex: 1;
+  padding: 1rem;
 }
 
 .monster-title {
@@ -409,5 +427,17 @@ function enterLocation(event?: MouseEvent) {
 
 .monster-stat {
   margin-bottom: 0.25rem;
+}
+
+.monster-type-group:last-child {
+  margin-bottom: 0;
+}
+
+.prize-item-wrapper {
+  margin-bottom: 1rem;
+}
+
+.prize-item-wrapper:last-child {
+  margin-bottom: 0;
 }
 </style> 

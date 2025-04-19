@@ -79,11 +79,15 @@
                     :style="getToggleButtonStyle(monster)"
                     @click="toggleMonsterStatus(monster)"
                   >
-                    <span class="toggle-icon">{{ isMonsterDying(monster.id) ? '❌' : (monster.alive ? '☠️' : '🔄') }}</span>
-                    {{ isMonsterDying(monster.id) ? 'Cancel' : (monster.alive ? 'Defeat' : 'Revive') }}
-                    <span class="xp-text">{{ getMonsterXP(monster.type) }}&nbsp;XP
-                      <template v-if="getMonsterBooze(monster.type)>0">/ {{ formatNumber(getMonsterBooze(monster.type)) }}&nbsp;Booze</template>
-                    </span>
+                    <div class="toggle-content">
+                      <div class="toggle-icon">{{ isMonsterDying(monster.id) ? '❌' : (monster.alive ? '☠️' : '🔄') }}</div>
+                      <div class="toggle-text">
+                        {{ isMonsterDying(monster.id) ? 'Cancel' : (monster.alive ? 'Defeat' : 'Revive') }}
+                      </div>
+                      <div class="xp-text">{{ getMonsterXP(monster.type) }}&nbsp;XP
+                        <template v-if="getMonsterBooze(monster.type)>0">/ {{ formatNumber(getMonsterBooze(monster.type)) }}&nbsp;Booze</template>
+                      </div>
+                    </div>
                   </button>
                 </div>
               </div>
@@ -334,6 +338,11 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
     color: questStore.getTextColor('primary')
   }
 
+  // If monster has style.background, use it
+  if (monster.style.background) {
+    style.background = monster.style.background
+  }
+  
   // If monster has style.backgroundColor, use it
   if (monster.style.backgroundColor) {
     style.backgroundColor = monster.style.backgroundColor
@@ -347,6 +356,11 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   // If monster has style.color, use it
   if (monster.style.color) {
     style.color = monster.style.color
+  }
+
+  // If monster has style.boxShadow, use it
+  if (monster.style.boxShadow) {
+    style.boxShadow = monster.style.boxShadow
   }
   
   return style
@@ -629,6 +643,8 @@ function isMonsterDying(monsterId: string): boolean {
   border-style: solid;
   overflow: hidden;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .monster-header {
@@ -636,6 +652,7 @@ function isMonsterDying(monsterId: string): boolean {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  flex: 1;
 }
 
 .monster-name-container {
@@ -667,29 +684,41 @@ function isMonsterDying(monsterId: string): boolean {
 }
 
 .monster-toggle-btn {
-  padding: 0.5rem;
+  padding: 0.75rem 0.5rem;
   border-radius: 4px;
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
+  min-width: 85px;
+}
+
+.toggle-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .toggle-icon {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.toggle-text {
+  font-weight: bold;
 }
 
 .xp-text {
   font-size: 0.8rem;
   opacity: 0.8;
+  text-align: center;
 }
 
 .monster-drink-bar {
   padding: 0.75rem;
   text-align: center;
   font-style: italic;
+  margin-top: auto;
 }
 
 .monster-item-locked {
@@ -712,6 +741,10 @@ function isMonsterDying(monsterId: string): boolean {
 
 .prize-item-wrapper {
   position: relative;
+}
+
+.prize-item-wrapper + .prize-item-wrapper {
+  margin-top: 1.5rem;
 }
 
 /* States */
