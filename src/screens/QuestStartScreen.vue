@@ -5,13 +5,14 @@
       <h2>Start Your Quest</h2>
       
       <div class="theme-toggle">
-        <button 
+        <Button 
           @click="toggleTheme" 
-          class="theme-button"
-          :class="{ active: currentTheme === 'dark' }"
+          variant="secondary"
+          size="small"
+          :theme="currentTheme"
         >
           {{ currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
-        </button>
+        </Button>
       </div>
       
       <div v-if="isLoading" class="loading-state">
@@ -23,7 +24,7 @@
         <div class="gameLocation-selection">
           <div class="gameLocation-selector">
             <h3>Start GameLocation</h3>
-            <PickerComponent
+            <List
               v-model="startLocationId"
               :options="locationStore.locations"
               searchable
@@ -37,7 +38,7 @@
           
           <div class="gameLocation-selector">
             <h3>End GameLocation</h3>
-            <PickerComponent
+            <List
               v-model="endLocationId"
               :options="locationStore.locations"
               searchable
@@ -59,7 +60,7 @@
           />
           
           <div class="difficulty-selector">
-            <ButtonPickerComponent
+            <ButtonSet
               v-model="selectedDifficulty"
               :options="[
                 { id: 'easy', name: 'Easy' },
@@ -72,7 +73,7 @@
           </div>
           
           <div class="player-count-selector">
-            <CounterPickerComponent
+            <Number
               v-model="playerCount"
               title="Number of Players"
               :min="1"
@@ -83,13 +84,16 @@
           </div>
         </div>
         
-        <button 
-          class="start-quest-button" 
+        <Button 
           @click="callStartQuest"
           :disabled="!canStartQuest"
+          size="large"
+          variant="primary"
+          :theme="currentTheme"
+          fullWidth
         >
           Start Quest
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -99,9 +103,10 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useAppStore } from '../stores/appStore'
 import { startQuest } from "@/quest/startQuest.ts"
-import PickerComponent from '@/components/PickerComponent.vue'
-import ButtonPickerComponent from '@/components/ButtonPickerComponent.vue'
-import CounterPickerComponent from '@/components/CounterPickerComponent.vue'
+import List from '@/components/forms/List.vue'
+import ButtonSet from '@/components/forms/ButtonSet.vue'
+import Number from '@/components/forms/Number.vue'
+import Button from '@/components/forms/ButtonSet.vue'
 import {GameLocation} from "@/types";
 import {useLocationStore} from "@/stores/locationStore.ts";
 
@@ -173,7 +178,7 @@ const canStartQuest = computed(() => {
   return hasStartLocation && hasEndLocation && differentGameLocations && hasTitle
 })
 
-// Helper functions for the PickerComponent
+// Helper functions for the List
 function updateStartGameLocation(gameLocation: GameLocation | string) {
   console.log('Setting start gameLocation:', gameLocation)
   

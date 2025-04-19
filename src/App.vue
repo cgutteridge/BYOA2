@@ -10,7 +10,7 @@ import IntroScreen from './screens/IntroScreen.vue'
 import LocationScreen from './screens/LocationScreen.vue'
 import VictoryScreen from './screens/VictoryScreen.vue'
 import InterfaceModal from './components/InterfaceModal.vue'
-import ItemInspectModal from './components/ItemInspectModal.vue'
+import ItemModal from './components/ItemModal.vue'
 import NotificationSystem from './components/NotificationSystem.vue'
 import formatNumber from "@/utils/formatNumber.ts";
 
@@ -199,8 +199,8 @@ onUnmounted(() => {
       <!-- Interface Modal -->
       <InterfaceModal />
       
-      <!-- Global ItemInspectModal -->
-      <ItemInspectModal v-if="appStore.inspectedItem" />
+      <!-- Global ItemModal -->
+      <ItemModal v-if="appStore.inspectedItem" />
     </template>
   </div>
 </template>
