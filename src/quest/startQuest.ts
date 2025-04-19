@@ -7,6 +7,7 @@ import { toItemId } from '@/types';
 import {useLocationStore} from "@/stores/locationStore.ts";
 import initialiseGameLocation from "@/quest/initialiseLocation.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
+import {ChatGPTAPI} from "@/api/chatGPT.ts";
 
 // Function to create unrestricted debug items with pick and pick_type for each power
 function createDebugItems(): Item[] {
@@ -84,10 +85,32 @@ export async function startQuest(
     const questStore = useQuestStore()
     const locationStore = useLocationStore()
     const inventoryStore = useInventoryStore()
+    const chatGPT = new ChatGPTAPI()
 
     questStore.setStatus('init');
-    questStore.setTitle(title);
-    questStore.setDescription(`Your quest is to reach ${endGameLocation.name}`);
+    
+    // Initialize quest details using ChatGPT
+    try {
+        const questData = await chatGPT.initializeQuest(
+            startGameLocation.name,
+            endGameLocation.name,
+            minimumLocations,
+            title
+        )
+        
+        questStore.setTitle(title);
+        questStore.setDescription(questData.questDescription);
+        questStore.setTokenTitle(questData.tokenTitle);
+        questStore.setTokenDescription(questData.tokenDescription);
+    } catch (error) {
+        console.error('Failed to initialize quest with ChatGPT:', error);
+        // Fallback to basic initialization
+        questStore.setTitle(title);
+        questStore.setDescription(`Your quest is to reach ${endGameLocation.name}`);
+        questStore.setTokenTitle('shard of truth');
+        questStore.setTokenDescription('a magical shard that contains a piece of ancient knowledge');
+    }
+    
     questStore.setStartGameLocationId(startGameLocation.id);
     questStore.setEndGameLocationId(endGameLocation.id);
     questStore.setPlayerCount(players);

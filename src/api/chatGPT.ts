@@ -139,4 +139,49 @@ export class ChatGPTAPI {
     console.log(json)
     return JSON.parse(json)
   }
+
+  async initializeQuest(
+    startLocationName: string,
+    endLocationName: string,
+    locationsCount: number,
+    questItemTitle: string
+  ): Promise<{
+    questDescription: string,
+    tokenTitle: string,
+    tokenDescription: string
+  }> {
+    const messages: Message[] = [
+      {
+        role: 'system',
+        content: `You are a chaotic, sarcastic dungeon master narrating a ridiculous adventure. 
+        Don't say things are quirky or funny, just show it. Be either deadpan or over the top.
+        Be wild, cheeky, and risque. Your target audience is 18-35 year old nerdy drinkers. Output JSON only. 
+        Do not include backticks in the JSON response.`
+      },
+      {
+        role: 'user',
+        content: `
+          Generate a quest starting at "${startLocationName}" . 
+          The players will visit at least ${locationsCount} locations of their choice after this to collect tokens that will eventually lead to the "${questItemTitle}" at ${endLocationName}.
+          
+          Be outrageous and creative. 
+          
+          Create a quest description that explains the overall goal and why the players must collect these tokens. Make
+          it epic and over the top. Use the "${questItemTitle}" as a seed for the overall theme.
+         
+          Also create a name and description for the token item that must be collected at each location they visit.
+          This is the name and description for a single item so don't make it plural.
+          
+          Respond in JSON format with the following fields:
+          "questDescription" - A detailed description of the overall quest and its goal
+          "tokenTitle" - A catchy name for the tokens that must be collected (singular form)
+          "tokenDescription" - A description of what these tokens are and why they're important
+        `
+      }
+    ]
+
+    const json = await this.sendMessage(messages)
+    console.log(json)
+    return JSON.parse(json)
+  }
 }
