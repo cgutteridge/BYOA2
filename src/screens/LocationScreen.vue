@@ -11,7 +11,17 @@
       </div>
     </div>
 
-    <button class="leave-button" @click="leaveGameLocation">Leave Location</button>
+    <div class="leave-button-container">
+      <ButtonInput 
+        class="leave-button" 
+        :action="leaveGameLocation"
+        variant="primary"
+        size="medium"
+        :theme="questStore.theme"
+      >
+        Leave Location
+      </ButtonInput>
+    </div>
 
     <div class="gift-item-section" v-if="questStore.currentGameLocation?.giftItem">
       <h3><span class="icon">🎁</span> Gift Item Available!</h3>
@@ -127,6 +137,7 @@ import '../styles/monsterAnimations.css';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
 import ItemCard from "../components/ItemCard.vue";
+import ButtonInput from "@/components/forms/ButtonInput.vue";
 import {areAllMonstersDefeated, getMonsterBooze, getMonsterSoft, getMonsterXP} from "../quest/monsterUtils.ts";
 import formatNumber from "../utils/formatNumber.ts";
 
@@ -489,16 +500,14 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   font-size: 2rem;
 }
 
-.leave-button {
-  padding: 12px 24px;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 4px;
+.leave-button-container {
   margin: 0 0 2rem 0;
-  font-size: 1rem;
-  display: inline-block;
-  cursor: pointer;
+  display: flex;
+  justify-content: center;
+}
+
+.leave-button {
+  min-width: 160px;
 }
 
 .gameLocation-description-section {
