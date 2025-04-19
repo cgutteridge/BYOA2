@@ -124,6 +124,19 @@
           />
         </div>
       </div>
+      
+      <!-- Token Power item section -->
+      <div v-if="allMonstersDefeated" class="token-power-item-section">
+        <h3><span class="icon">🔮</span> Power Token:</h3>
+        <div class="token-power-item-wrapper">
+          <ItemCard 
+            :item="tokenPowerItem"
+            variant="prize"
+            :show-details="true"
+            @action="claimTokenPowerItem"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -140,6 +153,7 @@ import ItemCard from "../components/ItemCard.vue";
 import ButtonInput from "@/components/forms/ButtonInput.vue";
 import {areAllMonstersDefeated, getMonsterBooze, getMonsterSoft, getMonsterXP} from "../quest/monsterUtils.ts";
 import formatNumber from "../utils/formatNumber.ts";
+import {generateTokenPowerItem} from "@/quest/itemUtils.ts";
 
 // Constants
 const MONSTER_DEFEAT_DELAY_MS = 1000; // 2 seconds
@@ -217,6 +231,14 @@ const allMonstersDefeated = computed(() => {
   return questStore.currentGameLocation?.monsters
     ? areAllMonstersDefeated(questStore.currentGameLocation.monsters)
     : false
+})
+
+// Dynamically generate the token power item when needed
+const tokenItem = computed(() => {
+  if (questStore.currentGameLocation) {
+    return generateTokenItem(questStore.currentGameLocation);
+  }
+  return null;
 })
 
 function getMonsterTitle(monsterId: string): string {
@@ -317,6 +339,19 @@ function claimPrizeItem() {
     // Only show the description if not all monsters are defeated
     if (questStore.currentGameLocation?.prizeItem) {
       appStore.openItemInspectModal(questStore.currentGameLocation.prizeItem);
+    }
+  }
+}
+
+function claimTokenItem() {
+  if (allMonstersDefeated.value && tokenItem.value) {
+    // Add to inventory
+    inventoryStore.addItem(tokenItem.value);
+    
+    // Award XP based on item level
+    if (tokenItem.value.level) {
+      const xpToAward = tokenItem.value.level * 2; // 2 XP per level for token power items
+      questStore.updateStats(xpToAward, 0, 0, `claiming token power ${tokenItem.value.name}`);
     }
   }
 }
@@ -496,7 +531,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   font-style: italic;
 }
 
-.gift-item-section, .prize-item-section {
+.gift-item-section, .prize-item-section, .token-power-item-section {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1.5rem;
@@ -506,7 +541,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.gift-item-section h3, .prize-item-section h3 {
+.gift-item-section h3, .prize-item-section h3, .token-power-item-section h3 {
   color: #ffeb3b;
   margin-top: 0;
   margin-bottom: 1rem;
@@ -516,7 +551,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   justify-content: center;
 }
 
-.gift-item-section .icon, .prize-item-section .icon {
+.gift-item-section .icon, .prize-item-section .icon, .token-power-item-section .icon {
   display: inline-block;
   margin-right: 0.5rem;
   font-size: 1.4rem;

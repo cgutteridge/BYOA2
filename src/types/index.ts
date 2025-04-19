@@ -27,6 +27,8 @@ export type ItemPowerId =
   | 'distract'
   | 'vegetate'
   | 'stun'
+  | 'token'
+  | 'victory'
 
 // Target modes - how the target is selected
 export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'location' | undefined

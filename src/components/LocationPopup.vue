@@ -74,6 +74,15 @@
             :show-details="true"
           />
         </div>
+        
+        <div v-if="allMonstersDefeated" class="token-power-info">
+          <h3>Power Token:</h3>
+          <ItemCard 
+            :item="tokenItem"
+            variant="prize"
+            :show-details="true"
+          />
+        </div>
       </div>
       
       <!-- Loading state when scouting -->
@@ -97,6 +106,7 @@ import {useQuestStore} from "@/stores/questStore.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {locationTypesById} from "@/data/locationTypes.ts";
+import {generateTokenItem} from "@/quest/itemUtils.ts";
 
 const props = defineProps<{
   location: GameLocation
@@ -165,6 +175,11 @@ const allMonstersDefeated = computed(() => {
   }
   
   return props.location.monsters.every(monster => !monster.alive);
+});
+
+// Compute the token power item for this location
+const tokenItem = computed(() => {
+  return generateTokenItem(props.location);
 });
 
 const isLoading = computed(() => {
@@ -272,7 +287,8 @@ h2 {
 }
 
 .prize-info,
-.gift-info {
+.gift-info,
+.token-power-info {
   margin: 1.25rem 0;
   border-radius: 8px;
   padding: 1rem;
@@ -280,7 +296,8 @@ h2 {
 }
 
 .prize-info h3,
-.gift-info h3 {
+.gift-info h3,
+.token-power-info h3 {
   margin-top: 0;
   margin-bottom: 0.75rem;
   text-align: center;
@@ -289,16 +306,31 @@ h2 {
 
 /* Styling modifications for ItemCard inside prize-info and gift-info */
 .prize-info :deep(.item-card),
-.gift-info :deep(.item-card) {
+.gift-info :deep(.item-card),
+.token-power-info :deep(.item-card) {
   margin: 0.5rem 0 1rem;
   max-width: 100%;
   border-width: 2px;
 }
 
 .prize-info :deep(.item-card__power),
-.gift-info :deep(.item-card__power) {
+.gift-info :deep(.item-card__power),
+.token-power-info :deep(.item-card__power) {
   white-space: normal;
   line-height: 1.2;
+}
+
+.token-power-locked {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.token-power-message {
+  color: #ff9800;
+  font-weight: bold;
 }
 
 .monsters-heading {
