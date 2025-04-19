@@ -47,7 +47,7 @@ async function initializeGPS() {
     
     // If in debug mode, use fixed coordinates for Southampton
     if (isDebugMode.value ) {
-      const debugCoordinates = {lat: 50.91018, lng: -1.40419 } //southampton
+      const debugCoordinates = {lat: 50.92018, lng: -1.40419 } //southampton
       //const debugCoordinates = {lat: 49.0434, lng: 3.9562}// epernay
       console.log('DEBUG MODE: Using fixed GPS gameLocation:', debugCoordinates)
       appStore.setPlayerCoordinates(debugCoordinates)
@@ -113,7 +113,7 @@ function startContinuousTracking() {
 // Stop GPS tracking
 function stopContinuousTracking() {
   console.log('Stopping GPS tracking')
-  if (!isDebugMode.value  && watchId.value !== null) {
+  if ( watchId.value !== null) {
     navigator.geolocation.clearWatch(watchId.value)
     watchId.value = null
   }

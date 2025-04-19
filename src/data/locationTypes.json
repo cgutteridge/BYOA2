@@ -105,9 +105,9 @@
     "filename": "eldrich_horror.png"
   },
   {
-    "id": "cursed_gameLocation",
-    "title": "Cursed GameLocation",
-    "filename": "cursed_gameLocation.png"
+    "id": "cursed_Location",
+    "title": "Cursed Location",
+    "filename": "cursed_Location.png"
   },
   {
     "id": "crystal_forest",

@@ -14,14 +14,15 @@
         <p>{{ questStore.endGameLocation?.name || 'Not selected' }}</p>
       </div>
     </div>
+
   </div>
 </template>
-
 <script setup lang="ts">
+import { useQuestStore } from '@/stores/questStore';
+import MonsterTypeStats from '@/components/MonsterTypeStats.vue';
 
-import {useQuestStore} from "../stores/questStore";
+const questStore = useQuestStore();
 
-const questStore = useQuestStore()
 </script>
 
 <style scoped>

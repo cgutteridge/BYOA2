@@ -8,7 +8,7 @@ const OVERPASS_ENDPOINTS = [
 export default async function fetchNearbyGameLocations(lat: number, lng: number, radius: number = 5000): Promise<GameLocation[]> {
   const overpassQuery = `
     [out:json][timeout:100];
-    nwr["amenity"~"^(gameLocation|bar)$"]["name"](around:${radius},${lat},${lng});
+    nwr["amenity"~"^(pub|bar)$"]["name"](around:${radius},${lat},${lng});
     out center;
   `
   let lastError: Error | null = null
@@ -31,7 +31,7 @@ export default async function fetchNearbyGameLocations(lat: number, lng: number,
           name: element.tags.name,
           lat: element.lat ?? element.center.lat,
           lng: element.lon ?? element.center.lon,
-          gameLocationType: 'gameLocation', // Default type, will be randomized later
+          gameLocationType: 'location', // Default type, will be randomized later
           scouted: false,
         }))
 
