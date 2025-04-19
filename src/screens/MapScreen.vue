@@ -33,7 +33,7 @@ const gameLocations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
 
-function createGameLocationMarker(gameLocation: GameLocation, mapInstance: L.Map): L.Marker {
+function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker {
   if (!mapInstance) {
     throw new Error('No map instance provided for marker creation')
   }
@@ -53,9 +53,9 @@ function createGameLocationMarker(gameLocation: GameLocation, mapInstance: L.Map
     })
   }).addTo(mapInstance)
 
-  // Create popup for this gameLocation
+  // Create popup for this location
   const popup = L.popup({
-    className: 'gameLocation-info-popup',
+    className: 'location-info-popup',
     maxWidth: 500,
     minWidth: 320,
     closeButton: false,
@@ -202,7 +202,7 @@ function initializeMap(): void {
       document.querySelector('.map-container')?.appendChild(mapContainer)
     }
 
-    // Use stored map position, fall back to player gameLocation or default
+    // Use stored map position, fall back to player location or default
     let coordinates: Coordinates
     let zoom: number
 
@@ -280,12 +280,12 @@ function initializeMap(): void {
 
     map.value = mapInstance
 
-    // Add player marker if gameLocation is available
+    // Add player marker if location is available
     if (playerCoordinates.value) {
       updatePlayerMarker(playerCoordinates.value)
     }
 
-    // Generate gameLocation markers
+    // Generate location markers
     generateGameLocationMarkers()
 
 
@@ -320,7 +320,7 @@ onUnmounted(() => {
   }
 })
 
-// Watch for gameLocation changes
+// Watch for location changes
 watch(playerCoordinates, (newGameLocation) => {
   if (newGameLocation && map.value) {
     updatePlayerMarker(newGameLocation)
@@ -344,7 +344,7 @@ function generateGameLocationMarkers(): void {
   gameLocationMarkers.value = [];
 
   // Create new markers
-  gameLocations.value.forEach((gameLocation: GameLocation) => {
+  gameLocations.value.forEach((location: GameLocation) => {
     const marker = createGameLocationMarker(gameLocation, map.value as L.Map)
     gameLocationMarkers.value.push(marker)
     return marker

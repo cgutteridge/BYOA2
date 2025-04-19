@@ -16,19 +16,19 @@ export const useLocationStore = defineStore('locations', () => {
     locations.value = newLocations
   }
 
-  // Set difficulty for a specific gameLocation
+  // Set difficulty for a specific location
   const setGameLocationDifficulty = (gameLocationId: GameLocationId, difficulty: GameLocationDifficulty) => {
     const targetGameLocation = gameLocation(gameLocationId)
     targetGameLocation.difficulty = difficulty
   }
 
-  // Set type for a specific gameLocation
+  // Set type for a specific location
   const setGameLocationType = (gameLocationId: GameLocationId, type: GameLocationTypeId) => {
     const targetGameLocation = gameLocation(gameLocationId)
     targetGameLocation.type = type
   }
 
-  // Check if a gameLocation can be scouted based on player's distance to it (within 50 meters)
+  // Check if a location can be scouted based on player's distance to it (within 50 meters)
   const canScout = (gameLocationId: GameLocationId): boolean => {
     if (!appStore.playerCoordinates) return false
     

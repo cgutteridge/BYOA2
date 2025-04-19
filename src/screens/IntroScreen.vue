@@ -19,6 +19,8 @@
         </div>
       </div>
 
+      <LoadingSpinner v-if="questStore.status!=='active'" message="Initialising Quest..." />
+
       <div class="button-container">
         <ButtonInput 
           class="continue-button" 
@@ -40,12 +42,13 @@
 import { useAppStore } from "@/stores/appStore";
 import { useQuestStore } from "@/stores/questStore";
 import ButtonInput from "@/components/forms/ButtonInput.vue";
+import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 const questStore = useQuestStore();
 const appStore = useAppStore();
 
 function start(): void {
-  appStore.setScreen('gameLocation');
+  appStore.setScreen('location');
 }
 </script>
 

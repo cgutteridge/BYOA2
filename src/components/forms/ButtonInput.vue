@@ -111,7 +111,7 @@ function handleClick(event: Event): void {
 }
 
 .lock-icon {
-  font-size: 1.2rem;
+  font-size: 2rem;
   opacity: 1;
 }
 

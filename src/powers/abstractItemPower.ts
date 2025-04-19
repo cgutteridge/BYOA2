@@ -195,7 +195,7 @@ export abstract class ItemPower {
         // Get the quest store
         const questStore = useQuestStore();
 
-        // Get the current gameLocation's monsters
+        // Get the current location's monsters
         const gameLocation = questStore.currentGameLocation;
         if (!gameLocation || !gameLocation.monsters) {
             return 0

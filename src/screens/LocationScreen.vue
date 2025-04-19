@@ -13,8 +13,8 @@
 
     <div class="leave-button-container">
       <ButtonInput 
-        class="leave-button" 
-        :action="leaveGameLocation"
+        class="leave-button"
+        :action="leaveLocation"
         variant="primary"
         size="medium"
         :theme="questStore.theme"
@@ -134,7 +134,7 @@ import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
 import {Monster} from "../types";
 import '../styles/monsterAnimations.css';
-import {computed, ref, onMounted, onUnmounted} from 'vue';
+import {computed, onMounted, onUnmounted, ref} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
 import ItemCard from "../components/ItemCard.vue";
 import ButtonInput from "@/components/forms/ButtonInput.vue";
@@ -232,43 +232,14 @@ function getMonsterDrink(monsterId: string): string {
 function getMonsterClasses(monsterId: string): Record<string, boolean> {
   const monster = monsterTypes.find(m => m.id === monsterId)
   if (!monster) return {}
-  
-  const classes: Record<string, boolean> = {
-    [`monster-${monster.level}`]: true
-  }
-  
+
+  const classes : Record<string, boolean>= {}
+
   // Add additional classes from monster style
   if (monster.style?.additionalClasses) {
     monster.style.additionalClasses.forEach(className => {
       classes[className] = true
     })
-  }
-  
-  // If the monster has an animation defined but no classes, add the appropriate class
-  if (monster.style?.animation && !monster.style.additionalClasses) {
-    switch (monster.style.animation) {
-      case 'desert-shimmer':
-        classes['desert-monster'] = true
-        break
-      case 'elemental-pulse':
-        classes['flame-monster'] = true
-        break
-      case 'earth-rumble':
-        classes['earth-monster'] = true
-        break
-      case 'water-flow':
-        classes['water-monster'] = true
-        break
-      case 'ice-shimmer':
-        classes['ice-monster'] = true
-        break
-      case 'obsidian-pulse':
-        classes['obsidian-monster'] = true
-        break
-      case 'sparkle-pulse':
-        classes['sparkle-monster'] = true
-        break
-    }
   }
   
   return classes
@@ -297,7 +268,7 @@ function getMonsterFlags(monsterId: string): string[] {
   return monster.flags
 }
 
-function leaveGameLocation() {
+function leaveLocation() {
   appStore.setScreen('map')
   questStore.unsetCurrentGameLocation()
 }
@@ -339,8 +310,8 @@ function claimPrizeItem() {
       const xpToAward = prizeItem.level * 3; // 3 XP per level for prize items
       questStore.updateStats(xpToAward, 0, 0, `claiming prize ${prizeItem.name}`);
     }
-    
-    // Remove from gameLocation
+
+    // Remove from location
     delete questStore.currentGameLocation.prizeItem;
   } else {
     // Only show the description if not all monsters are defeated
@@ -424,8 +395,8 @@ function cancelDefeatCountdown(monster: Monster) {
 // Actually defeat the monster
 function defeatMonster(monster: Monster) {
   if (!questStore.currentGameLocation?.monsters) return;
-  
-  // Find the monster in the gameLocation
+
+  // Find the monster in the location
   const monsterIndex = questStore.currentGameLocation.monsters.findIndex(m => m.id === monster.id);
   if (monsterIndex === -1) return;
 
@@ -439,16 +410,16 @@ function defeatMonster(monster: Monster) {
   
   // Check if this was the last monster to defeat for quest completion
   if (areAllMonstersDefeated(questStore.currentGameLocation.monsters)) {
-    // Award XP for completing all monsters in a gameLocation (using updateStats)
-    questStore.updateStats(5, 0, 0, "clearing all monsters from this gameLocation");
+    // Award XP for completing all monsters in a location (using updateStats)
+    questStore.updateStats(5, 0, 0, "clearing all monsters from this location");
   }
 }
 
 // Revive a monster
 function reviveMonster(monster: Monster) {
   if (!questStore.currentGameLocation?.monsters) return;
-  
-  // Find the monster in the gameLocation
+
+  // Find the monster in the location
   const monsterIndex = questStore.currentGameLocation.monsters.findIndex(m => m.id === monster.id);
   if (monsterIndex === -1) return;
   
@@ -471,8 +442,6 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   if (monster.style.color) style.color = monster.style.color
   if (monster.style.borderColor) style.borderColor = monster.style.borderColor
   if (monster.style.boxShadow) style.boxShadow = monster.style.boxShadow
-  
-  // Animation will be handled via classes
   
   return style
 }

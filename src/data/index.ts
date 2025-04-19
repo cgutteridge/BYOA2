@@ -1,4 +1,4 @@
-// Export gameLocation types
+// Export location types
 export { 
   locationTypes,
   locationTypesList,

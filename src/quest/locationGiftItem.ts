@@ -2,8 +2,8 @@ import {GameLocationDifficulty, Item} from "@/types";
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
 
 /**
- * Generate a gift item based on gameLocation difficulty
- * @param difficulty The gameLocation difficulty
+ * Generate a gift item based on location difficulty
+ * @param difficulty The location difficulty
  * @returns An item or undefined if no gift should be generated
  */
 export function locationGiftItem(difficulty: GameLocationDifficulty): Item | undefined {

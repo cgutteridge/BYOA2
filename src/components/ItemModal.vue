@@ -32,7 +32,7 @@
               <p>{{ generateEffectDescription(item) }}</p>
             </div>
             
-            <!-- Target selection (when in gameLocation) -->
+            <!-- Target selection (when in location) -->
             <div v-if="isInGameLocation && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish' || item.power === 'freeze' || item.power === 'petrify' || item.power === 'pacify' || item.power === 'distract' || item.power === 'vegetate' || item.power === 'stun')" class="item-inspect-modal__target-section">
               <h3>{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
               <p class="target-description">{{ getTargetDescription(item) }}</p>
@@ -71,7 +71,7 @@
               </div>
               
               <p v-else class="no-targets">
-                No valid targets available for this item in current gameLocation.
+                No valid targets available for this item in current location.
               </p>
             </div>
             
@@ -160,7 +160,7 @@ const showUseButton = computed(() => {
 })
 
 const isInGameLocation = computed(() => {
-  // Check if the player is in a gameLocation (any context with "gameLocation")
+  // Check if the player is in a location (any context with "location")
   return context.value === 'inventory_in_gameLocation' || context.value === 'item_in_gameLocation'
 })
 
@@ -197,7 +197,7 @@ const possibleResults = computed(() => {
   // For transmute, determine possible result types
   if (item.value.power !== 'transmute') return []
   
-  // Could be fetched from a data source; using gameLocationholder for now
+  // Could be fetched from a data source; using placeholder for now
   return ['ghost', 'vampire', 'human', 'goblinoid', 'demonoid', 'elemental']
 })
 
@@ -581,12 +581,6 @@ function getMonsterTitle(typeId: string): string {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.gameLocationholder-message {
-  color: #777;
-  font-style: italic;
-  text-align: center;
 }
 
 .visual-result {

@@ -25,17 +25,17 @@ export class BanishPower extends ItemPower {
       return false;
     }
 
-    // Get the quest store to access the current gameLocation
+    // Get the quest store to access the current location
     const questStore = useQuestStore();
     const currentGameLocation = questStore.currentGameLocation;
 
-    // Guard: check if current gameLocation exists and has monsters
+    // Guard: check if current location exists and has monsters
     if (!currentGameLocation || !currentGameLocation.monsters) {
-      console.log('Cannot banish monster: no current gameLocation found');
+      console.log('Cannot banish monster: no current location found');
       return false;
     }
 
-    // Find the monster in the current gameLocation
+    // Find the monster in the current location
     const monsterIndex = currentGameLocation.monsters.findIndex((m: Monster) => m.id === monster.id);
     
     // Guard: check if monster was found
@@ -44,7 +44,7 @@ export class BanishPower extends ItemPower {
       return false;
     }
 
-    // Remove the monster from the gameLocation
+    // Remove the monster from the location
     currentGameLocation.monsters.splice(monsterIndex, 1);
 
     // Log the banishment

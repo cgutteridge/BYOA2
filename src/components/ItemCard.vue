@@ -64,12 +64,12 @@ const isSelected = computed(() => {
   return appStore.inspectedItem?.id === props.item.id
 })
 
-// Determine if we're in a gameLocation with the inventory open
+// Determine if we're in a location with the inventory open
 const isInLocationWithInventory = computed(() => {
   return !!questStore.currentGameLocation && appStore.isInterfaceOpen
 })
 
-// Check if this item has valid targets in the current gameLocation
+// Check if this item has valid targets in the current location
 const hasValidTargets = computed(() => {
   // Only check for inventory variant
   if (props.variant !== 'inventory' && props.variant !== undefined) {
@@ -86,7 +86,7 @@ const hasValidTargets = computed(() => {
     // For spy items, check if there are unscouted gameLocations
     return locationStore.locations.some(gameLocation => !gameLocation.scouted)
   } else {
-    // For monster targeting items, check if we're in a gameLocation with valid monster targets
+    // For monster targeting items, check if we're in a location with valid monster targets
     if (!isInLocationWithInventory.value || !questStore.currentGameLocation?.monsters) {
       return false
     }

@@ -15,34 +15,34 @@
         </ButtonInput>
       </div>
       
-      <LoadingSpinner v-if="isLoading" message="Loading gameLocations..." />
+      <LoadingSpinner v-if="isLoading" message="Loading locations from Open Streetmap..." />
       
       <div v-else class="quest-form">
-        <div class="gameLocation-selection">
-          <div class="gameLocation-selector">
-            <h3>Start GameLocation</h3>
+        <div class="location-selection">
+          <div class="location-selector">
+            <h3>Start Location</h3>
             <ListInput
               v-model="startLocationId"
               :options="locationStore.locations"
               searchable
-              gameLocationholder="Search for a gameLocation..."
+              placeholder="Search for a location..."
               value-property="id"
               display-property="name"
-              @selection-change="updateStartGameLocation"
+              @selection-change="updateStartLocation"
               :theme="questStore.theme"
             />
           </div>
           
-          <div class="gameLocation-selector">
-            <h3>End GameLocation</h3>
+          <div class="location-selector">
+            <h3>End Location</h3>
             <ListInput
               v-model="endLocationId"
               :options="locationStore.locations"
               searchable
-              gameLocationholder="Search for a gameLocation..."
+              placeholder="Search for a location..."
               value-property="id"
               display-property="name"
-              @selection-change="updateEndGameLocation"
+              @selection-change="updateEndLocation"
               :theme="questStore.theme"
             />
           </div>
@@ -52,7 +52,7 @@
           <input 
             v-model="questTitle" 
             type="text" 
-            gameLocationholder="Quest Title" 
+            placeholder="Quest Title"
             class="quest-input"
           />
           
@@ -135,12 +135,12 @@ watch(() => locationStore.locations, (newLocations) => {
   }
 }, { immediate: true })
 
-// Watch for id changes to update the gameLocation objects
+// Watch for id changes to update the location objects
 watch([startLocationId], () => {
   if (startLocationId.value) {
-    const gameLocation = locationStore.locations.find((p:GameLocation) => p.id === startLocationId.value)
-    if (gameLocation) {
-      selectedStartLocation.value = gameLocation
+    const location = locationStore.locations.find((p:GameLocation) => p.id === startLocationId.value)
+    if (location) {
+      selectedStartLocation.value = location
     }
   } else {
     selectedStartLocation.value = null
@@ -149,9 +149,9 @@ watch([startLocationId], () => {
 
 watch([endLocationId], () => {
   if (endLocationId.value) {
-    const gameLocation = locationStore.locations.find((p:GameLocation) => p.id === endLocationId.value)
-    if (gameLocation) {
-      selectedEndLocation.value = gameLocation
+    const location = locationStore.locations.find((p:GameLocation) => p.id === endLocationId.value)
+    if (location) {
+      selectedEndLocation.value = location
     }
   } else {
     selectedEndLocation.value = null
@@ -184,24 +184,24 @@ const canStartQuest = computed(() => {
 })
 
 // Helper functions for the ListInput
-function updateStartGameLocation(gameLocation: GameLocation | string) {
-  console.log('Setting start gameLocation:', gameLocation)
+function updateStartLocation(location: GameLocation | string) {
+  console.log('Setting start location:', location)
   
   // If we're getting an ID instead of a GameLocation object
-  if (typeof gameLocation === 'string') {
-    startLocationId.value = gameLocation
+  if (typeof location === 'string') {
+    startLocationId.value = location
     const found = locationStore.locations.find((p:GameLocation) => p.id === gameLocation)
     if (found) {
       selectedStartLocation.value = found
     }
   } else {
-    selectedStartLocation.value = gameLocation
-    startLocationId.value = gameLocation.id
+    selectedStartLocation.value = location
+    startLocationId.value = location.id
   }
 }
 
-function updateEndGameLocation(gameLocation: GameLocation | string) {
-  console.log('Setting end gameLocation:', gameLocation)
+function updateEndLocation(location: GameLocation | string) {
+  console.log('Setting end location:', gameLocation)
   
   // If we're getting an ID instead of a GameLocation object
   if (typeof gameLocation === 'string') {
@@ -216,7 +216,7 @@ function updateEndGameLocation(gameLocation: GameLocation | string) {
   }
 }
 
-// Watch for changes in selected gameLocation and quest title to help debug
+// Watch for changes in selected location and quest title to help debug
 watch([selectedStartLocation, selectedEndLocation, questTitle], () => {
   console.log('Quest state updated:', {
     startGameLocation: selectedStartLocation.value,
@@ -230,11 +230,11 @@ async function callStartQuest() {
   if (canStartQuest.value) {
     console.log('Starting quest...')
     
-    // Make sure we have the full gameLocation objects
+    // Make sure we have the full location objects
     let startGameLocation = selectedStartLocation.value
     let endGameLocation = selectedEndLocation.value
     
-    // If we only have IDs, find the full gameLocation objects
+    // If we only have IDs, find the full location objects
     if (!startGameLocation && startLocationId.value) {
       startGameLocation = locationStore.locations.find((p:GameLocation) => p.id === startLocationId.value) || null
     }
@@ -243,7 +243,7 @@ async function callStartQuest() {
       endGameLocation = locationStore.locations.find((p:GameLocation) => p.id === endLocationId.value) || null
     }
     
-    // Check that we have valid gameLocation objects
+    // Check that we have valid location objects
     if (!startGameLocation || !endGameLocation) {
       console.error('Failed to find gameLocations', { startGameLocationId: startLocationId.value, endGameLocationId: endLocationId.value })
       return
@@ -315,13 +315,13 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.3);
 }
 
-.gameLocation-selection {
+.location-selection {
   display: flex;
   gap: 2rem;
   margin: 2rem 0;
 }
 
-.gameLocation-selector {
+.location-selector {
   flex: 1;
   position: relative;
 }

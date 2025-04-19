@@ -81,7 +81,7 @@
                 
                 <div class="gameLocation">
                   <div class="gameLocation-label">Current GameLocation:</div>
-                  <div class="gameLocation-value">{{ questStore.currentGameLocation?.name || 'Not in a gameLocation' }}</div>
+                  <div class="gameLocation-value">{{ questStore.currentGameLocation?.name || 'Not in a location' }}</div>
                 </div>
                 
                 <div class="gameLocation">

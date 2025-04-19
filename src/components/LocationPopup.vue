@@ -1,12 +1,12 @@
 <template>
   <div class="gameLocation-popup">
-    <h2>{{ gameLocation.name }}<template v-if="!gameLocation.scouted"> ({{ type.title }})</template></h2>
+    <h2>{{ location.name }}<template v-if="!location.scouted"> ({{ type.title }})</template></h2>
     <div class="distance-info" v-if="playerDistance !== null">
       <span>{{ Math.round(playerDistance) }}m away</span>
     </div>
     <div class="action-buttons">
       <ButtonInput 
-        v-if="!gameLocation.scouted && !isLoading" 
+        v-if="!location.scouted && !isLoading"
         :action="scoutLocationAction"
         class="scout-button"
         variant="primary"
@@ -16,7 +16,7 @@
         Scout Location
       </ButtonInput>
       <ButtonInput 
-        v-if="gameLocation.scouted && isNearby" 
+        v-if="location.scouted && isNearby"
         :action="enterLocation"
         class="enter-button"
         variant="primary"
@@ -27,11 +27,11 @@
       </ButtonInput>
     </div>
     <div class="gameLocation-details">
-      <div v-if="gameLocation.scouted && gameLocation.description">
-        <div v-if="gameLocation.giftItem" class="gift-info">
+      <div v-if="location.scouted && location.description">
+        <div v-if="location.giftItem" class="gift-info">
           <h3>Gift:</h3>
           <ItemCard 
-            :item="gameLocation.giftItem"
+            :item="location.giftItem"
             variant="gift"
             :show-details="true"
           />
@@ -66,10 +66,10 @@
           </div>
         </div>
         
-        <div v-if="gameLocation.prizeItem" class="prize-info">
+        <div v-if="location.prizeItem" class="prize-info">
           <h3>Reward:</h3>
           <ItemCard 
-            :item="gameLocation.prizeItem"
+            :item="location.prizeItem"
             variant="prize"
             :show-details="true"
           />
@@ -99,13 +99,13 @@ import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {locationTypesById} from "@/data/locationTypes.ts";
 
 const props = defineProps<{
-  gameLocation: GameLocation
+  location: GameLocation
 }>()
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
 
-const type = computed((): GameLocationType => locationTypesById[props.gameLocation.type])
+const type = computed((): GameLocationType => locationTypesById[props.location.type])
 
 const playerDistance = computed(() => {
   if (!appStore.playerCoordinates) return null;
@@ -113,19 +113,19 @@ const playerDistance = computed(() => {
   return calculateDistance(
     appStore.playerCoordinates.lat,
     appStore.playerCoordinates.lng,
-    props.gameLocation.lat,
-    props.gameLocation.lng
+    props.location.lat,
+    props.location.lng
   );
 });
 
-// Check if player is within range to interact with the gameLocation
+// Check if player is within range to interact with the location
 const isNearby = computed(() => {
   return playerDistance.value !== null && playerDistance.value < 50000; // 50000 meters range
 });
 
 // Group undefeated monsters by type for display
 const groupedMonsters = computed(() => {
-  if (!props.gameLocation?.monsters || !props.gameLocation.monsters.length) {
+  if (!props.location?.monsters || !props.location.monsters.length) {
     return [];
   }
   
@@ -136,7 +136,7 @@ const groupedMonsters = computed(() => {
   }>();
   
   // Only include monsters that are still alive
-  props.gameLocation.monsters.forEach(monster => {
+  props.location.monsters.forEach(monster => {
     // Skip defeated monsters
     if (!monster.alive) return;
     
@@ -160,15 +160,15 @@ const groupedMonsters = computed(() => {
 
 // Check if all monsters are defeated
 const allMonstersDefeated = computed(() => {
-  if (!props.gameLocation?.monsters || props.gameLocation.monsters.length === 0) {
+  if (!props.location?.monsters || props.location.monsters.length === 0) {
     return false;
   }
   
-  return props.gameLocation.monsters.every(monster => !monster.alive);
+  return props.location.monsters.every(monster => !monster.alive);
 });
 
 const isLoading = computed(() => {
-  return props.gameLocation.scouted && !props.gameLocation.description;
+  return props.location.scouted && !props.location.description;
 })
 
 function getMonsterTitle(monsterId: string): string {
@@ -184,27 +184,16 @@ function getMonsterDrink(monsterId: string): string {
 function getMonsterClasses(monsterId: string): Record<string, boolean> {
   const monster = monsterTypes.find(m => m.id === monsterId)
   if (!monster) return {}
-  
-  const classes = {
-    [`monster-${monster.species}`]: true,
-    [`monster-${monster.level}`]: true
+
+  const classes : Record<string, boolean>= {}
+
+  // Add additional classes from monster style
+  if (monster.style?.additionalClasses) {
+    monster.style.additionalClasses.forEach(className => {
+      classes[className] = true
+    })
   }
-  
-  // Add special classes for themed monsters
-  if (monster.id.includes('desert') || monster.id.includes('sand')) {
-    classes['desert-monster'] = true
-  } else if (monster.id.includes('flame') || monster.id.includes('fire')) {
-    classes['flame-monster'] = true
-  } else if (monster.id.includes('earth') || monster.id.includes('mountain')) {
-    classes['earth-monster'] = true
-  } else if (monster.id.includes('water') || monster.id.includes('tidal')) {
-    classes['water-monster'] = true
-  } else if (monster.id.includes('ice') || monster.id.includes('frost') || monster.id.includes('glacial')) {
-    classes['ice-monster'] = true
-  } else if (monster.id.includes('obsidian')) {
-    classes['obsidian-monster'] = true
-  }
-  
+
   return classes
 }
 
@@ -235,9 +224,9 @@ async function scoutLocationAction(event?: MouseEvent) {
   if (event) {
     event.stopPropagation()
   }
-  await scoutLocation(props.gameLocation)
+  await scoutLocation(props.location)
   
-  // Award XP for scouting a gameLocation through the UI (using updateStats)
+  // Award XP for scouting a location through the UI (using updateStats)
   questStore.updateStats(1, 0, 0, "Scouting a location.");
 }
 
@@ -245,10 +234,10 @@ function enterLocation(event?: MouseEvent) {
   if (event) {
     event.stopPropagation()
   }
-  questStore.setCurrentGameLocation(props.gameLocation.id)
+  questStore.setCurrentGameLocation(props.location.id)
   appStore.setScreen('gameLocation')
   
-  // Award XP for arriving at a gameLocation (using updateStats)
+  // Award XP for arriving at a location (using updateStats)
   questStore.updateStats(2, 0, 0, "Entering a location.");
 }
 

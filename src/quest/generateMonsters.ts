@@ -1,4 +1,4 @@
-// generate the monsters for a gameLocation based on it's attributes.
+// generate the monsters for a location based on it's attributes.
 import { Monster, GameLocation, MonsterLevel, GameLocationDifficulty, Item, toMonsterId, Encounter } from '../types'
 import { monsterTypes } from '../data'
 import { monsterItem } from './monsterItem'
@@ -8,7 +8,7 @@ import pickWeightedOne from "../utils/pickWeightedOne"
 import {encounterTable} from "../data/encounterTable"
 
 export default function generateMonsters(gameLocation: GameLocation): Monster[] {
-    // If the gameLocation already has monsters, return them
+    // If the location already has monsters, return them
     if (gameLocation.monsters && gameLocation.monsters.length > 0) {
         return gameLocation.monsters
     }
@@ -40,9 +40,9 @@ export default function generateMonsters(gameLocation: GameLocation): Monster[] 
         const monsterCount = calculateMonsterCount(unitSpec.level, gameLocation.difficulty ?? 'medium')
         console.log("monsterCount", monsterCount)
         console.log("monster level", unitSpec.level)
-        console.log("gameLocation difficulty", gameLocation.difficulty)
+        console.log("location difficulty", gameLocation.difficulty)
 
-        // Create individual monsters with gameLocationholder names that will be regameLocationd by AI
+        // Create individual monsters with placeholder names that will be replaced by AI
         for (let i = 0; i < monsterCount; i++) {
             const monsterName = monsterCount > 1
                 ? `${monsterType.title} ${i + 1}`
@@ -52,7 +52,7 @@ export default function generateMonsters(gameLocation: GameLocation): Monster[] 
             monsters.push({
                 id: toMonsterId(`monster_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`),
                 type: monsterType.id,
-                name: monsterName, // This will be regameLocationd with AI-generated name
+                name: monsterName, // This will be replaced with AI-generated name
                 alive: true,
                 item: item
             })

@@ -7,7 +7,7 @@
       v-if="searchable"
       type="text" 
       v-model="searchText" 
-      :gameLocationholder="gameLocationholder || 'Search...'"
+      :placeholder="placeholder || 'Search...'"
       @focus="showList = true"
       @input="showList = true"
       class="picker-search"
@@ -60,7 +60,7 @@ const props = defineProps<{
   modelValue: any | any[] // Current selected value(s)
   title?: string
   searchable?: boolean
-  gameLocationholder?: string
+  placeholder?: string
   alwaysShow?: boolean
   multiple?: boolean
   maxSelections?: number

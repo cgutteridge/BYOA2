@@ -61,7 +61,7 @@ export class SplitPower extends ItemPower {
     // Check if the monster has a lesser form defined
     if (!monsterTypeDef.lesser) return false;
     
-    // Make sure we have access to the current gameLocation
+    // Make sure we have access to the current location
     const gameLocation = questStore.currentGameLocation;
     if (!gameLocation || !gameLocation.monsters) return false;
     
@@ -129,7 +129,7 @@ export class SplitPower extends ItemPower {
       }
     }
     
-    // Add the new monsters to the gameLocation
+    // Add the new monsters to the location
     gameLocation.monsters.push(...newMonsters);
     
     // Remove the original monster

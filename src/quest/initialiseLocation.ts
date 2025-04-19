@@ -23,7 +23,7 @@ function calculateDifficulty(gameLocation: GameLocation) : GameLocationDifficult
         // this should not actually happen but it keeps typescript quiet
         return 'medium'
     }
-    // calculate distance to start and end gameLocation
+    // calculate distance to start and end location
     const distanceFromStart = calculateDistance(questStore.startGameLocation.lat,questStore.startGameLocation.lng,gameLocation.lat,gameLocation.lng)
     const distanceFromEnd = calculateDistance(questStore.endGameLocation.lat,questStore.endGameLocation.lng,gameLocation.lat,gameLocation.lng)
     const ratio = distanceFromStart / distanceFromEnd

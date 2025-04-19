@@ -10,8 +10,8 @@ import {locationGiftItem} from "@/quest/locationGiftItem.ts";
 import {locationTypesById} from "@/data/locationTypes.ts";
 
 /**
- * Scout a gameLocation, generating its description, monsters, and prize
- * @param gameLocation The gameLocation to scout
+ * Scout a location, generating its description, monsters, and prize
+ * @param gameLocation The location to scout
  * @returns Promise resolving to true when scouting is complete
  */
 export async function scoutLocation(
@@ -20,10 +20,10 @@ export async function scoutLocation(
     const chatGPT = new ChatGPTAPI()
     const questStore = useQuestStore()
 
-    // Mark the gameLocation as scouted
+    // Mark the location as scouted
     gameLocation.scouted = true
 
-    // Generate monsters for this gameLocation
+    // Generate monsters for this location
     const monsters = generateMonsters(gameLocation)
 
     // Generate items for elite and boss monsters
@@ -38,14 +38,14 @@ export async function scoutLocation(
         }
     });
 
-    // Assign the monsters to the gameLocation
+    // Assign the monsters to the location
     gameLocation.monsters = monsters
 
-    // Generate a gift item based on gameLocation difficulty
+    // Generate a gift item based on location difficulty
     if (gameLocation.difficulty) {
         gameLocation.giftItem = locationGiftItem(gameLocation.difficulty);
 
-        // Also generate a prize item to be awarded for completing the gameLocation
+        // Also generate a prize item to be awarded for completing the location
         // We'll store this as metadata, but not display it until the player defeats all monsters
         gameLocation.prizeItem = locationPrizeItem(gameLocation.difficulty);
     }
@@ -70,7 +70,7 @@ export async function scoutLocation(
     const prizeItemPower = gameLocation.prizeItem ? generateEffectDescription(gameLocation.prizeItem) : "nothing";
     const giftItemPower = gameLocation.giftItem ? generateEffectDescription(gameLocation.giftItem) : undefined;
     
-    // Generate gameLocation description, name, and item details from AI
+    // Generate location description, name, and item details from AI
     const {
         name,
         description,
@@ -87,7 +87,7 @@ export async function scoutLocation(
         giftItemPower
     )
 
-    // Update the gameLocation with the new information
+    // Update the location with the new information
     gameLocation.name = name;
     gameLocation.description = description;
     
