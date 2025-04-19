@@ -147,7 +147,7 @@
 import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
 import {monsterTypes} from "../data/monsterTypes";
-import {Monster} from "../types";
+import {GameLocation, Monster} from "../types";
 import '../styles/monsterAnimations.css';
 import {computed, onMounted, onUnmounted, ref} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
@@ -160,6 +160,7 @@ import {generateTokenItem} from "@/quest/itemUtils.ts";
 
 // Constants
 const MONSTER_DEFEAT_DELAY_MS = 1000;
+const transitionDurationSeconds = MONSTER_DEFEAT_DELAY_MS/1000
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
@@ -236,10 +237,8 @@ const allMonstersDefeated = computed(() => {
 
 // Dynamically generate the regular token item when needed
 const tokenItem = computed(() => {
-  if (questStore.currentGameLocation) {
-    return generateTokenItem(questStore.currentGameLocation);
-  }
-  return null;
+  // when we are in a location the currentLocation will always be set
+  return generateTokenItem(questStore.currentGameLocation as GameLocation);
 })
 
 function getMonsterTitle(monsterId: string): string {

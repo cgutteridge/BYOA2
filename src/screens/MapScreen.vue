@@ -33,7 +33,7 @@ const locations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
 
-function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker {
+function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker|undefined {
   if (!mapInstance) {
     throw new Error('No map instance provided for marker creation')
   }
@@ -350,7 +350,9 @@ function generateGameLocationMarkers(): void {
   // Create new markers
   locations.value.forEach((location: GameLocation) => {
     const marker = createGameLocationMarker(location, map.value as L.Map)
-    locationMarkers.value.push(marker)
+    if(marker){
+      locationMarkers.value.push(marker)
+    }
     return marker
   })
 }

@@ -239,7 +239,9 @@ function generateItemName(power: ItemPowerId, targetMode?: string): string {
     pacify: ["Water Vial", "Calming Spray", "Peace Pendant", "Tranquil Mist", "Serene Orb", "Still Water Crystal"],
     distract: ["Cola Bomb", "Fizzing Stone", "Bubble Gem", "Carbonated Crystal", "Sparkling Sphere", "Effervescent Orb"],
     vegetate: ["Juice Box", "Fruit Extract", "Plant Seed", "Green Elixir", "Growth Potion", "Verdant Crystal"],
-    stun: ["Lemon Drop", "Sour Crystal", "Citrus Orb", "Zesty Sphere", "Tangy Gem", "Acidic Stone"]
+    stun: ["Lemon Drop", "Sour Crystal", "Citrus Orb", "Zesty Sphere", "Tangy Gem", "Acidic Stone"],
+    token: ["N/A"],
+    victory: ["N/A"]
   };
   
   // Get a random material and item type

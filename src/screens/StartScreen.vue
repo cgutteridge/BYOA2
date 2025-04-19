@@ -126,9 +126,6 @@ const appStore = useAppStore()
 const locationStore = useLocationStore()
 const questStore = useQuestStore()
 
-// For demo purposes, this can be toggled programmatically or based on game state
-const lockedStartButton = ref(false)
-
 const selectedStartLocation = ref<GameLocation | null>(null)
 const selectedEndLocation = ref<GameLocation | null>(null)
 const startLocationId = ref<string>('')

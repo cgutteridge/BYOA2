@@ -42,7 +42,6 @@ export function generateTokenItem(location: GameLocation): Item {
 export function generateVictoryItem(location: GameLocation): Item {
   const questStore = useQuestStore()
   const tokenTitle = questStore.title
-  const tokenDescription = "Victory!"
 
   return {
     id: toItemId(`victory_${location.id}_${Date.now()}`),

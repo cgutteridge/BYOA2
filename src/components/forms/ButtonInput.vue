@@ -7,7 +7,7 @@
         size ? `button-${size}` : '',
         { 'button-full-width': fullWidth },
         { 'button-locked': locked },
-        theme
+        questStore.theme
       ]"
       :disabled="disabled"
       @click="handleClick"
@@ -21,22 +21,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+
+import {useQuestStore} from "@/stores/questStore.ts";
 
 const props = defineProps<{
   variant?: 'primary' | 'secondary' | 'danger'
   size?: 'small' | 'medium' | 'large'
   disabled?: boolean
   fullWidth?: boolean
-  theme?: 'light' | 'dark'
   locked?: boolean
-  action?: () => void
+  action?: (event?:MouseEvent) => void
 }>()
 
-// Default theme (fallback to dark if not specified)
-const theme = computed((): string => props.theme || 'dark')
+const questStore = useQuestStore()
 
-function handleClick(event: Event): void {
+function handleClick(event: MouseEvent): void {
   if (!props.locked && !props.disabled) {
     // Call the action if provided
     if (props.action) {

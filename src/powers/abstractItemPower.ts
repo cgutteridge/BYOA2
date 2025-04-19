@@ -217,7 +217,10 @@ export abstract class ItemPower {
         return count
     }
 
-    abstract applyEffect(item: Item, monster: Monster): boolean;
+    applyEffect(item: Item, _monster: Monster): boolean {
+        console.error( "applyEffect should be subclassed. Called on ",item)
+        return false;
+    }
 }
 
 // Power factory to provide UI properties and functionality

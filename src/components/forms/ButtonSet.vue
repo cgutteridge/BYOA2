@@ -1,5 +1,5 @@
 <template>
-  <div class="button-picker" :class="[theme]">
+  <div class="button-picker" :class="[questStore.theme]">
     <h3 v-if="title">{{ title }}</h3>
     <div class="button-options">
       <template v-if="options && options.length > 0">
@@ -8,7 +8,7 @@
           :key="`btn-option-${option.id || index}`"
           :variant="isSelected(option) ? 'primary' : 'secondary'"
           :disabled="isDisabled(option)"
-          :theme="theme"
+          :theme="questStore.theme"
           @click="selectOption(option)"
           class="picker-button"
           :class="{ 'selected': isSelected(option) }"
@@ -26,6 +26,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import ButtonInput from '@/components/forms/ButtonInput.vue'
+import {useQuestStore} from "@/stores/questStore.ts";
+
+const questStore = useQuestStore()
 
 interface ButtonOption {
   id?: string | number
@@ -43,13 +46,9 @@ const props = defineProps<{
   valueProperty?: string
   disabled?: boolean
   disabledOptions?: any[]
-  theme?: 'light' | 'dark'
 }>()
 
 const emit = defineEmits(['update:modelValue', 'selection-change'])
-
-// Default theme (fallback to dark if not specified)
-const theme = computed((): string => props.theme || 'dark')
 
 // Function to convert simple options to objects
 const normalizedOptions = computed(() => {
