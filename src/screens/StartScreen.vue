@@ -1,7 +1,7 @@
 <template>
-  <div class="quest-start-screen screen-container">
+  <div class="quest-start-screen screen-container" :style="{ background: questStore.getGradient('primary') }">
 
-    <div class="quest-start-content">
+    <div class="quest-start-content" :style="contentStyle">
       <h2>Start Your Quest</h2>
       
       <div class="theme-toggle">
@@ -9,7 +9,6 @@
           @click="questStore.toggleTheme" 
           variant="secondary"
           size="small"
-          :theme="questStore.theme"
         >
           {{ questStore.theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
         </ButtonInput>
@@ -29,7 +28,6 @@
               value-property="id"
               display-property="name"
               @selection-change="updateStartLocation"
-              :theme="questStore.theme"
             />
           </div>
           
@@ -43,7 +41,6 @@
               value-property="id"
               display-property="name"
               @selection-change="updateEndLocation"
-              :theme="questStore.theme"
             />
           </div>
         </div>
@@ -54,6 +51,7 @@
             type="text" 
             placeholder="Quest Title"
             class="quest-input"
+            :style="inputStyle"
           />
           
           <div class="difficulty-selector">
@@ -65,7 +63,6 @@
                 { id: 'hard', name: 'Hard' }
               ]"
               title="Difficulty Level"
-              :theme="questStore.theme"
             />
           </div>
           
@@ -76,7 +73,6 @@
               :min="1"
               :max="20"
               description="Monsters scale with player count:<br>• Minions: 2× player count<br>• Grunts: 1× player count<br>• Elites: Fixed (1) or scaled on hard difficulty<br>• Bosses: Always 1"
-              :theme="questStore.theme"
             />
           </div>
           
@@ -86,7 +82,6 @@
               title="Minimum Locations"
               :min="3"
               description="Minimum number of locations to visit in the quest"
-              :theme="questStore.theme"
             />
           </div>
         </div>
@@ -97,7 +92,6 @@
             :locked="!canStartQuest"
             size="large"
             variant="primary"
-            :theme="questStore.theme"
             fullWidth
             class="start-quest-button"
           >
@@ -110,9 +104,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { useAppStore } from '../stores/appStore'
-import { startQuest } from "@/quest/startQuest.ts"
+import {computed, onMounted, ref, watch} from 'vue'
+import {useAppStore} from '../stores/appStore'
+import {startQuest} from "@/quest/startQuest.ts"
 import ListInput from '@/components/forms/ListInput.vue'
 import ButtonSet from '@/components/forms/ButtonSet.vue'
 import ButtonInput from '@/components/forms/ButtonInput.vue'
@@ -135,6 +129,19 @@ const isLoading = ref(true)
 const selectedDifficulty = ref('medium')
 const playerCount = ref(3)
 const minimumLocations = ref(3)
+
+// Theme-based styles
+const contentStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('card'),
+  color: questStore.getTextColor('primary'),
+  borderColor: questStore.getBorderColor('medium')
+}))
+
+const inputStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  color: questStore.getTextColor('primary'),
+  borderColor: questStore.getBorderColor('medium')
+}))
 
 // Watch for locations to be loaded
 watch(() => locationStore.locations, (newLocations) => {
@@ -250,28 +257,39 @@ async function callStartQuest() {
     if (!endGameLocation && endLocationId.value) {
       endGameLocation = locationStore.locations.find((p:GameLocation) => p.id === endLocationId.value) || null
     }
-    
-    // Check that we have valid location objects
+
+    // Safety check
     if (!startGameLocation || !endGameLocation) {
-      console.error('Failed to find locations', { startGameLocationId: startLocationId.value, endGameLocationId: endLocationId.value })
+      console.error('Cannot start quest: Missing locations')
       return
     }
-    
-    // Change screen
-    appStore.setScreen('intro')
-    
-    let difficulty = 1
-    if (selectedDifficulty.value === 'hard') { difficulty = 1.5 }
-    if (selectedDifficulty.value === 'easy') { difficulty = 0.66 }
-    
+
+    // Set our quest minimum locations
+    questStore.setMinimumLocations(minimumLocations.value)
+
+    // Update the player count
+    questStore.setPlayerCount(playerCount.value)
+
+    // Map difficulty setting to numeric value
+    let difficultyValue = 1
+    if (selectedDifficulty.value === 'easy') difficultyValue = 0
+    if (selectedDifficulty.value === 'medium') difficultyValue = 1
+    if (selectedDifficulty.value === 'hard') difficultyValue = 2
+
+    questStore.setDifficulty(difficultyValue)
+
+    // Start the quest
     await startQuest(
-      questTitle.value,
-      startGameLocation as GameLocation,
-      endGameLocation as GameLocation,
-      difficulty,
-      playerCount.value,
-      minimumLocations.value
-    );
+        questTitle.value,
+        startGameLocation,
+        endGameLocation,
+        playerCount.value,
+        difficultyValue,
+        minimumLocations.value
+    )
+
+    // Transition to intro
+    appStore.setScreen('intro')
   }
 }
 
@@ -288,107 +306,84 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-  color: white;
-  padding: 2rem 0;
+  padding: 2rem;
 }
 
 .quest-start-content {
   max-width: 800px;
   width: 90%;
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
   margin: auto;
 }
 
-.theme-toggle {
+.quest-start-content h2 {
+  font-size: 2rem;
   margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
 }
 
-.theme-button {
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.theme-button:hover {
-  background: rgba(255, 255, 255, 0.3);
+.quest-form {
+  margin-top: 2rem;
 }
 
 .location-selection {
   display: flex;
-  gap: 2rem;
-  margin: 2rem 0;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .location-selector {
   flex: 1;
-  position: relative;
+  min-width: 250px;
+}
+
+.location-selector h3 {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .quest-details {
-  margin: 2rem 0;
+  margin-bottom: 2rem;
 }
 
 .quest-input {
   width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: white;
+  padding: 1rem;
   font-size: 1.2rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-width: 1px;
+  border-style: solid;
+  outline: none;
 }
 
-.difficulty-selector, .player-count-selector, .min-locations-selector {
-  margin-top: 1.5rem;
+.difficulty-selector,
+.player-count-selector,
+.min-locations-selector {
   margin-bottom: 1.5rem;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .start-button-container {
   margin-top: 2rem;
   width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
-.start-quest-button {
-  min-width: 200px;
-}
+@media (max-width: 768px) {
+  .location-selection {
+    flex-direction: column;
+  }
 
-.start-quest-button:disabled {
-  background: #666;
-  cursor: not-allowed;
-}
-
-h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.quest-form {
-  opacity: 0;
-  animation: fadeIn 0.5s ease forwards;
-}
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
+  .location-selector {
+    width: 100%;
   }
 }
 </style> 

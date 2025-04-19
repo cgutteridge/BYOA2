@@ -1,6 +1,6 @@
 <template>
-  <div class="picker-container" :class="[theme]">
-    <h3 v-if="title">{{ title }}</h3>
+  <div class="picker-container" :style="containerStyle">
+    <h3 v-if="title" :style="titleStyle">{{ title }}</h3>
     
     <!-- Search field (optional) -->
     <input 
@@ -11,10 +11,11 @@
       @focus="showList = true"
       @input="showList = true"
       class="picker-search"
+      :style="inputStyle"
     />
     
     <!-- Options list -->
-    <div v-if="shouldShowList" class="picker-list">
+    <div v-if="shouldShowList" class="picker-list" :style="listStyle">
       <div 
         v-for="(option, index) in filteredOptions" 
         :key="`option-${option.id || index}`" 
@@ -23,6 +24,7 @@
           'selected': isSelected(option),
           'disabled': isDisabled(option)
         }"
+        :style="getItemStyle(isSelected(option), isDisabled(option))"
         @click="!isDisabled(option) && selectOption(option)"
       >
         <div class="picker-item-count" v-if="option.count">
@@ -34,7 +36,7 @@
         </div>
       </div>
       
-      <div v-if="filteredOptions.length === 0" class="no-options">
+      <div v-if="filteredOptions.length === 0" class="no-options" :style="noOptionsStyle">
         No options available
       </div>
     </div>
@@ -43,6 +45,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useQuestStore } from '@/stores/questStore'
 
 interface PickerOption {
   id?: string | number
@@ -68,10 +71,10 @@ const props = defineProps<{
   valueProperty?: string
   disabled?: boolean
   disabledOptions?: any[]
-  theme?: 'light' | 'dark'
 }>()
 
 const emit = defineEmits(['update:modelValue', 'selection-change'])
+const questStore = useQuestStore()
 
 // Local state
 const searchText = ref('')
@@ -82,8 +85,53 @@ if (props.alwaysShow) {
   showList.value = true
 }
 
-// Default theme (fallback to dark if not specified)
-const theme = computed(() => props.theme || 'dark')
+// Theme-based styles
+const containerStyle = computed(() => ({
+  color: questStore.getTextColor('primary')
+}))
+
+const titleStyle = computed(() => ({
+  color: questStore.getTextColor('primary')
+}))
+
+const inputStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  color: questStore.getTextColor('primary'),
+  borderColor: questStore.getBorderColor('medium')
+}))
+
+const listStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('card'),
+  borderColor: questStore.getBorderColor('medium'),
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+}))
+
+const noOptionsStyle = computed(() => ({
+  color: questStore.getTextColor('secondary')
+}))
+
+function getItemStyle(isSelected: boolean, isDisabled: boolean) {
+  if (isDisabled) {
+    return {
+      backgroundColor: questStore.getButtonColors('disabled').background,
+      color: questStore.getButtonColors('disabled').text,
+      borderColor: questStore.getBorderColor('light')
+    }
+  }
+
+  if (isSelected) {
+    return {
+      backgroundColor: questStore.getButtonColors('primary').background,
+      color: questStore.getButtonColors('primary').text,
+      borderColor: questStore.getBorderColor('accent')
+    }
+  }
+
+  return {
+    borderColor: questStore.getBorderColor('light'),
+    color: questStore.getTextColor('primary')
+  }
+}
 
 // Function to convert simple options to objects
 const normalizedOptions = computed(() => {
@@ -116,6 +164,11 @@ const filteredOptions = computed(() => {
     
     return searchIn.some(text => text.includes(searchTerm))
   })
+})
+
+// Only show list if showList is true (and not alwaysShow)
+const shouldShowList = computed(() => {
+  return props.alwaysShow || showList.value
 })
 
 // Determine if an option is selected
@@ -201,64 +254,51 @@ function selectOption(option: PickerOption): void {
   }
 }
 
-// Close dropdown when clicking outside for searchable pickers
-function handleClickOutside(event: MouseEvent) {
-  // Only apply to searchable pickers
-  if (!props.searchable || props.alwaysShow) return;
-  
-  const target = event.target as HTMLElement
-  if (!target.closest('.picker-container')) {
+// Click outside to close dropdown
+function handleOutsideClick(event: MouseEvent) {
+  const pickerContainer = document.querySelector('.picker-container') as Element
+  if (pickerContainer && !pickerContainer.contains(event.target as Node)) {
     showList.value = false
   }
 }
 
-// Update searchText when modelValue changes for searchable single-select pickers
+// Mount and cleanup event listeners
+onMounted(() => {
+  if (!props.alwaysShow) {
+    document.addEventListener('click', handleOutsideClick)
+  }
+})
+
+onUnmounted(() => {
+  if (!props.alwaysShow) {
+    document.removeEventListener('click', handleOutsideClick)
+  }
+})
+
+// Watch for model changes and update search text
 watch(() => props.modelValue, (newValue) => {
-  if (props.searchable && !props.multiple && newValue) {
-    const option = normalizedOptions.value.find(opt => {
+  if (props.searchable && !Array.isArray(newValue)) {
+    // Find the option
+    const option = normalizedOptions.value.find(option => {
       const valueProperty = props.valueProperty || 'id'
       if (typeof newValue === 'object' && newValue !== null) {
-        return opt[valueProperty] === newValue[valueProperty]
+        return option[valueProperty] === newValue[valueProperty]
       }
-      return opt[valueProperty] === newValue || opt.id === newValue || opt === newValue
+      return option.id === newValue || option === newValue
     })
     
     if (option) {
       const displayProperty = props.displayProperty || 'name'
-      searchText.value = typeof option === 'object' ? (option[displayProperty] || option.title || option.label || '') : String(option)
+      searchText.value = option[displayProperty] || option.title || option.label || ''
     }
   }
 }, { immediate: true })
-
-// Computed property to determine if list should be shown
-const shouldShowList = computed(() => {
-  // Always show if alwaysShow is true
-  if (props.alwaysShow) return true;
-  
-  // For searchable pickers, show when search is active or text exists
-  if (props.searchable) {
-    return showList.value && searchText.value;
-  }
-  
-  // Don't show by default
-  return false;
-});
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>
 
 <style scoped>
-/* Base styles */
 .picker-container {
   position: relative;
-  width: 100%;
-  margin-bottom: 0.5rem; /* Add margin to ensure space below the container */
+  margin: 1rem 0;
 }
 
 .picker-container h3 {
@@ -270,145 +310,77 @@ onUnmounted(() => {
 .picker-search {
   width: 100%;
   padding: 0.8rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem; /* Add margin bottom to create space between search and list */
-  border-radius: 8px;
   font-size: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  border-width: 1px;
+  border-style: solid;
+  outline: none;
+  transition: all 0.3s ease;
 }
 
 .picker-list {
+  position: absolute;
   width: 100%;
-  max-height: 200px;
+  max-height: 300px;
   overflow-y: auto;
+  z-index: 10;
   border-radius: 8px;
-  z-index: 1000;
-  margin-top: 0.5rem;
-  /* Removed position: absolute */
+  border-width: 1px;
+  border-style: solid;
 }
 
 .picker-item {
   padding: 0.8rem;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
 }
 
-.picker-item-content {
-  flex: 1;
+.picker-item:last-child {
+  border-bottom: none;
+}
+
+.picker-item:hover:not(.disabled) {
+  filter: brightness(1.1);
+}
+
+.picker-item.disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .picker-item-count {
   font-weight: bold;
-  min-width: 30px;
-  text-align: center;
+  margin-right: 1rem;
+  font-size: 1.1rem;
+}
+
+.picker-item-content {
+  flex: 1;
+  overflow: hidden;
 }
 
 .picker-item-title {
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .picker-item-subtitle {
-  font-size: 0.8rem;
-  opacity: 0.8;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .no-options {
-  padding: 0.8rem;
+  padding: 1rem;
   text-align: center;
   font-style: italic;
-}
-
-/* Dark theme (default) */
-.picker-container.dark h3 {
-  color: #ffffff;
-}
-
-.picker-container.dark .picker-search {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.picker-container.dark .picker-list {
-  background: rgba(30, 30, 30, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.picker-container.dark .picker-item {
-  color: #f0f0f0;
-}
-
-.picker-container.dark .picker-item:hover:not(.disabled) {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.picker-container.dark .picker-item.selected {
-  background: #2E7D32; /* Darker green for better contrast */
-  color: white;
-}
-
-.picker-container.dark .picker-item.selected:hover {
-  background: #1B5E20; /* Even darker green on hover for better distinction */
-}
-
-.picker-container.dark .picker-item.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  color: #a0a0a0;
-}
-
-.picker-container.dark .no-options {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* Light theme */
-.picker-container.light h3 {
-  color: #333333;
-}
-
-.picker-container.light .picker-search {
-  background: #ffffff;
-  border: 1px solid #d0d0d0;
-  color: #333333;
-}
-
-.picker-container.light .picker-list {
-  background: #ffffff;
-  border: 1px solid #d0d0d0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.picker-container.light .picker-item {
-  color: #333333;
-}
-
-.picker-container.light .picker-item:hover:not(.disabled) {
-  background: #f0f0f0;
-}
-
-.picker-container.light .picker-item.selected {
-  background: #43A047; /* Bright green */
-  color: white;
-}
-
-.picker-container.light .picker-item.selected:hover {
-  background: #2E7D32; /* Darker green on hover for better distinction */
-}
-
-.picker-container.light .picker-item.disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  color: #888888;
-}
-
-.picker-container.light .no-options {
-  color: #888888;
-}
-
-/* Add a nice subtle separator between items */
-.picker-item:not(:last-child) {
-  border-bottom: 1px solid rgba(200, 200, 200, 0.1);
 }
 </style> 

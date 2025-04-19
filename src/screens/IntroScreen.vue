@@ -1,18 +1,18 @@
 <template>
-  <div class="intro-screen screen-container">
-    <div class="intro-content">
+  <div class="intro-screen screen-container" :style="{ background: questStore.getGradient('primary') }">
+    <div class="intro-content" :style="contentStyle">
       <h2>{{ questStore.title }}</h2>
       
       <div class="quest-details">
         <p class="description">{{ questStore.description }}</p>
 
         <div class="location-info">
-          <div class="location-card">
+          <div class="location-card" :style="locationCardStyle">
             <h3>Start Location</h3>
             <p>{{ questStore.startGameLocation?.name || 'Not selected' }}</p>
           </div>
 
-          <div class="location-card">
+          <div class="location-card" :style="locationCardStyle">
             <h3>End Location</h3>
             <p>{{ questStore.endGameLocation?.name || 'Not selected' }}</p>
           </div>
@@ -28,7 +28,6 @@
           :locked="questStore.status!=='active'"
           variant="primary"
           size="large"
-          :theme="questStore.theme"
           fullWidth
         >
           Continue
@@ -39,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useAppStore } from "@/stores/appStore";
 import { useQuestStore } from "@/stores/questStore";
 import ButtonInput from "@/components/forms/ButtonInput.vue";
@@ -46,6 +46,17 @@ import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 const questStore = useQuestStore();
 const appStore = useAppStore();
+
+// Theme-based styles
+const contentStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('card'),
+  color: questStore.getTextColor('primary')
+}));
+
+const locationCardStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('medium')
+}));
 
 function start(): void {
   appStore.setScreen('location');
@@ -58,8 +69,6 @@ function start(): void {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-  color: white;
   padding: 2rem 0;
 }
 
@@ -67,7 +76,6 @@ function start(): void {
   max-width: 800px;
   width: 90%;
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   text-align: center;
   margin: auto;
@@ -93,8 +101,7 @@ function start(): void {
 .location-card {
   flex: 1;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid;
   border-radius: 8px;
 }
 

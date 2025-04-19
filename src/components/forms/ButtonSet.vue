@@ -1,6 +1,6 @@
 <template>
-  <div class="button-picker" :class="[questStore.theme]">
-    <h3 v-if="title">{{ title }}</h3>
+  <div class="button-picker" :style="pickerStyle">
+    <h3 v-if="title" :style="titleStyle">{{ title }}</h3>
     <div class="button-options">
       <template v-if="options && options.length > 0">
         <ButtonInput
@@ -8,7 +8,6 @@
           :key="`btn-option-${option.id || index}`"
           :variant="isSelected(option) ? 'primary' : 'secondary'"
           :disabled="isDisabled(option)"
-          :theme="questStore.theme"
           @click="selectOption(option)"
           class="picker-button"
           :class="{ 'selected': isSelected(option) }"
@@ -49,6 +48,15 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:modelValue', 'selection-change'])
+
+// Styles based on theme
+const pickerStyle = computed(() => ({
+  color: questStore.getTextColor('primary')
+}))
+
+const titleStyle = computed(() => ({
+  color: questStore.getTextColor('primary')
+}))
 
 // Function to convert simple options to objects
 const normalizedOptions = computed(() => {
@@ -128,15 +136,5 @@ function selectOption(option: ButtonOption): void {
 .picker-button {
   flex: 1;
   min-width: 80px;
-}
-
-/* Dark theme styles */
-.button-picker.dark h3 {
-  color: #ffffff;
-}
-
-/* Light theme styles */
-.button-picker.light h3 {
-  color: #333333;
 }
 </style> 

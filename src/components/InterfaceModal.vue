@@ -1,10 +1,10 @@
 <template>
   <Teleport to="body">
     <div v-if="isOpen" class="interface-modal">
-      <div class="interface-modal__backdrop" @click="close"></div>
+      <div class="interface-modal__backdrop" :style="backdropStyle" @click="close"></div>
       
-      <div class="interface-modal__content">
-        <div class="interface-modal__header">
+      <div class="interface-modal__content" :style="modalContentStyle">
+        <div class="interface-modal__header" :style="headerStyle">
           <div class="interface-modal__tabs">
             <button-input
               v-for="tab in tabs" 
@@ -23,10 +23,10 @@
           </button-input>
         </div>
         
-        <div class="interface-modal__body">
+        <div class="interface-modal__body" :style="bodyStyle">
           <!-- Items Tab -->
           <div v-if="activeTab === 'items'" class="interface-tab interface-tab--items">
-            <div v-if="!hasItems" class="interface-tab__empty">
+            <div v-if="!hasItems" class="interface-tab__empty" :style="emptyMessageStyle">
               Your inventory is empty.
             </div>
             <div v-else class="interface-grid">
@@ -48,10 +48,10 @@
             <h2>Current Quest</h2>
             
             <div class="quest-details">
-              <div class="quest-title">{{ questStore.title }}</div>
-              <div class="quest-description">{{ questStore.description }}</div>
+              <div class="quest-title" :style="titleStyle">{{ questStore.title }}</div>
+              <div class="quest-description" :style="descriptionStyle">{{ questStore.description }}</div>
               
-              <div class="quest-stats">
+              <div class="quest-stats" :style="statsStyle">
                 <div class="stat-group">
                   <div class="stat-label">Experience Points:</div>
                   <div class="stat-value">{{ questStore.xp }}</div>
@@ -73,7 +73,7 @@
                 </div>
               </div>
               
-              <div class="quest-locations">
+              <div class="quest-locations" :style="locationsStyle">
                 <div class="location">
                   <div class="location-label">Start GameLocation:</div>
                   <div class="location-value">{{ questStore.startGameLocation?.name || 'Unknown' }}</div>
@@ -114,7 +114,6 @@
                     @click="toggleTheme" 
                     variant="secondary"
                     size="small"
-                    :theme="questStore.theme"
                   >
                     {{ questStore.theme === 'dark' ? '☀️ Switch to Light Mode' : '🌙 Switch to Dark Mode' }}
                   </ButtonInput>
@@ -193,6 +192,47 @@ const tabs = [
   { id: 'options', label: 'Options', disabled: false }
 ]
 
+// Theme-based styles
+const backdropStyle = computed(() => ({
+  backgroundColor: questStore.getOverlayColors().background,
+}))
+
+const modalContentStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('modal'),
+  color: questStore.getTextColor('primary'),
+  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+}))
+
+const headerStyle = computed(() => ({
+  borderBottom: `1px solid ${questStore.getBorderColor('light')}`,
+}))
+
+const bodyStyle = computed(() => ({
+  color: questStore.getTextColor('primary'),
+}))
+
+const emptyMessageStyle = computed(() => ({
+  color: questStore.getTextColor('secondary'),
+}))
+
+const titleStyle = computed(() => ({
+  color: questStore.getTextColor('primary'),
+}))
+
+const descriptionStyle = computed(() => ({
+  color: questStore.getTextColor('secondary'),
+}))
+
+const statsStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('light'),
+}))
+
+const locationsStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('light'),
+}))
+
 // Methods
 function close() {
   appStore.closeInterface()
@@ -232,7 +272,6 @@ function formatUnits(value: number): string {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
 }
 
@@ -241,208 +280,135 @@ function formatUnits(value: number): string {
   width: 90%;
   height: 90%;
   max-width: 1200px;
-  background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .interface-modal__header {
-  padding: 16px;
-  border-bottom: 1px solid #eee;
+  padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f5f5f5;
 }
 
 .interface-modal__tabs {
   display: flex;
-  gap: 1px;
+  gap: 0.5rem;
 }
 
 .interface-modal__tab {
-  padding: 8px 16px;
-  border: none;
-  background-color: transparent;
-  font-size: 1rem;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s;
-  color: #555;
-}
-
-.interface-modal__tab:hover:not(:disabled) {
-  background-color: #eaeaea;
-}
-
-.interface-modal__tab--active {
-  color: #226644;
-  font-weight: 600;
-}
-
-.interface-modal__tab--active::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -16px;
-  height: 3px;
-  background-color: #226644;
-  border-radius: 3px 3px 0 0;
-}
-
-.interface-modal__tab:disabled {
-  color: #777;
-  cursor: not-allowed;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
 }
 
 .interface-modal__close {
-  border: none;
-  background: transparent;
-  font-size: 32px;
+  font-size: 1.5rem;
   line-height: 1;
-  cursor: pointer;
-  padding: 0 8px;
-  color: #666;
-}
-
-.interface-modal__close:hover {
-  color: #333;
+  padding: 0.25rem 0.5rem;
 }
 
 .interface-modal__body {
-  flex-grow: 1;
-  padding: 20px;
+  flex: 1;
+  padding: 1rem;
   overflow-y: auto;
+}
+
+.interface-tab {
+  height: 100%;
+}
+
+.interface-tab h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.75rem;
+}
+
+.interface-tab h3 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.25rem;
 }
 
 .interface-tab__empty {
   text-align: center;
-  padding: 40px;
-  color: #888;
+  padding: 2rem;
   font-style: italic;
 }
 
 .interface-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
 }
 
-.options-section {
-  margin-top: 24px;
-}
-
-.quit-button {
-  background-color: #e55;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.quit-button:hover {
-  background-color: #d44;
+.interface-grid__item {
+  margin-bottom: 1rem;
 }
 
 .quest-details {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .quest-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #333;
+  margin-bottom: 0.5rem;
+  text-align: center;
 }
 
 .quest-description {
+  margin-bottom: 2rem;
   font-style: italic;
-  color: #555;
-  line-height: 1.4;
+  text-align: center;
 }
 
-.quest-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin: 1rem 0;
+.quest-stats, .quest-locations {
+  margin-bottom: 2rem;
   padding: 1rem;
-  background-color: #f5f5f5;
   border-radius: 8px;
+  border: 1px solid;
 }
 
-.stat-group {
+.stat-group, .location {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem;
-  border-bottom: 1px solid #eee;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
-.stat-label {
-  font-weight: bold;
-  color: #555;
+.stat-group:not(:last-child), .location:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.stat-value {
-  color: #333;
-  font-weight: 600;
+.stat-label, .location-label {
+  font-weight: 500;
 }
 
-.quest-locations {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin: 1rem 0;
-  padding: 1rem;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-}
-
-.location {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem;
-  border-bottom: 1px solid #eee;
-}
-
-.location-label {
-  font-weight: bold;
-  color: #555;
-}
-
-.location-value {
-  color: #333;
-  font-weight: 600;
+.options-section {
+  margin-bottom: 2rem;
 }
 
 .theme-option {
   display: flex;
   align-items: center;
+  gap: 1rem;
   margin: 1rem 0;
-  padding: 0.5rem;
-  background-color: #f5f5f5;
-  border-radius: 8px;
 }
 
 .option-label {
-  font-weight: bold;
-  color: #555;
-  margin-right: 1rem;
-  min-width: 80px;
+  min-width: 100px;
+  font-weight: 500;
 }
 
 .theme-buttons {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.quit-button {
+  margin-top: 1rem;
 }
 </style> 

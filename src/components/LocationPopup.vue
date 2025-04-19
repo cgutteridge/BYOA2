@@ -1,5 +1,5 @@
 <template>
-  <div class="location-popup">
+  <div class="location-popup" :style="popupStyle">
     <h2>{{ location.name }}<template v-if="!location.scouted"> ({{ type.title }})</template></h2>
     <div class="distance-info" v-if="playerDistance !== null">
       <span>{{ Math.round(playerDistance) }}m away</span>
@@ -11,7 +11,6 @@
         class="scout-button"
         variant="primary"
         size="medium"
-        :theme="questStore.theme"
       >
         Scout Location
       </ButtonInput>
@@ -21,14 +20,13 @@
         class="enter-button"
         variant="primary"
         size="medium"
-        :theme="questStore.theme"
       >
         Enter Location
       </ButtonInput>
     </div>
     <div class="location-details">
       <div v-if="location.scouted && location.description">
-        <div v-if="location.giftItem" class="gift-info">
+        <div v-if="location.giftItem" class="gift-info" :style="sectionStyle">
           <h3>Gift:</h3>
           <ItemCard 
             :item="location.giftItem"
@@ -40,7 +38,7 @@
         <h3 class="monsters-heading">Active Monsters:</h3>
         
         <!-- Show a message when all monsters are defeated -->
-        <div v-if="allMonstersDefeated" class="all-defeated-message">
+        <div v-if="allMonstersDefeated" class="all-defeated-message" :style="messageStyle">
           All monsters have been defeated!
         </div>
         
@@ -50,6 +48,7 @@
             <div 
               class="monster-card"
               :class="getMonsterClasses(group.type)"
+              :style="getMonsterStyle(group.type)"
             >
               <div class="monster-count">
                 <span>{{ group.monsters.length }}x</span>
@@ -66,7 +65,7 @@
           </div>
         </div>
         
-        <div v-if="location.prizeItem" class="prize-info">
+        <div v-if="location.prizeItem" class="prize-info" :style="sectionStyle">
           <h3>Reward:</h3>
           <ItemCard 
             :item="location.prizeItem"
@@ -111,6 +110,24 @@ const props = defineProps<{
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
+
+// Theme-based styles
+const popupStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('card'),
+  color: questStore.getTextColor('primary'),
+  borderColor: questStore.getBorderColor('medium')
+}))
+
+const sectionStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('light')
+}))
+
+const messageStyle = computed(() => ({
+  color: questStore.getTextColor('secondary'),
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('light')
+}))
 
 const type = computed((): GameLocationType => locationTypesById[props.location.type])
 
@@ -184,29 +201,57 @@ const isLoading = computed(() => {
 })
 
 function getMonsterTitle(monsterId: string): string {
-  const monster = monsterTypes.find(m => m.id === monsterId)
-  return monster?.title || monsterId
+  const monsterType = monsterTypes.find(m => m.id === monsterId)
+  return monsterType?.title || monsterId
 }
 
 function getMonsterDrink(monsterId: string): string {
-  const monster = monsterTypes.find(m => m.id === monsterId)
-  return monster?.drink || "Unknown"
+  const monsterType = monsterTypes.find(m => m.id === monsterId)
+  return monsterType?.drink || "Unknown"
 }
 
 function getMonsterClasses(monsterId: string): Record<string, boolean> {
-  const monster = monsterTypes.find(m => m.id === monsterId)
-  if (!monster) return {}
+  const monsterType = monsterTypes.find(m => m.id === monsterId)
+  if (!monsterType) return {}
 
   const classes : Record<string, boolean>= {}
 
   // Add additional classes from monster style
-  if (monster.style?.additionalClasses) {
-    monster.style.additionalClasses.forEach(className => {
+  if (monsterType.style?.additionalClasses) {
+    monsterType.style.additionalClasses.forEach(className => {
       classes[className] = true
     })
   }
 
   return classes
+}
+
+function getMonsterStyle(monsterId: string): Record<string, string> {
+  const monsterType = monsterTypes.find(m => m.id === monsterId)
+  if (!monsterType || !monsterType.style) return {}
+  
+  const style: Record<string, string> = {
+    backgroundColor: questStore.getBackgroundColor('card'),
+    borderColor: questStore.getBorderColor('medium'),
+    color: questStore.getTextColor('primary')
+  }
+
+  // If monster has style.backgroundColor, use it
+  if (monsterType.style.backgroundColor) {
+    style.backgroundColor = monsterType.style.backgroundColor
+  }
+
+  // If monster has style.borderColor, use it
+  if (monsterType.style.borderColor) {
+    style.borderColor = monsterType.style.borderColor
+  }
+  
+  // If monster has style.color, use it
+  if (monsterType.style.color) {
+    style.color = monsterType.style.color
+  }
+  
+  return style
 }
 
 function getMonsterSpecies(monsterId: string): string {
@@ -257,210 +302,112 @@ function enterLocation(event?: MouseEvent) {
 
 <style scoped>
 .location-popup {
-  color: white;
-  padding: 5px;
-  max-width: 100%;
-  font-size: 16px;
+  position: relative;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 90vw;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid;
 }
 
-h2 {
-  font-size: 1.4rem;
+.location-popup h2 {
   margin-top: 0;
-  margin-bottom: 0.75rem;
-  text-align: center;
-  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 600;
 }
 
 .distance-info {
-  font-size: 1rem;
   margin-bottom: 1rem;
-  text-align: center;
-  color: #8bc34a;
-  font-weight: bold;
-}
-
-.location-details {
-  margin: 1rem 0;
-}
-
-.prize-info,
-.gift-info,
-.token-power-info,
-.token-info {
-  margin: 1.25rem 0;
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: left;
-}
-
-.prize-info h3,
-.gift-info h3,
-.token-power-info h3,
-.token-info h3 {
-  margin-top: 0;
-  margin-bottom: 0.75rem;
-  text-align: center;
-  font-size: 1.2rem;
-}
-
-/* Styling modifications for ItemCard inside prize-info and gift-info */
-.prize-info :deep(.item-card),
-.gift-info :deep(.item-card),
-.token-power-info :deep(.item-card),
-.token-info :deep(.item-card) {
-  margin: 0.5rem 0 1rem;
-  max-width: 100%;
-  border-width: 2px;
-}
-
-.prize-info :deep(.item-card__power),
-.gift-info :deep(.item-card__power),
-.token-power-info :deep(.item-card__power),
-.token-info :deep(.item-card__power) {
-  white-space: normal;
-  line-height: 1.2;
-}
-
-.token-power-locked {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 0.5rem;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  text-align: center;
-}
-
-.token-power-message {
-  color: #ff9800;
-  font-weight: bold;
-}
-
-.monsters-heading {
-  font-size: 1.2rem;
-  margin: 1.25rem 0 0.75rem;
-  padding-bottom: 0.5rem;
-  color: #fff;
-  text-align: center;
-}
-
-.monster-groups {
-  margin: 0.75rem 0;
-}
-
-.monster-type-group {
-  margin-bottom: 1rem;
-}
-
-/* Monster card styling */
-.monster-card {
-  display: flex;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  margin: 0.5rem 0;
-}
-
-.monster-count {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 1rem;
-  font-size: 2rem;
-  font-weight: 900;
-  background: rgba(0, 0, 0, 0.3);
-  min-width: 80px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.monster-info {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
-}
-
-.monster-title {
-  font-weight: bold;
-  font-size: 1.3rem;
-  margin-bottom: 0.25rem;
-  padding-right: 60px; /* Make room for XP */
-  color: #ffeb3b;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.monster-subinfo {
   font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-  font-style: italic;
-}
-
-.monster-xp {
-  position: absolute;
-  top: 0.75rem;
-  right: 1rem;
-  font-size: 0.9rem;
-  font-weight: bold;
-}
-
-.monster-details {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.monster-stat {
-  font-size: 0.95rem;
-}
-
-.all-defeated-message {
-  margin: 1rem 0;
-  padding: 1rem;
-  font-style: italic;
-  color: #4CAF50;
-  font-weight: bold;
-  text-align: center;
-  background: rgba(76, 175, 80, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(76, 175, 80, 0.3);
-  font-size: 1rem;
 }
 
 .action-buttons {
   display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.scout-button,
-.enter-button {
-  min-width: 120px;
-}
-
-.token-info {
+.location-details {
   margin-top: 1rem;
+}
+
+.gift-info, .prize-info {
+  margin: 1.5rem 0;
   padding: 1rem;
-  background-color: rgba(220, 220, 220, 0.1);
-  border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid;
 }
 
-.token-info h3 {
+.gift-info h3, .prize-info h3 {
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.monsters-heading {
+  margin: 1.5rem 0 1rem;
+  font-size: 1.25rem;
+}
+
+.all-defeated-message {
+  text-align: center;
+  padding: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.monster-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.monster-card {
+  border-radius: 8px;
+  border: 1px solid;
+  overflow: hidden;
+  display: flex;
+  padding: 1rem;
+}
+
+.monster-count {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.monster-info {
+  flex: 1;
+}
+
+.monster-title {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
   font-size: 1.1rem;
+}
+
+.monster-subinfo {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.monster-xp {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #ffcc00;
 }
 
-.token-info :deep(.item-card) {
-  margin-bottom: 0;
+.monster-details {
+  font-size: 0.9rem;
 }
 
-.token-info :deep(.item-card__power) {
-  border-color: #ffcc00;
+.monster-stat {
+  margin-bottom: 0.25rem;
 }
 </style> 

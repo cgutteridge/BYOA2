@@ -1,29 +1,32 @@
 <template>
-  <div class="counter-picker" :class="[theme]">
-    <h3 v-if="title">{{ title }}</h3>
+  <div class="counter-picker" :style="pickerStyle">
+    <h3 v-if="title" :style="titleStyle">{{ title }}</h3>
     <div class="counter-control">
       <button 
         class="counter-button decrement" 
         @click="decrement" 
         :disabled="disabled || value <= (min ?? 0)"
+        :style="buttonStyle"
       >
         {{ decrementText || '-' }}
       </button>
-      <div class="counter-value">{{ displayValue || value }}</div>
+      <div class="counter-value" :style="valueStyle">{{ displayValue || value }}</div>
       <button 
         class="counter-button increment" 
         @click="increment"
         :disabled="disabled || value >= (max ?? Infinity)"
+        :style="buttonStyle"
       >
         {{ incrementText || '+' }}
       </button>
     </div>
-    <div v-if="description" class="counter-description" v-html="description"></div>
+    <div v-if="description" class="counter-description" v-html="description" :style="descriptionStyle"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useQuestStore } from '@/stores/questStore'
 
 const props = defineProps<{
   modelValue: number
@@ -36,13 +39,45 @@ const props = defineProps<{
   disabled?: boolean
   decrementText?: string
   incrementText?: string
-  theme?: 'light' | 'dark'
 }>()
 
 const emit = defineEmits(['update:modelValue', 'change'])
+const questStore = useQuestStore()
 
-// Default theme (fallback to dark if not specified)
-const theme = computed(() => props.theme || 'dark')
+// Theme-based styles
+const pickerStyle = computed(() => ({
+  color: questStore.getTextColor('primary')
+}))
+
+const titleStyle = computed(() => ({
+  color: questStore.getTextColor('primary')
+}))
+
+const valueStyle = computed(() => ({
+  color: questStore.getTextColor('primary')
+}))
+
+const buttonStyle = computed(() => {
+  const isDisabled = props.disabled;
+  
+  return {
+    backgroundColor: isDisabled 
+      ? questStore.getButtonColors('disabled').background 
+      : questStore.getButtonColors('secondary').background,
+    color: isDisabled 
+      ? questStore.getButtonColors('disabled').text 
+      : questStore.getButtonColors('secondary').text,
+    borderColor: isDisabled 
+      ? questStore.getButtonColors('disabled').border 
+      : questStore.getButtonColors('secondary').border
+  }
+})
+
+const descriptionStyle = computed(() => ({
+  color: questStore.getTextColor('secondary'),
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('light')
+}))
 
 // Computed property to get the current value
 const value = computed(() => props.modelValue)
@@ -111,6 +146,19 @@ function decrement() {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.counter-button:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.counter-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .counter-value {
@@ -131,70 +179,7 @@ function decrement() {
   margin-right: auto;
   padding: 0.8rem;
   border-radius: 8px;
-}
-
-/* Dark theme styles */
-.counter-picker.dark h3 {
-  color: #ffffff;
-}
-
-.counter-picker.dark .counter-value {
-  color: #ffffff;
-}
-
-.counter-picker.dark .counter-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #f0f0f0;
-}
-
-.counter-picker.dark .counter-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
-}
-
-.counter-picker.dark .counter-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #555;
-  color: #a0a0a0;
-}
-
-.counter-picker.dark .counter-description {
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(0, 0, 0, 0.3);
-}
-
-/* Light theme styles */
-.counter-picker.light h3 {
-  color: #333333;
-}
-
-.counter-picker.light .counter-value {
-  color: #333333;
-}
-
-.counter-picker.light .counter-button {
-  background: #f5f5f5;
-  border: 1px solid #d0d0d0;
-  color: #333333;
-}
-
-.counter-picker.light .counter-button:hover:not(:disabled) {
-  background: #e0e0e0;
-  transform: translateY(-2px);
-}
-
-.counter-picker.light .counter-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background: #cccccc;
-  color: #888888;
-}
-
-.counter-picker.light .counter-description {
-  color: #555555;
-  background: #f0f0f0;
-  border: 1px solid #e0e0e0;
+  border-width: 1px;
+  border-style: solid;
 }
 </style> 

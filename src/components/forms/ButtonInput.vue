@@ -6,9 +6,9 @@
         variant ? `button-${variant}` : '', 
         size ? `button-${size}` : '',
         { 'button-full-width': fullWidth },
-        { 'button-locked': locked },
-        questStore.theme
+        { 'button-locked': locked }
       ]"
+      :style="buttonStyle"
       :disabled="disabled"
       @click="handleClick"
     >
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-
+import {computed} from 'vue'
 import {useQuestStore} from "@/stores/questStore.ts";
 
 const props = defineProps<{
@@ -34,6 +34,20 @@ const props = defineProps<{
 }>()
 
 const questStore = useQuestStore()
+
+// Compute button styles based on variant and theme
+const buttonStyle = computed(() => {
+  const variantType = props.variant || 'primary'
+  const colors = props.disabled 
+    ? questStore.getButtonColors('disabled')
+    : questStore.getButtonColors(variantType)
+
+  return {
+    backgroundColor: colors.background,
+    color: colors.text,
+    borderColor: colors.border
+  }
+})
 
 function handleClick(event: MouseEvent): void {
   if (!props.locked && !props.disabled) {
@@ -66,8 +80,13 @@ function handleClick(event: MouseEvent): void {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid transparent;
+  border-width: 1px;
+  border-style: solid;
   text-align: center;
+}
+
+.button:hover:not(:disabled):not(.button-locked) {
+  filter: brightness(1.1);
 }
 
 .button-full-width {
@@ -114,61 +133,9 @@ function handleClick(event: MouseEvent): void {
   opacity: 1;
 }
 
-/* Dark theme styles */
-.button.dark {
-  color: #ffffff;
-}
-
-.button-primary.dark {
-  background: #2E7D32;
-  color: white;
-}
-
-.button-secondary.dark {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #f0f0f0;
-}
-
-.button-danger.dark {
-  background: #c62828;
-  color: white;
-}
-
-.button.dark:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #555;
-  color: #a0a0a0;
-  transform: none;
-}
-
-/* Light theme styles */
-.button.light {
-  color: #333333;
-}
-
-.button-primary.light {
-  background: #43A047;
-  color: white;
-}
-
-.button-secondary.light {
-  background: #f5f5f5;
-  border: 1px solid #d0d0d0;
-  color: #333333;
-}
-
-.button-danger.light {
-  background: #e53935;
-  color: white;
-}
-
-.button.light:disabled {
+.button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background: #cccccc;
-  color: #888888;
   transform: none;
 }
 </style> 
