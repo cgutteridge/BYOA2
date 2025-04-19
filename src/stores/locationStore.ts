@@ -28,6 +28,12 @@ export const useLocationStore = defineStore('locations', () => {
     targetGameLocation.type = type
   }
 
+  // Set hasToken flag for a specific location
+  const setGameLocationHasToken = (locationId: GameLocationId, hasToken: boolean) => {
+    const targetGameLocation = location(locationId)
+    targetGameLocation.hasToken = hasToken
+  }
+
   // Check if a location can be scouted based on player's distance to it (within 50 meters)
   const canScout = (locationId: GameLocationId): boolean => {
     if (!appStore.playerCoordinates) return false
@@ -81,6 +87,7 @@ export const useLocationStore = defineStore('locations', () => {
     canScout,
     setGameLocationDifficulty,
     setGameLocationType,
+    setGameLocationHasToken,
     persist
   }
 }) 

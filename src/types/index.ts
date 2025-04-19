@@ -70,6 +70,7 @@ export interface GameLocation {
   difficulty?: GameLocationDifficulty
   monsters?: Monster[]
   scouted: boolean
+  hasToken?: boolean
   giftItem?: Item
   prizeItem?: Item
 }
