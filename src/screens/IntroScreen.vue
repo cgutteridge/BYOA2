@@ -19,7 +19,7 @@
     </div>
     <ButtonInput 
       class="continue-button" 
-      @click="start"
+      :action="start"
       :locked="questStore.status!=='active'"
       variant="primary"
       size="large"
@@ -47,7 +47,6 @@ function start() {
 <style scoped>
 .intro-screen {
   min-height: 100vh;
-  display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);

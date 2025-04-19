@@ -86,7 +86,7 @@
         
         <div class="start-button-container">
           <ButtonInput
-            @click="callStartQuest"
+            :action="callStartQuest"
             :locked="!canStartQuest"
             size="large"
             variant="primary"
