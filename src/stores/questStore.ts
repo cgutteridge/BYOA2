@@ -23,10 +23,13 @@ export const useQuestStore = defineStore('quest', () => {
   const booze = ref<number>(0) // Track alcohol booze consumed
   const soft = ref<number>(0) // Track soft drinks/water consumed
   const theme = ref<ThemeType>('dark') // Theme preference, defaulting to dark
+  const minimumLocations = ref<number>(1) // Minimum number of locations required
+  const tokenTitle = ref<string>('') // Title for token
+  const tokenDescription = ref<string>('') // Description for token
   const persist = ref(['title', 'description', 'status', 'startGameLocation' +
   'Id', 'endGameLocation' +
   'Id', 'currentGameLocation' +
-  'Id', 'playerCount', 'xp', 'booze', 'soft', 'theme'])
+  'Id', 'playerCount', 'xp', 'booze', 'soft', 'theme', 'minimumLocations', 'tokenTitle', 'tokenDescription'])
 
   const setTitle = (newTitle: string) => {
     title.value = newTitle
@@ -87,6 +90,18 @@ export const useQuestStore = defineStore('quest', () => {
   
   const toggleTheme = (): void => {
     theme.value = theme.value === 'light' ? 'dark' : 'light'
+  }
+  
+  const setMinimumLocations = (count: number): void => {
+    minimumLocations.value = count
+  }
+  
+  const setTokenTitle = (newTokenTitle: string): void => {
+    tokenTitle.value = newTokenTitle
+  }
+  
+  const setTokenDescription = (newTokenDescription: string): void => {
+    tokenDescription.value = newTokenDescription
   }
   
   /**
@@ -156,6 +171,9 @@ export const useQuestStore = defineStore('quest', () => {
     booze,
     soft,
     theme,
+    minimumLocations,
+    tokenTitle,
+    tokenDescription,
     startGameLocationId,
     endGameLocationId,
     setStartGameLocationId,
@@ -176,6 +194,9 @@ export const useQuestStore = defineStore('quest', () => {
     addSoft,
     setTheme,
     toggleTheme,
+    setMinimumLocations,
+    setTokenTitle,
+    setTokenDescription,
     updateStats,
     persist
   }
