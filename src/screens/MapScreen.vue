@@ -137,8 +137,6 @@ function createGameLocationMarker(gameLocation: GameLocation, mapInstance: L.Map
   })
 
   marker.on('popupclose', () => {
-
-    console.log('Popup closed')
     // Always clean up apps since we're not reopening popups
     cleanupPopupApps()
   })
@@ -148,10 +146,7 @@ function createGameLocationMarker(gameLocation: GameLocation, mapInstance: L.Map
 }
 
 function closePopup() {
-  console.log('closePopup() called')
-  console.log(new Error().stack);
-
-  // Clean up Vue apps
+  // Clean up Vue apps. might get called twice but that's OK.
   cleanupPopupApps()
 
   try {
@@ -196,7 +191,6 @@ function initializeMap(): void {
   isInitializing.value = true
 
   try {
-    console.log('Initializing map...')
     cleanupMap()
 
     // Create map container if it doesn't exist
@@ -209,26 +203,24 @@ function initializeMap(): void {
     }
 
     // Use stored map position, fall back to player gameLocation or default
-    let gameLocation: Coordinates
+    let coordinates: Coordinates
     let zoom: number
 
     if (mapPosition.value) {
-      gameLocation = mapPosition.value
+      coordinates = mapPosition.value
       zoom = mapZoom.value || 16
     } else if (playerCoordinates.value) {
-      gameLocation = playerCoordinates.value
+      coordinates = playerCoordinates.value
       zoom = 16
     } else {
-      gameLocation = { lat: 51.505, lng: -0.09 }
+      coordinates = { lat: 51.505, lng: -0.09 }
       zoom = 13
     }
     
-    console.log('Using gameLocation for map:', gameLocation, 'zoom:', zoom)
-
     const mapInstance = L.map('map', {
       preferCanvas: true,
       zoomControl: false  // Disable the default zoom control
-    }).setView([gameLocation.lat, gameLocation.lng], zoom)
+    }).setView([coordinates.lat, coordinates.lng], zoom)
 
     // Add event listeners for map movement and zoom
     mapInstance.on('moveend', () => {
@@ -237,7 +229,6 @@ function initializeMap(): void {
     })
 
     mapInstance.on('zoomend', () => {
-      console.log('Zoomend')
       appStore.setMapZoom(mapInstance.getZoom())
       
       // Remove popup reopening logic
@@ -245,13 +236,11 @@ function initializeMap(): void {
 
     // Simplify to just close any open popup when zoom starts
     mapInstance.on('zoomstart', () => {
-      console.log('zoom start')
       closePopup()
     })
 
     // Keep click listener to close popup
     mapInstance.on('click', () => {
-      console.log('click')
       closePopup()
     })
 
@@ -290,8 +279,6 @@ function initializeMap(): void {
     new CenterControl().addTo(mapInstance);
 
     map.value = mapInstance
-    console.log('Map initialized successfully with gameLocation:', gameLocation)
-
 
     // Add player marker if gameLocation is available
     if (playerCoordinates.value) {
@@ -318,8 +305,6 @@ function initWhenReady(): void {
 }
 
 onMounted(() => {
-  console.log('MapView mounted')
-
   // Wait for next tick to ensure DOM is ready
   nextTick(() => {
     initWhenReady()
@@ -364,8 +349,6 @@ function generateGameLocationMarkers(): void {
     gameLocationMarkers.value.push(marker)
     return marker
   })
-
-  console.log('Total markers created:', gameLocationMarkers.value.length)
 }
 
 function updatePlayerMarker(coords: Coordinates): void {

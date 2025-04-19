@@ -15,10 +15,7 @@
         </ButtonInput>
       </div>
       
-      <div v-if="isLoading" class="loading-state">
-        <div class="loading-spinner"></div>
-        <p>Loading gameLocations...</p>
-      </div>
+      <LoadingSpinner v-if="isLoading" message="Loading gameLocations..." />
       
       <div v-else class="quest-form">
         <div class="gameLocation-selection">
@@ -110,6 +107,7 @@ import ListInput from '@/components/forms/ListInput.vue'
 import ButtonSet from '@/components/forms/ButtonSet.vue'
 import ButtonInput from '@/components/forms/ButtonInput.vue'
 import NumberInput from '@/components/forms/NumberInput.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import {GameLocation} from "@/types"
 import {useLocationStore} from "@/stores/locationStore.ts"
 import {useQuestStore} from "@/stores/questStore.ts"
@@ -372,30 +370,6 @@ h2 {
 h3 {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
-}
-
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  border-top-color: #4CAF50;
-  animation: spin 1s ease-in-out infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .quest-form {

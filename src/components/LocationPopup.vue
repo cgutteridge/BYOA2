@@ -77,10 +77,7 @@
       </div>
       
       <!-- Loading state when scouting -->
-      <div v-else-if="isLoading" class="loading-state">
-        <div class="loading-spinner"></div>
-        <p>Scouting gameLocation...</p>
-      </div>
+      <LoadingSpinner v-else-if="isLoading" message="Scouting Location..." />
 
     </div>
 
@@ -95,6 +92,7 @@ import {monsterTypes} from '../data/monsterTypes'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
 import ButtonInput from '@/components/forms/ButtonInput.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
@@ -418,31 +416,5 @@ h2 {
 .scout-button,
 .enter-button {
   min-width: 120px;
-}
-
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  margin: 1rem 0;
-  text-align: center;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  border-top-color: #4CAF50;
-  animation: spin 1s ease-in-out infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 </style> 
