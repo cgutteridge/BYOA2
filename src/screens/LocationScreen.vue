@@ -108,11 +108,11 @@
           </div>
         </template>
       </div>
-      
+
       <!-- Prize item section -->
-      <div v-if="questStore.currentGameLocation.prizeItem" class="prize-item-section">
+      <div v-if="questStore.currentGameLocation.prizeItem || questStore.currentGameLocation.hasToken" class="prize-item-section">
         <h3><span class="icon">🏆</span> Quest Prize:</h3>
-        <div class="prize-item-wrapper">
+        <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.prizeItem" >
           <div v-if="!allMonstersDefeated" class="monster-item-locked">
             <span class="lock-icon">🔒</span>
           </div>
@@ -124,7 +124,7 @@
             @action="claimPrizeItem"
           />
         </div>
-        <div class="prize-item-wrapper">
+        <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.hasToken">
           <div v-if="!allMonstersDefeated" class="monster-item-locked">
             <span class="lock-icon">🔒</span>
           </div>
@@ -156,10 +156,10 @@ import ItemCard from "../components/ItemCard.vue";
 import ButtonInput from "@/components/forms/ButtonInput.vue";
 import {areAllMonstersDefeated, getMonsterBooze, getMonsterSoft, getMonsterXP} from "../quest/monsterUtils.ts";
 import formatNumber from "../utils/formatNumber.ts";
-import {generateTokenItem, generateTokenPowerItem} from "@/quest/itemUtils.ts";
+import {generateTokenItem} from "@/quest/itemUtils.ts";
 
 // Constants
-const MONSTER_DEFEAT_DELAY_MS = 1000; // 2 seconds
+const MONSTER_DEFEAT_DELAY_MS = 1000;
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
@@ -171,9 +171,6 @@ const monstersDying = ref<Record<string, { timeoutId: number; startTime: number 
 
 // Progress animation
 let animationFrameId: number | null = null;
-
-// Calculate transition duration in seconds for CSS
-const transitionDurationSeconds = MONSTER_DEFEAT_DELAY_MS / 1000;
 
 // Update the progress of all dying monsters
 function updateDyingProgress() {
@@ -235,14 +232,6 @@ const allMonstersDefeated = computed(() => {
   return questStore.currentGameLocation?.monsters
     ? areAllMonstersDefeated(questStore.currentGameLocation.monsters)
     : false
-})
-
-// Dynamically generate the token power item when needed
-const tokenPowerItem = computed(() => {
-  if (questStore.currentGameLocation) {
-    return generateTokenPowerItem(questStore.currentGameLocation);
-  }
-  return null;
 })
 
 // Dynamically generate the regular token item when needed
@@ -342,7 +331,7 @@ function claimPrizeItem() {
     // Award XP based on item level
     if (prizeItem.level) {
       const xpToAward = prizeItem.level * 3; // 3 XP per level for prize items
-      questStore.updateStats(xpToAward, 0, 0, `claiming prize ${prizeItem.name}`);
+      questStore.updateStats(xpToAward, 0, 0, `Claimed ${prizeItem.name}`);
     }
 
     // Remove from location
@@ -355,41 +344,15 @@ function claimPrizeItem() {
   }
 }
 
-function claimTokenPowerItem() {
-  if (allMonstersDefeated.value && tokenPowerItem.value && questStore.currentGameLocation) {
-    // Add the token power item to the inventory
-    inventoryStore.addItem(tokenPowerItem.value);
-
-    // Mark the location as having had its token claimed
-    locationStore.setGameLocationHasToken(questStore.currentGameLocation.id, true);
-
-    // Show notification
-    appStore.addNotification(`You claimed the power token from ${questStore.currentGameLocation.name}!`);
-
-    // Award XP for claiming the token power
-    if (tokenPowerItem.value.level) {
-      const xpToAward = tokenPowerItem.value.level * 2; // 2 XP per level for token power items
-      questStore.updateStats(xpToAward, 0, 0, `claiming token power ${tokenPowerItem.value.name}`);
-    }
-  }
-}
-
 function claimTokenItem() {
   if (allMonstersDefeated.value && tokenItem.value && questStore.currentGameLocation) {
     // Add the token item to the inventory
     inventoryStore.addItem(tokenItem.value);
 
     // Mark the location as having had its token claimed
-    locationStore.setGameLocationHasToken(questStore.currentGameLocation.id, true);
+    locationStore.setGameLocationHasToken(questStore.currentGameLocation.id, false);
 
-    // Show notification
-    appStore.addNotification(`You claimed the token from ${questStore.currentGameLocation.name}!`);
-
-    // Award XP for claiming the token
-    if (tokenItem.value.level) {
-      const xpToAward = tokenItem.value.level; // 1 XP per level for regular tokens
-      questStore.updateStats(xpToAward, 0, 0, `claiming token ${tokenItem.value.name}`);
-    }
+    questStore.updateStats(10, 0, 0, `Claimed ${tokenItem.value.name}`);
   }
 }
 
@@ -403,7 +366,7 @@ function claimGiftItem() {
     // Award XP based on item level
     if (giftItem.level) {
       const xpToAward = giftItem.level * 2; // 2 XP per level for gift items
-      questStore.updateStats(xpToAward, 0, 0, `claiming gift ${giftItem.name}`);
+      questStore.updateStats(xpToAward, 0, 0, `Claimed ${giftItem.name}`);
     }
     
     // Remove from GameLocation

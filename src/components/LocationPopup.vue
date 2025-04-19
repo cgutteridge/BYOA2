@@ -77,7 +77,6 @@
               :item="tokenItem"
               variant="prize"
               :show-details="true"
-              @action="handleTokenAction"
           />
         </div>
 
@@ -95,8 +94,6 @@
 import {computed} from 'vue'
 import type {GameLocationType, Monster, MonsterTypeId, GameLocation} from '../types'
 import {useAppStore} from "../stores/appStore"
-import {useInventoryStore} from "../stores/inventoryStore"
-import {useLocationStore} from "../stores/locationStore"
 import {monsterTypes} from '../data/monsterTypes'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
@@ -106,7 +103,7 @@ import {useQuestStore} from "@/stores/questStore.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {locationTypesById} from "@/data/locationTypes.ts";
-import {generateTokenPowerItem, generateTokenItem} from "@/quest/itemUtils.ts";
+import {generateTokenItem} from "@/quest/itemUtils.ts";
 
 const props = defineProps<{
   location: GameLocation
@@ -114,8 +111,6 @@ const props = defineProps<{
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
-const inventoryStore = useInventoryStore()
-const locationStore = useLocationStore()
 
 const type = computed((): GameLocationType => locationTypesById[props.location.type])
 
@@ -179,12 +174,7 @@ const allMonstersDefeated = computed(() => {
   return props.location.monsters.every(monster => !monster.alive);
 });
 
-// Compute the token power item for this location
-const tokenPowerItem = computed(() => {
-  return generateTokenPowerItem(props.location);
-});
-
-// Compute the regular token item for this location
+// Compute the token item for this location
 const tokenItem = computed(() => {
   return generateTokenItem(props.location);
 });
@@ -261,45 +251,6 @@ function enterLocation(event?: MouseEvent) {
   
   // Award XP for arriving at a location (using updateStats)
   questStore.updateStats(2, 0, 0, "Entering a location.");
-}
-
-// Add functions to handle token actions
-function handleTokenPowerAction() {
-  if (allMonstersDefeated.value && tokenPowerItem.value) {
-    // Add the token power item to the inventory
-    inventoryStore.addItem(tokenPowerItem.value);
-    
-    // Mark the location as having had its token claimed
-    locationStore.setGameLocationHasToken(props.location.id, true);
-    
-    // Show notification
-    appStore.addNotification(`You claimed the power token from ${props.location.name}!`);
-    
-    // Award XP for claiming the token power
-    if (tokenPowerItem.value.level) {
-      const xpToAward = tokenPowerItem.value.level * 2; // 2 XP per level for token power items
-      questStore.updateStats(xpToAward, 0, 0, `claiming token power ${tokenPowerItem.value.name}`);
-    }
-  }
-}
-
-function handleTokenAction() {
-  if (allMonstersDefeated.value && tokenItem.value) {
-    // Add the token item to the inventory
-    inventoryStore.addItem(tokenItem.value);
-    
-    // Mark the location as having had its token claimed
-    locationStore.setGameLocationHasToken(props.location.id, true);
-    
-    // Show notification
-    appStore.addNotification(`You claimed the token from ${props.location.name}!`);
-    
-    // Award XP for claiming the token
-    if (tokenItem.value.level) {
-      const xpToAward = tokenItem.value.level; // 1 XP per level for regular tokens
-      questStore.updateStats(xpToAward, 0, 0, `claiming token ${tokenItem.value.name}`);
-    }
-  }
 }
 
 </script>
