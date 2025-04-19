@@ -8,6 +8,7 @@ import {monsterItem} from "@/quest/monsterItem.ts";
 import {locationPrizeItem} from "@/quest/locationPrizeItem.ts";
 import {locationGiftItem} from "@/quest/locationGiftItem.ts";
 import {locationTypesById} from "@/data/locationTypes.ts";
+import {generateVictoryItem} from "@/quest/itemUtils.ts";
 
 /**
  * Scout a location, generating its description, monsters, and prize
@@ -45,9 +46,13 @@ export async function scoutLocation(
     if (location.difficulty) {
         location.giftItem = locationGiftItem(location.difficulty);
 
-        // Also generate a prize item to be awarded for completing the location
-        // We'll store this as metadata, but not display it until the player defeats all monsters
-        location.prizeItem = locationPrizeItem(location.difficulty);
+        // For the final location, use the victory item as the prize
+        if (location.difficulty === 'end') {
+            location.prizeItem = generateVictoryItem(location);
+        } else {
+            // For other locations, generate a regular prize item
+            location.prizeItem = locationPrizeItem(location.difficulty);
+        }
     }
 
     // Create a string description of the monsters for the API
@@ -93,8 +98,13 @@ export async function scoutLocation(
     
     // Update prize item with AI-generated name and description
     if (location.prizeItem) {
-        location.prizeItem.name = prizeItemName;
-        location.prizeItem.description = prizeItemDescription;
+        // For victory items, keep the original name which is the quest title
+        if (location.difficulty === 'end') {
+            location.prizeItem.description = prizeItemDescription;
+        } else {
+            location.prizeItem.name = prizeItemName;
+            location.prizeItem.description = prizeItemDescription;
+        }
     }
     
     // Update gift item with AI-generated name and description (if available)

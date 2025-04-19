@@ -13,6 +13,8 @@ import { PacifyPower } from './pacify'
 import { DistractPower } from './distract'
 import { VegetatePower } from './vegetate'
 import { StunPower } from './stun'
+import { TokenPower } from './token'
+import { VictoryPower} from "@/powers/victory.ts";
 
 // Create instances of the power classes
 const banishPower = new BanishPower();

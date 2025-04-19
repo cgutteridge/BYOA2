@@ -7,6 +7,7 @@ import {locationTypesList} from "@/data/locationTypes.ts";
 
 export default function initialiseGameLocation(location: GameLocation) {
     const locationStore = useLocationStore()
+    const questStore = useQuestStore()
     // calculate difficulty
     locationStore.setGameLocationDifficulty(location.id, calculateDifficulty(location))
 
@@ -14,7 +15,7 @@ export default function initialiseGameLocation(location: GameLocation) {
     locationStore.setGameLocationType(location.id, pickOne(locationTypesList))
 
     // Initialize hasToken flag - true for all locations except start and end
-    const isStartOrEnd = location.id === startGameLocation.id || location.id === endGameLocation.id
+    const isStartOrEnd = location.id === questStore.startGameLocationId || location.id === questStore.endGameLocationId
     locationStore.setGameLocationHasToken(location.id, !isStartOrEnd)
 }
 
