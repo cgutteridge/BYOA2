@@ -13,6 +13,15 @@
         >
           {{ currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
         </Button>
+        
+        <Button 
+          @click="quitGame" 
+          variant="danger"
+          size="small"
+          :theme="currentTheme"
+        >
+          Quit Game
+        </Button>
       </div>
       
       <div v-if="isLoading" class="loading-state">
@@ -84,7 +93,7 @@
           </div>
         </div>
         
-        <Button 
+        <ButtonSet
           @click="callStartQuest"
           :disabled="!canStartQuest"
           size="large"
@@ -93,7 +102,7 @@
           fullWidth
         >
           Start Quest
-        </Button>
+        </ButtonSet>
       </div>
     </div>
   </div>
@@ -105,8 +114,8 @@ import { useAppStore } from '../stores/appStore'
 import { startQuest } from "@/quest/startQuest.ts"
 import List from '@/components/forms/List.vue'
 import ButtonSet from '@/components/forms/ButtonSet.vue'
+import Button from '@/components/forms/Button.vue'
 import Number from '@/components/forms/Number.vue'
-import Button from '@/components/forms/ButtonSet.vue'
 import {GameLocation} from "@/types";
 import {useLocationStore} from "@/stores/locationStore.ts";
 
@@ -226,6 +235,16 @@ function toggleTheme() {
   currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
 }
 
+// Function to quit the game
+function quitGame(): void {
+  if (confirm('Are you sure you want to quit the game?')) {
+    // Reset to start quest screen
+    appStore.setScreen('start_quest')
+    // Add a notification to inform the user
+    appStore.addNotification('Game session ended', 'info')
+  }
+}
+
 async function callStartQuest() {
   if (canStartQuest.value) {
     console.log('Starting quest...')
@@ -268,7 +287,7 @@ async function callStartQuest() {
 
 // Load gameLocations when the component is mounted
 onMounted(() => {
-  console.log('mounted QuestStartScreen')
+  console.log('mounted StartScreen')
   locationStore.fetchNearbyGameLocations()
 })
 </script>
@@ -298,6 +317,7 @@ onMounted(() => {
   margin-bottom: 1.5rem;
   display: flex;
   justify-content: center;
+  gap: 1rem;
 }
 
 .theme-button {

@@ -5,7 +5,7 @@ import {useQuestStore} from './stores/questStore'
 import {useInventoryStore} from './stores/inventoryStore'
 
 import MapScreen from './screens/MapScreen.vue'
-import QuestStartScreen from './screens/QuestStartScreen.vue'
+import StartScreen from './screens/StartScreen.vue'
 import IntroScreen from './screens/IntroScreen.vue'
 import LocationScreen from './screens/LocationScreen.vue'
 import VictoryScreen from './screens/VictoryScreen.vue'
@@ -177,7 +177,7 @@ onUnmounted(() => {
     </div>
     <template v-else>
       <!-- Normal game screens -->
-      <QuestStartScreen v-if="appStore.screen === 'start_quest'" />
+      <StartScreen v-if="appStore.screen === 'start_quest'" />
       <IntroScreen v-else-if="appStore.screen === 'intro'" />
       <MapScreen v-else-if="appStore.screen === 'map'" />
       <LocationScreen v-else-if="appStore.screen === 'gameLocation'" />
