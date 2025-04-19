@@ -751,6 +751,10 @@ function isMonsterDying(monsterId: string): boolean {
 /* States */
 .dying {
   position: relative;
+  opacity: 0;
+  filter: grayscale(1);
+  transition: opacity var(--transition-duration, 1s) ease-in, 
+              filter var(--transition-duration, 1s) ease-in;
 }
 
 .dying::before {
@@ -763,13 +767,6 @@ function isMonsterDying(monsterId: string): boolean {
   background: rgba(255, 0, 0, 0.2);
   z-index: 1;
   pointer-events: none;
-}
-
-.dying {
-  opacity: 0;
-  filter: grayscale(1);
-  transition: opacity var(--transition-duration, 1s) ease-in, 
-              filter var(--transition-duration, 1s) ease-in;
 }
 
 .defeated {
