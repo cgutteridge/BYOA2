@@ -3,7 +3,7 @@
     <h3 v-if="title">{{ title }}</h3>
     <div class="button-options">
       <template v-if="options && options.length > 0">
-        <Button
+        <ButtonInput
           v-for="(option, index) in normalizedOptions"
           :key="`btn-option-${option.id || index}`"
           :variant="isSelected(option) ? 'primary' : 'secondary'"
@@ -14,7 +14,7 @@
           :class="{ 'selected': isSelected(option) }"
         >
           {{ option.name || option.title || option.label || option }}
-        </Button>
+        </ButtonInput>
       </template>
       <template v-else>
         <slot></slot>
@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import Button from '@/components/forms/Button.vue'
+import ButtonInput from '@/components/forms/ButtonInput.vue'
 
 interface ButtonOption {
   id?: string | number
@@ -131,7 +131,7 @@ function selectOption(option: ButtonOption): void {
   min-width: 80px;
 }
 
-/* Custom styling for selected buttons - augments Button component styles */
+/* Custom styling for selected buttons - augments ButtonInput component styles */
 .picker-button.selected {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }

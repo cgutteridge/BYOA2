@@ -183,7 +183,7 @@ onUnmounted(() => {
       <LocationScreen v-else-if="appStore.screen === 'gameLocation'" />
       <VictoryScreen v-else-if="appStore.screen === 'victory'" />
 
-      <!-- Interface Button (only show during gameplay) -->
+      <!-- Interface ButtonInput (only show during gameplay) -->
       <button 
         v-if="(appStore.screen !== 'start_quest' && 
               appStore.screen !== 'intro' && 

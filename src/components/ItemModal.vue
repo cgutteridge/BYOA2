@@ -39,7 +39,7 @@
               
               <div v-if="hasTargetableMonsters" class="target-list">
                 <div v-if="targetMode === 'type'" class="target-type-list">
-                  <List
+                  <ListInput
                     v-model="selectedTargetTypes"
                     :options="potentialTargetMonsterTypes.map(type => ({
                       id: type,
@@ -54,7 +54,7 @@
                   />
                 </div>
                 <div v-else class="target-monster-list">
-                  <List
+                  <ListInput
                     v-model="selectedTargets"
                     :options="potentialTargetMonsters.map(monster => ({
                       id: monster.id,
@@ -80,7 +80,7 @@
               <h3>{{ item.result === 'pick' ? 'Choose Result' : 'Possible Results' }}</h3>
               
               <div class="result-list">
-                <List
+                <ListInput
                   v-model="selectedResult"
                   :options="possibleResults"
                   :always-show="true"
@@ -121,7 +121,7 @@ import {getMonsterLevel, getMonsterSpecies, getUniqueMonsterTypes} from '../ques
 import {monsterTypes} from '../data/monsterTypes.ts'
 import {powerFactory} from "@/powers";
 import pickOne from "@/utils/pickOne.ts";
-import List from './forms/List.vue'
+import ListInput from './forms/ListInput.vue'
 
 // Stores
 const appStore = useAppStore()

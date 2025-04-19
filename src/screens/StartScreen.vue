@@ -5,14 +5,14 @@
       <h2>Start Your Quest</h2>
       
       <div class="theme-toggle">
-        <Button 
+        <ButtonInput
           @click="questStore.toggleTheme" 
           variant="secondary"
           size="small"
           :theme="questStore.theme"
         >
           {{ questStore.theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
-        </Button>
+        </ButtonInput>
       </div>
       
       <div v-if="isLoading" class="loading-state">
@@ -24,7 +24,7 @@
         <div class="gameLocation-selection">
           <div class="gameLocation-selector">
             <h3>Start GameLocation</h3>
-            <List
+            <ListInput
               v-model="startLocationId"
               :options="locationStore.locations"
               searchable
@@ -38,7 +38,7 @@
           
           <div class="gameLocation-selector">
             <h3>End GameLocation</h3>
-            <List
+            <ListInput
               v-model="endLocationId"
               :options="locationStore.locations"
               searchable
@@ -73,7 +73,7 @@
           </div>
           
           <div class="player-count-selector">
-            <Number
+            <NumberInput
               v-model="playerCount"
               title="Number of Players"
               :min="1"
@@ -84,7 +84,7 @@
           </div>
         </div>
         
-        <Button
+        <ButtonInput
           @click="callStartQuest"
           :disabled="!canStartQuest"
           size="large"
@@ -93,7 +93,7 @@
           fullWidth
         >
           Start Quest
-        </Button>
+        </ButtonInput>
       </div>
     </div>
   </div>
@@ -103,10 +103,10 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useAppStore } from '../stores/appStore'
 import { startQuest } from "@/quest/startQuest.ts"
-import List from '@/components/forms/List.vue'
+import ListInput from '@/components/forms/ListInput.vue'
 import ButtonSet from '@/components/forms/ButtonSet.vue'
-import Button from '@/components/forms/Button.vue'
-import Number from '@/components/forms/Number.vue'
+import ButtonInput from '@/components/forms/ButtonInput.vue'
+import NumberInput from '@/components/forms/NumberInput.vue'
 import {GameLocation} from "@/types"
 import {useLocationStore} from "@/stores/locationStore.ts"
 import {useQuestStore} from "@/stores/questStore.ts"
@@ -179,7 +179,7 @@ const canStartQuest = computed(() => {
   return hasStartLocation && hasEndLocation && differentGameLocations && hasTitle
 })
 
-// Helper functions for the List
+// Helper functions for the ListInput
 function updateStartGameLocation(gameLocation: GameLocation | string) {
   console.log('Setting start gameLocation:', gameLocation)
   

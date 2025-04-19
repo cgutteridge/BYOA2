@@ -109,7 +109,7 @@ export interface MonsterType {
   booze: number // Alcohol booze (UK) in the drink
   soft: number // Soft drink consumption (water/soda) 
   lesser?: MonsterTypeId  // ID of monster that this monster splits into (smaller version of same species)
-  lesserCount?: number | "playerCount"  // Number of lesser monsters created when splitting (defaults to 2)
+  lesserCount?: number | "playerCount"  // NumberInput of lesser monsters created when splitting (defaults to 2)
   // CSS styling properties
   style?: {
     background?: string          // Background gradient or color

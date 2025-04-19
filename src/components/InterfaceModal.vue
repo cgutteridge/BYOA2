@@ -6,7 +6,7 @@
       <div class="interface-modal__content">
         <div class="interface-modal__header">
           <div class="interface-modal__tabs">
-            <button 
+            <button-input
               v-for="tab in tabs" 
               :key="tab.id"
               class="interface-modal__tab"
@@ -15,12 +15,12 @@
               @click="activeTab = tab.id"
             >
               {{ tab.label }}
-            </button>
+            </button-input>
           </div>
           
-          <button class="interface-modal__close" @click="close">
+          <button-input class="interface-modal__close" @click="close">
             ×
-          </button>
+          </button-input>
         </div>
         
         <div class="interface-modal__body">
@@ -110,23 +110,23 @@
               <div class="theme-option">
                 <span class="option-label">Theme:</span>
                 <div class="theme-buttons">
-                  <Button 
+                  <ButtonInput
                     @click="toggleTheme" 
                     variant="secondary"
                     size="small"
                     :theme="questStore.theme"
                   >
                     {{ questStore.theme === 'dark' ? '☀️ Switch to Light Mode' : '🌙 Switch to Dark Mode' }}
-                  </Button>
+                  </ButtonInput>
                 </div>
               </div>
             </div>
             
             <div class="options-section">
               <h3>Game Controls</h3>
-              <button class="quit-button" @click="handleQuit">
+              <button-input class="quit-button" @click="handleQuit">
                 Quit Game
-              </button>
+              </button-input>
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
 import ItemCard from './ItemCard.vue'
 import MonsterTypeStats from "@/components/MonsterTypeStats.vue"
-import Button from "@/components/forms/Button.vue"
+import ButtonInput from "@/components/forms/ButtonInput.vue"
 
 // Stores
 const inventoryStore = useInventoryStore()
