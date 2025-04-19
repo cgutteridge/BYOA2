@@ -38,7 +38,7 @@ function createGameLocationMarker(gameLocation: GameLocation, mapInstance: L.Map
     throw new Error('No map instance provided for marker creation')
   }
 
-  const gameLocationType = locationTypesById[gameLocation.gameLocationType]
+  const gameLocationType = locationTypesById[gameLocation.type]
   const iconPath = `./icons/${gameLocationType.filename}`
 
   const marker = L.marker([gameLocation.lat, gameLocation.lng], {

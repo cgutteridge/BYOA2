@@ -66,7 +66,7 @@ export interface GameLocation {
   description?: string
   lat: number
   lng: number
-  gameLocationType: GameLocationTypeId
+  type: GameLocationTypeId
   difficulty?: GameLocationDifficulty
   monsters?: Monster[]
   scouted: boolean

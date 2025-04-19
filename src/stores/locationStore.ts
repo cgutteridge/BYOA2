@@ -25,7 +25,7 @@ export const useLocationStore = defineStore('locations', () => {
   // Set type for a specific gameLocation
   const setGameLocationType = (gameLocationId: GameLocationId, type: GameLocationTypeId) => {
     const targetGameLocation = gameLocation(gameLocationId)
-    targetGameLocation.gameLocationType = type
+    targetGameLocation.type = type
   }
 
   // Check if a gameLocation can be scouted based on player's distance to it (within 50 meters)

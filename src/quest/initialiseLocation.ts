@@ -10,7 +10,7 @@ export default function initialiseGameLocation(gameLocation: GameLocation) {
     // calculate difficulty
     locationStore.setGameLocationDifficulty(gameLocation.id, calculateDifficulty(gameLocation))
 
-    // set gameLocationType
+    // set type
     locationStore.setGameLocationType(gameLocation.id, pickOne(locationTypesList))
 }
 

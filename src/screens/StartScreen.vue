@@ -6,21 +6,12 @@
       
       <div class="theme-toggle">
         <Button 
-          @click="toggleTheme" 
+          @click="questStore.toggleTheme" 
           variant="secondary"
           size="small"
-          :theme="currentTheme"
+          :theme="questStore.theme"
         >
-          {{ currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
-        </Button>
-        
-        <Button 
-          @click="quitGame" 
-          variant="danger"
-          size="small"
-          :theme="currentTheme"
-        >
-          Quit Game
+          {{ questStore.theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
         </Button>
       </div>
       
@@ -41,7 +32,7 @@
               value-property="id"
               display-property="name"
               @selection-change="updateStartGameLocation"
-              :theme="currentTheme"
+              :theme="questStore.theme"
             />
           </div>
           
@@ -55,7 +46,7 @@
               value-property="id"
               display-property="name"
               @selection-change="updateEndGameLocation"
-              :theme="currentTheme"
+              :theme="questStore.theme"
             />
           </div>
         </div>
@@ -77,7 +68,7 @@
                 { id: 'hard', name: 'Hard' }
               ]"
               title="Difficulty Level"
-              :theme="currentTheme"
+              :theme="questStore.theme"
             />
           </div>
           
@@ -88,7 +79,7 @@
               :min="1"
               :max="6"
               description="Monsters scale with player count:<br>• Minions: 2× player count<br>• Grunts: 1× player count<br>• Elites: Fixed (1) or scaled on hard difficulty<br>• Bosses: Always 1"
-              :theme="currentTheme"
+              :theme="questStore.theme"
             />
           </div>
         </div>
@@ -98,7 +89,7 @@
           :disabled="!canStartQuest"
           size="large"
           variant="primary"
-          :theme="currentTheme"
+          :theme="questStore.theme"
           fullWidth
         >
           Start Quest
@@ -116,11 +107,13 @@ import List from '@/components/forms/List.vue'
 import ButtonSet from '@/components/forms/ButtonSet.vue'
 import Button from '@/components/forms/Button.vue'
 import Number from '@/components/forms/Number.vue'
-import {GameLocation} from "@/types";
-import {useLocationStore} from "@/stores/locationStore.ts";
+import {GameLocation} from "@/types"
+import {useLocationStore} from "@/stores/locationStore.ts"
+import {useQuestStore} from "@/stores/questStore.ts"
 
 const appStore = useAppStore()
 const locationStore = useLocationStore()
+const questStore = useQuestStore()
 
 const selectedStartLocation = ref<GameLocation | null>(null)
 const selectedEndLocation = ref<GameLocation | null>(null)
@@ -130,7 +123,6 @@ const questTitle = ref('The ring of Badgers')
 const isLoading = ref(true)
 const selectedDifficulty = ref('medium')
 const playerCount = ref(3)
-const currentTheme = ref<'light' | 'dark'>('light') // Updated with proper type
 
 // Watch for gameLocations to be loaded
 watch(() => locationStore.locations, (newLocations) => {
@@ -229,21 +221,6 @@ watch([selectedStartLocation, selectedEndLocation, questTitle], () => {
     canStart: canStartQuest.value
   })
 }, { deep: true })
-
-// Toggle between light and dark themes
-function toggleTheme() {
-  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
-}
-
-// Function to quit the game
-function quitGame(): void {
-  if (confirm('Are you sure you want to quit the game?')) {
-    // Reset to start quest screen
-    appStore.setScreen('start_quest')
-    // Add a notification to inform the user
-    appStore.addNotification('Game session ended', 'info')
-  }
-}
 
 async function callStartQuest() {
   if (canStartQuest.value) {

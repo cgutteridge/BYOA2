@@ -1,6 +1,6 @@
 <template>
   <div class="gameLocation-popup">
-    <h2>{{ gameLocation.name }}<template v-if="!gameLocation.scouted"> ({{ gameLocationType.title }})</template></h2>
+    <h2>{{ gameLocation.name }}<template v-if="!gameLocation.scouted"> ({{ type.title }})</template></h2>
     <div class="distance-info" v-if="playerDistance !== null">
       <span>{{ Math.round(playerDistance) }}m away</span>
     </div>
@@ -90,7 +90,7 @@ const emit = defineEmits(['close'])
 const appStore = useAppStore()
 const questStore = useQuestStore()
 
-const gameLocationType = computed((): GameLocationType => locationTypesById[props.gameLocation.gameLocationType])
+const type = computed((): GameLocationType => locationTypesById[props.gameLocation.type])
 
 const playerDistance = computed(() => {
   if (!appStore.playerCoordinates) return null;

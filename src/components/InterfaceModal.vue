@@ -106,6 +106,23 @@
             <h2>Game Options</h2>
             
             <div class="options-section">
+              <h3>Theme Settings</h3>
+              <div class="theme-option">
+                <span class="option-label">Theme:</span>
+                <div class="theme-buttons">
+                  <Button 
+                    @click="toggleTheme" 
+                    variant="secondary"
+                    size="small"
+                    :theme="questStore.theme"
+                  >
+                    {{ questStore.theme === 'dark' ? '☀️ Switch to Light Mode' : '🌙 Switch to Dark Mode' }}
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="options-section">
               <h3>Game Controls</h3>
               <button class="quit-button" @click="handleQuit">
                 Quit Game
@@ -124,7 +141,8 @@ import {useInventoryStore} from '../stores/inventoryStore'
 import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
 import ItemCard from './ItemCard.vue'
-import MonsterTypeStats from "@/components/MonsterTypeStats.vue";
+import MonsterTypeStats from "@/components/MonsterTypeStats.vue"
+import Button from "@/components/forms/Button.vue"
 
 // Stores
 const inventoryStore = useInventoryStore()
@@ -183,6 +201,10 @@ function close() {
 function handleQuit() {
   appStore.setScreen('start_quest')
   appStore.closeInterface()
+}
+
+function toggleTheme() {
+  questStore.toggleTheme()
 }
 
 // Helper function to format booze without decimal for whole numbers
@@ -400,5 +422,27 @@ function formatUnits(value: number): string {
 .gameLocation-value {
   color: #333;
   font-weight: 600;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.option-label {
+  font-weight: bold;
+  color: #555;
+  margin-right: 1rem;
+  min-width: 80px;
+}
+
+.theme-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 </style> 

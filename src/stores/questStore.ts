@@ -5,6 +5,8 @@ import {useLocationStore} from './locationStore'
 import {useAppStore} from './appStore'
 import formatNumber from "@/utils/formatNumber.ts";
 
+export type ThemeType = 'light' | 'dark'
+
 export const useQuestStore = defineStore('quest', () => {
   const gameLocationStore = useLocationStore()
   const appStore = useAppStore()
@@ -20,10 +22,11 @@ export const useQuestStore = defineStore('quest', () => {
   const xp = ref<number>(0)
   const booze = ref<number>(0) // Track alcohol booze consumed
   const soft = ref<number>(0) // Track soft drinks/water consumed
+  const theme = ref<ThemeType>('dark') // Theme preference, defaulting to dark
   const persist = ref(['title', 'description', 'status', 'startGameLocation' +
   'Id', 'endGameLocation' +
   'Id', 'currentGameLocation' +
-  'Id', 'playerCount', 'xp', 'booze', 'soft'])
+  'Id', 'playerCount', 'xp', 'booze', 'soft', 'theme'])
 
   const setTitle = (newTitle: string) => {
     title.value = newTitle
@@ -75,6 +78,15 @@ export const useQuestStore = defineStore('quest', () => {
 
   const addSoft = (amount: number) => {
     soft.value += amount
+  }
+  
+  // Theme management
+  const setTheme = (newTheme: ThemeType): void => {
+    theme.value = newTheme
+  }
+  
+  const toggleTheme = (): void => {
+    theme.value = theme.value === 'light' ? 'dark' : 'light'
   }
   
   /**
@@ -143,6 +155,7 @@ export const useQuestStore = defineStore('quest', () => {
     xp,
     booze,
     soft,
+    theme,
     startGameLocationId,
     endGameLocationId,
     setStartGameLocationId,
@@ -161,6 +174,8 @@ export const useQuestStore = defineStore('quest', () => {
     addBooze,
     setSoft,
     addSoft,
+    setTheme,
+    toggleTheme,
     updateStats,
     persist
   }

@@ -53,7 +53,7 @@ export async function scoutLocation(
     // Create a string description of the monsters for the API
     const monstersDescription = formatMonstersDescription(monsters)
 
-    const gameLocationType = locationTypesById[gameLocation.gameLocationType]
+    const gameLocationType = locationTypesById[gameLocation.type]
 
     let extraInstructions = ''
     if(gameLocation.difficulty === 'start') {
