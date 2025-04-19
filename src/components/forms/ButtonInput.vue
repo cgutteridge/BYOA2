@@ -40,7 +40,7 @@ function handleClick(event: Event): void {
   if (!props.locked && !props.disabled) {
     // Call the action if provided
     if (props.action) {
-      props.action()
+      props.action(event)
     }
   }
 }

@@ -7,7 +7,7 @@
     <div class="action-buttons">
       <ButtonInput 
         v-if="!gameLocation.scouted && !isLoading" 
-        :action="scoutGameLocationAction" 
+        :action="scoutLocationAction"
         class="scout-button"
         variant="primary"
         size="medium"
@@ -17,7 +17,7 @@
       </ButtonInput>
       <ButtonInput 
         v-if="gameLocation.scouted && isNearby" 
-        :action="enterGameLocation" 
+        :action="enterLocation"
         class="enter-button"
         variant="primary"
         size="medium"
@@ -103,8 +103,6 @@ import {locationTypesById} from "@/data/locationTypes.ts";
 const props = defineProps<{
   gameLocation: GameLocation
 }>()
-
-const emit = defineEmits(['close'])
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
@@ -235,21 +233,25 @@ function getMonsterTraits(monsterId: string): string {
   return `, ${monster.flags.join(', ')}`
 }
 
-async function scoutGameLocationAction(event: MouseEvent) {
-  event.stopPropagation()
+async function scoutLocationAction(event?: MouseEvent) {
+  if (event) {
+    event.stopPropagation()
+  }
   await scoutLocation(props.gameLocation)
   
   // Award XP for scouting a gameLocation through the UI (using updateStats)
-  questStore.updateStats(1, 0, 0, "scouting this gameLocation");
+  questStore.updateStats(1, 0, 0, "Scouting a location.");
 }
 
-function enterGameLocation(event: MouseEvent) {
-  event.stopPropagation()
+function enterLocation(event?: MouseEvent) {
+  if (event) {
+    event.stopPropagation()
+  }
   questStore.setCurrentGameLocation(props.gameLocation.id)
   appStore.setScreen('gameLocation')
   
   // Award XP for arriving at a gameLocation (using updateStats)
-  questStore.updateStats(2, 0, 0, "entering this gameLocation");
+  questStore.updateStats(2, 0, 0, "Entering a location.");
 }
 
 </script>
@@ -415,7 +417,6 @@ h2 {
 
 .scout-button,
 .enter-button {
-  flex: 1;
   min-width: 120px;
 }
 

@@ -137,6 +137,7 @@ function createGameLocationMarker(gameLocation: GameLocation, mapInstance: L.Map
   })
 
   marker.on('popupclose', () => {
+
     console.log('Popup closed')
     // Always clean up apps since we're not reopening popups
     cleanupPopupApps()
@@ -147,6 +148,9 @@ function createGameLocationMarker(gameLocation: GameLocation, mapInstance: L.Map
 }
 
 function closePopup() {
+  console.log('closePopup() called')
+  console.log(new Error().stack);
+
   // Clean up Vue apps
   cleanupPopupApps()
 
@@ -230,11 +234,10 @@ function initializeMap(): void {
     mapInstance.on('moveend', () => {
       const center = mapInstance.getCenter()
       appStore.setMapPosition({ lat: center.lat, lng: center.lng })
-      
-      // Remove popup reopening logic
     })
 
     mapInstance.on('zoomend', () => {
+      console.log('Zoomend')
       appStore.setMapZoom(mapInstance.getZoom())
       
       // Remove popup reopening logic
@@ -242,11 +245,13 @@ function initializeMap(): void {
 
     // Simplify to just close any open popup when zoom starts
     mapInstance.on('zoomstart', () => {
+      console.log('zoom start')
       closePopup()
     })
 
     // Keep click listener to close popup
     mapInstance.on('click', () => {
+      console.log('click')
       closePopup()
     })
 
