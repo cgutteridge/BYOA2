@@ -12,6 +12,10 @@ export default function initialiseGameLocation(location: GameLocation) {
 
     // set type
     locationStore.setGameLocationType(location.id, pickOne(locationTypesList))
+
+    // Initialize hasToken flag - true for all locations except start and end
+    const isStartOrEnd = location.id === startGameLocation.id || location.id === endGameLocation.id
+    locationStore.setGameLocationHasToken(location.id, !isStartOrEnd)
 }
 
 function calculateDifficulty(location: GameLocation) : GameLocationDifficulty{

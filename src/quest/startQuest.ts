@@ -100,10 +100,6 @@ export async function startQuest(
     // Initialize locations
     locationStore.locations.forEach((location:GameLocation) => {
         initialiseGameLocation(location)
-        
-        // Initialize hasToken flag - true for all locations except start and end
-        const isStartOrEnd = location.id === startGameLocation.id || location.id === endGameLocation.id
-        locationStore.setGameLocationHasToken(location.id, !isStartOrEnd)
     })
     
     // Clear any existing inventory items

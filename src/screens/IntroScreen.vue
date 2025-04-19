@@ -8,12 +8,12 @@
 
         <div class="location-info">
           <div class="location-card">
-            <h3>Start GameLocation</h3>
+            <h3>Start Location</h3>
             <p>{{ questStore.startGameLocation?.name || 'Not selected' }}</p>
           </div>
 
           <div class="location-card">
-            <h3>End GameLocation</h3>
+            <h3>End Location</h3>
             <p>{{ questStore.endGameLocation?.name || 'Not selected' }}</p>
           </div>
         </div>

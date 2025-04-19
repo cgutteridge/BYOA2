@@ -39,6 +39,10 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
   }
 
   const locationType = locationTypesById[location.type]
+  if( !locationType ) {
+    console.error(`Location type is missing ${location.type}`)
+    return
+  }
   const iconPath = `./icons/${locationType.filename}`
 
   const marker = L.marker([location.lat, location.lng], {
