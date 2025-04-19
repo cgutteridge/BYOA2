@@ -5,8 +5,26 @@
       <span>{{ Math.round(playerDistance) }}m away</span>
     </div>
     <div class="action-buttons">
-      <button v-if="!gameLocation.scouted && !isLoading" @click="scoutGameLocationAction" class="scout-button">Scout GameLocation</button>
-      <button @click="enterGameLocation" v-if="gameLocation.scouted && isNearby" class="enter-button">Enter GameLocation</button>
+      <ButtonInput 
+        v-if="!gameLocation.scouted && !isLoading" 
+        :action="scoutGameLocationAction" 
+        class="scout-button"
+        variant="primary"
+        size="medium"
+        :theme="questStore.theme"
+      >
+        Scout Location
+      </ButtonInput>
+      <ButtonInput 
+        v-if="gameLocation.scouted && isNearby" 
+        :action="enterGameLocation" 
+        class="enter-button"
+        variant="primary"
+        size="medium"
+        :theme="questStore.theme"
+      >
+        Enter Location
+      </ButtonInput>
     </div>
     <div class="gameLocation-details">
       <div v-if="gameLocation.scouted && gameLocation.description">
@@ -76,6 +94,7 @@ import {useAppStore} from "../stores/appStore"
 import {monsterTypes} from '../data/monsterTypes'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
+import ButtonInput from '@/components/forms/ButtonInput.vue'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
@@ -394,49 +413,10 @@ h2 {
   margin-bottom: 0.5rem;
 }
 
-button {
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+.scout-button,
+.enter-button {
   flex: 1;
   min-width: 120px;
-  transition: background-color 0.2s ease;
-  font-weight: bold;
-}
-
-.scout-button {
-  background: #ff9800;
-  color: white;
-}
-
-.scout-button:hover {
-  background: #f57c00;
-}
-
-.enter-button {
-  background: #4CAF50;
-  color: white;
-}
-
-.enter-button:hover {
-  background: #388E3C;
-}
-
-.close-button {
-  background: #757575;
-  color: white;
-}
-
-.close-button:hover {
-  background: #616161;
-}
-
-button:disabled {
-  background: #9e9e9e;
-  color: rgba(255, 255, 255, 0.7);
-  cursor: not-allowed;
 }
 
 .loading-state {
