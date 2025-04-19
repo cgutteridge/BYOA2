@@ -645,6 +645,7 @@ function isMonsterDying(monsterId: string): boolean {
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
+  --transition-duration: v-bind('`${transitionDurationSeconds}s`');
 }
 
 .monster-header {
@@ -758,9 +759,17 @@ function isMonsterDying(monsterId: string): boolean {
   top: 0;
   left: 0;
   height: 100%;
+  width: 100%; /* Ensure it covers the full width */
   background: rgba(255, 0, 0, 0.2);
   z-index: 1;
   pointer-events: none;
+}
+
+.dying {
+  opacity: 0;
+  filter: grayscale(1);
+  transition: opacity var(--transition-duration, 1s) ease-in, 
+              filter var(--transition-duration, 1s) ease-in;
 }
 
 .defeated {
