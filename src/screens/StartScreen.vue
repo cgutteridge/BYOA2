@@ -79,6 +79,16 @@
               :theme="questStore.theme"
             />
           </div>
+          
+          <div class="min-locations-selector">
+            <NumberInput
+              v-model="minimumLocations"
+              title="Minimum Locations"
+              :min="3"
+              description="Minimum number of locations to visit in the quest"
+              :theme="questStore.theme"
+            />
+          </div>
         </div>
         
         <div class="start-button-container">
@@ -127,6 +137,7 @@ const questTitle = ref('The ring of Badgers')
 const isLoading = ref(true)
 const selectedDifficulty = ref('medium')
 const playerCount = ref(3)
+const minimumLocations = ref(3)
 
 // Watch for locations to be loaded
 watch(() => locationStore.locations, (newLocations) => {
@@ -261,7 +272,8 @@ async function callStartQuest() {
       startGameLocation as GameLocation,
       endGameLocation as GameLocation,
       difficulty,
-      playerCount.value
+      playerCount.value,
+      minimumLocations.value
     );
   }
 }
@@ -341,7 +353,7 @@ onMounted(() => {
   font-size: 1.2rem;
 }
 
-.difficulty-selector, .player-count-selector {
+.difficulty-selector, .player-count-selector, .min-locations-selector {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 }

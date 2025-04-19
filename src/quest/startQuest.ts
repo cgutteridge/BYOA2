@@ -79,6 +79,7 @@ export async function startQuest(
     endGameLocation: GameLocation,
     difficulty: number,
     players: number,
+    minimumLocations: number = 3,
 ): Promise<void> {
     const questStore = useQuestStore()
     const locationStore = useLocationStore()
@@ -91,6 +92,7 @@ export async function startQuest(
     questStore.setEndGameLocationId(endGameLocation.id);
     questStore.setPlayerCount(players);
     questStore.setDifficulty(difficulty);
+    questStore.setMinimumLocations(minimumLocations);
     questStore.setXP(0); // Initialize player XP to zero when starting a new quest
     questStore.setBooze(0); // Initialize booze consumed to zero when starting a new quest
     questStore.setSoft(0); // Initialize soft drinks consumed to zero when starting a new quest
