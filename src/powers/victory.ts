@@ -5,10 +5,10 @@ import {useQuestStore} from "@/stores/questStore.ts";
 /**
  * Kill power implementation
  */
-export class TokenPower extends ItemPower {
+export class VictoryPower extends ItemPower {
   // UI properties
-  readonly displayName = "Kill";
-  readonly icon = "⭐️️";
+  readonly displayName = "Victory";
+  readonly icon = "🥇️";
   readonly glowColor = "rgba(255, 0, 0, 0.8)";
   
   // Item generation constants

@@ -28,6 +28,8 @@ const pacifyPower = new PacifyPower();
 const distractPower = new DistractPower();
 const vegetatePower = new VegetatePower();
 const stunPower = new StunPower();
+const tokenPower = new TokenPower();
+const victoryPower = new VictoryPower();
 
 // Register all power implementations
 const powerInstances: Record<ItemPowerId, ItemPower> = {
@@ -43,7 +45,9 @@ const powerInstances: Record<ItemPowerId, ItemPower> = {
   pacify: pacifyPower,
   distract: distractPower,
   vegetate: vegetatePower,
-  stun: stunPower
+  stun: stunPower,
+  token: tokenPower,
+  victory: victoryPower,
 };
 
 /**
