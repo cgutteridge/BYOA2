@@ -120,23 +120,25 @@
             :item="questStore.currentGameLocation.prizeItem"
             variant="prize"
             :show-details="true"
+            :locked="!allMonstersDefeated"
             @action="claimPrizeItem"
           />
         </div>
-      </div>
-      
-      <!-- Token Power item section -->
-      <div v-if="allMonstersDefeated" class="token-power-item-section">
-        <h3><span class="icon">🔮</span> Power Token:</h3>
-        <div class="token-power-item-wrapper">
-          <ItemCard 
-            :item="tokenPowerItem"
-            variant="prize"
-            :show-details="true"
-            @action="claimTokenPowerItem"
+        <div class="prize-item-wrapper">
+          <div v-if="!allMonstersDefeated" class="monster-item-locked">
+            <span class="lock-icon">🔒</span>
+          </div>
+          <ItemCard
+              :item="tokenItem"
+              variant="prize"
+              :show-details="true"
+              @action="claimTokenItem"
+              :locked="!allMonstersDefeated"
+
           />
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -149,11 +151,12 @@ import {Monster} from "../types";
 import '../styles/monsterAnimations.css';
 import {computed, onMounted, onUnmounted, ref} from 'vue';
 import {useInventoryStore} from "../stores/inventoryStore";
+import {useLocationStore} from "../stores/locationStore";
 import ItemCard from "../components/ItemCard.vue";
 import ButtonInput from "@/components/forms/ButtonInput.vue";
 import {areAllMonstersDefeated, getMonsterBooze, getMonsterSoft, getMonsterXP} from "../quest/monsterUtils.ts";
 import formatNumber from "../utils/formatNumber.ts";
-import {generateTokenPowerItem} from "@/quest/itemUtils.ts";
+import {generateTokenItem, generateTokenPowerItem} from "@/quest/itemUtils.ts";
 
 // Constants
 const MONSTER_DEFEAT_DELAY_MS = 1000; // 2 seconds
@@ -161,6 +164,7 @@ const MONSTER_DEFEAT_DELAY_MS = 1000; // 2 seconds
 const questStore = useQuestStore()
 const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
+const locationStore = useLocationStore()
 
 // Keep track of which monsters are currently being defeated (in the countdown)
 const monstersDying = ref<Record<string, { timeoutId: number; startTime: number }>>({});
@@ -234,6 +238,14 @@ const allMonstersDefeated = computed(() => {
 })
 
 // Dynamically generate the token power item when needed
+const tokenPowerItem = computed(() => {
+  if (questStore.currentGameLocation) {
+    return generateTokenPowerItem(questStore.currentGameLocation);
+  }
+  return null;
+})
+
+// Dynamically generate the regular token item when needed
 const tokenItem = computed(() => {
   if (questStore.currentGameLocation) {
     return generateTokenItem(questStore.currentGameLocation);
@@ -343,15 +355,40 @@ function claimPrizeItem() {
   }
 }
 
+function claimTokenPowerItem() {
+  if (allMonstersDefeated.value && tokenPowerItem.value && questStore.currentGameLocation) {
+    // Add the token power item to the inventory
+    inventoryStore.addItem(tokenPowerItem.value);
+
+    // Mark the location as having had its token claimed
+    locationStore.setGameLocationHasToken(questStore.currentGameLocation.id, true);
+
+    // Show notification
+    appStore.addNotification(`You claimed the power token from ${questStore.currentGameLocation.name}!`);
+
+    // Award XP for claiming the token power
+    if (tokenPowerItem.value.level) {
+      const xpToAward = tokenPowerItem.value.level * 2; // 2 XP per level for token power items
+      questStore.updateStats(xpToAward, 0, 0, `claiming token power ${tokenPowerItem.value.name}`);
+    }
+  }
+}
+
 function claimTokenItem() {
-  if (allMonstersDefeated.value && tokenItem.value) {
-    // Add to inventory
+  if (allMonstersDefeated.value && tokenItem.value && questStore.currentGameLocation) {
+    // Add the token item to the inventory
     inventoryStore.addItem(tokenItem.value);
-    
-    // Award XP based on item level
+
+    // Mark the location as having had its token claimed
+    locationStore.setGameLocationHasToken(questStore.currentGameLocation.id, true);
+
+    // Show notification
+    appStore.addNotification(`You claimed the token from ${questStore.currentGameLocation.name}!`);
+
+    // Award XP for claiming the token
     if (tokenItem.value.level) {
-      const xpToAward = tokenItem.value.level * 2; // 2 XP per level for token power items
-      questStore.updateStats(xpToAward, 0, 0, `claiming token power ${tokenItem.value.name}`);
+      const xpToAward = tokenItem.value.level; // 1 XP per level for regular tokens
+      questStore.updateStats(xpToAward, 0, 0, `claiming token ${tokenItem.value.name}`);
     }
   }
 }
@@ -531,7 +568,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   font-style: italic;
 }
 
-.gift-item-section, .prize-item-section, .token-power-item-section {
+.gift-item-section, .prize-item-section, .token-power-item-section, .token-item-section {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1.5rem;
@@ -541,7 +578,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.gift-item-section h3, .prize-item-section h3, .token-power-item-section h3 {
+.gift-item-section h3, .prize-item-section h3, .token-power-item-section h3, .token-item-section h3 {
   color: #ffeb3b;
   margin-top: 0;
   margin-bottom: 1rem;
@@ -551,7 +588,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   justify-content: center;
 }
 
-.gift-item-section .icon, .prize-item-section .icon, .token-power-item-section .icon {
+.gift-item-section .icon, .prize-item-section .icon, .token-power-item-section .icon, .token-item-section .icon {
   display: inline-block;
   margin-right: 0.5rem;
   font-size: 1.4rem;
@@ -745,6 +782,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
 
 .prize-item-wrapper {
   position: relative;
+  margin-bottom: 1.5rem;
 }
 
 .gift-item-section .item-card, 
@@ -798,5 +836,13 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   transition: all 0.3s ease;
   padding: 0.75rem;
   box-shadow: none;
+}
+
+.token-item-section {
+  background-color: rgba(255, 204, 0, 0.05);
+}
+
+.token-item-wrapper {
+  position: relative;
 }
 </style> 

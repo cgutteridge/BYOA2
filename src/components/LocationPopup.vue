@@ -73,16 +73,14 @@
             variant="prize"
             :show-details="true"
           />
-        </div>
-        
-        <div v-if="allMonstersDefeated" class="token-power-info">
-          <h3>Power Token:</h3>
-          <ItemCard 
-            :item="tokenItem"
-            variant="prize"
-            :show-details="true"
+          <ItemCard
+              :item="tokenItem"
+              variant="prize"
+              :show-details="true"
+              @action="handleTokenAction"
           />
         </div>
+
       </div>
       
       <!-- Loading state when scouting -->
@@ -97,6 +95,8 @@
 import {computed} from 'vue'
 import type {GameLocationType, Monster, MonsterTypeId, GameLocation} from '../types'
 import {useAppStore} from "../stores/appStore"
+import {useInventoryStore} from "../stores/inventoryStore"
+import {useLocationStore} from "../stores/locationStore"
 import {monsterTypes} from '../data/monsterTypes'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
@@ -106,7 +106,7 @@ import {useQuestStore} from "@/stores/questStore.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {locationTypesById} from "@/data/locationTypes.ts";
-import {generateTokenItem} from "@/quest/itemUtils.ts";
+import {generateTokenPowerItem, generateTokenItem} from "@/quest/itemUtils.ts";
 
 const props = defineProps<{
   location: GameLocation
@@ -114,6 +114,8 @@ const props = defineProps<{
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
+const inventoryStore = useInventoryStore()
+const locationStore = useLocationStore()
 
 const type = computed((): GameLocationType => locationTypesById[props.location.type])
 
@@ -178,6 +180,11 @@ const allMonstersDefeated = computed(() => {
 });
 
 // Compute the token power item for this location
+const tokenPowerItem = computed(() => {
+  return generateTokenPowerItem(props.location);
+});
+
+// Compute the regular token item for this location
 const tokenItem = computed(() => {
   return generateTokenItem(props.location);
 });
@@ -256,6 +263,45 @@ function enterLocation(event?: MouseEvent) {
   questStore.updateStats(2, 0, 0, "Entering a location.");
 }
 
+// Add functions to handle token actions
+function handleTokenPowerAction() {
+  if (allMonstersDefeated.value && tokenPowerItem.value) {
+    // Add the token power item to the inventory
+    inventoryStore.addItem(tokenPowerItem.value);
+    
+    // Mark the location as having had its token claimed
+    locationStore.setGameLocationHasToken(props.location.id, true);
+    
+    // Show notification
+    appStore.addNotification(`You claimed the power token from ${props.location.name}!`);
+    
+    // Award XP for claiming the token power
+    if (tokenPowerItem.value.level) {
+      const xpToAward = tokenPowerItem.value.level * 2; // 2 XP per level for token power items
+      questStore.updateStats(xpToAward, 0, 0, `claiming token power ${tokenPowerItem.value.name}`);
+    }
+  }
+}
+
+function handleTokenAction() {
+  if (allMonstersDefeated.value && tokenItem.value) {
+    // Add the token item to the inventory
+    inventoryStore.addItem(tokenItem.value);
+    
+    // Mark the location as having had its token claimed
+    locationStore.setGameLocationHasToken(props.location.id, true);
+    
+    // Show notification
+    appStore.addNotification(`You claimed the token from ${props.location.name}!`);
+    
+    // Award XP for claiming the token
+    if (tokenItem.value.level) {
+      const xpToAward = tokenItem.value.level; // 1 XP per level for regular tokens
+      questStore.updateStats(xpToAward, 0, 0, `claiming token ${tokenItem.value.name}`);
+    }
+  }
+}
+
 </script>
 
 <style scoped>
@@ -288,7 +334,8 @@ h2 {
 
 .prize-info,
 .gift-info,
-.token-power-info {
+.token-power-info,
+.token-info {
   margin: 1.25rem 0;
   border-radius: 8px;
   padding: 1rem;
@@ -297,7 +344,8 @@ h2 {
 
 .prize-info h3,
 .gift-info h3,
-.token-power-info h3 {
+.token-power-info h3,
+.token-info h3 {
   margin-top: 0;
   margin-bottom: 0.75rem;
   text-align: center;
@@ -307,7 +355,8 @@ h2 {
 /* Styling modifications for ItemCard inside prize-info and gift-info */
 .prize-info :deep(.item-card),
 .gift-info :deep(.item-card),
-.token-power-info :deep(.item-card) {
+.token-power-info :deep(.item-card),
+.token-info :deep(.item-card) {
   margin: 0.5rem 0 1rem;
   max-width: 100%;
   border-width: 2px;
@@ -315,7 +364,8 @@ h2 {
 
 .prize-info :deep(.item-card__power),
 .gift-info :deep(.item-card__power),
-.token-power-info :deep(.item-card__power) {
+.token-power-info :deep(.item-card__power),
+.token-info :deep(.item-card__power) {
   white-space: normal;
   line-height: 1.2;
 }
@@ -437,5 +487,29 @@ h2 {
 .scout-button,
 .enter-button {
   min-width: 120px;
+}
+
+.token-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: rgba(220, 220, 220, 0.1);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.token-info h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffcc00;
+}
+
+.token-info :deep(.item-card) {
+  margin-bottom: 0;
+}
+
+.token-info :deep(.item-card__power) {
+  border-color: #ffcc00;
 }
 </style> 

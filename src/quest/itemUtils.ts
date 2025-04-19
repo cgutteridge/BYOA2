@@ -50,8 +50,26 @@ export function generateVictoryItem(location: GameLocation): Item {
     description: `${tokenDescription}`,
     uses: 1,
     level: 1,
-    power: 'victory', // Using 'spy' as a neutral power that doesn't affect monsters
+    power: 'victory',
     icon: '🥇',
+    timestamp: Date.now()
+  }
+}
+
+/**
+ * Generate a token power item for a given location
+ * @param location The location to generate a token power item for
+ * @returns A token power item with 1 use
+ */
+export function generateTokenPowerItem(location: GameLocation): Item {
+  return {
+    id: toItemId(`token_power_${location.id}_${Date.now()}`),
+    name: `Power Token`,
+    description: `A special token of power obtained by clearing ${location.name}`,
+    uses: 1,
+    level: 2,
+    power: 'token',
+    icon: '🔮',
     timestamp: Date.now()
   }
 }
