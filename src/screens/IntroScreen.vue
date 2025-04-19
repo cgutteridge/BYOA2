@@ -17,13 +17,24 @@
       </div>
 
     </div>
-    <button v-if="questStore.status==='active' "class="continue-button" @click="start">Continue</button>
+    <ButtonInput 
+      class="continue-button" 
+      @click="start"
+      :locked="questStore.status!=='active'"
+      variant="primary"
+      size="large"
+      :theme="questStore.theme"
+    >
+      Continue
+    </ButtonInput>
   </div>
 </template>
 
 <script setup lang="ts">
 import {useAppStore} from "../stores/appStore.js";
 import {useQuestStore} from "@/stores/questStore.ts";
+import ButtonInput from "@/components/forms/ButtonInput.vue";
+import { ref } from 'vue';
 
 const questStore = useQuestStore();
 const appStore = useAppStore()
@@ -42,5 +53,9 @@ function start() {
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   color: white;
   padding: 2rem 0;
+}
+
+.continue-button {
+  margin-top: 2rem;
 }
 </style> 

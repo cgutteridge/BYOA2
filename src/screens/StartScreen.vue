@@ -84,16 +84,19 @@
           </div>
         </div>
         
-        <ButtonInput
-          @click="callStartQuest"
-          :disabled="!canStartQuest"
-          size="large"
-          variant="primary"
-          :theme="questStore.theme"
-          fullWidth
-        >
-          Start Quest
-        </ButtonInput>
+        <div class="start-button-container">
+          <ButtonInput
+            @click="callStartQuest"
+            :locked="!canStartQuest"
+            size="large"
+            variant="primary"
+            :theme="questStore.theme"
+            fullWidth
+            class="start-quest-button"
+          >
+            Start Quest
+          </ButtonInput>
+        </div>
       </div>
     </div>
   </div>
@@ -114,6 +117,9 @@ import {useQuestStore} from "@/stores/questStore.ts"
 const appStore = useAppStore()
 const locationStore = useLocationStore()
 const questStore = useQuestStore()
+
+// For demo purposes, this can be toggled programmatically or based on game state
+const lockedStartButton = ref(false)
 
 const selectedStartLocation = ref<GameLocation | null>(null)
 const selectedEndLocation = ref<GameLocation | null>(null)
@@ -342,19 +348,15 @@ onMounted(() => {
   margin-bottom: 1.5rem;
 }
 
-.start-quest-button {
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+.start-button-container {
+  margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-.start-quest-button:hover:not(:disabled) {
-  background: #45a049;
+.start-quest-button {
+  min-width: 200px;
 }
 
 .start-quest-button:disabled {
