@@ -2,14 +2,22 @@
   <div class="victory-screen">
     <h2>Victory!</h2>
     <p class="congratulations">Congratulations on completing your quest!</p>
-    <button class="new-quest-button" @click="startNewQuest">Start New Quest</button>
+    <ButtonInput 
+      class="new-quest-button" 
+      @click="startNewQuest"
+      variant="primary"
+      size="large"
+      :theme="questStore.theme"
+    >
+      Start New Quest
+    </ButtonInput>
   </div>
 </template>
 
 <script setup lang="ts">
-
 import {useAppStore} from "../stores/appStore";
 import {useQuestStore} from "../stores/questStore";
+import ButtonInput from "@/components/forms/ButtonInput.vue";
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
@@ -36,18 +44,8 @@ function startNewQuest() {
   color: #4CAF50;
 }
 
+/* Custom styling to override ButtonInput defaults if needed */
 .new-quest-button {
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.new-quest-button:hover {
-  background: #45a049;
+  margin-top: 1rem;
 }
 </style> 

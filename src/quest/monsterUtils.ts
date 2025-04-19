@@ -45,7 +45,7 @@ export function getUniqueMonsterTypes(monsters: Monster[]): MonsterTypeId[] {
  * Get monster count by species
  * @param monsters Array of monsters to count
  * @param species Species to count
- * @returns NumberInput of monsters of the specified species
+ * @returns number of monsters of the specified species
  */
 export function getMonsterCountBySpecies(monsters: Monster[], species: string): number {
   // Get all monster types matching this species

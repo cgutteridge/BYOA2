@@ -77,7 +77,7 @@
               v-model="playerCount"
               title="Number of Players"
               :min="1"
-              :max="6"
+              :max="20"
               description="Monsters scale with player count:<br>• Minions: 2× player count<br>• Grunts: 1× player count<br>• Elites: Fixed (1) or scaled on hard difficulty<br>• Bosses: Always 1"
               :theme="questStore.theme"
             />
