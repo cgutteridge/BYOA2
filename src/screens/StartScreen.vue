@@ -93,7 +93,7 @@
           </div>
         </div>
         
-        <ButtonSet
+        <Button
           @click="callStartQuest"
           :disabled="!canStartQuest"
           size="large"
@@ -102,7 +102,7 @@
           fullWidth
         >
           Start Quest
-        </ButtonSet>
+        </Button>
       </div>
     </div>
   </div>
