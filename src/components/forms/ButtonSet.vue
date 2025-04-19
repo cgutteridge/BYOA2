@@ -131,11 +131,6 @@ function selectOption(option: ButtonOption): void {
   min-width: 80px;
 }
 
-/* Custom styling for selected buttons - augments ButtonInput component styles */
-.picker-button.selected {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
 /* Dark theme styles */
 .button-picker.dark h3 {
   color: #ffffff;
