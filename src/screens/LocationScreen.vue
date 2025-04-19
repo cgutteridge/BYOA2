@@ -343,9 +343,9 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
     style.background = monster.style.background
   }
   
-  // If monster has style.backgroundColor, use it
-  if (monster.style.backgroundColor) {
-    style.backgroundColor = monster.style.backgroundColor
+  // If monster has style.backgroundColor, use it (legacy support)
+  if (monster.style.background) {
+    style.background = monster.style.background
   }
 
   // If monster has style.borderColor, use it

@@ -278,15 +278,15 @@ async function callStartQuest() {
 
     questStore.setDifficulty(difficultyValue)
 
-    // Start the quest
-    await startQuest(
+    // Start the quest but don't wait for it to all init
+    startQuest(
         questTitle.value,
         startGameLocation,
         endGameLocation,
         playerCount.value,
         difficultyValue,
         minimumLocations.value
-    )
+    ).then()
 
     // Transition to intro
     appStore.setScreen('intro')

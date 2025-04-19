@@ -101,7 +101,7 @@ const inputStyle = computed(() => ({
 }))
 
 const listStyle = computed(() => ({
-  backgroundColor: questStore.getBackgroundColor('card'),
+  backgroundColor: questStore.getBackgroundColor('secondary'),
   borderColor: questStore.getBorderColor('medium'),
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
 }))
