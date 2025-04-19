@@ -23,13 +23,13 @@ const locationStore = useLocationStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
-const gameLocationMarkers = ref<L.Marker[]>([])
+const locationMarkers = ref<L.Marker[]>([])
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])
 
 // Computed properties
 const playerCoordinates = computed(() => appStore.playerCoordinates)
-const gameLocations = computed(() => locationStore.locations)
+const locations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
 
@@ -38,10 +38,10 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     throw new Error('No map instance provided for marker creation')
   }
 
-  const gameLocationType = locationTypesById[gameLocation.type]
-  const iconPath = `./icons/${gameLocationType.filename}`
+  const locationType = locationTypesById[location.type]
+  const iconPath = `./icons/${locationType.filename}`
 
-  const marker = L.marker([gameLocation.lat, gameLocation.lng], {
+  const marker = L.marker([location.lat, location.lng], {
     icon: L.icon({
       iconUrl: iconPath,
       iconSize: [67, 83],
@@ -72,7 +72,7 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     container.className = 'popup-vue-container'
     
     // Create a new Vue app with our component
-    const app = createApp(LocationPopup, {gameLocation})
+    const app = createApp(LocationPopup, {location})
     
     // Mount the app to our container
     app.mount(container)
@@ -167,14 +167,14 @@ function cleanupMap(): void {
   if (map.value) {
     try {
       // Remove markers first
-      gameLocationMarkers.value.forEach(marker => {
+      locationMarkers.value.forEach(marker => {
         try {
           if (marker) marker.remove()
         } catch (error) {
           console.error('Error removing marker:', error)
         }
       })
-      gameLocationMarkers.value = []
+      locationMarkers.value = []
       
       // Then remove map
       map.value.off()
@@ -340,13 +340,13 @@ function generateGameLocationMarkers(): void {
   if (!map.value) return;
   
   // Clear existing markers
-  gameLocationMarkers.value.forEach(marker => marker.remove());
-  gameLocationMarkers.value = [];
+  locationMarkers.value.forEach(marker => marker.remove());
+  locationMarkers.value = [];
 
   // Create new markers
-  gameLocations.value.forEach((location: GameLocation) => {
-    const marker = createGameLocationMarker(gameLocation, map.value as L.Map)
-    gameLocationMarkers.value.push(marker)
+  locations.value.forEach((location: GameLocation) => {
+    const marker = createGameLocationMarker(location, map.value as L.Map)
+    locationMarkers.value.push(marker)
     return marker
   })
 }
@@ -447,23 +447,23 @@ button {
 }
 
 /* Popup styles */
-:deep(.gameLocation-info-popup) {
+:deep(.location-info-popup) {
   max-width: 90vw !important;
 }
 
-:deep(.gameLocation-info-popup .leaflet-popup-content-wrapper) {
+:deep(.location-info-popup .leaflet-popup-content-wrapper) {
   background: rgba(30, 30, 30, 0.95);
   border-radius: 12px;
   box-shadow: 0 3px 20px rgba(0, 0, 0, 0.7);
   padding: 5px;
 }
 
-:deep(.gameLocation-info-popup .leaflet-popup-tip) {
+:deep(.location-info-popup .leaflet-popup-tip) {
   background: rgba(30, 30, 30, 0.95);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
 }
 
-:deep(.gameLocation-info-popup .leaflet-popup-content) {
+:deep(.location-info-popup .leaflet-popup-content) {
   margin: 0;
   width: auto !important;
   max-height: 75vh;
@@ -484,11 +484,11 @@ button {
 }
 
 @media screen and (max-width: 600px) {
-  :deep(.gameLocation-info-popup) {
+  :deep(.location-info-popup) {
     max-width: 95vw !important;
   }
   
-  :deep(.gameLocation-info-popup .leaflet-popup-content) {
+  :deep(.location-info-popup .leaflet-popup-content) {
     max-height: 70vh;
   }
 }

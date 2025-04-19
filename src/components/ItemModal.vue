@@ -136,8 +136,8 @@ const context = computed(() => {
   const hasCurrentGameLocation = !!questStore.currentGameLocation
   const isInventoryOpen = appStore.isInterfaceOpen
   
-  if (hasCurrentGameLocation && isInventoryOpen) return 'inventory_in_gameLocation'
-  if (hasCurrentGameLocation && !isInventoryOpen) return 'item_in_gameLocation'
+  if (hasCurrentGameLocation && isInventoryOpen) return 'inventory_in_location'
+  if (hasCurrentGameLocation && !isInventoryOpen) return 'item_in_location'
   if (!hasCurrentGameLocation && isInventoryOpen) return 'inventory'
   return 'item'
 })
@@ -156,12 +156,12 @@ function toggleTheme() {
 // Computed properties
 const showUseButton = computed(() => {
   // Only show use button in inventory contexts
-  return context.value === 'inventory' || context.value === 'inventory_in_gameLocation'
+  return context.value === 'inventory' || context.value === 'inventory_in_location'
 })
 
 const isInGameLocation = computed(() => {
   // Check if the player is in a location (any context with "location")
-  return context.value === 'inventory_in_gameLocation' || context.value === 'item_in_gameLocation'
+  return context.value === 'inventory_in_location' || context.value === 'item_in_location'
 })
 
 const targetMode = computed(() => {

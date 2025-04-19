@@ -1,15 +1,15 @@
-import gameLocationsData from './locationTypes.json';
+import locationsData from './locationTypes.json';
 import { GameLocationType, GameLocationTypeId, toGameLocationTypeId } from '../types';
 
 // Parse the JSON data and apply the proper branded type to each ID
-export const locationTypes: GameLocationType[] = gameLocationsData.map(gameLocation => ({
-  ...gameLocation,
-  id: toGameLocationTypeId(gameLocation.id)
+export const locationTypes: GameLocationType[] = locationsData.map(location => ({
+  ...location,
+  id: toGameLocationTypeId(location.id)
 }));
 
-export const locationTypesList: GameLocationTypeId[] = locationTypes.map(gameLocationType => gameLocationType.id);
+export const locationTypesList: GameLocationTypeId[] = locationTypes.map(locationType => locationType.id);
 
-export const locationTypesById: Record<GameLocationTypeId, GameLocationType> = locationTypes.reduce((acc, gameLocationType) => {
-  acc[gameLocationType.id] = gameLocationType;
+export const locationTypesById: Record<GameLocationTypeId, GameLocationType> = locationTypes.reduce((acc, locationType) => {
+  acc[locationType.id] = locationType;
   return acc;
 }, {} as Record<GameLocationTypeId, GameLocationType>); 

@@ -20,22 +20,22 @@ export default async function fetchNearbyGameLocations(lat: number, lng: number,
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch gameLocations: ${response.status} ${response.statusText}`)
+        throw new Error(`Failed to fetch locations: ${response.status} ${response.statusText}`)
       }
 
       const data = await response.json()
-      const gameLocations: GameLocation[] = data.elements
+      const locations: GameLocation[] = data.elements
         .filter((element: any) => element.tags && element.tags.name)
         .map((element: any) => ({
           id: element.id.toString(),
           name: element.tags.name,
           lat: element.lat ?? element.center.lat,
           lng: element.lon ?? element.center.lon,
-          gameLocationType: 'location', // Default type, will be randomized later
+          locationType: 'location', // Default type, will be randomized later
           scouted: false,
         }))
 
-      return gameLocations
+      return locations
     } catch (error) {
       console.warn(`Failed to fetch from ${endpoint}:`, error)
       lastError = error as Error

@@ -8,7 +8,7 @@ import formatNumber from "@/utils/formatNumber.ts";
 export type ThemeType = 'light' | 'dark'
 
 export const useQuestStore = defineStore('quest', () => {
-  const gameLocationStore = useLocationStore()
+  const locationStore = useLocationStore()
   const appStore = useAppStore()
 
   const title = ref<string>('foo')
@@ -37,8 +37,8 @@ export const useQuestStore = defineStore('quest', () => {
   const setStatus = (newStatus: QuestState) => {
     status.value = newStatus
   }
-  const setCurrentGameLocation = (gameLocationId: GameLocationId) => {
-    currentGameLocationId.value = gameLocationId
+  const setCurrentGameLocation = (locationId: GameLocationId) => {
+    currentGameLocationId.value = locationId
   }
   const unsetCurrentGameLocation = () => {
     currentGameLocationId.value = undefined
@@ -127,19 +127,19 @@ export const useQuestStore = defineStore('quest', () => {
     if (startGameLocationId.value === undefined) {
       return undefined
     }
-    return gameLocationStore.gameLocation(startGameLocationId.value)
+    return locationStore.location(startGameLocationId.value)
   })
   const endGameLocation = computed(() => {
     if (endGameLocationId.value === undefined) {
       return undefined
     }
-    return gameLocationStore.gameLocation(endGameLocationId.value)
+    return locationStore.location(endGameLocationId.value)
   })
   const currentGameLocation = computed(() => {
     if (currentGameLocationId.value === undefined) {
       return undefined
     }
-    return gameLocationStore.gameLocation(currentGameLocationId.value)
+    return locationStore.location(currentGameLocationId.value)
   })
 
   return {

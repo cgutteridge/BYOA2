@@ -62,15 +62,15 @@ export class SplitPower extends ItemPower {
     if (!monsterTypeDef.lesser) return false;
     
     // Make sure we have access to the current location
-    const gameLocation = questStore.currentGameLocation;
-    if (!gameLocation || !gameLocation.monsters) return false;
+    const location = questStore.currentGameLocation;
+    if (!location || !location.monsters) return false;
     
     // Find the original monster
-    const monsterIndex = gameLocation.monsters.findIndex(m => m.id === monster.id);
+    const monsterIndex = location.monsters.findIndex(m => m.id === monster.id);
     if (monsterIndex === -1) return false;
     
     // Save its item if it has one
-    const originalItem = gameLocation.monsters[monsterIndex].item;
+    const originalItem = location.monsters[monsterIndex].item;
     
     // Determine how many lesser monsters to create
     let count = 2; // Default is 2
@@ -130,10 +130,10 @@ export class SplitPower extends ItemPower {
     }
     
     // Add the new monsters to the location
-    gameLocation.monsters.push(...newMonsters);
+    location.monsters.push(...newMonsters);
     
     // Remove the original monster
-    gameLocation.monsters.splice(monsterIndex, 1);
+    location.monsters.splice(monsterIndex, 1);
 
     // Log the banishment
     questStore.updateStats(1,0,0,

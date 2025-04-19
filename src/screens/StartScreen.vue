@@ -128,7 +128,7 @@ const isLoading = ref(true)
 const selectedDifficulty = ref('medium')
 const playerCount = ref(3)
 
-// Watch for gameLocations to be loaded
+// Watch for locations to be loaded
 watch(() => locationStore.locations, (newLocations) => {
   if (newLocations.length > 0) {
     isLoading.value = false
@@ -168,11 +168,11 @@ const canStartQuest = computed(() => {
     questTitle: questTitle.value
   })
   
-  // We have gameLocations selected either via objects or IDs
+  // We have locations selected either via objects or IDs
   const hasStartLocation = !!(selectedStartLocation.value || startLocationId.value)
   const hasEndLocation = !!(selectedEndLocation.value || endLocationId.value)
   
-  // The gameLocations are different
+  // The locations are different
   const differentGameLocations =
     (selectedStartLocation.value?.id !== selectedEndLocation.value?.id) &&
     (startLocationId.value !== endLocationId.value)
@@ -190,7 +190,7 @@ function updateStartLocation(location: GameLocation | string) {
   // If we're getting an ID instead of a GameLocation object
   if (typeof location === 'string') {
     startLocationId.value = location
-    const found = locationStore.locations.find((p:GameLocation) => p.id === gameLocation)
+    const found = locationStore.locations.find((p:GameLocation) => p.id === location)
     if (found) {
       selectedStartLocation.value = found
     }
@@ -201,18 +201,18 @@ function updateStartLocation(location: GameLocation | string) {
 }
 
 function updateEndLocation(location: GameLocation | string) {
-  console.log('Setting end location:', gameLocation)
+  console.log('Setting end location:', location)
   
   // If we're getting an ID instead of a GameLocation object
-  if (typeof gameLocation === 'string') {
-    endLocationId.value = gameLocation
-    const found = locationStore.locations.find((p:GameLocation) => p.id === gameLocation)
+  if (typeof location === 'string') {
+    endLocationId.value = location
+    const found = locationStore.locations.find((p:GameLocation) => p.id === location)
     if (found) {
       selectedEndLocation.value = found
     }
   } else {
-    selectedEndLocation.value = gameLocation
-    endLocationId.value = gameLocation.id
+    selectedEndLocation.value = location
+    endLocationId.value = location.id
   }
 }
 
@@ -245,7 +245,7 @@ async function callStartQuest() {
     
     // Check that we have valid location objects
     if (!startGameLocation || !endGameLocation) {
-      console.error('Failed to find gameLocations', { startGameLocationId: startLocationId.value, endGameLocationId: endLocationId.value })
+      console.error('Failed to find locations', { startGameLocationId: startLocationId.value, endGameLocationId: endLocationId.value })
       return
     }
     
@@ -266,7 +266,7 @@ async function callStartQuest() {
   }
 }
 
-// Load gameLocations when the component is mounted
+// Load locations when the component is mounted
 onMounted(() => {
   console.log('mounted StartScreen')
   locationStore.fetchNearbyGameLocations()

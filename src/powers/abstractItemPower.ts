@@ -55,7 +55,7 @@ export abstract class ItemPower {
     }
 
     // @ts-ignore - May be unused in base class, implemented by subclasses
-    targetGameLocations(_item: Item, _gameLocations: GameLocation[]): GameLocation[] {
+    targetGameLocations(_item: Item, _locations: GameLocation[]): GameLocation[] {
         return [];
     }
 
@@ -78,7 +78,7 @@ export abstract class ItemPower {
     }
 
     // @ts-ignore - May be unused in base class, implemented by subclasses
-    useOnGameLocation(item: Item, gameLocationId: string): boolean {
+    useOnGameLocation(item: Item, locationId: string): boolean {
         return false
     }
 
@@ -140,7 +140,7 @@ export abstract class ItemPower {
                 // It's a monster array
                 return this.targetMonsters(item, targets as Monster[]);
             } else if ('monsters' in targets[0]) {
-                // It's a gameLocations array
+                // It's a locations array
                 return this.targetGameLocations(item, targets as GameLocation[]);
             }
         }
@@ -196,13 +196,13 @@ export abstract class ItemPower {
         const questStore = useQuestStore();
 
         // Get the current location's monsters
-        const gameLocation = questStore.currentGameLocation;
-        if (!gameLocation || !gameLocation.monsters) {
+        const location = questStore.currentGameLocation;
+        if (!location || !location.monsters) {
             return 0
         }
 
         // Find all monsters of the specified type
-        const monstersOfType = gameLocation.monsters.filter(
+        const monstersOfType = location.monsters.filter(
             (monster: Monster) => monster.type === type && monster.alive
         );
 

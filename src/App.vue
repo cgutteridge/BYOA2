@@ -84,7 +84,7 @@ function startContinuousTracking() {
     return
   }
  
-  // In normal mode, use geogameLocation.watchPosition
+  // In normal mode, use geolocation.watchPosition
   watchId.value = navigator.geolocation.watchPosition(
     (position) => {
       const coordinates = {
@@ -154,7 +154,7 @@ onUnmounted(() => {
 <template>
   <div class="app">
     <div v-if="isDebugMode" class="debug-banner">DEBUG MODE</div>
-{{appStore.screen}}
+
     <NotificationSystem />
     
     <div class="debug-overlay" v-if="appStore.playerCoordinates">

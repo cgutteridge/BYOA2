@@ -11,20 +11,20 @@ import {locationTypesById} from "@/data/locationTypes.ts";
 
 /**
  * Scout a location, generating its description, monsters, and prize
- * @param gameLocation The location to scout
+ * @param location The location to scout
  * @returns Promise resolving to true when scouting is complete
  */
 export async function scoutLocation(
-    gameLocation: GameLocation,
+    location: GameLocation,
 ): Promise<boolean> {
     const chatGPT = new ChatGPTAPI()
     const questStore = useQuestStore()
 
     // Mark the location as scouted
-    gameLocation.scouted = true
+    location.scouted = true
 
     // Generate monsters for this location
-    const monsters = generateMonsters(gameLocation)
+    const monsters = generateMonsters(location)
 
     // Generate items for elite and boss monsters
     monsters.forEach(monster => {
@@ -39,36 +39,36 @@ export async function scoutLocation(
     });
 
     // Assign the monsters to the location
-    gameLocation.monsters = monsters
+    location.monsters = monsters
 
     // Generate a gift item based on location difficulty
-    if (gameLocation.difficulty) {
-        gameLocation.giftItem = locationGiftItem(gameLocation.difficulty);
+    if (location.difficulty) {
+        location.giftItem = locationGiftItem(location.difficulty);
 
         // Also generate a prize item to be awarded for completing the location
         // We'll store this as metadata, but not display it until the player defeats all monsters
-        gameLocation.prizeItem = locationPrizeItem(gameLocation.difficulty);
+        location.prizeItem = locationPrizeItem(location.difficulty);
     }
 
     // Create a string description of the monsters for the API
     const monstersDescription = formatMonstersDescription(monsters)
 
-    const gameLocationType = locationTypesById[gameLocation.type]
+    const locationType = locationTypesById[location.type]
 
     let extraInstructions = ''
-    if(gameLocation.difficulty === 'start') {
-        extraInstructions = `this is the first gameLocation in the quest, where the quest begins.
-         Please describe how this gameLocation triggers the whole quest. The quest is "${questStore.title}: ${questStore.description}"`
+    if(location.difficulty === 'start') {
+        extraInstructions = `this is the first location in the quest, where the quest begins.
+         Please describe how this location triggers the whole quest. The quest is "${questStore.title}: ${questStore.description}"`
     }
-    if(gameLocation.difficulty === 'end') {
-        extraInstructions = `this is the last gameLocation in the quest, where the quest ends. The quest was "${questStore.title}: ${questStore.description}"`
+    if(location.difficulty === 'end') {
+        extraInstructions = `this is the last location in the quest, where the quest ends. The quest was "${questStore.title}: ${questStore.description}"`
     }
    
-    console.log(gameLocation,extraInstructions)
+    console.log(location,extraInstructions)
     
     // Get prize and gift item powers to pass to ChatGPT
-    const prizeItemPower = gameLocation.prizeItem ? generateEffectDescription(gameLocation.prizeItem) : "nothing";
-    const giftItemPower = gameLocation.giftItem ? generateEffectDescription(gameLocation.giftItem) : undefined;
+    const prizeItemPower = location.prizeItem ? generateEffectDescription(location.prizeItem) : "nothing";
+    const giftItemPower = location.giftItem ? generateEffectDescription(location.giftItem) : undefined;
     
     // Generate location description, name, and item details from AI
     const {
@@ -79,8 +79,8 @@ export async function scoutLocation(
         giftItemName,
         giftItemDescription
     } = await chatGPT.generateGameLocationDescription(
-        gameLocation.name,
-        gameLocationType.title,
+        location.name,
+        locationType.title,
         monstersDescription,
         prizeItemPower,
         extraInstructions,
@@ -88,27 +88,27 @@ export async function scoutLocation(
     )
 
     // Update the location with the new information
-    gameLocation.name = name;
-    gameLocation.description = description;
+    location.name = name;
+    location.description = description;
     
     // Update prize item with AI-generated name and description
-    if (gameLocation.prizeItem) {
-        gameLocation.prizeItem.name = prizeItemName;
-        gameLocation.prizeItem.description = prizeItemDescription;
+    if (location.prizeItem) {
+        location.prizeItem.name = prizeItemName;
+        location.prizeItem.description = prizeItemDescription;
     }
     
     // Update gift item with AI-generated name and description (if available)
-    if (gameLocation.giftItem && giftItemName && giftItemDescription) {
-        gameLocation.giftItem.name = giftItemName;
-        gameLocation.giftItem.description = giftItemDescription;
+    if (location.giftItem && giftItemName && giftItemDescription) {
+        location.giftItem.name = giftItemName;
+        location.giftItem.description = giftItemDescription;
     }
 
     // Now generate names for each monster
-    if (gameLocation.monsters && gameLocation.monsters.length > 0) {
+    if (location.monsters && location.monsters.length > 0) {
         // Group monsters by type for the API call
         const monstersByType = new Map<string, Monster[]>();
         
-        gameLocation.monsters.forEach(monster => {
+        location.monsters.forEach(monster => {
             if (!monstersByType.has(monster.type)) {
                 monstersByType.set(monster.type, []);
             }
@@ -129,8 +129,8 @@ export async function scoutLocation(
 
         // Call the AI to generate names
         const namesData = await chatGPT.generateMonsterNames(
-            gameLocation.name,
-            gameLocation.description,
+            location.name,
+            location.description,
             monsterGroups
         );
         

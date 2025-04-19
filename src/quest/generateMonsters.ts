@@ -7,17 +7,17 @@ import pickOne from "../utils/pickOne"
 import pickWeightedOne from "../utils/pickWeightedOne"
 import {encounterTable} from "../data/encounterTable"
 
-export default function generateMonsters(gameLocation: GameLocation): Monster[] {
+export default function generateMonsters(location: GameLocation): Monster[] {
     // If the location already has monsters, return them
-    if (gameLocation.monsters && gameLocation.monsters.length > 0) {
-        return gameLocation.monsters
+    if (location.monsters && location.monsters.length > 0) {
+        return location.monsters
     }
 
     // Otherwise, generate new monsters
     const monsters: Monster[] = []
 
     // step one is to pick a pattern
-    const encounter: Encounter = pickWeightedOne(encounterTable[gameLocation.difficulty ?? 'medium'])
+    const encounter: Encounter = pickWeightedOne(encounterTable[location.difficulty ?? 'medium'])
     console.log("encounter", encounter)
 
     encounter.forEach((unitSpec) => {
@@ -37,10 +37,10 @@ export default function generateMonsters(gameLocation: GameLocation): Monster[] 
         const monsterType = pickOne(possibleMonsters)
 
         // decide how many monsters of this type to create
-        const monsterCount = calculateMonsterCount(unitSpec.level, gameLocation.difficulty ?? 'medium')
+        const monsterCount = calculateMonsterCount(unitSpec.level, location.difficulty ?? 'medium')
         console.log("monsterCount", monsterCount)
         console.log("monster level", unitSpec.level)
-        console.log("location difficulty", gameLocation.difficulty)
+        console.log("location difficulty", location.difficulty)
 
         // Create individual monsters with placeholder names that will be replaced by AI
         for (let i = 0; i < monsterCount; i++) {
@@ -63,7 +63,7 @@ export default function generateMonsters(gameLocation: GameLocation): Monster[] 
     return monsters
 }
 
-function calculateMonsterCount(monsterLevel: MonsterLevel, gameLocationLevel: GameLocationDifficulty) {
+function calculateMonsterCount(monsterLevel: MonsterLevel, locationLevel: GameLocationDifficulty) {
     const questStore = useQuestStore()
     const players = questStore.playerCount
     console.log({players})
@@ -73,7 +73,7 @@ function calculateMonsterCount(monsterLevel: MonsterLevel, gameLocationLevel: Ga
         return 1
     }
     if (monsterLevel === 'elite') {
-        if (gameLocationLevel === 'hard') {
+        if (locationLevel === 'hard') {
             return diffMod(players)
         }
         return 1;

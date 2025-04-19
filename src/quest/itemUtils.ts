@@ -4,7 +4,7 @@ import {powerFactory} from '../powers'
 /**
  * Get targets for an item based on its targeting mode
  * @param item The item to get targets for
- * @param potentialTargets Array of potential targets (monsters, gameLocations, etc)
+ * @param potentialTargets Array of potential targets (monsters, locations, etc)
  * @returns Array of valid targets
  */
 export function getTargetsForItem(item: Item, potentialTargets: Monster[]): GameLocation[] | MonsterTypeId[] | Monster[] {

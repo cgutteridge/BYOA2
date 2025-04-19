@@ -17,23 +17,23 @@ export const useLocationStore = defineStore('locations', () => {
   }
 
   // Set difficulty for a specific location
-  const setGameLocationDifficulty = (gameLocationId: GameLocationId, difficulty: GameLocationDifficulty) => {
-    const targetGameLocation = gameLocation(gameLocationId)
+  const setGameLocationDifficulty = (locationId: GameLocationId, difficulty: GameLocationDifficulty) => {
+    const targetGameLocation = location(locationId)
     targetGameLocation.difficulty = difficulty
   }
 
   // Set type for a specific location
-  const setGameLocationType = (gameLocationId: GameLocationId, type: GameLocationTypeId) => {
-    const targetGameLocation = gameLocation(gameLocationId)
+  const setGameLocationType = (locationId: GameLocationId, type: GameLocationTypeId) => {
+    const targetGameLocation = location(locationId)
     targetGameLocation.type = type
   }
 
   // Check if a location can be scouted based on player's distance to it (within 50 meters)
-  const canScout = (gameLocationId: GameLocationId): boolean => {
+  const canScout = (locationId: GameLocationId): boolean => {
     if (!appStore.playerCoordinates) return false
     
     try {
-      const targetGameLocation = gameLocation(gameLocationId)
+      const targetGameLocation = location(locationId)
       const distance = calculateDistance(
         appStore.playerCoordinates.lat,
         appStore.playerCoordinates.lng,
@@ -43,7 +43,7 @@ export const useLocationStore = defineStore('locations', () => {
       
       return distance <= 20000
     } catch (error) {
-      console.error(`Error checking if gameLocation can be scouted: ${error}`)
+      console.error(`Error checking if location can be scouted: ${error}`)
       return false
     }
   }
@@ -65,10 +65,10 @@ export const useLocationStore = defineStore('locations', () => {
     }
   }
 
-  const gameLocation = (gameLocationId: GameLocationId): GameLocation => {
-    const foundGameLocation = locations.value.find(p => p.id === gameLocationId)
+  const location = (locationId: GameLocationId): GameLocation => {
+    const foundGameLocation = locations.value.find(p => p.id === locationId)
     if (!foundGameLocation) {
-      throw new Error(`GameLocation with ID ${gameLocationId} not found`)
+      throw new Error(`GameLocation with ID ${locationId} not found`)
     }
     return foundGameLocation
   }
@@ -77,7 +77,7 @@ export const useLocationStore = defineStore('locations', () => {
     locations,
     setGameLocations: setLocations,
     fetchNearbyGameLocations: fetchNearbyGameLocationsFromAPI,
-    gameLocation,
+    location,
     canScout,
     setGameLocationDifficulty,
     setGameLocationType,

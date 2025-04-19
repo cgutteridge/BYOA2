@@ -133,7 +133,7 @@ export function generateEffectDescription(item: Item): string {
       break;
       
     case 'spy':
-      effect = `This ${qualityTerm} item reveals any gameLocation without visiting it.`;
+      effect = `This ${qualityTerm} item reveals any location without visiting it.`;
       break;
       
     case 'freeze':

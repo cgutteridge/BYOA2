@@ -29,7 +29,7 @@ export const useAppStore = defineStore('app', () => {
   const focusGameLocationId = ref<GameLocationId | undefined>(undefined)
   const mapPosition = ref<Coordinates | null>(null)
   const mapZoom = ref<number | null>(null)
-  const gameLocationStore = useLocationStore()
+  const locationStore = useLocationStore()
   
   // Inventory UI state
   const isInterfaceOpen = ref(false)
@@ -56,8 +56,8 @@ export const useAppStore = defineStore('app', () => {
     return true
   }
 
-  const setFocusGameLocation = (gameLocationId: GameLocationId) => {
-    focusGameLocationId.value = gameLocationId
+  const setFocusGameLocation = (locationId: GameLocationId) => {
+    focusGameLocationId.value = locationId
   }
   
   const unsetFocusGameLocation = () => {
@@ -160,7 +160,7 @@ export const useAppStore = defineStore('app', () => {
     if (focusGameLocationId.value === undefined) {
       return undefined
     }
-    return gameLocationStore.gameLocation(focusGameLocationId.value)
+    return locationStore.location(focusGameLocationId.value)
   })
 
 

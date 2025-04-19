@@ -42,8 +42,8 @@ export class ChatGPTAPI {
   }
 
   async generateGameLocationDescription(
-    gameLocationName: string, 
-    gameLocationType: string, 
+    locationName: string, 
+    locationType: string, 
     enemies: string, 
     prizeItemPower: string, 
     extraInstructions: string = '',
@@ -68,15 +68,15 @@ export class ChatGPTAPI {
       {
         role: 'user',
         content: `
-           Generate a JSON object for the ${gameLocationType} at '${gameLocationName}'. 
+           Generate a JSON object for the ${locationType} at '${locationName}'. 
            ${giftItemPower ? `The players may find or be given an item with this power: "${giftItemPower}".` : ''}
            The players must defeat ${enemies} to win an item with this power: "${prizeItemPower}".
             Be outrageous."
         
-        For each item, create a unique name and a story description that ties it to the gameLocation and challenge.  
+        For each item, create a unique name and a story description that ties it to the location and challenge.  
         Do not promise additional rewards. 
-        You may retitle the gameLocation in an amusing way maybe combining the real name with the fantasy theme. 
-        The description field in the JSON response is in the 2nd person and must describe ALL OF the gameLocation, 
+        You may retitle the location in an amusing way maybe combining the real name with the fantasy theme. 
+        The description field in the JSON response is in the 2nd person and must describe ALL OF the location, 
         ${giftItemPower ? "the item available and why, ":""}, the challenge, and the prize as the situation lies when the
         players arrive. Pick a really random theme but stick to it from grimdark to kids tv show to nature documentary to 80s sitcom. 
         
@@ -94,8 +94,8 @@ export class ChatGPTAPI {
   }
 
   async generateMonsterNames(
-    gameLocationName: string,
-    gameLocationDescription: string,
+    locationName: string,
+    locationDescription: string,
     monsterGroups: Array<{
       type: string,
       title: string,
@@ -112,8 +112,8 @@ export class ChatGPTAPI {
       {
         role: 'user',
         content: `
-          Generate names for monsters at the gameLocation "${gameLocationName}".
-          GameLocation description: "${gameLocationDescription}"
+          Generate names for monsters at the location "${locationName}".
+          GameLocation description: "${locationDescription}"
           
           I need unique names for each monster.
           
@@ -124,7 +124,7 @@ export class ChatGPTAPI {
           
           For each group, provide unique individual names for each monster.
           
-          The names should be creative, funny, and fit the monster's species and the gameLocation's atmosphere. 
+          The names should be creative, funny, and fit the monster's species and the location's atmosphere. 
           Do not add the type of monster to the name. Do not write "Lord Vlad the Vampire" just "Lord Vlad".
           It is OK to add other qualifiers to the name to make it more interesting or funny.
           

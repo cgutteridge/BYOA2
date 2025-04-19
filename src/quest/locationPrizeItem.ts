@@ -10,14 +10,14 @@ export function locationPrizeItem(difficulty: GameLocationDifficulty): Item {
     switch (difficulty) {
         case 'easy':
         case 'start':
-            // Easy gameLocations have level 2 prizes
+            // Easy locations have level 2 prizes
             return generateRandomItem(2);
         case 'medium':
-            // Medium gameLocations have level 3 prizes
+            // Medium locations have level 3 prizes
             return generateRandomItem(3);
         case 'hard':
         case 'end':
-            // Hard and end gameLocations have level 4 prizes
+            // Hard and end locations have level 4 prizes
             return generateRandomItem(4);
         default:
             // Fallback to level 2

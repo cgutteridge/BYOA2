@@ -1,12 +1,12 @@
 <template>
-  <div class="gameLocation-screen">
-    <div class="gameLocation-header">
+  <div class="location-screen">
+    <div class="location-header">
       <h2>{{ questStore.currentGameLocation?.name }}</h2>
     </div>
 
     <!-- GameLocation description section -->
-    <div class="gameLocation-description-section" v-if="questStore.currentGameLocation?.description">
-      <div class="gameLocation-description">
+    <div class="location-description-section" v-if="questStore.currentGameLocation?.description">
+      <div class="location-description">
         {{ questStore.currentGameLocation.description }}
       </div>
     </div>
@@ -448,7 +448,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
 </script>
 
 <style scoped>
-.gameLocation-screen {
+.location-screen {
   min-height: 100vh;
   padding: 2rem;
   background: linear-gradient(135deg, #1a1a1a 0%, #666666 100%);
@@ -457,13 +457,13 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   text-align: center;
 }
 
-.gameLocation-header {
+.location-header {
   justify-content: space-between;
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
-.gameLocation-header h2 {
+.location-header h2 {
   display: inline-block;
   margin: 0;
   font-size: 2rem;
@@ -479,7 +479,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   min-width: 160px;
 }
 
-.gameLocation-description-section {
+.location-description-section {
   max-width: 800px;
   margin: 1rem auto 2rem;
   padding: 1.5rem;
@@ -488,7 +488,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.gameLocation-description {
+.location-description {
   font-size: 1.1rem;
   line-height: 1.6;
   color: #f0f0f0;

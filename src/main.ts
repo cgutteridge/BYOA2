@@ -50,7 +50,7 @@ if (questStore.status === 'active') {
     if (questStore.currentGameLocation === undefined) {
         appStore.setScreen('map')
     } else {
-        appStore.setScreen('gameLocation')
+        appStore.setScreen('location')
     }
 } else {
     appStore.setScreen('start_quest')

@@ -95,9 +95,9 @@ export async function startQuest(
     questStore.setBooze(0); // Initialize booze consumed to zero when starting a new quest
     questStore.setSoft(0); // Initialize soft drinks consumed to zero when starting a new quest
 
-    // Initialize gameLocations
-    locationStore.locations.forEach((gameLocation:GameLocation) => {
-        initialiseGameLocation(gameLocation)
+    // Initialize locations
+    locationStore.locations.forEach((location:GameLocation) => {
+        initialiseGameLocation(location)
     })
     
     // Clear any existing inventory items

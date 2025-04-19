@@ -83,8 +83,8 @@ const hasValidTargets = computed(() => {
   
   // Different handling for spy vs monster targeting items
   if (props.item.power === 'spy') {
-    // For spy items, check if there are unscouted gameLocations
-    return locationStore.locations.some(gameLocation => !gameLocation.scouted)
+    // For spy items, check if there are unscouted locations
+    return locationStore.locations.some(location => !location.scouted)
   } else {
     // For monster targeting items, check if we're in a location with valid monster targets
     if (!isInLocationWithInventory.value || !questStore.currentGameLocation?.monsters) {

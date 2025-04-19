@@ -29,7 +29,7 @@ export type ItemPowerId =
   | 'stun'
 
 // Target modes - how the target is selected
-export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'gameLocation' | undefined
+export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'location' | undefined
 
 // Result modes
 export type ResultMode = 'random' | 'pick' | 'random_type' | 'chosen_type' | undefined
@@ -133,7 +133,7 @@ export type ScreenId =
   | 'start_quest'
   | 'intro'
   | 'map'
-  | 'gameLocation'
+  | 'location'
   | 'victory'
 
 export type QuestState = 'no_quest' | 'init' | 'active' | 'completed'

@@ -6,13 +6,13 @@
       <div class="quest-details">
         <p class="description">{{ questStore.description }}</p>
 
-        <div class="gameLocation-info">
-          <div class="gameLocation-card">
+        <div class="location-info">
+          <div class="location-card">
             <h3>Start GameLocation</h3>
             <p>{{ questStore.startGameLocation?.name || 'Not selected' }}</p>
           </div>
 
-          <div class="gameLocation-card">
+          <div class="location-card">
             <h3>End GameLocation</h3>
             <p>{{ questStore.endGameLocation?.name || 'Not selected' }}</p>
           </div>
@@ -84,13 +84,13 @@ function start(): void {
   margin-bottom: 2rem;
 }
 
-.gameLocation-info {
+.location-info {
   display: flex;
   gap: 2rem;
   margin: 2rem 0;
 }
 
-.gameLocation-card {
+.location-card {
   flex: 1;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.1);

@@ -1,5 +1,5 @@
 <template>
-  <div class="gameLocation-popup">
+  <div class="location-popup">
     <h2>{{ location.name }}<template v-if="!location.scouted"> ({{ type.title }})</template></h2>
     <div class="distance-info" v-if="playerDistance !== null">
       <span>{{ Math.round(playerDistance) }}m away</span>
@@ -26,7 +26,7 @@
         Enter Location
       </ButtonInput>
     </div>
-    <div class="gameLocation-details">
+    <div class="location-details">
       <div v-if="location.scouted && location.description">
         <div v-if="location.giftItem" class="gift-info">
           <h3>Gift:</h3>
@@ -235,7 +235,7 @@ function enterLocation(event?: MouseEvent) {
     event.stopPropagation()
   }
   questStore.setCurrentGameLocation(props.location.id)
-  appStore.setScreen('gameLocation')
+  appStore.setScreen('location')
   
   // Award XP for arriving at a location (using updateStats)
   questStore.updateStats(2, 0, 0, "Entering a location.");
@@ -244,7 +244,7 @@ function enterLocation(event?: MouseEvent) {
 </script>
 
 <style scoped>
-.gameLocation-popup {
+.location-popup {
   color: white;
   padding: 5px;
   max-width: 100%;
@@ -267,7 +267,7 @@ h2 {
   font-weight: bold;
 }
 
-.gameLocation-details {
+.location-details {
   margin: 1rem 0;
 }
 
