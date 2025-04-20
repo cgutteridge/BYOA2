@@ -74,4 +74,9 @@ export class DistractPower extends ItemPower {
 
     return true;
   }
+
+  generateEffectDescription(item: Item): string {
+    const qualityTerm = this.getLevelQualityTerm(item.level);
+    return `This ${qualityTerm} item distracts ${this.getTargetDescription(item)}.`;
+  }
 } 

@@ -222,6 +222,95 @@ export abstract class ItemPower {
         console.log("applyEffect should be subclassed.")
         return false
     }
+
+    /**
+     * Generate a description of this power's effect for the given item
+     * Each power implementation should override this to provide a specific description
+     */
+    abstract generateEffectDescription(item: Item): string;
+
+    /**
+     * Convert item level to descriptive quality term
+     */
+    protected getLevelQualityTerm(level: number): string {
+        switch (level) {
+            case 1: return "crap";
+            case 2: return "mediocre";
+            case 3: return "decent";
+            case 4: return "superior";
+            case 5: return "excellent";
+            case 6: return "legendary";
+            default: return "unknown quality";
+        }
+    }
+
+    /**
+     * Get a description of the item's target options
+     */
+    protected getTargetDescription(item: Item): string {
+        // Handle empty or undefined item objects
+        if (!item || typeof item !== 'object') {
+            return 'an unknown enemy';
+        }
+        
+        let filterDescription = '';
+        let selectionMethod = '';
+        
+        // Add target filters if present
+        if (item.targetFilters) {
+            const filters = [];
+            
+            if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
+                filters.push(item.targetFilters.flags.join('/'));
+            }
+
+            if (item.maxLevel) {
+                filters.push(item.maxLevel);
+            }
+            
+            if (item.targetFilters.species && item.targetFilters.species.length > 0) {
+                filters.push(item.targetFilters.species.join('/'));
+            }
+            
+            if (filters.length > 0) {
+                filterDescription += filters.join(', ');
+            }
+        }
+
+        // Determine selection method based on target mode
+        if (item.target === 'pick' || item.target === 'pick_type') {
+            selectionMethod = 'chosen';
+        } else {
+            selectionMethod = 'random';
+        }
+        
+        // Type vs single target based on target mode
+        if (item.target === 'random_type' || item.target === 'pick_type') {
+            return `all ${filterDescription} enemies of one ${selectionMethod} type`;
+        }
+        
+        return `a ${selectionMethod} ${filterDescription} enemy`;
+    }
+
+    /**
+     * Get a description of the item's result for transmutation
+     */
+    protected getResultDescription(item: Item): string {
+        if (item.power !== 'transmute' || !item.result) return '';
+        
+        let effect = '';
+        
+        switch (item.result) {
+            case 'random':
+                effect += "a random enemy of the same level";
+                break;
+            case 'pick':
+                effect += "a chosen enemy of the same level";
+                break;
+        }
+        
+        return effect;
+    }
 }
 
 // Power factory to provide UI properties and functionality

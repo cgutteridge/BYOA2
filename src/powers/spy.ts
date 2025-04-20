@@ -1,5 +1,5 @@
+import type {Item, Monster} from '../types'
 import { ItemPower } from './abstractItemPower'
-import {Item, Monster} from "@/types";
 import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
@@ -8,24 +8,27 @@ import {useQuestStore} from "@/stores/questStore.ts";
 export class SpyPower extends ItemPower {
   // UI properties
   readonly displayName = "Spy";
-  readonly icon = "👁️";
-  readonly glowColor = "rgba(0, 128, 128, 0.8)";
+  readonly icon = "🔍";
+  readonly glowColor = "rgba(65, 105, 225, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 1;
+  readonly baseCost = 2;
   readonly canHaveTargetRestriction = false;
   readonly supportsTypeTargeting = false;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
 
-  applyEffect(_item: Item, _monster: Monster): boolean {
+  applyEffect(item: Item, monster: Monster): boolean {
     const questStore = useQuestStore();
 
-    // Log the banishment
-    questStore.updateStats(1,0,0,
-        `todo`)
-
+    questStore.updateStats(0,0,0, 
+        `Used ${item.name} to spy TODO`)
+    
     return false;
-  } // Can target any level
+  }
 
+  generateEffectDescription(item: Item): string {
+    const qualityTerm = this.getLevelQualityTerm(item.level);
+    return `This ${qualityTerm} item reveals any location without visiting it.`;
+  }
 } 

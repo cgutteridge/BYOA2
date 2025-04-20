@@ -28,4 +28,8 @@ export class TransmutePower extends ItemPower {
     return false;
   }
 
+  generateEffectDescription(item: Item): string {
+    const qualityTerm = this.getLevelQualityTerm(item.level);
+    return `This ${qualityTerm} item transforms ${this.getTargetDescription(item)} into ${this.getResultDescription(item)}.`;
+  }
 } 

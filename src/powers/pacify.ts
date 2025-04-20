@@ -77,4 +77,9 @@ export class PacifyPower extends ItemPower {
 
     return true;
   }
+
+  generateEffectDescription(item: Item): string {
+    const qualityTerm = this.getLevelQualityTerm(item.level);
+    return `This ${qualityTerm} item turns ${this.getTargetDescription(item)} into water.`;
+  }
 } 

@@ -73,4 +73,9 @@ export class ShrinkPower extends ItemPower {
 
     return true;
   }
+
+  generateEffectDescription(item: Item): string {
+    const qualityTerm = this.getLevelQualityTerm(item.level);
+    return `This ${qualityTerm} item reduces the power of ${this.getTargetDescription(item)}.`;
+  }
 } 

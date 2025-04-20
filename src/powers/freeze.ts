@@ -39,39 +39,42 @@ export class FreezePower extends ItemPower {
     }
     
     // Find the monster type to get its level
-    const monsterType = monsterTypes.find(m => m.id === monster.type);
+    const monsterTypeInfo = monsterTypes.find(t => t.id === monster.type);
     
     // Guard: check if we found the monster type
-    if (!monsterType) {
+    if (!monsterTypeInfo) {
       console.log(`Could not find type information for monster ${monster.name}`);
       return false;
     }
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
-    if (monsterType.level === 'boss') {
+    if (monsterTypeInfo.level === 'boss') {
       console.log(`Cannot freeze boss monster ${monster.name}`);
       return false;
     }
     
     // Get the appropriate ice monster for this level
-    const iceMonsterTypeId = this.iceMonsterMap[monsterType.level];
-    const iceMonsterType = monsterTypes.find(m => m.id === iceMonsterTypeId);
+    const frozenTypeId = this.iceMonsterMap[monsterTypeInfo.level];
+    const frozenTypeInfo = monsterTypes.find(t => t.id === frozenTypeId);
     
     // Guard: check if we found the ice monster type
-    if (!iceMonsterType) {
-      console.log(`Could not find ice monster type for level ${monsterType.level}`);
+    if (!frozenTypeInfo) {
+      console.log(`Could not find ice monster type for level ${monsterTypeInfo.level}`);
       return false;
     }
 
-    const originalName = monster.name;
+    // Transform the monster to ice
+    monster.type = frozenTypeId;
 
-    // Update the monster's type and name
-    monster.type = iceMonsterTypeId;
-
-    // Log the banishment
-    questStore.updateStats(1, 0, 0,
-        `${originalName} was frozen with ${item.name}`)
+    // Log the transformation
+    questStore.updateStats(1,0,0,
+        `${monsterTypeInfo.title} was frozen into ice`)
 
     return true;
+  }
+
+  generateEffectDescription(item: Item): string {
+    const qualityTerm = this.getLevelQualityTerm(item.level);
+    return `This ${qualityTerm} item transforms ${this.getTargetDescription(item)} into an ice monster of the same level.`;
   }
 } 

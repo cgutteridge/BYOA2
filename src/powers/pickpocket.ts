@@ -28,4 +28,8 @@ export class PickpocketPower extends ItemPower {
     return false;
   }
 
+  generateEffectDescription(item: Item): string {
+    const qualityTerm = this.getLevelQualityTerm(item.level);
+    return `This ${qualityTerm} item steals from ${this.getTargetDescription(item)}.`;
+  }
 } 

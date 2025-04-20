@@ -52,4 +52,9 @@ export class BanishPower extends ItemPower {
 
     return true;
   }
+
+  generateEffectDescription(item: Item): string {
+    const qualityTerm = this.getLevelQualityTerm(item.level);
+    return `This ${qualityTerm} item banishes ${this.getTargetDescription(item)}.`;
+  }
 } 

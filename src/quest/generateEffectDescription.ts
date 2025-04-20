@@ -1,4 +1,5 @@
 import type { Item } from '../types';
+import { powerFactory } from '@/powers';
 
 /**
  * Convert item level to descriptive quality term
@@ -89,100 +90,13 @@ export function getResultDescription(item: Item): string {
 export function generateEffectDescription(item: Item): string {
   if (!item.power) return "Does nothing special.";
   
-  const qualityTerm = getLevelQualityTerm(item.level);
-  let effect = "";
-  
-  // Base effect by power type
-  switch (item.power) {
-    case 'kill':
-      effect = `This ${qualityTerm} item instantly defeats `;
-      effect += getTargetDescription(item);
-      effect += ".";
-      break;
-      
-    case 'transmute':
-      effect = `This ${qualityTerm} item transforms `;
-      effect += getTargetDescription(item);
-      effect += " into ";
-      effect += getResultDescription(item);
-      effect += ".";
-      break;
-      
-    case 'shrink':
-      effect = `This ${qualityTerm} item reduces the power of `;
-      effect += getTargetDescription(item);
-      effect += ".";
-      break;
-      
-    case 'split':
-      effect = `This ${qualityTerm} item splits `;
-      effect += getTargetDescription(item);
-      effect += " into multiple but weaker enemies.";
-      break;
-      
-    case 'pickpocket':
-      effect = `This ${qualityTerm} item steals from `;
-      effect += getTargetDescription(item);
-      effect += ".";
-      break;
-      
-    case 'banish':
-      effect = `This ${qualityTerm} item banishes `;
-      effect += getTargetDescription(item);
-      effect += ".";
-      break;
-      
-    case 'spy':
-      effect = `This ${qualityTerm} item reveals any location without visiting it.`;
-      break;
-      
-    case 'freeze':
-      effect = `This ${qualityTerm} item transforms `;
-      effect += getTargetDescription(item);
-      effect += " into an ice monster of the same level.";
-      break;
-      
-    case 'petrify':
-      effect = `This ${qualityTerm} item turns `;
-      effect += getTargetDescription(item);
-      effect += " into stone.";
-      break;
-      
-    case 'pacify':
-      effect = `This ${qualityTerm} item turns `;
-      effect += getTargetDescription(item);
-      effect += " into water.";
-      break;
-      
-    case 'distract':
-      effect = `This ${qualityTerm} item distracts `;
-      effect += getTargetDescription(item);
-      effect += "."
-      break;
-      
-    case 'vegetate':
-      effect = `This ${qualityTerm} item vegetates `;
-      effect += getTargetDescription(item);
-      effect += "."
-      break;
-      
-    case 'stun':
-      effect = `This ${qualityTerm} item stuns `;
-      effect += getTargetDescription(item);
-      effect += "."
-      break;
-
-    case 'victory':
-      effect = `This is the thing you've been after. Well done. YOU WIN!`;
-      break;
-      
-    case 'token':
-      effect = `This is required to complete the quest.`;
-      break;
-
-    default:
-      effect = `This ${qualityTerm} item has unknown effects.`;
+  // Get the power implementation and delegate to its description generator
+  const power = powerFactory.getPower(item.power);
+  if (power) {
+    return power.generateEffectDescription(item);
   }
-
-  return effect;
+  
+  // Fallback in case the power is not found
+  const qualityTerm = getLevelQualityTerm(item.level);
+  return `This ${qualityTerm} item has unknown effects.`;
 } 
