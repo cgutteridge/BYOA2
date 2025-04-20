@@ -36,14 +36,7 @@ export function getTargetDescription(item: Item): string {
     }
 
     if (item.maxLevel) {
-      // Convert maxLevel to appropriate description
-      const levelDescriptions = {
-        'minion': 'minion',
-        'grunt': 'minion/grunt',
-        'elite': 'minion/grunt/elite',
-        'boss': 'minion/grunt/elite/boss'
-      };
-      filters.push(levelDescriptions[item.maxLevel]);
+      filters.push(item.maxLevel);
     }
     
     if (item.targetFilters.species && item.targetFilters.species.length > 0) {

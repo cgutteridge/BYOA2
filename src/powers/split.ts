@@ -14,12 +14,11 @@ export class SplitPower extends ItemPower {
   readonly glowColor = "rgba(255, 165, 0, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 3;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
-  readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = null; // Can target any level
+  readonly maxLevel = 'grunt';
 
   // Silly name pairs for when exactly 2 monsters are created
   private readonly namePairs = [

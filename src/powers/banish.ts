@@ -15,7 +15,6 @@ export class BanishPower extends ItemPower {
   readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
-  readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
 

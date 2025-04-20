@@ -19,9 +19,8 @@ export class FreezePower extends ItemPower {
   readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
-  readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly maxLevel: MonsterLevel = 'elite'; // Can't target bosses
+  readonly maxLevel = 'elite';
 
   // Map from level to appropriate ice monster
   private readonly iceMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

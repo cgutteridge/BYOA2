@@ -15,9 +15,8 @@ export class PickpocketPower extends ItemPower {
   readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
-  readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = null; // Can target any level
+  readonly maxLevel = 'elite';
 
   applyEffect(item: Item, monster: Monster): boolean {
     const questStore = useQuestStore();

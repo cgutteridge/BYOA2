@@ -13,9 +13,8 @@ export class SpyPower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 1;
-  readonly canHaveTargetRestriction = true;
-  readonly supportsTypeTargeting = true;
-  readonly defaultTargetMode = 'random';
+  readonly canHaveTargetRestriction = false;
+  readonly supportsTypeTargeting = false;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
 

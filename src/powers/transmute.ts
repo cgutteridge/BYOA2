@@ -12,10 +12,9 @@ export class TransmutePower extends ItemPower {
   readonly glowColor = "rgba(138, 43, 226, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 1;
+  readonly baseCost = 2;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
-  readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = true;
   readonly maxLevel = null; // Can target any level
 

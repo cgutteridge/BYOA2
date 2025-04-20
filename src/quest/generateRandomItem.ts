@@ -50,8 +50,8 @@ export function generateRandomItem(level: number): Item {
   
   remainingPoints -= power.baseCost;
   
-  // Get default target mode
-  const defaultTargetMode = power.defaultTargetMode;
+  // Always use 'random' as the default target mode
+  const defaultTargetMode = 'random';
   
   // Initialize item with default properties
   const item: Item = {
@@ -286,27 +286,18 @@ export function generateTestItems(): Item[] {
  */
 function generateItemWithPower(power: ItemPowerId, level: number): Item {
   const powerInstance = powerFactory.getPower(power);
+  
   if (!powerInstance) {
-    // Fallback to simple item if power not found
-    return {
-      id: toItemId(`test_${power}_${Date.now()}`),
-      name: `Test ${power} Item`,
-      uses: 3,
-      power,
-      level,
-      target: 'random',
-      targetFilters: {},
-      maxLevel: 'minion'
-    };
+    throw new Error(`Power ${power} not found`);
   }
   
   return {
     id: toItemId(`test_${power}_${Date.now()}`),
-    name: generateItemName(power, powerInstance.defaultTargetMode),
+    name: generateItemName(power, 'random'),
     uses: 3,
     power,
     level,
-    target: powerInstance.defaultTargetMode,
+    target: 'random',
     targetFilters: {},
     maxLevel: powerInstance.maxLevel || 'minion'
   };

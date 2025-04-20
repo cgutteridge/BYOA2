@@ -31,9 +31,6 @@ export abstract class ItemPower {
     // Whether the power supports targeting all monsters of a type
     abstract readonly supportsTypeTargeting: boolean;
 
-    // Default target mode when generating items
-    abstract readonly defaultTargetMode: TargetMode;
-
     // Whether the power can have result restrictions (for transmutation)
     abstract readonly canHaveResultRestriction: boolean;
 

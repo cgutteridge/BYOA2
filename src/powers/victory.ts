@@ -10,10 +10,9 @@ export class VictoryPower extends ItemPower {
   readonly glowColor = "rgba(255, 0, 0, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
-  readonly canHaveTargetRestriction = true;
-  readonly supportsTypeTargeting = true;
-  readonly defaultTargetMode = 'random';
+  readonly baseCost = 10;
+  readonly canHaveTargetRestriction = false;
+  readonly supportsTypeTargeting = false;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
 
