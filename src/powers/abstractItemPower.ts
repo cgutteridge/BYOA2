@@ -24,6 +24,8 @@ export abstract class ItemPower {
     // Base cost in points when generating items
     abstract readonly baseCost: number;
 
+    // USED IN ITEM GENERATION
+
     // Whether the power can have target restrictions (species/flags)
     abstract readonly canHaveTargetRestriction: boolean;
 
