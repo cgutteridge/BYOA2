@@ -8,6 +8,7 @@ import { jsonrepair } from 'jsonrepair'
 export class ChatGPTAPI {
   private readonly model = 'gpt-3.5-turbo'
   private readonly proxyUrl = 'https://chris.totl.net/BYOA/proxy.php'
+  private readonly MAX_RETRIES = 3
 
   private readonly SYSTEM_ROLE : Message =     {
     role: 'system',
@@ -23,42 +24,57 @@ export class ChatGPTAPI {
   }
 
   private async sendMessage<T>(messages: Message[]): Promise<T> {
-    try {
-      const response = await fetch(this.proxyUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: this.model,
-          messages,
+    let lastError: Error | null = null;
+    
+    for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
+      try {
+        console.log(`API attempt ${attempt}/${this.MAX_RETRIES}`)
+        
+        const response = await fetch(this.proxyUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: this.model,
+            messages,
             temperature: 0.1,
             frequency_penalty: 0.3,
-          presence_penalty: 0.3,
-          max_tokens: 1000
+            presence_penalty: 0.3,
+            max_tokens: 1000
+          })
         })
-      })
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(`API Error: ${JSON.stringify(error)}`)
-      }
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(`API Error: ${JSON.stringify(error)}`)
+        }
 
-      const data = await response.json()
-      const content = data.choices[0].message.content || ''
-      console.log(content)
-      
-      try {
-        return JSON.parse(content) as T
+        const data = await response.json()
+        const content = data.choices[0].message.content || ''
+        console.log(content)
+        
+        try {
+          return JSON.parse(content) as T
+        } catch (error) {
+          console.warn('Failed to parse JSON response, attempting repair:', error)
+          const repairedJson = jsonrepair(content)
+          return JSON.parse(repairedJson) as T
+        }
       } catch (error) {
-        console.warn('Failed to parse JSON response, attempting repair:', error)
-        const repairedJson = jsonrepair(content)
-        return JSON.parse(repairedJson) as T
+        lastError = error instanceof Error ? error : new Error(String(error));
+        console.error(`Error on attempt ${attempt}/${this.MAX_RETRIES}:`, error)
+        
+        if (attempt === this.MAX_RETRIES) {
+          console.error('All retry attempts failed')
+          throw lastError
+        }
       }
-    } catch (error) {
-      console.error('Error calling ChatGPT API via proxy:', error)
-      throw error
     }
+    
+    // This should never be reached due to the throw in the loop,
+    // but TypeScript needs it for type safety
+    throw new Error('All retry attempts failed')
   }
 
   async generateGameLocationDescription(
