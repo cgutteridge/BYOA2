@@ -59,11 +59,20 @@ onMounted(() => {
     
     // For each new notification, set up timing to end center animation
     newNotifications.forEach(notification => {
+      // Get animation duration based on screen size
+      let animationDuration = 2000; // Default for desktop
+      
+      if (window.matchMedia('(max-width: 480px)').matches) {
+        animationDuration = 1600; // Small mobile
+      } else if (window.matchMedia('(max-width: 768px)').matches) {
+        animationDuration = 1800; // Tablet/medium mobile
+      }
+      
       // Remove entering flag after animation completes
       setTimeout(() => {
         // Call the store method to exit the center animation
         appStore.exitCenterAnimation(notification.id);
-      }, 2000); // Match animation duration
+      }, animationDuration);
     });
   });
 });
@@ -120,16 +129,112 @@ onMounted(() => {
   }
   15% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(3);
+    transform: translate(-50%, -50%) scale(2);
   }
   30% {
-    transform: translate(-50%, -50%) scale(2.5);
+    transform: translate(-50%, -50%) scale(1.8);
   }
   90% {
-    transform: translate(-50%, -50%) scale(2.5);
+    transform: translate(-50%, -50%) scale(1.8);
   }
   100% {
-    transform: translate(-50%, -50%) scale(2.5);
+    transform: translate(-50%, -50%) scale(1.8);
+  }
+}
+
+/* Mobile-specific animation scales */
+@media screen and (max-width: 768px) {
+  .notification-entering {
+    animation: poof-animation 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    top: calc(30vh + var(--notification-offset, 0));
+  }
+  
+  @keyframes poof-animation {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.2);
+    }
+    15% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.5);
+    }
+    30% {
+      transform: translate(-50%, -50%) scale(1.3);
+    }
+    90% {
+      transform: translate(-50%, -50%) scale(1.3);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1.3);
+    }
+  }
+  
+  .notification-container {
+    top: 15px;
+    right: 15px;
+    max-width: 90vw;
+    gap: 8px;
+  }
+  
+  .notification {
+    padding: 6px 12px;
+    font-size: 0.95rem;
+  }
+  
+  .notification-content {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Small mobile screens */
+@media screen and (max-width: 480px) {
+  .notification-entering {
+    animation: poof-animation 1.6s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    top: calc(25vh + var(--notification-offset, 0));
+  }
+  
+  @keyframes poof-animation {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.2);
+    }
+    15% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+    30% {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    90% {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+  }
+  
+  .notification {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    max-width: 85vw;
+  }
+  
+  .notification-content {
+    margin-right: 5px;
+    line-height: 1.3;
+  }
+  
+  .close-button {
+    width: 20px;
+    height: 20px;
+    font-size: 16px;
+  }
+  
+  .notification-container {
+    top: 10px;
+    right: 10px;
+    gap: 6px;
   }
 }
 
