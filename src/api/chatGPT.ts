@@ -3,9 +3,20 @@ type Message = {
   content: string
 }
 
+import { jsonrepair } from 'jsonrepair'
+
 export class ChatGPTAPI {
   private readonly model = 'gpt-3.5-turbo'
   private readonly proxyUrl = 'https://chris.totl.net/BYOA/proxy.php'
+
+  private readonly SYSTEM_ROLE : Message =     {
+    role: 'system',
+    content: `You are a chaotic, sarcastic dungeon master narrating a ridiculous adventure. 
+        Don't say things are quirky or funny, just show it. Be either deadpan or over the top.
+        Be wild, cheeky, and risque.  Be outrageous. Your target audience is 18-35 year old nerds. Output JSON only. 
+        Do not include backticks in the JSON response. `
+  }
+
 
   constructor() {
     // No need for API key or OpenAI instance when using proxy
@@ -57,21 +68,14 @@ export class ChatGPTAPI {
     giftItemDescription?: string
   }> {
     const messages: Message[] = [
-      {
-        role: 'system',
-        content: `You are a chaotic, sarcastic dungeon master narrating a ridiculous adventure. 
-        Don't say things are quirky or funny, just show it. Be either deadpan or over the top.
-        Be wild, cheeky, and risque. Your target audience is 18-35 year old nerdy drinkers. Output JSON only. 
-        Do not include backticks in the JSON response. `
-     },
-     
+      this.SYSTEM_ROLE,
       {
         role: 'user',
         content: `
            Generate a JSON object for the ${locationType} at '${locationName}'. 
            ${giftItemPower ? `The players may find or be given an item with this power: "${giftItemPower}".` : ''}
            The players must defeat ${enemies} to win an item with this power: "${prizeItemPower}".
-            Be outrageous."
+           
         
         For each item, create a unique name and a story description that ties it to the location and challenge.  
         Do not promise additional rewards. 
@@ -90,7 +94,13 @@ export class ChatGPTAPI {
 
     const json = await this.sendMessage(messages)
     console.log(json)
-    return JSON.parse(json)
+    try {
+      return JSON.parse(json)
+    } catch (error) {
+      console.warn('Failed to parse JSON response, attempting repair:', error)
+      const repairedJson = jsonrepair(json)
+      return JSON.parse(repairedJson)
+    }
   }
 
   async generateMonsterNames(
@@ -105,10 +115,7 @@ export class ChatGPTAPI {
     }>
   ): Promise<Array<string[]>> {
     const messages: Message[] = [
-      {
-        role: 'system',
-        content: 'You are a chaotic, sarcastic dungeon master naming creatures in a ridiculous adventure. Be wild, cheeky, and creative with the names. Output JSON only. Do not include backticks in the JSON response.'
-      },
+      this.SYSTEM_ROLE,
       {
         role: 'user',
         content: `
@@ -137,7 +144,13 @@ export class ChatGPTAPI {
     console.log(messages)
     const json = await this.sendMessage(messages)
     console.log(json)
-    return JSON.parse(json)
+    try {
+      return JSON.parse(json)
+    } catch (error) {
+      console.warn('Failed to parse JSON response, attempting repair:', error)
+      const repairedJson = jsonrepair(json)
+      return JSON.parse(repairedJson)
+    }
   }
 
   async initializeQuest(
@@ -151,20 +164,12 @@ export class ChatGPTAPI {
     tokenDescription: string
   }> {
     const messages: Message[] = [
-      {
-        role: 'system',
-        content: `You are a chaotic, sarcastic dungeon master narrating a ridiculous adventure. 
-        Don't say things are quirky or funny, just show it. Be either deadpan or over the top.
-        Be wild, cheeky, and risque. Your target audience is 18-35 year old nerdy drinkers. Output JSON only. 
-        Do not include backticks in the JSON response.`
-      },
+      this.SYSTEM_ROLE,
       {
         role: 'user',
         content: `
           Generate a quest starting at "${startLocationName}" . 
-          The players will visit at least ${locationsCount} locations of their choice after this to collect tokens that will eventually lead to the "${questItemTitle}" at ${endLocationName}.
-          
-          Be outrageous and creative. 
+          The players will visit at least ${locationsCount} locations of their choice after this to collect tokens that will eventually lead to the "${questItemTitle}" at ${endLocationName}.. 
           
           Create a quest description that explains the overall goal and why the players must collect these tokens. Make
           it epic and over the top. Use the "${questItemTitle}" as a seed for the overall theme.
@@ -182,6 +187,12 @@ export class ChatGPTAPI {
 
     const json = await this.sendMessage(messages)
     console.log(json)
-    return JSON.parse(json)
+    try {
+      return JSON.parse(json)
+    } catch (error) {
+      console.warn('Failed to parse JSON response, attempting repair:', error)
+      const repairedJson = jsonrepair(json)
+      return JSON.parse(repairedJson)
+    }
   }
 }
