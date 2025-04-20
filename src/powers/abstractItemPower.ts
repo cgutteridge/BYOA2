@@ -5,8 +5,7 @@ import type {
     Monster,
     MonsterFlag,
     MonsterLevel,
-    MonsterTypeId,
-    TargetMode
+    MonsterTypeId
 } from '../types'
 import {monsterTypes} from '../data/monsterTypes'
 import {useQuestStore} from "@/stores/questStore.ts";
@@ -247,7 +246,7 @@ export abstract class ItemPower {
     /**
      * Get a description of the item's target options
      */
-    protected getTargetDescription(item: Item): string {
+     getTargetDescription(item: Item): string {
         // Handle empty or undefined item objects
         if (!item || typeof item !== 'object') {
             return 'an unknown enemy';

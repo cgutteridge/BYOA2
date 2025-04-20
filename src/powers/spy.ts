@@ -1,6 +1,5 @@
-import type {Item, Monster} from '../types'
+import type {Item} from '../types'
 import { ItemPower } from './abstractItemPower'
-import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Spy power implementation
@@ -18,14 +17,6 @@ export class SpyPower extends ItemPower {
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
 
-  applyEffect(item: Item, monster: Monster): boolean {
-    const questStore = useQuestStore();
-
-    questStore.updateStats(0,0,0, 
-        `Used ${item.name} to spy TODO`)
-    
-    return false;
-  }
 
   generateEffectDescription(item: Item): string {
     const qualityTerm = this.getLevelQualityTerm(item.level);

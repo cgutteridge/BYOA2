@@ -29,13 +29,13 @@
             
             <!-- Effect description -->
             <div class="item-inspect-modal__effect">
-              <p>{{ generateEffectDescription(item) }}</p>
+              <p>{{ power.generateEffectDescription(item) }}</p>
             </div>
             
             <!-- Target selection (when in location) -->
             <div v-if="isInGameLocation && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish' || item.power === 'freeze' || item.power === 'petrify' || item.power === 'pacify' || item.power === 'distract' || item.power === 'vegetate' || item.power === 'stun')" class="item-inspect-modal__target-section">
               <h3>{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
-              <p class="target-description">{{ getTargetDescription(item) }}</p>
+              <p class="target-description">{{ power.getTargetDescription(item) }}</p>
               
               <div v-if="hasTargetableMonsters" class="target-list">
                 <div v-if="targetMode === 'type'" class="target-type-list">
@@ -113,7 +113,6 @@
 <script setup lang="ts">
 import {computed, ref} from 'vue'
 import {Item, Monster, MonsterTypeId, toMonsterTypeId} from '../types'
-import {generateEffectDescription, getTargetDescription} from '../quest/generateEffectDescription.ts'
 import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
 import {getValidTargets} from '../quest/itemUtils.ts'
@@ -130,6 +129,8 @@ const questStore = useQuestStore()
 // Get modal state from appStore
 const isOpen = computed(() => appStore.inspectedItem !== null)
 const item = computed(() => appStore.inspectedItem || {} as Item)
+
+const power = computed(()=> powerFactory.getPower(item.value.power))
 
 // Determine context based on app state
 const context = computed(() => {

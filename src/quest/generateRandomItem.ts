@@ -1,6 +1,5 @@
 import type { Item, Species, MonsterFlag, ItemPowerId } from '../types';
 import { toItemId } from '../types';
-import { getLevelQualityTerm } from './generateEffectDescription.ts';
 import pickOne from "@/utils/pickOne.ts";
 import { powerFactory } from "@/powers/index.ts";
 
@@ -246,12 +245,9 @@ function generateItemName(power: ItemPowerId, targetMode?: string): string {
   // Get a random material and item type
   const material = pickOne(materials);
   const itemType = pickOne(itemTypes[power] || ["Artifact"]);
-  
-  // Add a quality term based on the power's level
-  const qualityTerm = getLevelQualityTerm(1); // Use level 1 quality term
-  
+
   // Combine parts into full name
-  const baseName = `${material} ${qualityTerm} ${itemType}`;
+  const baseName = `${material} ${itemType}`;
   
   // Add target mode suffix if applicable
   if (targetMode === 'pick') {

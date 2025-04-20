@@ -10,7 +10,7 @@
       'item-card--drop': variant === 'drop'
     }"
     :data-power="item.power"
-    :aria-label="`${item.name}, ${generateEffectDescription(item)}, ${item.uses !== undefined ? item.uses + ' uses remaining' : 'Unlimited uses'}`"
+    :aria-label="`${item.name}, ${itemEffect}, ${item.uses !== undefined ? item.uses + ' uses remaining' : 'Unlimited uses'}`"
     @click="handleClick"
   >
     <div class="item-card__icon" v-if="item.power">
@@ -18,7 +18,7 @@
     </div>
     <div class="item-card__content">
       <div class="item-card__name">{{ item.name }}</div>
-      <div class="item-card__power" v-if="showDetails">{{ generateEffectDescription(item) }}</div>
+      <div class="item-card__power" v-if="showDetails">{{ itemEffect }}</div>
     </div>
     <div class="item-card__uses">{{ item.uses !== undefined ? item.uses : '∞' }}</div>
   </div>
@@ -31,7 +31,6 @@ import { useAppStore } from '../stores/appStore'
 import { useQuestStore } from '../stores/questStore'
 import { powerFactory } from '../powers'
 import { getValidTargets } from '../quest/itemUtils.ts'
-import { generateEffectDescription } from '../quest/generateEffectDescription.ts'
 import {useLocationStore} from "@/stores/locationStore.ts";
 
 // Get the stores
@@ -58,6 +57,11 @@ const getItemPowerIcon = (power: ItemPowerId | undefined): string => {
   const powerObj = powerFactory.getPower(power)
   return powerObj?.icon || '?'
 }
+
+const itemEffect = computed(()=> {
+  const powerObj = powerFactory.getPower(props.item.power)
+  return powerObj?.generateEffectDescription(props.item) || 'unknown'
+})
 
 // Is this item currently selected?
 const isSelected = computed(() => {
@@ -108,6 +112,8 @@ function handleClick() {
     appStore.openItemInspectModal(props.item)
   }
 }
+
+
 
 const getPowerGlowColor = (power: ItemPowerId): string => {
   const powerObj = powerFactory.getPower(power)

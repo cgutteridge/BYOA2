@@ -3,12 +3,12 @@ import {ChatGPTAPI} from '../api/chatGPT.ts'
 import generateMonsters from './generateMonsters.ts'
 import {monsterTypes} from "@/data/monsterTypes.ts";
 import {useQuestStore} from '@/stores/questStore.ts';
-import {generateEffectDescription} from './generateEffectDescription.ts'
 import {monsterItem} from "@/quest/monsterItem.ts";
 import {locationPrizeItem} from "@/quest/locationPrizeItem.ts";
 import {locationGiftItem} from "@/quest/locationGiftItem.ts";
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {generateVictoryItem} from "@/quest/itemUtils.ts";
+import {powerFactory} from "@/powers";
 
 /**
  * Scout a location, generating its description, monsters, and prize
@@ -70,11 +70,23 @@ export async function scoutLocation(
     }
    
     console.log(location,extraInstructions)
-    
-    // Get prize and gift item powers to pass to ChatGPT
-    const prizeItemPower = location.prizeItem ? generateEffectDescription(location.prizeItem) : "nothing";
-    const giftItemPower = location.giftItem ? generateEffectDescription(location.giftItem) : undefined;
-    
+
+    let giftItemEffect = ''
+    if (location.giftItem) {
+        const giftItemPower = powerFactory.getPower(location.giftItem.power)
+        if (giftItemPower) {
+            giftItemEffect = giftItemPower.generateEffectDescription(location.giftItem)
+        }
+    }
+
+    let prizeItemEffect = ''
+    if (location.prizeItem) {
+        const prizeItemPower = powerFactory.getPower(location.prizeItem.power)
+        if (prizeItemPower) {
+            prizeItemEffect = prizeItemPower.generateEffectDescription(location.prizeItem)
+        }
+    }
+
     // Generate location description, name, and item details from AI
     const {
         name,
@@ -87,9 +99,9 @@ export async function scoutLocation(
         location.name,
         locationType.title,
         monstersDescription,
-        prizeItemPower,
+        prizeItemEffect,
         extraInstructions,
-        giftItemPower
+        giftItemEffect
     )
 
     // Update the location with the new information

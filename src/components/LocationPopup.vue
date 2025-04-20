@@ -299,7 +299,7 @@ async function scoutLocationAction(event?: MouseEvent) {
   await scoutLocation(props.location)
   
   // Award XP for scouting a location through the UI (using updateStats)
-  questStore.updateStats(1, 0, 0, "Scouting a location.");
+  questStore.updateStats(1, 0, 0, `Scouted ${props.location.name}.`);
 }
 
 function enterLocation(event?: MouseEvent) {
@@ -310,7 +310,7 @@ function enterLocation(event?: MouseEvent) {
   appStore.setScreen('location')
   
   // Award XP for arriving at a location (using updateStats)
-  questStore.updateStats(2, 0, 0, "Entering a location.");
+  questStore.updateStats(2, 0, 0, `Entered ${props.location.name}.`);
 }
 
 </script>
