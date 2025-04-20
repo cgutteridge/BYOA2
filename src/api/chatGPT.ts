@@ -22,7 +22,7 @@ export class ChatGPTAPI {
     // No need for API key or OpenAI instance when using proxy
   }
 
-  private async sendMessage(messages: Message[]): Promise<string> {
+  private async sendMessage<T>(messages: Message[]): Promise<T> {
     try {
       const response = await fetch(this.proxyUrl, {
         method: 'POST',
@@ -45,7 +45,16 @@ export class ChatGPTAPI {
       }
 
       const data = await response.json()
-      return data.choices[0].message.content || ''
+      const content = data.choices[0].message.content || ''
+      console.log(content)
+      
+      try {
+        return JSON.parse(content) as T
+      } catch (error) {
+        console.warn('Failed to parse JSON response, attempting repair:', error)
+        const repairedJson = jsonrepair(content)
+        return JSON.parse(repairedJson) as T
+      }
     } catch (error) {
       console.error('Error calling ChatGPT API via proxy:', error)
       throw error
@@ -92,15 +101,7 @@ export class ChatGPTAPI {
       }
     ]
 
-    const json = await this.sendMessage(messages)
-    console.log(json)
-    try {
-      return JSON.parse(json)
-    } catch (error) {
-      console.warn('Failed to parse JSON response, attempting repair:', error)
-      const repairedJson = jsonrepair(json)
-      return JSON.parse(repairedJson)
-    }
+    return this.sendMessage(messages)
   }
 
   async generateMonsterNames(
@@ -142,15 +143,7 @@ export class ChatGPTAPI {
     ]
 
     console.log(messages)
-    const json = await this.sendMessage(messages)
-    console.log(json)
-    try {
-      return JSON.parse(json)
-    } catch (error) {
-      console.warn('Failed to parse JSON response, attempting repair:', error)
-      const repairedJson = jsonrepair(json)
-      return JSON.parse(repairedJson)
-    }
+    return this.sendMessage(messages)
   }
 
   async initializeQuest(
@@ -185,14 +178,6 @@ export class ChatGPTAPI {
       }
     ]
 
-    const json = await this.sendMessage(messages)
-    console.log(json)
-    try {
-      return JSON.parse(json)
-    } catch (error) {
-      console.warn('Failed to parse JSON response, attempting repair:', error)
-      const repairedJson = jsonrepair(json)
-      return JSON.parse(repairedJson)
-    }
+    return this.sendMessage(messages)
   }
 }
