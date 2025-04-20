@@ -1,4 +1,4 @@
-import type { Item, MonsterLevel, Species, MonsterFlag, ItemPowerId } from '../types';
+import type { Item, Species, MonsterFlag, ItemPowerId } from '../types';
 import { toItemId } from '../types';
 import { getLevelQualityTerm } from './generateEffectDescription.ts';
 import pickOne from "@/utils/pickOne.ts";
@@ -61,21 +61,13 @@ export function generateRandomItem(level: number): Item {
     power: selectedPower,
     level: level,
     target: defaultTargetMode,
-    targetFilters: {
-      levels: ['minion', 'grunt'] as MonsterLevel[],
-    }
+    targetFilters: {},
+    maxLevel: 'minion'
   };
   
   // Apply level-specific restrictions if any
   if (power.maxLevel) {
-    const levelOrder: MonsterLevel[] = ['minion', 'grunt', 'elite', 'boss'];
-    const maxLevelIndex = levelOrder.indexOf(power.maxLevel);
-    const allowedLevels = levelOrder.slice(0, maxLevelIndex + 1);
-    
-    item.targetFilters = {
-      ...item.targetFilters,
-      levels: allowedLevels
-    };
+    item.maxLevel = power.maxLevel;
   }
   
   // Step 2: Apply target restrictions if applicable
@@ -152,11 +144,13 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   }
   
   // Increase monster level targeting
-  const currentLevels = item.targetFilters?.levels || [];
-  if (!currentLevels.includes('elite') && !power.maxLevel) {
+  if (item.maxLevel === 'minion' && remainingPoints >= 1) {
+    availableUpgrades.push('level_grunt');
+  }
+  if (item.maxLevel === 'grunt' && remainingPoints >= 2) {
     availableUpgrades.push('level_elite');
   }
-  if (!currentLevels.includes('boss') && currentLevels.includes('elite') && !power.maxLevel) {
+  if (item.maxLevel === 'elite' && remainingPoints >= 4 && !power.maxLevel) {
     availableUpgrades.push('level_boss');
   }
   
@@ -200,19 +194,20 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
       item.target = 'pick_type';
       return remainingPoints - 1;
       
-    case 'level_elite':
-      // Add elite monsters to targeting
-      if (item.targetFilters) {
-        item.targetFilters.levels = [...(item.targetFilters.levels || []), 'elite'];
-      }
+    case 'level_grunt':
+      // Upgrade from minion to grunt (cost: 1)
+      item.maxLevel = 'grunt';
       return remainingPoints - 1;
       
+    case 'level_elite':
+      // Upgrade from grunt to elite (cost: 2)
+      item.maxLevel = 'elite';
+      return remainingPoints - 2;
+      
     case 'level_boss':
-      // Add boss monsters to targeting
-      if (item.targetFilters) {
-        item.targetFilters.levels = [...(item.targetFilters.levels || []), 'boss'];
-      }
-      return remainingPoints - 1;
+      // Upgrade from elite to boss (cost: 4)
+      item.maxLevel = 'boss';
+      return remainingPoints - 4;
       
     default:
       return remainingPoints;
@@ -300,7 +295,8 @@ function generateItemWithPower(power: ItemPowerId, level: number): Item {
       power,
       level,
       target: 'random',
-      targetFilters: { levels: ['minion', 'grunt'] }
+      targetFilters: {},
+      maxLevel: 'minion'
     };
   }
   
@@ -311,21 +307,9 @@ function generateItemWithPower(power: ItemPowerId, level: number): Item {
     power,
     level,
     target: powerInstance.defaultTargetMode,
-    targetFilters: {
-      levels: getDefaultLevelsFromMaxLevel(powerInstance.maxLevel)
-    }
+    targetFilters: {},
+    maxLevel: powerInstance.maxLevel || 'minion'
   };
-}
-
-/**
- * Get default level array based on maxLevel restriction
- */
-function getDefaultLevelsFromMaxLevel(maxLevel: MonsterLevel | null): MonsterLevel[] {
-  if (!maxLevel) return ['minion', 'grunt'] as MonsterLevel[];
-  
-  const levelOrder: MonsterLevel[] = ['minion', 'grunt', 'elite', 'boss'];
-  const maxLevelIndex = levelOrder.indexOf(maxLevel);
-  return levelOrder.slice(0, maxLevelIndex + 1);
 }
 
 /**

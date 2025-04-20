@@ -44,9 +44,8 @@ function createDebugItems(): Item[] {
       level: 6,
       power,
       target: 'pick',
-      targetFilters: {
-        levels: ['minion', 'grunt', 'elite', 'boss']
-      },
+      targetFilters: {},
+      maxLevel: 'boss',
       icon: '🛠️',
       timestamp: Date.now()
     };
@@ -60,9 +59,8 @@ function createDebugItems(): Item[] {
       level: 6,
       power,
       target: 'pick_type',
-      targetFilters: {
-        levels: ['minion', 'grunt', 'elite', 'boss']
-      },
+      targetFilters: {},
+      maxLevel: 'boss',
       icon: '🛠️',
       timestamp: Date.now()
     };

@@ -97,15 +97,19 @@ export abstract class ItemPower {
             return false;
         }
 
+        // Check level restrictions based on maxLevel
+        if (item.maxLevel) {
+            const levelOrder: MonsterLevel[] = ['minion', 'grunt', 'elite', 'boss'];
+            const maxLevelIndex = levelOrder.indexOf(item.maxLevel);
+            const itemMonsterLevelIndex = levelOrder.indexOf(monsterType.level);
+            
+            if (itemMonsterLevelIndex > maxLevelIndex) {
+                return false;
+            }
+        }
+
         // Check target filters from the item
         if (item.targetFilters) {
-            // Check level restrictions
-            if (item.targetFilters.levels && item.targetFilters.levels.length > 0) {
-                if (!item.targetFilters.levels.includes(monsterType.level)) {
-                    return false;
-                }
-            }
-
             // Check species restrictions
             if (item.targetFilters.species && item.targetFilters.species.length > 0) {
                 if (!item.targetFilters.species.includes(monsterType.species)) {

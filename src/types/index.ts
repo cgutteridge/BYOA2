@@ -47,9 +47,9 @@ export interface Item {
   target?: TargetMode
   targetFilters?: {
     species?: Species[]
-    levels?: MonsterLevel[]
     flags?: MonsterFlag[]
   }
+  maxLevel?: MonsterLevel
   result?: ResultMode
   resultLevel?: MonsterLevel
   resultSpecies?: Species
