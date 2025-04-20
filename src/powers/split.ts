@@ -19,7 +19,7 @@ export class SplitPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly levelRestrictions = null; // Can target any level
+  readonly maxLevel = null; // Can target any level
 
   // Silly name pairs for when exactly 2 monsters are created
   private readonly namePairs = [

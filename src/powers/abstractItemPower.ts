@@ -37,8 +37,8 @@ export abstract class ItemPower {
     // Whether the power can have result restrictions (for transmutation)
     abstract readonly canHaveResultRestriction: boolean;
 
-    // Level restrictions - which monster levels this power works on
-    abstract readonly levelRestrictions: MonsterLevel[] | null;
+    // Maximum monster level this power works on (or null for any level)
+    abstract readonly maxLevel: MonsterLevel | null;
 
     // Target selection methods
     // @ts-ignore - May be unused in base class, implemented by subclasses
@@ -217,9 +217,9 @@ export abstract class ItemPower {
         return count
     }
 
-    applyEffect(item: Item, _monster: Monster): boolean {
-        console.error( "applyEffect should be subclassed. Called on ",item)
-        return false;
+    applyEffect(_item: Item, _monster: Monster): boolean {
+        console.log("applyEffect should be subclassed.")
+        return false
     }
 }
 

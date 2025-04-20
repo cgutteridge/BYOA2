@@ -21,7 +21,7 @@ export class PacifyPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly levelRestrictions: MonsterLevel[] = ['minion', 'grunt', 'elite']; // Can't target bosses
+  readonly maxLevel: MonsterLevel = 'elite'
 
   // Map from level to appropriate pacified monster
   private readonly pacifiedMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

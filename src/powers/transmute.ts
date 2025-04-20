@@ -17,7 +17,7 @@ export class TransmutePower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = true;
-  readonly levelRestrictions = null;
+  readonly maxLevel = null; // Can target any level
 
   applyEffect(item: Item, monster: Monster): boolean {
     const questStore = useQuestStore();
@@ -27,6 +27,6 @@ export class TransmutePower extends ItemPower {
         `${monster.name} was transmuted TODO with ${item.name}`)
 
     return false;
-  } // Can target any level
+  }
 
 } 

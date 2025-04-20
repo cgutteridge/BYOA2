@@ -21,7 +21,7 @@ export class DistractPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly levelRestrictions: MonsterLevel[] = ['minion', 'grunt', 'elite']; // Can't target bosses
+  readonly maxLevel: MonsterLevel = 'elite'; // Can't target bosses
 
   // Map from level to appropriate distracted monster
   private readonly distractedMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

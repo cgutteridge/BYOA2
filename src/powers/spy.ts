@@ -17,7 +17,7 @@ export class SpyPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly levelRestrictions = null;
+  readonly maxLevel = null; // Can target any level
 
   applyEffect(_item: Item, _monster: Monster): boolean {
     const questStore = useQuestStore();

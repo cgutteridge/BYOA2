@@ -67,10 +67,14 @@ export function generateRandomItem(level: number): Item {
   };
   
   // Apply level-specific restrictions if any
-  if (power.levelRestrictions) {
+  if (power.maxLevel) {
+    const levelOrder: MonsterLevel[] = ['minion', 'grunt', 'elite', 'boss'];
+    const maxLevelIndex = levelOrder.indexOf(power.maxLevel);
+    const allowedLevels = levelOrder.slice(0, maxLevelIndex + 1);
+    
     item.targetFilters = {
       ...item.targetFilters,
-      levels: power.levelRestrictions
+      levels: allowedLevels
     };
   }
   
@@ -149,10 +153,10 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   
   // Increase monster level targeting
   const currentLevels = item.targetFilters?.levels || [];
-  if (!currentLevels.includes('elite') && !power.levelRestrictions) {
+  if (!currentLevels.includes('elite') && !power.maxLevel) {
     availableUpgrades.push('level_elite');
   }
-  if (!currentLevels.includes('boss') && currentLevels.includes('elite') && !power.levelRestrictions) {
+  if (!currentLevels.includes('boss') && currentLevels.includes('elite') && !power.maxLevel) {
     availableUpgrades.push('level_boss');
   }
   
@@ -308,9 +312,20 @@ function generateItemWithPower(power: ItemPowerId, level: number): Item {
     level,
     target: powerInstance.defaultTargetMode,
     targetFilters: {
-      levels: powerInstance.levelRestrictions || ['minion', 'grunt']
+      levels: getDefaultLevelsFromMaxLevel(powerInstance.maxLevel)
     }
   };
+}
+
+/**
+ * Get default level array based on maxLevel restriction
+ */
+function getDefaultLevelsFromMaxLevel(maxLevel: MonsterLevel | null): MonsterLevel[] {
+  if (!maxLevel) return ['minion', 'grunt'] as MonsterLevel[];
+  
+  const levelOrder: MonsterLevel[] = ['minion', 'grunt', 'elite', 'boss'];
+  const maxLevelIndex = levelOrder.indexOf(maxLevel);
+  return levelOrder.slice(0, maxLevelIndex + 1);
 }
 
 /**

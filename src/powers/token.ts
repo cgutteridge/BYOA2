@@ -1,12 +1,12 @@
 import {ItemPower} from './abstractItemPower';
 
 /**
- * Kill power implementation
+ * Quest token power implementation
  */
 export class TokenPower extends ItemPower {
   // UI properties
-  readonly displayName = "Kill";
-  readonly icon = "⭐️️";
+  readonly displayName = "Quest Token";
+  readonly icon = "⭐️";
   readonly glowColor = "rgba(255, 0, 0, 0.8)";
   
   // Item generation constants
@@ -15,6 +15,6 @@ export class TokenPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly levelRestrictions = null; // Can target any level
+  readonly maxLevel = null; // Can target any level
 
 } 

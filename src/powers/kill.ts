@@ -17,7 +17,7 @@ export class KillPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly levelRestrictions = null; // Can target any level
+  readonly maxLevel = null; // Can target any level
 
   // @ts-ignore
   applyEffect(item: Item, monster: Monster): boolean {
@@ -33,5 +33,6 @@ export class KillPower extends ItemPower {
     questStore.updateStats(1,0,0,
         `${monster.name} was destroyed with ${item.name}`)
 
+    return true;
   }
 } 

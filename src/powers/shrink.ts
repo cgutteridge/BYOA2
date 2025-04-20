@@ -18,7 +18,7 @@ export class ShrinkPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly defaultTargetMode = 'random';
   readonly canHaveResultRestriction = false;
-  readonly levelRestrictions: MonsterLevel[] = ['grunt','elite']
+  readonly maxLevel: MonsterLevel = 'elite';
 
   // Funny name patterns for shrunken monsters
   private readonly shrinkNames = [
