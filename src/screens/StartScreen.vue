@@ -115,6 +115,7 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import {GameLocation} from "@/types"
 import {useLocationStore} from "@/stores/locationStore.ts"
 import {useQuestStore} from "@/stores/questStore.ts"
+import {generateSillyQuestTitle} from "@/quest/generateSillyQuestTitle.ts"
 
 const appStore = useAppStore()
 const locationStore = useLocationStore()
@@ -124,7 +125,7 @@ const selectedStartLocation = ref<GameLocation | null>(null)
 const selectedEndLocation = ref<GameLocation | null>(null)
 const startLocationId = ref<string>('')
 const endLocationId = ref<string>('')
-const questTitle = ref('The ring of Badgers')
+const questTitle = ref(generateSillyQuestTitle())
 const isLoading = ref(true)
 const selectedDifficulty = ref('medium')
 const playerCount = ref(3)
