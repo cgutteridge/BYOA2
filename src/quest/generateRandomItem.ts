@@ -5,8 +5,8 @@ import { powerFactory } from "@/powers/index.ts";
 
 // Available species for targeting
 const AVAILABLE_SPECIES: Species[] = [
-  'vampire', 'ghost', 'human', 'chameleonoid', 'goblinoid', 
-  'elf', 'demonoid', 'dwarf', 'special', 'fey', 'elemental'
+  'vampire', 'ghost', 'human', 'chameleonoid', 'humanoid', 
+  'demonoid', 'special', 'fey', 'elemental', 'nullified'
 ];
 
 // Available flags for targeting
@@ -216,35 +216,19 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
 /**
  * Generate an item name based on power type and target mode
  */
-function generateItemName(power: ItemPowerId, targetMode?: string): string {
+function generateItemName(powerId: ItemPowerId, targetMode?: string): string {
   // Base material/quality descriptors
   const materials = [
     "Wooden", "Stone", "Copper", "Bronze", "Iron", "Silver", "Gold", "Crystal", 
     "Jade", "Obsidian", "Steel", "Ebony", "Glass", "Bone", "Ancient"
   ];
   
-  // Power-specific item types
-  const itemTypes: Record<ItemPowerId, string[]> = {
-    kill: ["Dagger", "Sword", "Axe", "Hammer", "Spear", "Staff", "Wand", "Bow", "Arrow"],
-    transmute: ["Amulet", "Ring", "Medallion", "Talisman", "Charm", "Jewel", "Orb"],
-    spy: ["Eyeglass", "Looking Glass", "Lens", "Scope", "Mirror", "Spyglass", "Crystal Ball"],
-    shrink: ["Potion", "Elixir", "Flask", "Vial", "Phial", "Draught", "Brew"],
-    split: ["Cleaver", "Scissors", "Shears", "Slicer", "Divider", "Splitter", "Carver"],
-    pickpocket: ["Gloves", "Lockpick", "Hook", "Claw", "Hand", "Grasp", "Grip", "Thief's Tool"],
-    banish: ["Bell", "Book", "Candle", "Scroll", "Rune", "Sigil", "Seal", "Symbol"],
-    freeze: ["Ice Crystal", "Frost Stone", "Cold Gem", "Freezing Orb", "Glacier Shard", "Winter Sphere"],
-    petrify: ["Stone Gaze", "Petrifying Rune", "Gorgon Scale", "Basilisk Eye", "Stone Sphere", "Medusa Lock"],
-    pacify: ["Water Vial", "Calming Spray", "Peace Pendant", "Tranquil Mist", "Serene Orb", "Still Water Crystal"],
-    distract: ["Cola Bomb", "Fizzing Stone", "Bubble Gem", "Carbonated Crystal", "Sparkling Sphere", "Effervescent Orb"],
-    vegetate: ["Juice Box", "Fruit Extract", "Plant Seed", "Green Elixir", "Growth Potion", "Verdant Crystal"],
-    stun: ["Lemon Drop", "Sour Crystal", "Citrus Orb", "Zesty Sphere", "Tangy Gem", "Acidic Stone"],
-    token: ["N/A"],
-    victory: ["N/A"]
-  };
+  // Get item type from the power class
+  const powerInstance = powerFactory.getPower(powerId);
   
   // Get a random material and item type
   const material = pickOne(materials);
-  const itemType = pickOne(itemTypes[power] || ["Artifact"]);
+  const itemType = pickOne(powerInstance?.itemTypes || ["Artifact"]);
 
   // Combine parts into full name
   const baseName = `${material} ${itemType}`;
@@ -253,9 +237,9 @@ function generateItemName(power: ItemPowerId, targetMode?: string): string {
   if (targetMode === 'pick') {
     return `${baseName} of Precision`;
   } else if (targetMode === 'random_type') {
-    return `${baseName} of Species`;
+    return `${baseName} of Havoc`;
   } else if (targetMode === 'pick_type') {
-    return `${baseName} of Selective Species`;
+    return `${baseName} of Judgment`;
   }
   
   return baseName;

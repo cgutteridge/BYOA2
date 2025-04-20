@@ -13,14 +13,17 @@ export class StunPower extends ItemPower {
   // UI properties
   readonly displayName = "Stun";
   readonly icon = "🍋";
-  readonly glowColor = "rgba(255, 235, 59, 0.8)";
+  readonly glowColor = "rgba(255, 215, 0, 0.8)";
   
   // Item generation constants
   readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = 'elite';
+  readonly maxLevel = 'elite'; // Can target up to elite monsters
+  
+  // Item types for this power
+  readonly itemTypes = ["Lemon Drop", "Sour Crystal", "Citrus Orb", "Zesty Sphere", "Tangy Gem", "Acidic Stone"];
 
   // Map from level to appropriate stunned monster
   private readonly stunnedMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

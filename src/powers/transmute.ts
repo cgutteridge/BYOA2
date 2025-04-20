@@ -17,6 +17,9 @@ export class TransmutePower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = true;
   readonly maxLevel = null; // Can target any level
+  
+  // Item types for this power
+  readonly itemTypes = ["Amulet", "Ring", "Medallion", "Talisman", "Charm", "Jewel", "Orb"];
 
   applyEffect(item: Item, monster: Monster): boolean {
     const questStore = useQuestStore();

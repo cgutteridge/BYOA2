@@ -11,14 +11,17 @@ export class SplitPower extends ItemPower {
   // UI properties
   readonly displayName = "Split";
   readonly icon = "✂️";
-  readonly glowColor = "rgba(255, 165, 0, 0.8)";
+  readonly glowColor = "rgba(128, 0, 128, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 1;
+  readonly baseCost = 3;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = 'grunt';
+  readonly maxLevel = 'elite'; // Can target up to elite monsters
+  
+  // Item types for this power
+  readonly itemTypes = ["Cleaver", "Scissors", "Shears", "Slicer", "Divider", "Splitter", "Carver"];
 
   // Silly name pairs for when exactly 2 monsters are created
   private readonly namePairs = [

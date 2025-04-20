@@ -9,15 +9,18 @@ import { useQuestStore } from '@/stores/questStore.ts'
 export class ShrinkPower extends ItemPower {
   // UI properties
   readonly displayName = "Shrink";
-  readonly icon = "🔍";
-  readonly glowColor = "rgba(135, 206, 250, 0.8)";
+  readonly icon = "📏";
+  readonly glowColor = "rgba(0, 128, 128, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 1;
+  readonly baseCost = 2;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = null; // Can target any level
+  readonly maxLevel = 'elite'; // Can target up to elite monsters
+  
+  // Item types for this power
+  readonly itemTypes = ["Potion", "Elixir", "Flask", "Vial", "Phial", "Draught", "Brew"];
 
   // Funny name patterns for shrunken monsters
   private readonly shrinkNames = [

@@ -12,18 +12,21 @@ import {useQuestStore} from "@/stores/questStore.ts";
 export class VegetatePower extends ItemPower {
   // UI properties
   readonly displayName = "Vegetate";
-  readonly icon = "🧃";
-  readonly glowColor = "rgba(76, 175, 80, 0.8)";
+  readonly icon = "🥦";
+  readonly glowColor = "rgba(0, 128, 0, 0.8)";
   
   // Item generation constants
   readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = 'elite';
+  readonly maxLevel = 'elite'; // Can target up to elite monsters
+  
+  // Item types for this power
+  readonly itemTypes = ["Juice Box", "Fruit Extract", "Plant Seed", "Green Elixir", "Growth Potion", "Verdant Crystal"];
 
-  // Map from level to appropriate vegetated monster
-  private readonly vegetatedMonsterMap: Record<MonsterLevel, MonsterTypeId> = {
+  // Map from level to appropriate plant monster
+  private readonly plantMonsterMap: Record<MonsterLevel, MonsterTypeId> = {
     'minion': toMonsterTypeId('veg_minion'),
     'grunt': toMonsterTypeId('veg_grunt'),
     'elite': toMonsterTypeId('veg_elite'),
@@ -54,7 +57,7 @@ export class VegetatePower extends ItemPower {
     }
     
     // Get the appropriate vegetated monster for this level
-    const vegetatedMonsterTypeId = this.vegetatedMonsterMap[monsterType.level];
+    const vegetatedMonsterTypeId = this.plantMonsterMap[monsterType.level];
     const vegetatedMonsterType = monsterTypes.find(m => m.id === vegetatedMonsterTypeId);
     
     // Guard: check if we found the vegetated monster type

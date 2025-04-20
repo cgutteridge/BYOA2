@@ -37,6 +37,9 @@ export abstract class ItemPower {
 
     // Maximum monster level this power works on (or null for any level)
     abstract readonly maxLevel: MonsterLevel | null;
+    
+    // Item types that can have this power
+    abstract readonly itemTypes: string[];
 
     // Target selection methods
     // @ts-ignore - May be unused in base class, implemented by subclasses

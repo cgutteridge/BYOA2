@@ -9,14 +9,17 @@ export class PickpocketPower extends ItemPower {
   // UI properties
   readonly displayName = "Pickpocket";
   readonly icon = "🧤";
-  readonly glowColor = "rgba(255, 215, 0, 0.8)";
+  readonly glowColor = "rgba(0, 100, 0, 0.8)";
   
   // Item generation constants
   readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = 'elite';
+  readonly maxLevel = 'grunt'; // Max level this works on
+  
+  // Item types for this power
+  readonly itemTypes = ["Gloves", "Lockpick", "Hook", "Claw", "Hand", "Grasp", "Grip", "Thief's Tool"];
 
   applyEffect(item: Item, monster: Monster): boolean {
     const questStore = useQuestStore();

@@ -93,7 +93,7 @@
               </div>
               
               <!-- Monster drink bottom bar -->
-              <div class="monster-drink-bar" :style="drinkBarStyle">
+              <div class="monster-drink-bar">
                 {{ getMonsterDrink(monster.type) }}
               </div>
             </template>

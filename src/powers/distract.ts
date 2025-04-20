@@ -13,14 +13,17 @@ export class DistractPower extends ItemPower {
   // UI properties
   readonly displayName = "Distract";
   readonly icon = "🥤";
-  readonly glowColor = "rgba(139, 0, 139, 0.8)";
+  readonly glowColor = "rgba(139, 69, 19, 0.8)";
   
   // Item generation constants
   readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = 'elite';
+  readonly maxLevel = 'elite'; // Can target up to elite monsters
+  
+  // Item types for this power
+  readonly itemTypes = ["Cola Bomb", "Fizzing Stone", "Bubble Gem", "Carbonated Crystal", "Sparkling Sphere", "Effervescent Orb"];
 
   // Map from level to appropriate distracted monster
   private readonly distractedMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

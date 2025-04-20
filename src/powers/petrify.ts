@@ -12,7 +12,7 @@ import {useQuestStore} from "@/stores/questStore.ts";
 export class PetrifyPower extends ItemPower {
   // UI properties
   readonly displayName = "Petrify";
-  readonly icon = "🪨";
+  readonly icon = "🗿";
   readonly glowColor = "rgba(128, 128, 128, 0.8)";
   
   // Item generation constants
@@ -20,7 +20,10 @@ export class PetrifyPower extends ItemPower {
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = 'elite'; // Can't target bosses
+  readonly maxLevel = 'elite'; // Can target up to elite monsters
+  
+  // Item types for this power
+  readonly itemTypes = ["Stone Gaze", "Petrifying Rune", "Gorgon Scale", "Basilisk Eye", "Stone Sphere", "Medusa Lock"];
 
   // Map from level to appropriate petrified monster
   private readonly petrifiedMonsterMap: Record<MonsterLevel, MonsterTypeId> = {
