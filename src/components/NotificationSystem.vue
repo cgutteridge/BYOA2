@@ -100,7 +100,7 @@ onMounted(() => {
   align-items: center;
   color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  border-left: 4px solid #ccc;
+  border-left: 4px solid transparent;
   transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center;
   will-change: transform, opacity;
@@ -256,7 +256,7 @@ onMounted(() => {
 }
 
 .notification-info {
-  border-left-color: #2196f3;
+  border-left-color: transparent;
 }
 
 .notification-warning {
