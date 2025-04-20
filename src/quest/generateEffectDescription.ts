@@ -143,35 +143,43 @@ export function generateEffectDescription(item: Item): string {
       break;
       
     case 'petrify':
-      effect = `This ${qualityTerm} item transforms `;
+      effect = `This ${qualityTerm} item turns `;
       effect += getTargetDescription(item);
-      effect += " into a stone monster of the same level.";
+      effect += " into stone.";
       break;
       
     case 'pacify':
-      effect = `This ${qualityTerm} item transforms `;
+      effect = `This ${qualityTerm} item turns `;
       effect += getTargetDescription(item);
-      effect += " into a water-based pacified monster of the same level.";
+      effect += " into water.";
       break;
       
     case 'distract':
-      effect = `This ${qualityTerm} item transforms `;
+      effect = `This ${qualityTerm} item distracts `;
       effect += getTargetDescription(item);
-      effect += " into a distracted monster of the same level.";
+      effect += "."
       break;
       
     case 'vegetate':
-      effect = `This ${qualityTerm} item transforms `;
+      effect = `This ${qualityTerm} item vegetates `;
       effect += getTargetDescription(item);
-      effect += " into a vegetated monster of the same level.";
+      effect += "."
       break;
       
     case 'stun':
-      effect = `This ${qualityTerm} item transforms `;
+      effect = `This ${qualityTerm} item stuns `;
       effect += getTargetDescription(item);
-      effect += " into a stunned monster of the same level.";
+      effect += "."
+      break;
+
+    case 'victory':
+      effect = `This is the thing you've been after. Well done. YOU WIN!`;
       break;
       
+    case 'token':
+      effect = `This is required to complete the quest.`;
+      break;
+
     default:
       effect = `This ${qualityTerm} item has unknown effects.`;
   }
