@@ -57,7 +57,7 @@
                     <span class="monster-info-block">{{ getMonsterTitle(monster.type) }} - {{ getMonsterSpecies(monster.type) }} {{ getMonsterLevel(monster.type) }}</span>
                     <span class="monster-flags" v-if="getMonsterFlags(monster.type).length">
                       <template v-for="(flag, index) in getMonsterFlags(monster.type)" :key="flag">
-                        <template v-if="index === 0">(</template><span class="flag-item">{{ flag }}</span><template v-if="index < getMonsterFlags(monster.type).length - 1">, </template><template v-if="index === getMonsterFlags(monster.type).length - 1">)</template>
+                        <template v-if="index === 0"> (</template><span class="flag-item">{{ flag }}</span><template v-if="index < getMonsterFlags(monster.type).length - 1">, </template><template v-if="index === getMonsterFlags(monster.type).length - 1">)</template>
                       </template>
                     </span>
                   </div>
@@ -200,12 +200,6 @@ const combatContainerStyle = computed(() => ({
 const monsterDefeatStyle = computed(() => ({
   backgroundColor: questStore.getBackgroundColor('tertiary'),
   borderColor: questStore.getBorderColor('medium'),
-}))
-
-const drinkBarStyle = computed(() => ({
-  backgroundColor: questStore.getBackgroundColor('tertiary'),
-  color: questStore.getTextColor('primary'),
-  borderTop: `1px solid ${questStore.getBorderColor('light')}`,
 }))
 
 // Progress animation
@@ -408,7 +402,7 @@ function claimItem(monster: Monster) {
   // Award XP based on item level
   if (monster.item.level) {
     const xpToAward = monster.item.level * 2; // 2 XP per item level
-    questStore.updateStats(xpToAward, 0, 0, `claiming ${monster.item.name}`);
+    questStore.updateStats(xpToAward, 0, 0, `Claiming ${monster.item.name}`);
   }
   
   // Clear the item from the monster
@@ -716,9 +710,9 @@ function isMonsterDying(monsterId: string): boolean {
 }
 
 .monster-drink-bar {
+  background: rgb(0,0,0,0.4);
   padding: 0.75rem;
   text-align: center;
-  font-style: italic;
   margin-top: auto;
 }
 

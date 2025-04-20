@@ -60,7 +60,7 @@
     "title": "Dwarf",
     "drink": "Half pint of Ale",
     "level": "minion",
-    "species": "dwarf",
+    "species": "humanoid",
     "flags": [
       "mortal"
     ],
@@ -114,7 +114,7 @@
     "title": "Goblin",
     "drink": "Half Pint Cider",
     "level": "minion",
-    "species": "goblinoid",
+    "species": "humanoid",
     "flags": [
       "mortal"
     ],
@@ -132,7 +132,7 @@
     "title": "Ork",
     "drink": "Pint of Cider",
     "level": "grunt",
-    "species": "goblinoid",
+    "species": "humanoid",
     "flags": [
       "mortal"
     ],
@@ -189,7 +189,7 @@
     "title": "Dwarf Miner",
     "drink": "Half Pint Pale Ale",
     "level": "minion",
-    "species": "dwarf",
+    "species": "humanoid",
     "flags": [
       "mortal"
     ],
@@ -207,7 +207,7 @@
     "title": "Dwarf Warrior",
     "drink": "Ale",
     "level": "grunt",
-    "species": "dwarf",
+    "species": "humanoid",
     "flags": [
       "mortal"
     ],
