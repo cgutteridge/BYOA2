@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, ref, watch} from 'vue'
 import {useAppStore} from './stores/appStore'
-import {useQuestStore} from './stores/questStore'
 import {useInventoryStore} from './stores/inventoryStore'
 
 import MapScreen from '@/components/screens/MapScreen.vue'
@@ -12,14 +11,13 @@ import VictoryScreen from '@/components/screens/VictoryScreen.vue'
 import InterfaceModal from './components/InterfaceModal.vue'
 import ItemModal from './components/ItemModal.vue'
 import NotificationSystem from './components/NotificationSystem.vue'
-import formatNumber from "@/utils/formatNumber.ts";
 
 const appStore = useAppStore()
-const questStore = useQuestStore()
 const inventoryStore = useInventoryStore()
 const watchId = ref<number | null>(null)
 const showButtonPulse = ref(false)
 const hashChangeListener = ref<((event: HashChangeEvent) => void) | null>(null)
+const beforeUnloadHandler = ref<((event: BeforeUnloadEvent) => void) | null>(null)
 
 // Watch for inventory changes to trigger the pulse animation
 watch(() => inventoryStore.itemCount, (newCount, oldCount) => {
@@ -159,6 +157,22 @@ function handleHashChange(event: HashChangeEvent): void {
   window.history.pushState(null, '', '#main')
 }
 
+// Function to handle page unload attempts (reload, close, URL change)
+function setupBeforeUnloadHandler(): void {
+  beforeUnloadHandler.value = (event: BeforeUnloadEvent) => {
+    // Standard way to show confirmation dialog
+    event.preventDefault()
+    
+    // Chrome requires returnValue to be set
+    event.returnValue = ''
+    
+    // Message (note: most modern browsers show their own generic message instead)
+    return 'Are you sure you want to leave? Your progress may be lost.'
+  }
+  
+  window.addEventListener('beforeunload', beforeUnloadHandler.value)
+}
+
 onMounted(() => {
   // console.log('App mounted, initializing GPS...')
   initializeGPS()
@@ -169,6 +183,9 @@ onMounted(() => {
   // Add hash change listener
   hashChangeListener.value = (event) => handleHashChange(event)
   window.addEventListener('hashchange', hashChangeListener.value)
+  
+  // Set up beforeunload handler
+  setupBeforeUnloadHandler()
 })
 
 onUnmounted(() => {
@@ -178,6 +195,11 @@ onUnmounted(() => {
   // Remove hash change listener
   if (hashChangeListener.value) {
     window.removeEventListener('hashchange', hashChangeListener.value)
+  }
+  
+  // Remove beforeunload handler
+  if (beforeUnloadHandler.value) {
+    window.removeEventListener('beforeunload', beforeUnloadHandler.value)
   }
 })
 </script>
