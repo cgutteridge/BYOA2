@@ -1,7 +1,7 @@
 [
   {
     "id": "frozen_minion",
-    "title": "Frozen Minion",
+    "title": "Small Ice Sculpture",
     "drink": "One Ice Cube",
     "level": "minion",
     "species": "nullified",
@@ -19,7 +19,7 @@
   },
   {
     "id": "frozen_grunt",
-    "title": "Frost Golem",
+    "title": "Ice Sculpture",
     "drink": "3 Ice Cubes",
     "level": "grunt",
     "species": "nullified",
@@ -39,7 +39,7 @@
   },
   {
     "id": "frozen_elite",
-    "title": "Frozen Elite",
+    "title": "Fancy Ice Sculpture",
     "drink": "6 Ice Cubes",
     "level": "elite",
     "species": "nullified",
@@ -59,7 +59,7 @@
   },
   {
     "id": "passive_minion",
-    "title": "Pacified Minion",
+    "title": "Pacified",
     "drink": "Small Glass of Water",
     "level": "minion",
     "species": "nullified",
@@ -77,7 +77,7 @@
   },
   {
     "id": "passive_grunt",
-    "title": "Pacified Grunt",
+    "title": "Pacified",
     "drink": "Glass of Water",
     "level": "grunt",
     "species": "nullified",
@@ -96,7 +96,7 @@
   },
   {
     "id": "passive_elite",
-    "title": "Pacified Elite",
+    "title": "Pacified",
     "drink": "Large Glass of Water",
     "level": "elite",
     "species": "nullified",
@@ -116,7 +116,7 @@
   },
   {
     "id": "veg_minion",
-    "title": "Vegetated Minion",
+    "title": "Shrub",
     "drink": "Small Glass of Juice",
     "level": "minion",
     "species": "nullified",
@@ -131,7 +131,7 @@
   },
   {
     "id": "veg_grunt",
-    "title": "Vegetated Grunt",
+    "title": "Bush",
     "drink": "Glass of Juice",
     "level": "grunt",
     "species": "nullified",
@@ -147,7 +147,7 @@
   },
   {
     "id": "veg_elite",
-    "title": "Vegetated Elite",
+    "title": "Tree",
     "drink": "Large Glass of Juice",
     "level": "elite",
     "species": "nullified",
@@ -181,7 +181,7 @@
   },
   {
     "id": "petrified_minion",
-    "title": "Petrified Minion",
+    "title": "Small Statue",
     "drink": "Packet of Salty Snacks",
     "level": "minion",
     "species": "nullified",
@@ -200,7 +200,7 @@
   },
   {
     "id": "petrified_grunt",
-    "title": "Petrified Grunt",
+    "title": "Statue",
     "drink": "Packet of Salty Snacks",
     "level": "grunt",
     "species": "nullified",
@@ -219,7 +219,7 @@
   },
   {
     "id": "petrified_elite",
-    "title": "Petrified Elite",
+    "title": "Fancy Statue",
     "drink": "Packet of Salty Snacks",
     "level": "elite",
     "species": "nullified",
@@ -239,7 +239,7 @@
   },
   {
     "id": "distracted_minion",
-    "title": "Distracted Minion",
+    "title": "Distracted",
     "drink": "Small Glass of Cola",
     "level": "minion",
     "species": "nullified",
@@ -254,7 +254,7 @@
   },
   {
     "id": "distracted_grunt",
-    "title": "Distracted Grunt",
+    "title": "Distracted",
     "drink": "Glass of Cola",
     "level": "grunt",
     "species": "nullified",
@@ -270,7 +270,7 @@
   },
   {
     "id": "distracted_elite",
-    "title": "Distracted Elite",
+    "title": "Distracted",
     "drink": "Large Glass of Cola",
     "level": "elite",
     "species": "nullified",
@@ -287,7 +287,7 @@
   },
   {
     "id": "stunned_minion",
-    "title": "Vegetated Minion",
+    "title": "Stunned",
     "drink": "Small Glass of Lemonade",
     "level": "minion",
     "species": "nullified",
@@ -302,7 +302,7 @@
   },
   {
     "id": "stunned_grunt",
-    "title": "Pacified Grunt",
+    "title": "Stunned",
     "drink": "Glass of Lemonade",
     "level": "grunt",
     "species": "nullified",
@@ -318,7 +318,7 @@
   },
   {
     "id": "stunned_elite",
-    "title": "Pacified Elite",
+    "title": "Stunned",
     "drink": "Large Glass of Lemonade",
     "level": "elite",
     "species": "nullified",

@@ -16,9 +16,11 @@ export class TokenPower extends ItemPower {
   readonly supportsTypeTargeting = false;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
-  
+
+  readonly itemTargetType = 'none';
+
   // Item types for this power
-  readonly itemTypes = ["Token", "Pass", "Ticket"];
+  readonly itemArtifactNames = ["Token", "Pass", "Ticket"];
 
   applyEffect(_item: Item, _monster: Monster): boolean {
     return false;

@@ -21,9 +21,11 @@ export class PetrifyPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = 'elite'; // Can target up to elite monsters
-  
+
+  readonly itemTargetType = 'monsters';
+
   // Item types for this power
-  readonly itemTypes = ["Stone Gaze", "Petrifying Rune", "Gorgon Scale", "Basilisk Eye", "Stone Sphere", "Medusa Lock"];
+  readonly itemArtifactNames = ["Stone Gaze", "Petrifying Rune", "Gorgon Scale", "Basilisk Eye", "Stone Sphere", "Medusa Lock"];
 
   // Map from level to appropriate petrified monster
   private readonly petrifiedMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

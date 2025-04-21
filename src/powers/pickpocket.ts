@@ -17,9 +17,11 @@ export class PickpocketPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = 'grunt'; // Max level this works on
-  
+
+  readonly itemTargetType = 'monsters';
+
   // Item types for this power
-  readonly itemTypes = ["Gloves", "Lockpick", "Hook", "Claw", "Hand", "Grasp", "Grip", "Thief's Tool"];
+  readonly itemArtifactNames = ["Gloves", "Lockpick", "Hook", "Claw", "Hand", "Grasp", "Grip", "Thief's Tool"];
 
   applyEffect(item: Item, monster: Monster): boolean {
     const questStore = useQuestStore();

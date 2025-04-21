@@ -17,9 +17,11 @@ export class BanishPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
-  
+
+  readonly itemTargetType = 'monsters';
+
   // Item types for this power
-  readonly itemTypes = ["Bell", "Book", "Candle", "Scroll", "Rune", "Sigil", "Seal", "Symbol"];
+  readonly itemArtifactNames = ["Bell", "Book", "Candle", "Scroll", "Rune", "Sigil", "Seal", "Symbol"];
 
   applyEffect(item: Item, monster: Monster): boolean {
     // Guard: check if monster exists and is alive

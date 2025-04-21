@@ -19,9 +19,11 @@ export class SplitPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = 'elite'; // Can target up to elite monsters
+
+  readonly itemTargetType = 'monsters';
   
   // Item types for this power
-  readonly itemTypes = ["Cleaver", "Scissors", "Shears", "Slicer", "Divider", "Splitter", "Carver"];
+  readonly itemArtifactNames = ["Cleaver", "Scissors", "Shears", "Slicer", "Divider", "Splitter", "Carver"];
 
   // Silly name pairs for when exactly 2 monsters are created
   private readonly namePairs = [

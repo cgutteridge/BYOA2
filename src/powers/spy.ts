@@ -16,9 +16,11 @@ export class SpyPower extends ItemPower {
   readonly supportsTypeTargeting = false;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
-  
+
+  readonly itemTargetType = 'locations';
+
   // Item types for this power
-  readonly itemTypes = ["Eyeglass", "Looking Glass", "Lens", "Scope", "Mirror", "Spyglass", "Crystal Ball"];
+  readonly itemArtifactNames = ["Eyeglass", "Looking Glass", "Lens", "Scope", "Mirror", "Spyglass", "Crystal Ball"];
 
   generateEffectDescription(item: Item): string {
     const qualityTerm = this.getLevelQualityTerm(item.level);

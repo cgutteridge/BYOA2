@@ -2,26 +2,17 @@
   <Teleport to="body">
     <div v-if="isOpen" class="item-inspect-modal">
       <div class="item-inspect-modal__backdrop" @click="close"></div>
-      
-      <div class="item-inspect-modal__content" :class="[`theme-${currentTheme}`]">
+
+      <div class="item-inspect-modal__content">
         <button class="item-inspect-modal__close" @click="close">×</button>
-        
-        <div class="theme-toggle">
-          <button 
-            @click="toggleTheme" 
-            class="theme-button"
-          >
-            {{ currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
-          </button>
-        </div>
-        
+
         <!-- Item view -->
           <div class="item-inspect-modal__header">
             <h2 class="item-inspect-modal__title">{{ item.name }}</h2>
             <div class="item-inspect-modal__level">{{ item.uses !== undefined ? `${item.uses} use${item.uses!=1?"s":""} remaining` : 'Unlimited uses' }}</div>
           </div>
-          
-          <div class="item-inspect-modal__body">
+
+        <div class="item-inspect-modal__body">
             <!-- Item description (if available) -->
             <div v-if="item.description" class="item-inspect-modal__description">
               <p>{{ item.description }}</p>
@@ -31,74 +22,58 @@
             <div class="item-inspect-modal__effect">
               <p>{{ power.generateEffectDescription(item) }}</p>
             </div>
-            
+
             <!-- Target selection (when in location) -->
-            <div v-if="isInGameLocation && (item.power === 'kill' || item.power === 'transmute' || item.power === 'shrink' || item.power === 'split' || item.power === 'pickpocket' || item.power === 'banish' || item.power === 'freeze' || item.power === 'petrify' || item.power === 'pacify' || item.power === 'distract' || item.power === 'vegetate' || item.power === 'stun')" class="item-inspect-modal__target-section">
+          <template v-if="hasValidTargets">
+            <div class="item-inspect-modal__target-section">
               <h3>{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
-              <p class="target-description">{{ power.getTargetDescription(item) }}</p>
-              
-              <div v-if="hasTargetableMonsters" class="target-list">
-                <div v-if="targetMode === 'type'" class="target-type-list">
+
+              <template v-if="power.itemTargetType==='locations'">
+                Locations!
+              </template>
+
+              <template v-if="power.itemTargetType==='monsters'">
+                <div v-if="item.target==='pick_type' || item.target==='random_type'" class="target-list">
                   <ListInput
-                    v-model="selectedTargetTypes"
-                    :options="potentialTargetMonsterTypes.map(type => ({
-                      id: type,
-                      name: getMonsterTitle(type),
-                      count: getMonsterCountByType(type)
+                      v-model="selectedTargetMonsterTypes"
+                      :options="potentialTargetMonsterTypes.map(type => ({
+                      key: type,
+                      name: getMonsterTitle(type.id),
+                      count: getMonsterCountByType(type.id)
                     }))"
                     :multiple="true"
                     :max-selections="item.uses || 1"
                     :always-show="true"
-                    :disabled="!isChoiceTarget"
-                    :theme="currentTheme"
+                      :disabled="item.target==='random_type'"
                   />
                 </div>
-                <div v-else class="target-monster-list">
+                <div v-else class="target-list">
                   <ListInput
-                    v-model="selectedTargets"
-                    :options="potentialTargetMonsters.map(monster => ({
+                      v-model="selectedTargetMonsters"
+                      :options="potentialTargetMonsters.map(monster => ({
                       id: monster.id,
                       name: monster.name,
                       subtitle: `${getMonsterSpecies(monster.type)} ${getMonsterLevel(monster.type)}`
                     }))"
-                    :multiple="true"
-                    :max-selections="item.uses || 1"
-                    :always-show="true"
-                    :disabled="!isChoiceTarget"
-                    :theme="currentTheme"
+                      :multiple="true"
+                      :max-selections="item.uses || 1"
+                      :always-show="true"
+                      :disabled="item.target==='random'"
                   />
                 </div>
-              </div>
-              
+              </template>
+
               <p v-else class="no-targets">
                 No valid targets available for this item in current location.
               </p>
+
             </div>
-            
-            <!-- Result selection for transmute -->
-            <div v-if="isInGameLocation && item.power === 'transmute'" class="item-inspect-modal__result-section">
-              <h3>{{ item.result === 'pick' ? 'Choose Result' : 'Possible Results' }}</h3>
-              
-              <div class="result-list">
-                <ListInput
-                  v-model="selectedResult"
-                  :options="possibleResults"
-                  :always-show="true"
-                  :disabled="item.result !== 'pick'"
-                  :theme="currentTheme"
-                />
-                
-                <p v-if="possibleResults.length === 0" class="no-results">
-                  No possible results available
-                </p>
-              </div>
-            </div>
+          </template>
           </div>
           
           <div class="item-inspect-modal__footer">
-            <button 
-              v-if="showUseButton && item.power && (item.uses === undefined || item.uses > 0)"
-              :disabled="isUseButtonDisabled"
+            <button
+                :disabled="!formSatisfied"
               class="item-inspect-modal__use-btn"
               @click="useItem"
             >
@@ -112,15 +87,20 @@
 
 <script setup lang="ts">
 import {computed, ref} from 'vue'
-import {Item, Monster, MonsterTypeId, toMonsterTypeId} from '../types'
+import {GameLocation, Item, Monster, MonsterType, toMonsterTypeId} from '../types'
 import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
-import {getValidTargets} from '../quest/itemUtils.ts'
-import {getMonsterLevel, getMonsterSpecies, getUniqueMonsterTypes} from '../quest/monsterUtils.ts'
-import {monsterTypes} from '../data/monsterTypes.ts'
+import {
+  itemCanBeUsed,
+  potentialTargetLocationsForItem,
+  potentialTargetMonstersForItem,
+  potentialTargetMonstersTypesForItem
+} from '../quest/itemUtils.ts'
+import {monsterTypes, monsterTypesById} from '../data/monsterTypes.ts'
 import {powerFactory} from "@/powers";
 import pickOne from "@/utils/pickOne.ts";
-import ListInput from './forms/ListInput.vue'
+import {getMonsterLevel, getMonsterSpecies} from "@/quest/monsterUtils.ts";
+import ListInput from "@/components/forms/ListInput.vue";
 
 // Stores
 const appStore = useAppStore()
@@ -132,100 +112,43 @@ const item = computed(() => appStore.inspectedItem || {} as Item)
 
 const power = computed(()=> powerFactory.getPower(item.value.power))
 
-// Determine context based on app state
-const context = computed(() => {
-  const hasCurrentGameLocation = !!questStore.currentGameLocation
-  const isInventoryOpen = appStore.isInterfaceOpen
-  
-  if (hasCurrentGameLocation && isInventoryOpen) return 'inventory_in_location'
-  if (hasCurrentGameLocation && !isInventoryOpen) return 'item_in_location'
-  if (!hasCurrentGameLocation && isInventoryOpen) return 'inventory'
-  return 'item'
-})
 
 // State
-const selectedTargets = ref<string[]>([])
-const selectedTargetTypes = ref<string[]>([])
+const selectedTargetMonsters = ref<string[]>([])
+const selectedTargetMonsterTypes = ref<string[]>([])
+const selectedTargetLocation = ref<string>('')
 const selectedResult = ref<string>('')
-const currentTheme = ref<'light' | 'dark'>('light') // Default theme with proper type
 
-// Toggle between light and dark themes
-function toggleTheme() {
-  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
-}
-
-// Computed properties
-const showUseButton = computed(() => {
-  // Only show use button in inventory contexts
-  return context.value === 'inventory' || context.value === 'inventory_in_location'
+const isChoiceTarget = computed<boolean>(() => {
+  return item.value.target === 'pick_type' || item.value.target === 'pick'
 })
 
-const isInGameLocation = computed(() => {
-  // Check if the player is in a location (any context with "location")
-  return context.value === 'inventory_in_location' || context.value === 'item_in_location'
-})
+const potentialTargetMonsterTypes = computed<MonsterType[]>(
+    () => potentialTargetMonstersTypesForItem(item.value, questStore.currentGameLocation)
+)
+const potentialTargetMonsters = computed<Monster[]>(
+    () => potentialTargetMonstersForItem(item.value, questStore.currentGameLocation)
+)
+const potentialTargetLocations = computed<GameLocation[]>(
+    () => potentialTargetLocationsForItem(item.value)
+)
+const hasValidTargets = computed<boolean>(() => itemCanBeUsed(item.value))
 
-const targetMode = computed(() => {
-  // Determine if we're targeting individual monsters or monster types
-  if (item.value.target === 'random_type' || item.value.target === 'pick_type') {
-    return 'type'
-  }
-  return 'individual'
-})
-
-const isChoiceTarget = computed(() => {
-  // Determine if this is a choice-based target selection
-  return item.value.target === 'pick' || item.value.target === 'pick_type'
-})
-
-// Use the powers helper function to get valid targets
-const potentialTargetMonsters = computed(() => {
-  if (!questStore.currentGameLocation?.monsters) return []
-  return getValidTargets(item.value, questStore.currentGameLocation.monsters) as Monster[]
-})
-
-const potentialTargetMonsterTypes = computed(() => {
-  return getUniqueMonsterTypes(potentialTargetMonsters.value)
-})
-
-const hasTargetableMonsters = computed(() => {
-  if (!item.value) return false
-
-  return potentialTargetMonsters.value.length > 0 || potentialTargetMonsterTypes.value.length > 0
-})
-
-const possibleResults = computed(() => {
-  // For transmute, determine possible result types
-  if (item.value.power !== 'transmute') return []
-  
-  // Could be fetched from a data source; using placeholder for now
-  return ['ghost', 'vampire', 'human', 'goblinoid', 'demonoid', 'elemental']
-})
-
-const isUseButtonDisabled = computed(() => {
-  if (!isInGameLocation.value) return false
-  
-  // For powers that need targets
-  if (['kill', 'transmute', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun'].includes(item.value.power || '')) {
-    // Choice-based targeting requires selection
-    if (isChoiceTarget.value) {
-      if (targetMode.value === 'type') {
-        if (selectedTargetTypes.value.length === 0) return true
-      } else {
-        if (selectedTargets.value.length === 0) return true
-      }
+// true if all the pick elements have been completed
+const formSatisfied = computed<boolean>(() => {
+  let ok = true
+  if (power.value.itemTargetType === 'monsters') {
+    if (item.value.target === 'pick_type' && selectedTargetMonsterTypes.value.length === 0) {
+      ok = false;
     }
-    
-    // No valid targets available
-    if (!hasTargetableMonsters.value) return true
+    if (item.value.target === 'pick' && selectedTargetMonsters.value.length === 0) {
+      ok = false;
+    }
   }
-  
-  // For transmute with pick result
-  if (item.value.power === 'transmute' && item.value.result === 'pick') {
-    if (!selectedResult.value) return true
+  if (power.value.itemTargetType === 'locations' && selectedTargetLocation.value.length === 0) {
+    ok = false;
   }
-  
-  return false
+  return ok
 })
 
 // Helper function to get monster count by type
@@ -238,8 +161,8 @@ function getMonsterCountByType(type: string): number {
 // Methods
 function close() {
   // Reset state when closing
-  selectedTargets.value = []
-  selectedTargetTypes.value = []
+  selectedTargetMonsters.value = []
+  selectedTargetMonsterTypes.value = []
   selectedResult.value = ''
   
   // Use appStore to close modal
@@ -247,32 +170,51 @@ function close() {
 }
 
 function useItem(): void {
-  const power = powerFactory.getPower(item.value.power);
 
-  if (item.value.target === 'pick' || item.value.target === 'random') {
-    let targets: Monster[] = []
-    if (item.value.target === 'pick') {
-      targets = selectedTargets.value.map(monsterId => potentialTargetMonsters.value.find(monster => monster.id === monsterId) as Monster)
-    } else {
-      targets = [pickOne(potentialTargetMonsters.value)]
-    }
-    targets.forEach(monster => {
-      power.useOnMonster(item.value, monster)
-    })
-  } else { // type (pick_type or random_type)
-    let targets: MonsterTypeId[] = []
-    if (item.value.target === 'pick_type') {
-      targets = selectedTargetTypes.value.map(toMonsterTypeId)
-    } else {
-      targets = [toMonsterTypeId(pickOne(potentialTargetMonsterTypes.value))]
-    }
-    targets.forEach(monsterType => {
-      power.useOnType(item.value, monsterType)
-    })
+  switch (item.value.target) {
+    case 'pick':
+      useItemPickMonster();
+      break;
+    case 'random':
+      useItemRandomMonster();
+      break;
+    case 'pick_type':
+      useItemPickMonsterType();
+      break;
+    case 'random_type':
+      useItemRandomMonsterType();
+      break;
+    default:
+      console.warn('Not sure how to use item')
   }
-
   close()
   appStore.closeInterface()
+}
+
+function useItemRandomMonster() {
+  const target = pickOne(potentialTargetMonsters.value)
+  power.value.useOnMonster(item.value, target)
+}
+
+function useItemPickMonster() {
+  let targets: Monster[] = selectedTargetMonsters.value.map(
+      monsterId => potentialTargetMonsters.value.find(monster => monster.id === monsterId) as Monster);
+  targets.forEach(monster => {
+    power.value.useOnMonster(item.value, monster)
+  })
+}
+
+function useItemRandomMonsterType() {
+  const target = pickOne(potentialTargetMonsterTypes.value)
+  power.value.useOnMonsterType(item.value, target)
+}
+
+function useItemPickMonsterType() {
+  const targets: MonsterType[] = selectedTargetMonsterTypes.value.map(
+      monsterTypeId => monsterTypesById[toMonsterTypeId(monsterTypeId)])
+  targets.forEach(monsterType => {
+    power.value.useOnMonsterType(item.value, monsterType)
+  })
 }
 
 // Add this function to get monster title
@@ -294,6 +236,8 @@ function getMonsterTitle(typeId: string): string {
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  background-color: rgba(255, 255, 255, 1);
+
 }
 
 .item-inspect-modal__backdrop {

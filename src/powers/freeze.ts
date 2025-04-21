@@ -21,9 +21,11 @@ export class FreezePower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = 'elite';
-  
+
+  readonly itemTargetType = 'monsters';
+
   // Item types for this power
-  readonly itemTypes = ["Ice Crystal", "Frost Stone", "Cold Gem", "Freezing Orb", "Glacier Shard", "Winter Sphere"];
+  readonly itemArtifactNames = ["Ice Crystal", "Frost Stone", "Cold Gem", "Freezing Orb", "Glacier Shard", "Winter Sphere"];
 
   // Map from level to appropriate ice monster
   private readonly iceMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

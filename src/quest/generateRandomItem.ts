@@ -227,7 +227,7 @@ function generateItemName(powerId: ItemPowerId, targetMode?: string): string {
   
   // Get a random material and item type
   const material = pickOne(materials);
-  const itemType = pickOne(powerInstance?.itemTypes || ["Artifact"]);
+  const itemType = pickOne(powerInstance?.itemArtifactNames || ["Artifact"]);
 
   // Combine parts into full name
   const baseName = `${material} ${itemType}`;

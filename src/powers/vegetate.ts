@@ -13,7 +13,7 @@ export class VegetatePower extends ItemPower {
   // UI properties
   readonly displayName = "Vegetate";
   readonly icon = "🥦";
-  readonly glowColor = "rgba(0, 128, 0, 0.8)";
+  readonly glowColor = "rgba(0, 127, 0, 0.8)";
   
   // Item generation constants
   readonly baseCost = 1;
@@ -21,9 +21,11 @@ export class VegetatePower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = 'elite'; // Can target up to elite monsters
-  
+
+  readonly itemTargetType = 'monsters';
+
   // Item types for this power
-  readonly itemTypes = ["Juice Box", "Fruit Extract", "Plant Seed", "Green Elixir", "Growth Potion", "Verdant Crystal"];
+  readonly itemArtifactNames = ["Juice Box", "Fruit Extract", "Plant Seed", "Green Elixir", "Growth Potion", "Verdant Crystal"];
 
   // Map from level to appropriate plant monster
   private readonly plantMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

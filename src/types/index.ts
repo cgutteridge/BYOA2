@@ -31,10 +31,10 @@ export type ItemPowerId =
   | 'victory'
 
 // Target modes - how the target is selected
-export type TargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | 'location' | undefined
+export type MonsterTargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | undefined
 
 // Result modes
-export type ResultMode = 'random' | 'pick' | 'random_type' | 'chosen_type' | undefined
+export type ResultMode = 'random' | 'pick' | 'random_type' | 'pick_type' | undefined
 
 // Unified Item interface
 export interface Item {
@@ -44,7 +44,7 @@ export interface Item {
   uses: number
   level: number
   power: ItemPowerId
-  target?: TargetMode
+  target?: MonsterTargetMode
   targetFilters?: {
     species?: Species[]
     flags?: MonsterFlag[]
@@ -55,6 +55,8 @@ export interface Item {
   icon?: string
   timestamp?: number  // To track when the item was added or updated
 }
+
+export type ItemTargetType = 'monsters'|'locations'|'special'|'none'
 
 export interface Coordinates {
   lat: number

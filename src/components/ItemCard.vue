@@ -2,8 +2,7 @@
   <div 
     class="item-card" 
     :class="{
-      'item-card--selected': isSelected,
-      'item-card--has-targets': hasValidTargets,
+      'item-card--has-targets': canItemBeUsed,
       'item-card--compact': compact,
       'item-card--prize': variant === 'prize',
       'item-card--gift': variant === 'gift',
@@ -28,15 +27,11 @@
 import { computed } from 'vue'
 import type { Item, ItemPowerId } from '../types'
 import { useAppStore } from '../stores/appStore'
-import { useQuestStore } from '../stores/questStore'
 import { powerFactory } from '../powers'
-import { getValidTargets } from '../quest/itemUtils.ts'
-import {useLocationStore} from "@/stores/locationStore.ts";
+import { itemCanBeUsed} from '../quest/itemUtils.ts'
 
 // Get the stores
 const appStore = useAppStore()
-const questStore = useQuestStore()
-const locationStore = useLocationStore()
 
 // Define props
 const props = defineProps<{
@@ -63,43 +58,8 @@ const itemEffect = computed(()=> {
   return powerObj?.generateEffectDescription(props.item) || 'unknown'
 })
 
-// Is this item currently selected?
-const isSelected = computed(() => {
-  return appStore.inspectedItem?.id === props.item.id
-})
-
-// Determine if we're in a location with the inventory open
-const isInLocationWithInventory = computed(() => {
-  return !!questStore.currentGameLocation && appStore.isInterfaceOpen
-})
-
 // Check if this item has valid targets in the current location
-const hasValidTargets = computed(() => {
-  // Only check for inventory variant
-  if (props.variant !== 'inventory' && props.variant !== undefined) {
-    return false
-  }
-  
-  // Only apply to items with targeting powers
-  if (!props.item.power) {
-    return false
-  }
-  
-  // Different handling for spy vs monster targeting items
-  if (props.item.power === 'spy') {
-    // For spy items, check if there are unscouted locations
-    return locationStore.locations.some(location => !location.scouted)
-  } else {
-    // For monster targeting items, check if we're in a location with valid monster targets
-    if (!isInLocationWithInventory.value || !questStore.currentGameLocation?.monsters) {
-      return false
-    }
-    
-    // Check if there are valid targets for this item
-    const targets = getValidTargets(props.item, questStore.currentGameLocation.monsters)
-    return targets.length > 0
-  }
-})
+const canItemBeUsed = computed(() => itemCanBeUsed(props.item))
 
 // Handler for clicking on the item card
 function handleClick() {
@@ -114,7 +74,7 @@ function handleClick() {
 }
 
 
-
+// nb this *is* used by the css below
 const getPowerGlowColor = (power: ItemPowerId): string => {
   const powerObj = powerFactory.getPower(power)
   return powerObj?.glowColor || 'rgba(255, 255, 255, 0.8)'
@@ -133,12 +93,6 @@ const getPowerGlowColor = (power: ItemPowerId): string => {
   position: relative;
   min-height: 60px;
   transition: all 0.2s;
-}
-
-.item-card--selected {
-  border-color: #999;
-  background-color: #eee;
-  box-shadow: 0 0 0 2px rgba(153, 153, 153, 0.3);
 }
 
 /* Base has-targets styling with glowing effect */

@@ -21,9 +21,11 @@ export class PacifyPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = 'elite';
-  
+
+  readonly itemTargetType = 'monsters';
+
   // Item types for this power
-  readonly itemTypes = ["Water Vial", "Calming Spray", "Peace Pendant", "Tranquil Mist", "Serene Orb", "Still Water Crystal"];
+  readonly itemArtifactNames = ["Water Vial", "Calming Spray", "Peace Pendant", "Tranquil Mist", "Serene Orb", "Still Water Crystal"];
 
   // Map from level to appropriate pacified monster
   private readonly pacifiedMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

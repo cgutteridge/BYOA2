@@ -1,21 +1,78 @@
-import type {Item, Monster, MonsterTypeId, GameLocation} from '../types'
+import type {GameLocation, Item, Monster, MonsterType} from '../types'
 import {powerFactory} from '../powers'
 import {useQuestStore} from '@/stores/questStore'
 import {toItemId} from '@/types'
+import {getUniqueMonsterTypes} from "@/quest/monsterUtils.ts";
+import {monsterTypesById} from "@/data";
+import {useLocationStore} from "@/stores/locationStore.ts";
 
-/**
- * Get targets for an item based on its targeting mode
- * @param item The item to get targets for
- * @param potentialTargets Array of potential targets (monsters, locations, etc)
- * @returns Array of valid targets
- */
-export function getTargetsForItem(item: Item, potentialTargets: Monster[]): GameLocation[] | MonsterTypeId[] | Monster[] {
+export function itemCanBeUsed(item:Item) {
   const power = powerFactory.getPower(item.power);
-  if (power) {
-    return power.getValidTargets(item, potentialTargets);
+  const questStore = useQuestStore()
+
+  if (power.itemTargetType === 'none') {
+    return false;
   }
-  return [];
+  if (power.itemTargetType === 'special') {
+    // for now special items are always possible to use. Might filter it with a function on the power later.
+    return true;
+  }
+  if (power.itemTargetType === 'locations') {
+    return potentialTargetLocationsForItem(item).length > 0
+  }
+  if (power.itemTargetType === 'monsters') {
+    if( item.target === 'pick' || item.target === 'random') {
+      return potentialTargetMonstersForItem(item, questStore.currentGameLocation).length > 0
+    }
+    else {
+      return potentialTargetMonstersTypesForItem(item, questStore.currentGameLocation).length > 0
+    }
+  }
+  return false;
 }
+
+export function potentialTargetMonstersTypesForItem(item: Item, location: GameLocation | undefined): MonsterType[] {
+  const power = powerFactory.getPower(item.power);
+  if (location === undefined) {
+    return []
+  }
+  if (power.itemTargetType !== 'monsters') {
+    return [];
+  }
+  // this item targets individuals not types
+  if (item.target !== 'pick_type' && item.target === 'random_type') {
+    return []
+  }
+  const allMonsterTypesInLocation = getUniqueMonsterTypes(location.monsters ?? []).map(id => monsterTypesById[id])
+  return power.filterMonsterTypeTargetsForItem(item, allMonsterTypesInLocation);
+}
+
+export function potentialTargetMonstersForItem(item: Item, location: GameLocation | undefined): Monster[] {
+  const power = powerFactory.getPower(item.power);
+  if (location === undefined) {
+    return []
+  }
+  if (power.itemTargetType !== 'monsters') {
+    return [];
+  }
+  // this item targets monster types, not individuals
+  if (item.target !== 'pick' && item.target !== 'random') {
+    return []
+  }
+
+  return power.filterMonsterTargetsForItem(item, location.monsters ?? []);
+}
+
+export function potentialTargetLocationsForItem(item: Item): GameLocation[] {
+  const locationStore = useLocationStore();
+  const power = powerFactory.getPower(item.power);
+
+  if (power.itemTargetType !== 'locations') {
+    return [];
+  }
+  return power.filterLocationTargetsForItem(item, locationStore.locations);
+}
+
 
 /**
  * Generate a token item for a given location
@@ -56,6 +113,3 @@ export function generateVictoryItem(location: GameLocation): Item {
 }
 
 
-
-// Re-export getTargetsForItem as getValidTargets for backward compatibility
-export const getValidTargets = getTargetsForItem;

@@ -21,9 +21,11 @@ export class StunPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = 'elite'; // Can target up to elite monsters
-  
+
+  readonly itemTargetType = 'monsters';
+
   // Item types for this power
-  readonly itemTypes = ["Lemon Drop", "Sour Crystal", "Citrus Orb", "Zesty Sphere", "Tangy Gem", "Acidic Stone"];
+  readonly itemArtifactNames = ["Lemon Drop", "Sour Crystal", "Citrus Orb", "Zesty Sphere", "Tangy Gem", "Acidic Stone"];
 
   // Map from level to appropriate stunned monster
   private readonly stunnedMonsterMap: Record<MonsterLevel, MonsterTypeId> = {

@@ -17,9 +17,11 @@ export class KillPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
-  
+
+  readonly itemTargetType = 'monsters';
+
   // Item types for this power
-  readonly itemTypes = ["Dagger", "Sword", "Axe", "Hammer", "Spear", "Staff", "Wand", "Bow", "Arrow"];
+  readonly itemArtifactNames = ["Dagger", "Sword", "Axe", "Hammer", "Spear", "Staff", "Wand", "Bow", "Arrow"];
 
   // @ts-ignore
   applyEffect(item: Item, monster: Monster): boolean {

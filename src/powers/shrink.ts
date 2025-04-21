@@ -18,9 +18,11 @@ export class ShrinkPower extends ItemPower {
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = 'elite'; // Can target up to elite monsters
-  
+
+  readonly itemTargetType = 'monsters';
+
   // Item types for this power
-  readonly itemTypes = ["Potion", "Elixir", "Flask", "Vial", "Phial", "Draught", "Brew"];
+  readonly itemArtifactNames = ["Potion", "Elixir", "Flask", "Vial", "Phial", "Draught", "Brew"];
 
   // Funny name patterns for shrunken monsters
   private readonly shrinkNames = [

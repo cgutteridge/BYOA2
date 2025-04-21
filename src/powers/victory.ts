@@ -16,9 +16,11 @@ export class VictoryPower extends ItemPower {
   readonly supportsTypeTargeting = false;
   readonly canHaveResultRestriction = false;
   readonly maxLevel = null; // Can target any level
-  
+
+  readonly itemTargetType = 'special';
+
   // Item types for this power
-  readonly itemTypes = ["Trophy", "Crown", "Chalice", "Medal"];
+  readonly itemArtifactNames = ["Trophy", "Crown", "Chalice", "Medal"];
 
   applyEffect(_item: Item, _monster: Monster): boolean {
     return false;

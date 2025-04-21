@@ -1,17 +1,15 @@
 import type {
     GameLocation,
     Item,
-    ItemPowerId,
+    ItemPowerId, ItemTargetType,
     Monster,
     MonsterFlag,
-    MonsterLevel,
-    MonsterTypeId
+    MonsterLevel, MonsterType
 } from '../types'
 import {monsterTypes} from '../data/monsterTypes'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {useAppStore} from "@/stores/appStore.ts";
 import {useInventoryStore} from "@/stores/inventoryStore.ts";
-
 
 // Base abstract class for all power implementations
 export abstract class ItemPower {
@@ -38,49 +36,29 @@ export abstract class ItemPower {
     // Maximum monster level this power works on (or null for any level)
     abstract readonly maxLevel: MonsterLevel | null;
     
-    // Item types that can have this power
-    abstract readonly itemTypes: string[];
+    // Item types that can have this power. These are just a cute type appropriate for the item.
+    abstract readonly itemArtifactNames: string[];
+
+    abstract readonly itemTargetType: ItemTargetType;
+
+
+    /* FUNCTIONS FOR FILTERING TARGETS */
 
     // Target selection methods
-    // @ts-ignore - May be unused in base class, implemented by subclasses
-    targetTypes(item: Item): MonsterTypeId[] {
-        return (item.targetFilters?.species || []) as MonsterTypeId[];
+    filterMonsterTypeTargetsForItem(item: Item, monsterTypes : MonsterType[]): MonsterType[] {
+        return monsterTypes.filter(monsterType => this.canTargetMonsterType(item, monsterType));
     }
 
     /**
      * Filter monsters based on item's target filters
      */
-    // @ts-ignore - May be unused in base class, implemented by subclasses
-    targetMonsters(item: Item, monsters: Monster[]): Monster[] {
+    filterMonsterTargetsForItem(item: Item, monsters: Monster[]): Monster[] {
         return monsters.filter(monster => this.canTargetMonster(item, monster));
     }
 
-    // @ts-ignore - May be unused in base class, implemented by subclasses
-    targetGameLocations(_item: Item, _locations: GameLocation[]): GameLocation[] {
-        return [];
-    }
 
-    // @ts-ignore - May be unused in base class, implemented by subclasses
-    hasInputs(_item: Item): { target: boolean; result: boolean } {
-        return {target: true, result: false};
-    }
-
-    // Execution methods
-    protected reduceUses(item: Item, n: number = 1): void {
-        const inventoryStore = useInventoryStore();
-        const appStore = useAppStore()
-        item.uses = Math.max(0, item.uses - n)
-        // console.log({uses: item.uses})
-        if (item.uses === 0) {
-            // console.log("DUST")
-            inventoryStore.removeItem(item.id)
-            appStore.addNotification(`${item.name} crumbles to dust.`)
-        }
-    }
-
-    // @ts-ignore - May be unused in base class, implemented by subclasses
-    useOnGameLocation(item: Item, locationId: string): boolean {
-        return false
+    filterLocationTargetsForItem(item: Item, locations: GameLocation[]): GameLocation[] {
+        return locations.filter(location => this.canTargetLocation(item, location));
     }
 
     /**
@@ -97,13 +75,16 @@ export abstract class ItemPower {
         if (!monsterType) {
             return false;
         }
+        return this.canTargetMonsterType(item, monsterType);
+    }
 
+    private canTargetMonsterType(item: Item, monsterType: MonsterType) {
         // Check level restrictions based on maxLevel
         if (item.maxLevel) {
             const levelOrder: MonsterLevel[] = ['minion', 'grunt', 'elite', 'boss'];
             const maxLevelIndex = levelOrder.indexOf(item.maxLevel);
             const itemMonsterLevelIndex = levelOrder.indexOf(monsterType.level);
-            
+
             if (itemMonsterLevelIndex > maxLevelIndex) {
                 return false;
             }
@@ -132,48 +113,13 @@ export abstract class ItemPower {
         return true;
     }
 
-    /**
-     * Get valid targets for an item in the current array of potential targets
-     */
-    getValidTargets(
-        item: Item,
-        targets: Monster[] | GameLocation[] | MonsterTypeId[]
-    ): Monster[] | GameLocation[] | MonsterTypeId[] {
-        // Determine what type of targets we're dealing with
-        if (targets.length > 0) {
-            if ('type' in targets[0] && 'alive' in targets[0]) {
-                // It's a monster array
-                return this.targetMonsters(item, targets as Monster[]);
-            } else if ('monsters' in targets[0]) {
-                // It's a locations array
-                return this.targetGameLocations(item, targets as GameLocation[]);
-            }
-        }
-
-        // Default to empty array if we couldn't determine target type
-        return [];
+    canTargetLocation(_item : Item, _location: GameLocation): boolean {
+        return true
     }
 
-    /**
-     * Get all valid monster types that can be targeted
-     */
-    getValidMonsterTypes(item: Item, monsters: Monster[]): MonsterTypeId[] {
-        if (!monsters || !monsters.length) {
-            return [];
-        }
+    /* END OF FUNCTIONS FOR FILTERING TARGETS */
 
-        // Get all valid monsters first
-        const validMonsters = this.targetMonsters(item, monsters);
-
-        // Extract unique monster types
-        const validTypes = new Set<MonsterTypeId>();
-
-        validMonsters.forEach(monster => {
-            validTypes.add(monster.type as MonsterTypeId);
-        });
-
-        return Array.from(validTypes);
-    }
+    /* USE FUNCTIONS */
 
     useOnMonster(item: Item, monster: Monster): boolean {
         const success = this.applyEffect(item, monster);
@@ -185,8 +131,8 @@ export abstract class ItemPower {
         return success
     }
 
-    useOnType(item: Item, type: MonsterTypeId): boolean {
-        const count = this.applyEffectToType(item, type);
+    useOnMonsterType(item: Item, type: MonsterType): boolean {
+        const count = this.applyEffectToMonsterType(item, type);
 
         if (count > 0) {
             this.reduceUses(item);
@@ -195,7 +141,7 @@ export abstract class ItemPower {
         return false
     }
 
-    applyEffectToType(item: Item, type: MonsterTypeId): number {
+    applyEffectToMonsterType(item: Item, targetMonsterType: MonsterType): number {
 
         // Get the quest store
         const questStore = useQuestStore();
@@ -208,7 +154,7 @@ export abstract class ItemPower {
 
         // Find all monsters of the specified type
         const monstersOfType = location.monsters.filter(
-            (monster: Monster) => monster.type === type && monster.alive
+            (monster: Monster) => monster.type === targetMonsterType.id && monster.alive
         );
 
         // Kill each monster
@@ -226,6 +172,21 @@ export abstract class ItemPower {
         // console.log("applyEffect should be subclassed.")
         return false
     }
+
+    // Execution methods
+    protected reduceUses(item: Item, n: number = 1): void {
+        const inventoryStore = useInventoryStore();
+        const appStore = useAppStore()
+        item.uses = Math.max(0, item.uses - n)
+        // console.log({uses: item.uses})
+        if (item.uses === 0) {
+            // console.log("DUST")
+            inventoryStore.removeItem(item.id)
+            appStore.addNotification(`${item.name} crumbles to dust.`)
+        }
+    }
+
+    /* END OF USE FUNCTIONS */
 
     /**
      * Generate a description of this power's effect for the given item
@@ -263,21 +224,24 @@ export abstract class ItemPower {
         // Add target filters if present
         if (item.targetFilters) {
             const filters = [];
-            
-            if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
-                filters.push(item.targetFilters.flags.join('/'));
-            }
 
             if (item.maxLevel) {
-                filters.push(item.maxLevel);
+                filters.push(`${item.maxLevel}-level`);
+            }
+
+            if (item.targetFilters.flags && item.targetFilters.flags.length > 0) {
+                filters.push(item.targetFilters.flags.join('/'));
             }
             
             if (item.targetFilters.species && item.targetFilters.species.length > 0) {
                 filters.push(item.targetFilters.species.join('/'));
             }
-            
+            else {
+                filters.push("enemy")
+            }
+
             if (filters.length > 0) {
-                filterDescription += filters.join(', ');
+                filterDescription += filters.join(' ');
             }
         }
 
@@ -290,10 +254,10 @@ export abstract class ItemPower {
         
         // Type vs single target based on target mode
         if (item.target === 'random_type' || item.target === 'pick_type') {
-            return `all ${filterDescription} enemies of one ${selectionMethod} type`;
+            return `all ${filterDescription} of one ${selectionMethod} type`;
         }
         
-        return `a ${selectionMethod} ${filterDescription} enemy`;
+        return `a ${selectionMethod} ${filterDescription}`;
     }
 
     /**
@@ -315,6 +279,9 @@ export abstract class ItemPower {
         
         return effect;
     }
+
+
+
 }
 
 // Power factory to provide UI properties and functionality
