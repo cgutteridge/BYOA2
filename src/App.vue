@@ -273,14 +273,14 @@ body {
 
 .interface-button {
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 5px;
+  left: 5px;
   width: 60px;
   height: 60px;
   border-radius: 50%;
   background-color: #4a8;
   color: white;
-  font-size: 38px;
+  font-size: 45px;
   display: flex;
   align-items: center;
   justify-content: center;

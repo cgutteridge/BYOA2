@@ -129,7 +129,7 @@ function close(): void {
 }
 
 .interface-modal__header {
-  padding: 1rem;
+  padding: 0.2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -179,9 +179,8 @@ function close(): void {
 }
 
 .interface-modal__close {
-  font-size: 1.5rem;
-  line-height: 1;
-  padding: 0.25rem 0.5rem;
+  padding: 0 1rem;
+  font-size: 2rem;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -194,10 +193,6 @@ function close(): void {
   overflow-y: auto;
 }
 
-.interface-tab {
-  height: 100%;
-}
-
 .interface-tab h2 {
   margin-bottom: 1.5rem;
   text-align: center;
@@ -207,113 +202,6 @@ function close(): void {
 .interface-tab h3 {
   margin: 1rem 0 0.5rem;
   font-size: 1.25rem;
-}
-
-.interface-tab__empty {
-  text-align: center;
-  padding: 2rem;
-  font-style: italic;
-}
-
-.interface-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.interface-grid__item {
-  margin-bottom: 1rem;
-}
-
-.quest-details {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.quest-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  text-align: center;
-}
-
-.quest-description {
-  margin-bottom: 2rem;
-  font-style: italic;
-  text-align: center;
-}
-
-.quest-stats, .quest-locations {
-  margin-bottom: 2rem;
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid;
-}
-
-.stat-group, .location {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.stat-group:not(:last-child), .location:not(:last-child) {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.stat-label, .location-label {
-  font-weight: 500;
-}
-
-.options-section {
-  margin-bottom: 2rem;
-}
-
-.theme-option {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 1rem 0;
-}
-
-.option-label {
-  min-width: 100px;
-  font-weight: 500;
-}
-
-.theme-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.theme-toggle-button {
-  background-color: #444;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.theme-toggle-button:hover {
-  background-color: #555;
-}
-
-.quit-button {
-  margin-top: 1rem;
-  background-color: #d32f2f;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 0.5rem 1.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.quit-button:hover {
-  background-color: #b71c1c;
 }
 
 /* Media queries for responsive design */
@@ -340,22 +228,12 @@ function close(): void {
   }
   
   .interface-modal__close {
-    padding: 0.2rem 0.4rem;
-    font-size: 1.3rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 10.7rem;
   }
   
   .interface-modal__body {
     padding: 0.75rem;
-  }
-  
-  .interface-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 0.75rem;
-    padding: 0.5rem;
-  }
-  
-  .interface-grid__item {
-    margin-bottom: 0;
   }
   
   .interface-tab h2 {

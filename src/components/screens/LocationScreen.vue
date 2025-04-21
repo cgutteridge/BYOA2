@@ -226,6 +226,7 @@ function claimTokenItem() {
 .location-header h2 {
   font-size: 2rem;
   margin: 0;
+  padding: 0 50px;
 }
 
 .location-description-section {
