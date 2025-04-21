@@ -1,32 +1,32 @@
 <template>
   <Teleport to="body">
     <div v-if="isOpen" class="item-inspect-modal">
-      <div class="item-inspect-modal__backdrop" @click="close"></div>
+      <div class="item-inspect-modal__backdrop" :style="backdropStyle" @click="close"></div>
 
-      <div class="item-inspect-modal__content">
-        <button class="item-inspect-modal__close" @click="close">×</button>
+      <div class="item-inspect-modal__content" :style="modalContentStyle">
+        <button class="item-inspect-modal__close" :style="closeButtonStyle" @click="close">×</button>
 
         <!-- Item view -->
-          <div class="item-inspect-modal__header">
-            <h2 class="item-inspect-modal__title">{{ item.name }}</h2>
-            <div class="item-inspect-modal__level">{{ item.uses !== undefined ? `${item.uses} use${item.uses!=1?"s":""} remaining` : 'Unlimited uses' }}</div>
+          <div class="item-inspect-modal__header" :style="headerStyle">
+            <h2 class="item-inspect-modal__title" :style="titleStyle">{{ item.name }}</h2>
+            <div class="item-inspect-modal__level" :style="levelStyle">{{ item.uses !== undefined ? `${item.uses} use${item.uses!=1?"s":""} remaining` : 'Unlimited uses' }}</div>
           </div>
 
         <div class="item-inspect-modal__body">
             <!-- Item description (if available) -->
-            <div v-if="item.description" class="item-inspect-modal__description">
-              <p>{{ item.description }}</p>
+            <div v-if="item.description" class="item-inspect-modal__description" :style="sectionStyle">
+              <p :style="textStyle">{{ item.description }}</p>
             </div>
             
             <!-- Effect description -->
-            <div class="item-inspect-modal__effect">
-              <p>{{ power.generateEffectDescription(item) }}</p>
+            <div class="item-inspect-modal__effect" :style="sectionStyle">
+              <p :style="textStyle">{{ power.generateEffectDescription(item) }}</p>
             </div>
 
             <!-- Target selection (when in location) -->
           <template v-if="hasValidTargets">
-            <div class="item-inspect-modal__target-section">
-              <h3>{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
+            <div class="item-inspect-modal__target-section" :style="sectionStyle">
+              <h3 :style="sectionHeaderStyle">{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
 
               <template v-if="power.itemTargetType==='locations'">
                 Locations!
@@ -63,7 +63,7 @@
                 </div>
               </template>
 
-              <p v-else class="no-targets">
+              <p v-else class="no-targets" :style="noTargetsStyle">
                 No valid targets available for this item in current location.
               </p>
 
@@ -71,10 +71,11 @@
           </template>
           </div>
           
-          <div class="item-inspect-modal__footer">
+          <div class="item-inspect-modal__footer" :style="footerStyle">
             <button
                 :disabled="!formSatisfied"
               class="item-inspect-modal__use-btn"
+              :style="!formSatisfied ? disabledButtonStyle : useButtonStyle"
               @click="useItem"
             >
               Use Item
@@ -117,6 +118,75 @@ const selectedTargetMonsters = ref<string[]>([])
 const selectedTargetMonsterTypes = ref<string[]>([])
 const selectedTargetLocations = ref<string[]>([])
 const selectedResult = ref<string>('')
+
+// Theme-based styles
+const backdropStyle = computed(() => ({
+  backgroundColor: questStore.getOverlayColors().background,
+}))
+
+const modalContentStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('modal'),
+  color: questStore.getTextColor('primary'),
+  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+}))
+
+const closeButtonStyle = computed(() => ({
+  color: questStore.getTextColor('secondary'),
+}))
+
+const headerStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('secondary'),
+  borderBottom: `1px solid ${questStore.getBorderColor('light')}`,
+}))
+
+const titleStyle = computed(() => ({
+  color: questStore.getTextColor('primary'),
+}))
+
+const levelStyle = computed(() => ({
+  color: questStore.getTextColor('secondary'),
+}))
+
+const sectionStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('secondary'),
+  borderColor: questStore.getBorderColor('light'),
+}))
+
+const sectionHeaderStyle = computed(() => ({
+  color: questStore.getTextColor('primary'),
+}))
+
+const textStyle = computed(() => ({
+  color: questStore.getTextColor('primary'),
+}))
+
+const noTargetsStyle = computed(() => ({
+  backgroundColor: questStore.theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+  color: questStore.getTextColor('secondary'),
+}))
+
+const footerStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('secondary'),
+  borderTop: `1px solid ${questStore.getBorderColor('light')}`,
+}))
+
+const useButtonStyle = computed(() => {
+  const colors = questStore.getButtonColors('primary')
+  return {
+    backgroundColor: colors.background,
+    color: colors.text,
+    borderColor: colors.border,
+  }
+})
+
+const disabledButtonStyle = computed(() => {
+  const colors = questStore.getButtonColors('disabled')
+  return {
+    backgroundColor: colors.background,
+    color: colors.text,
+    borderColor: colors.border,
+  }
+})
 
 const isChoiceTarget = computed<boolean>(() => {
   return item.value.target === 'pick_type' || item.value.target === 'pick'
@@ -273,8 +343,6 @@ function getMonsterTitle(typeId: string): string {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color: rgba(255, 255, 255, 1);
-
 }
 
 .item-inspect-modal__backdrop {
@@ -283,7 +351,6 @@ function getMonsterTitle(typeId: string): string {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
 }
 
@@ -298,129 +365,6 @@ function getMonsterTitle(typeId: string): string {
   text-align: center;
 }
 
-.theme-toggle {
-  margin: 10px 0;
-  display: flex;
-  justify-content: center;
-}
-
-.theme-button {
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-}
-
-/* Light theme styles */
-.theme-light {
-  background-color: #fff;
-  color: #333333;
-}
-
-.theme-light .theme-button {
-  background: #f0f0f0;
-  border: 1px solid #d0d0d0;
-  color: #333;
-}
-
-.theme-light .theme-button:hover {
-  background: #e0e0e0;
-}
-
-.theme-light .item-inspect-modal__header {
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #eee;
-}
-
-.theme-light .item-inspect-modal__effect,
-.theme-light .item-inspect-modal__description,
-.theme-light .item-inspect-modal__target-section,
-.theme-light .item-inspect-modal__result-section,
-.theme-light .results-content {
-  background-color: #f5f5f5;
-  border: 1px solid #eee;
-}
-
-.theme-light .target-description {
-  color: #555;
-}
-
-.theme-light .no-targets, 
-.theme-light .no-results {
-  background: rgba(0, 0, 0, 0.05);
-  color: #666;
-}
-
-/* Dark theme styles */
-.theme-dark {
-  background-color: #222;
-  color: #f0f0f0;
-}
-
-.theme-dark .theme-button {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-}
-
-.theme-dark .theme-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.theme-dark .item-inspect-modal__header {
-  background-color: #333;
-  border-bottom: 1px solid #444;
-}
-
-.theme-dark .item-inspect-modal__title {
-  color: #f0f0f0;
-}
-
-.theme-dark .item-inspect-modal__level {
-  color: #ccc;
-}
-
-.theme-dark .item-inspect-modal__effect,
-.theme-dark .item-inspect-modal__description,
-.theme-dark .item-inspect-modal__target-section,
-.theme-dark .item-inspect-modal__result-section,
-.theme-dark .results-content {
-  background-color: #333;
-  border: 1px solid #444;
-}
-
-.theme-dark .item-inspect-modal__effect h3,
-.theme-dark .item-inspect-modal__description h3,
-.theme-dark .item-inspect-modal__target-section h3,
-.theme-dark .item-inspect-modal__result-section h3,
-.theme-dark .results-content h3 {
-  color: #f0f0f0;
-}
-
-.theme-dark .item-inspect-modal__effect p,
-.theme-dark .item-inspect-modal__description p,
-.theme-dark .item-modal-view p,
-.theme-dark .item-results-view p {
-  color: #f0f0f0;
-}
-
-.theme-dark .target-description {
-  color: #ccc;
-}
-
-.theme-dark .no-targets, 
-.theme-dark .no-results {
-  background: rgba(255, 255, 255, 0.05);
-  color: #ccc;
-}
-
-.theme-dark .item-inspect-modal__footer {
-  background-color: #333;
-  border-top: 1px solid #444;
-}
-
-/* Shared styles */
 .item-inspect-modal__close {
   position: absolute;
   top: 10px;
@@ -431,12 +375,11 @@ function getMonsterTitle(typeId: string): string {
   line-height: 1;
   cursor: pointer;
   padding: 0 8px;
-  color: #555;
   z-index: 10;
 }
 
 .item-inspect-modal__close:hover {
-  color: #333;
+  opacity: 0.8;
 }
 
 .item-inspect-modal__header {
@@ -502,7 +445,6 @@ function getMonsterTitle(typeId: string): string {
 .item-inspect-modal__targeting {
   font-style: italic;
   font-size: 0.9rem;
-  color: #666;
   margin-top: 8px;
 }
 
@@ -513,7 +455,6 @@ function getMonsterTitle(typeId: string): string {
 .uses-count {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #555;
   text-align: center;
 }
 
@@ -535,27 +476,15 @@ function getMonsterTitle(typeId: string): string {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-  background-color: #43A047;
-  color: white;
 }
 
-.item-inspect-modal__use-btn:hover,
+.item-inspect-modal__use-btn:hover:not(:disabled),
 .item-inspect-modal__close-btn:hover {
-  background-color: #2E7D32;
+  opacity: 0.9;
 }
 
 .item-inspect-modal__use-btn:disabled {
-  background-color: #ccc;
   cursor: not-allowed;
-}
-
-.item-inspect-modal__close-btn {
-  background-color: #757575;
-  color: white;
-}
-
-.item-inspect-modal__close-btn:hover {
-  background-color: #616161;
 }
 
 .target-options {
