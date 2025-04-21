@@ -77,7 +77,7 @@ const normalizedOptions = computed(() => {
 function isSelected(option: ButtonOption): boolean {
   if (!props.modelValue) return false
   
-  if (typeof props.modelValue === 'object' && props.modelValue !== null) {
+  if (typeof props.modelValue === 'object') {
     const valueProperty = props.valueProperty || 'id'
     return props.modelValue[valueProperty] === option[valueProperty]
   }

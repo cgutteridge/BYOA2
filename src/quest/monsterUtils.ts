@@ -2,26 +2,6 @@ import type {Monster, MonsterTypeId} from '../types'
 import {useQuestStore} from '@/stores/questStore.ts';
 import {monsterTypes, monsterTypesById} from "@/data";
 
-/**
- * Get unique monster species from available monsters
- * @param monsters Array of monsters to extract species from
- * @returns Array of unique species strings
- */
-export function getUniqueMonsterSpecies(monsters: Monster[]): string[] {
-  if (!monsters || !monsters.length) return []
-  
-  // Get all species from filtered monsters
-  const types = new Set<string>()
-  
-  monsters.forEach(monster => {
-    const monsterType = monsterTypes.find(mt => mt.id === monster.type)
-    if (monsterType) {
-      types.add(monsterType.species)
-    }
-  })
-  
-  return Array.from(types)
-}
 
 /**
  * Get unique monster type IDs from available monsters
@@ -41,23 +21,7 @@ export function getUniqueMonsterTypes(monsters: Monster[]): MonsterTypeId[] {
   return Array.from(types)
 }
 
-/**
- * Get monster count by species
- * @param monsters Array of monsters to count
- * @param species Species to count
- * @returns number of monsters of the specified species
- */
-export function getMonsterCountBySpecies(monsters: Monster[], species: string): number {
-  // Get all monster types matching this species
-  const monsterTypeIds = monsterTypes
-    .filter(mt => mt.species === species)
-    .map(mt => mt.id)
-  
-  // Count monsters that match any of these type IDs
-  return monsters.filter(monster => 
-    monsterTypeIds.includes(monster.type)
-  ).length
-}
+
 
 /**
  * Get monster level name from type ID

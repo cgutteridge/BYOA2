@@ -245,41 +245,7 @@ function generateItemName(powerId: ItemPowerId, targetMode?: string): string {
   return baseName;
 }
 
-/**
- * Generate a set of test items, one for each power
- */
-export function generateTestItems(): Item[] {
-  const items: Item[] = [];
-  
-  // Generate one item for each power type
-  const powers: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun'];
-  
-  powers.forEach(power => {
-    items.push(generateItemWithPower(power, 3));
-  });
-  
-  return items;
-}
 
-/**
- * Generate an item with a specific power
- */
-function generateItemWithPower(power: ItemPowerId, level: number): Item {
-  const powerInstance = powerFactory.getPower(power);
-  
-  if (!powerInstance) {
-    throw new Error(`Power ${power} not found`);
-  }
-  
-  return {
-    id: toItemId(`test_${power}_${Date.now()}`),
-    name: generateItemName(power, 'random'),
-    uses: 3,
-    power,
-    level,
-    target: 'random',
-    targetFilters: {},
-    maxLevel: powerInstance.maxLevel || 'minion'
-  };
-}
+
+
 

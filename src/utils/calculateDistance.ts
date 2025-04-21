@@ -6,7 +6,7 @@
  * @param point2 - Second coordinates
  * @returns Distance between the points in meters
  */
-import type { Coordinates } from '@/types'
+import type {Coordinates} from '@/types'
 
 export default function calculateDistance(point1: Coordinates, point2: Coordinates): number {
     // console.log('calculateDistance', point1, point2)
@@ -17,7 +17,6 @@ export default function calculateDistance(point1: Coordinates, point2: Coordinat
         Math.cos(point1.lat * Math.PI / 180) * Math.cos(point2.lat * Math.PI / 180) *
         Math.sin(dLng/2) * Math.sin(dLng/2)
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-    const distance = R * c  // Distance in meters
-    // console.log('distance (meters)', distance)
-    return distance
+    // Distance in meters
+    return R * c
 }

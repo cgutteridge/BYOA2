@@ -31,23 +31,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       items.value.splice(index, 1)
     }
   }
-  
-  function useItem(itemId: string) {
-    const item = items.value.find(item => item.id === itemId)
-    
-    if (item) {
-      // If item has uses, decrement them
-      if (item.uses !== undefined) {
-        item.uses--
-        
-        // Remove if no uses left
-        if (item.uses <= 0) {
-          removeItem(itemId)
-        }
-      }
-    }
-  }
-  
+
   return {
     // State
     items,
@@ -59,7 +43,6 @@ export const useInventoryStore = defineStore('inventory', () => {
     
     // Actions
     addItem,
-    removeItem,
-    useItem
+    removeItem
   }
 }) 

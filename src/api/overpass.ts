@@ -41,7 +41,6 @@ export default async function fetchNearbyGameLocations(lat: number, lng: number,
     } catch (error) {
       console.warn(`Failed to fetch from ${endpoint}:`, error)
       lastError = error as Error
-      continue
     }
   }
 

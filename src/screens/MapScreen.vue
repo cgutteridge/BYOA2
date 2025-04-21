@@ -249,7 +249,7 @@ function initializeMap(): void {
     })
 
     L.tileLayer('https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey=090957d4bae841118cdb982b96895428', {
-      attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 22
     }).addTo(mapInstance);
 
@@ -333,7 +333,7 @@ watch(playerCoordinates, (newGameLocation) => {
 
 // Watch for game mode changes
 // @ts-ignore
-watch(() => appStore.screen, (newMode, oldMode) => {
+watch(() => appStore.screen, (newMode, _oldMode) => {
   if (newMode !== 'map' && map.value) {
     closePopup()
     cleanupMap()
