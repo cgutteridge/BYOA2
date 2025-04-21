@@ -92,9 +92,10 @@ export const useQuestStore = defineStore('quest', () => {
   const minimumLocations = ref<number>(1) // Minimum number of locations required
   const tokenTitle = ref<string>('shard of truth') // Title for token
   const tokenDescription = ref<string>('a shard of truth') // Description for token
+  const scoutRange = ref<number>(200) // Scout range in meters
   const persist = ref(['title', 'description', 'status', 'startGameLocation',
     'endGameLocation', 'currentGameLocation', 'playerCount', 'xp', 'booze', 'soft', 'theme', 'minimumLocations',
-    'tokenTitle', 'tokenDescription'])
+    'tokenTitle', 'tokenDescription', 'scoutRange'])
 
   // Color systems for dark and light themes
   const darkColors: ColorSystem = {
@@ -379,6 +380,10 @@ export const useQuestStore = defineStore('quest', () => {
     return locationStore.location(currentGameLocationId.value)
   })
 
+  const setScoutRange = (range: number): void => {
+    scoutRange.value = range
+  }
+
   return {
     startGameLocation,
     endGameLocation,
@@ -421,6 +426,8 @@ export const useQuestStore = defineStore('quest', () => {
     setTokenDescription,
     updateStats,
     persist,
+    scoutRange,
+    setScoutRange,
     // Color functions
     colors,
     getTextColor,

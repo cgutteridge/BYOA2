@@ -3,11 +3,13 @@ import {ref} from 'vue'
 import type {GameLocationTypeId, GameLocation, GameLocationId} from '../types'
 import {GameLocationDifficulty} from '../types'
 import {useAppStore} from './appStore'
+import {useQuestStore} from './questStore'
 import fetchNearbyGameLocations from "../api/overpass.ts"
 import calculateDistance from '../utils/calculateDistance.ts'
 
 export const useLocationStore = defineStore('locations', () => {
   const appStore = useAppStore()
+  const questStore = useQuestStore()
   const persist = ref(['locations'])
 
   const locations = ref<GameLocation[]>([])
@@ -32,24 +34,6 @@ export const useLocationStore = defineStore('locations', () => {
   const setGameLocationHasToken = (locationId: GameLocationId, hasToken: boolean) => {
     const targetGameLocation = location(locationId)
     targetGameLocation.hasToken = hasToken
-  }
-
-  // Check if a location can be scouted based on player's distance to it (within 50 meters)
-  const canScout = (locationId: GameLocationId): boolean => {
-    if (!appStore.playerCoordinates) return false
-    
-    try {
-      const targetGameLocation = location(locationId)
-      const distance = calculateDistance(
-        appStore.playerCoordinates,
-        targetGameLocation.coordinates
-      )
-      
-      return distance <= 20000
-    } catch (error) {
-      console.error(`Error checking if location can be scouted: ${error}`)
-      return false
-    }
   }
 
   const fetchNearbyGameLocationsFromAPI = async () => {
@@ -82,7 +66,6 @@ export const useLocationStore = defineStore('locations', () => {
     setGameLocations: setLocations,
     fetchNearbyGameLocations: fetchNearbyGameLocationsFromAPI,
     location,
-    canScout,
     setGameLocationDifficulty,
     setGameLocationType,
     setGameLocationHasToken,

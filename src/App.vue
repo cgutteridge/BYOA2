@@ -36,8 +36,8 @@ async function initializeGPS() {
   try {
     // If in debug mode, use fixed coordinates for Southampton
     if (appStore.isDebugMode) {
-      const debugCoordinates = {lat: 50.92018, lng: -1.40419 } //southampton
-      //const debugCoordinates = {lat: 49.0434, lng: 3.9562}// epernay
+      const debugCoordinates = {lat: 50.92385, lng: -1.39501} // Southampton
+      //const debugCoordinates = {lat: 49.0434, lng: 3.9562}// Epernay
       // console.log('DEBUG MODE: Using fixed GPS location:', debugCoordinates)
       appStore.setPlayerCoordinates(debugCoordinates)
       appStore.setGPSStatus('success')

@@ -11,6 +11,7 @@ import 'leaflet/dist/leaflet.css'
 import type {Coordinates, GameLocation} from '@/types'
 import {useLocationStore} from "@/stores/locationStore"
 import {useAppStore} from "@/stores/appStore"
+import {useQuestStore} from "@/stores/questStore"
 import {locationTypesById} from "@/data/locationTypes"
 import LocationPopup from '@/components/LocationPopup.vue'
 
@@ -20,9 +21,11 @@ const EDGE_OFFSET = 300 // Minimum distance from screen edges  when opening a po
 
 const appStore = useAppStore()
 const locationStore = useLocationStore()
+const questStore = useQuestStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
+const scoutCircle = ref<L.Circle | null>(null)
 const locationMarkers = ref<L.Marker[]>([])
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])
@@ -365,6 +368,11 @@ function updatePlayerMarker(coords: Coordinates): void {
   if (playerMarker.value) {
     playerMarker.value.remove()
   }
+  
+  // Remove existing scout circle
+  if (scoutCircle.value) {
+    scoutCircle.value.remove()
+  }
 
   // Create new marker with a clear icon
   playerMarker.value = L.marker([coords.lat, coords.lng], {
@@ -374,6 +382,16 @@ function updatePlayerMarker(coords: Coordinates): void {
       iconSize: [20, 20],
       iconAnchor: [10, 10]
     })
+  }).addTo(theMap)
+  
+  // Create scout range circle
+  scoutCircle.value = L.circle([coords.lat, coords.lng], {
+    radius: questStore.scoutRange,
+    color: '#4285F4',
+    fillColor: '#4285F4',
+    fillOpacity: 0.1,
+    weight: 2,
+    dashArray: '5, 10'
   }).addTo(theMap)
 }
 
@@ -411,6 +429,13 @@ function cleanupPopupApps() {
     console.error('Error cleaning up popup containers:', error)
   }
 }
+
+// Add watch for scout range changes
+watch(() => questStore.scoutRange, () => {
+  if (playerCoordinates.value && map.value) {
+    updatePlayerMarker(playerCoordinates.value)
+  }
+})
 </script>
 
 <style scoped>

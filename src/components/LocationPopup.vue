@@ -5,8 +5,9 @@
       <span>{{ Math.round(playerDistance) }}m away</span>
     </div>
     <div class="action-buttons">
+      <!-- Unscouted locations -->
       <ButtonInput 
-        v-if="!location.scouted && !isLoading"
+        v-if="!location.scouted && isInScoutRange && !isLoading"
         :action="scoutLocationAction"
         class="scout-button"
         variant="primary"
@@ -14,14 +15,36 @@
       >
         Scout Location
       </ButtonInput>
+      
       <ButtonInput 
-        v-if="location.scouted && isNearby"
+        v-if="!location.scouted && !isInScoutRange && appStore.isDebugMode && !isLoading"
+        :action="scoutLocationAction"
+        class="scout-button debug-button"
+        variant="secondary"
+        size="medium"
+      >
+        Scout (DEBUG)
+      </ButtonInput>
+      
+      <!-- Scouted locations -->
+      <ButtonInput 
+        v-if="location.scouted && isEnterRange"
         :action="enterLocation"
         class="enter-button"
         variant="primary"
         size="medium"
       >
         Enter Location
+      </ButtonInput>
+      
+      <ButtonInput 
+        v-if="location.scouted && !isEnterRange && appStore.isDebugMode"
+        :action="enterLocation"
+        class="enter-button debug-button"
+        variant="secondary"
+        size="medium"
+      >
+        Enter Location (DEBUG)
       </ButtonInput>
     </div>
     <div class="location-details">
@@ -97,16 +120,16 @@
 import {computed} from 'vue'
 import type {GameLocationType, Monster, MonsterTypeId, GameLocation} from '../types'
 import {useAppStore} from "../stores/appStore"
+import {useQuestStore} from "../stores/questStore"
 import {monsterTypes} from '../data/monsterTypes'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
 import ButtonInput from '@/components/forms/ButtonInput.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
-import {useQuestStore} from "@/stores/questStore.ts";
-import {getMonsterXP} from "../quest/monsterUtils.ts";
-import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {locationTypesById} from "@/data/locationTypes.ts";
+import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {generateTokenItem} from "@/quest/itemUtils.ts";
+import {getMonsterXP} from "../quest/monsterUtils.ts";
 
 const props = defineProps<{
   location: GameLocation
@@ -144,9 +167,14 @@ const playerDistance = computed(() => {
   );
 });
 
-// Check if player is within range to interact with the location
-const isNearby = computed(() => {
-  return playerDistance.value !== null && playerDistance.value < 50000; // 50000 meters range
+// Check if player is within scout range
+const isInScoutRange = computed(() => {
+  return playerDistance.value !== null && playerDistance.value <= questStore.scoutRange;
+});
+
+// Check if player is within enter range (25m)
+const isEnterRange = computed(() => {
+  return playerDistance.value !== null && playerDistance.value <= 25;
 });
 
 // Group undefeated monsters by type for display
@@ -437,5 +465,15 @@ function enterLocation(event?: MouseEvent) {
 
 .prize-item-wrapper:last-child {
   margin-bottom: 0;
+}
+
+.debug-button {
+  border: 2px dashed rgba(200, 50, 50, 0.7);
+  background-color: rgba(200, 50, 50, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.debug-button:hover {
+  background-color: rgba(200, 50, 50, 0.3);
 }
 </style> 
