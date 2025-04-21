@@ -100,7 +100,7 @@ export const useAppStore = defineStore('app', () => {
     type: 'success' | 'error' | 'info' | 'warning' = 'info',
     timeout = 10000
   ): void => {
-    const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+    const id = `notification-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const centerIndex = centerNotificationCount.value;
     centerNotificationCount.value++;
     

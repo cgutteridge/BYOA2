@@ -54,7 +54,7 @@ export function generateRandomItem(level: number): Item {
   
   // Initialize item with default properties
   const item: Item = {
-    id: toItemId(`random_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`),
+    id: toItemId(`random_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`),
     name: generateItemName(selectedPower, defaultTargetMode),
     uses: 1,
     power: selectedPower,

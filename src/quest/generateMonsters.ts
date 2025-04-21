@@ -50,7 +50,7 @@ export default function generateMonsters(location: GameLocation): Monster[] {
             let item: Item | undefined = monsterItem(monsterType.id)
 
             monsters.push({
-                id: toMonsterId(`monster_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`),
+                id: toMonsterId(`monster_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`),
                 type: monsterType.id,
                 name: monsterName, // This will be replaced with AI-generated name
                 alive: true,
