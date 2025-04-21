@@ -67,7 +67,6 @@ export class StunPower extends ItemPower {
     }
     
     // Transform the monster into a stunned version
-    const originalType = monster.type;
     const originalName = monster.name;
     
     // Update the monster's type and name

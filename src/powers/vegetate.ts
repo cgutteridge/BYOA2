@@ -67,7 +67,6 @@ export class VegetatePower extends ItemPower {
     }
     
     // Transform the monster into a vegetated version
-    const originalType = monster.type;
     const originalName = monster.name;
     
     // Update the monster's type and name
