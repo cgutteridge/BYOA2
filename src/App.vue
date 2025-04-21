@@ -19,6 +19,7 @@ const questStore = useQuestStore()
 const inventoryStore = useInventoryStore()
 const watchId = ref<number | null>(null)
 const showButtonPulse = ref(false)
+const hashChangeListener = ref<((event: HashChangeEvent) => void) | null>(null)
 
 // Watch for inventory changes to trigger the pulse animation
 watch(() => inventoryStore.itemCount, (newCount, oldCount) => {
@@ -119,21 +120,65 @@ watch(() => appStore.isDebugMode, () => {
   initializeGPS()
 })
 
+// Function to set up initial hash fragments in the navigation history
+function setupHashHistory(): void {
+  // Only set up if we don't already have a hash
+  if (!window.location.hash) {
+    // First, add an initial hash fragment
+    window.location.hash = '#game'
+    
+    // Then, add a second hash fragment to create history
+    setTimeout(() => {
+      window.location.hash = '#main'
+    }, 100)
+  }
+}
+
+// Function to handle hash changes
+function handleHashChange(event: HashChangeEvent): void {
+  // Prevent default behavior
+  event.preventDefault()
+  
+  // Check if item modal is open
+  if (appStore.inspectedItem) {
+    appStore.closeItemInspectModal()
+    // Add a new history entry to maintain several fragments
+    window.history.pushState(null, '', '#main')
+    return
+  }
+  
+  // Check if interface is open
+  if (appStore.isInterfaceOpen) {
+    appStore.closeInterface()
+    // Add a new history entry to maintain several fragments
+    window.history.pushState(null, '', '#main')
+    return
+  }
+  
+  // If nothing is open, just add a new hash to maintain history depth
+  window.history.pushState(null, '', '#main')
+}
+
 onMounted(() => {
   // console.log('App mounted, initializing GPS...')
   initializeGPS()
+  
+  // Set up hash history
+  setupHashHistory()
+  
+  // Add hash change listener
+  hashChangeListener.value = (event) => handleHashChange(event)
+  window.addEventListener('hashchange', hashChangeListener.value)
 })
 
 onUnmounted(() => {
   // Clean up the continuous tracking when the component is unmounted
   stopContinuousTracking()
   
-  // Remove keyboard listener
-  window.removeEventListener('keydown', (e) => {
-    if (e.key === 'i' || e.key === 'I') {
-      toggleInterface()
-    }
-  })
+  // Remove hash change listener
+  if (hashChangeListener.value) {
+    window.removeEventListener('hashchange', hashChangeListener.value)
+  }
 })
 </script>
 
