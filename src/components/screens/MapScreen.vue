@@ -19,6 +19,7 @@ import {useQuestStore} from "@/stores/questStore"
 import {useRouteStore} from "@/stores/routeStore"
 import {locationTypesById} from "@/data/locationTypes"
 import LocationPopup from '@/components/LocationPopup.vue'
+import calculateDistance from "@/utils/calculateDistance"
 
 // Configuration constants
 const BOTTOM_OFFSET = 20 // Distance from bottom of screen  when opening a popup in pixels
@@ -277,7 +278,7 @@ function initializeMap(): void {
     })
 
     // Handle map clicks for closing popups (and teleporting in debug mode)
-    mapInstance.on('click', (e: L.LeafletMouseEvent) => {
+    mapInstance.on('click', () => {
       // If teleport mode is active, this will be handled by the teleport click handler
       if (!teleportModeActive.value) {
         closePopup()
@@ -373,9 +374,19 @@ onUnmounted(() => {
 })
 
 // Watch for location changes
-watch(playerCoordinates, (newGameLocation) => {
-  if (newGameLocation && map.value) {
-    updatePlayerMarker(newGameLocation)
+watch(playerCoordinates, (newCoordinates, oldCoordinates) => {
+  if (newCoordinates && map.value) {
+    updatePlayerMarker(newCoordinates)
+    
+    // If we have previous coordinates, calculate distance and possibly add to route
+    if (oldCoordinates && routeCoordinates.value.length > 0) {
+      const distance = calculateDistance(oldCoordinates, newCoordinates)
+      
+      // If distance is significant (more than 25 meters), add to route
+      if (distance > 25) {
+        routeStore.addRoutePoint(newCoordinates)
+      }
+    }
   }
 }, { immediate: true })
 
@@ -449,6 +460,9 @@ function updatePlayerMarker(coords: Coordinates): void {
   
   // Add the scout range labels
   updateScoutRangeLabels(coords, theMap);
+  
+  // Update the route line to ensure it's properly connected to the player's position
+  updateRouteLine();
 }
 
 // Function to update scout range labels with zoom-dependent sizing
@@ -611,7 +625,7 @@ function updateRouteLine(): void {
 // Watch for route changes to update the line
 watch(routeCoordinates, () => {
   updateRouteLine()
-})
+}, { deep: true })
 
 // Function to toggle teleport mode for debug
 function toggleTeleportMode(): void {
