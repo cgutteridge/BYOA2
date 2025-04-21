@@ -71,7 +71,7 @@
           </template>
           </div>
           
-          <div class="item-inspect-modal__footer" :style="footerStyle">
+          <div v-if="hasValidTargets" class="item-inspect-modal__footer" :style="footerStyle">
             <button
                 :disabled="!formSatisfied"
               class="item-inspect-modal__use-btn"

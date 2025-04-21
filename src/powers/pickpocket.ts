@@ -1,6 +1,8 @@
 import { ItemPower } from './abstractItemPower'
-import {Item, Monster} from "@/types";
-import {useQuestStore} from "@/stores/questStore.ts";
+import { Item, Monster } from "@/types";
+import { useQuestStore } from "@/stores/questStore.ts";
+import { useInventoryStore } from "@/stores/inventoryStore.ts";
+import { useAppStore } from "@/stores/appStore.ts";
 
 /**
  * Pickpocket power implementation
@@ -14,7 +16,7 @@ export class PickpocketPower extends ItemPower {
   // Item generation constants
   readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
-  readonly supportsTypeTargeting = true;
+  readonly supportsTypeTargeting = false; // Can't target monster types
   readonly canHaveResultRestriction = false;
   readonly maxLevel = 'grunt'; // Max level this works on
 
@@ -23,18 +25,46 @@ export class PickpocketPower extends ItemPower {
   // Item types for this power
   readonly itemArtifactNames = ["Gloves", "Lockpick", "Hook", "Claw", "Hand", "Grasp", "Grip", "Thief's Tool"];
 
+  /**
+   * Override canTargetMonster to only allow targeting monsters with items
+   */
+  canTargetMonster(item: Item, monster: Monster): boolean {
+    // First apply the base class logic
+    const canTarget = super.canTargetMonster(item, monster);
+    
+    // Only allow targeting monsters that have items
+    return canTarget && monster.item !== undefined;
+  }
+
   applyEffect(item: Item, monster: Monster): boolean {
     const questStore = useQuestStore();
+    const inventoryStore = useInventoryStore();
+    const appStore = useAppStore();
 
-    // Log the banishment
-    questStore.updateStats(1,0,0,
-        `${monster.name} was robbed with ${item.name}`)
+    // Check if monster has an item to steal
+    if (!monster.item) {
+      appStore.addNotification(`${monster.name} has no items to steal.`);
+      return false;
+    }
 
-    return false;
+    // Get the item from the monster
+    const stolenItem = monster.item;
+    
+    // Add the stolen item to inventory
+    inventoryStore.addItem(stolenItem);
+    
+    // Remove the item from the monster
+    monster.item = undefined;
+
+    // Log the theft
+    questStore.updateStats(1, 0, 0,
+      `Stole ${stolenItem.name} from ${monster.name} using ${item.name}`)
+
+    return true;
   }
 
   generateEffectDescription(item: Item): string {
     const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item steals from ${this.getTargetDescription(item)}.`;
+    return `This ${qualityTerm} item lets you steal from ${this.getTargetDescription(item)}.`;
   }
 } 
