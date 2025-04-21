@@ -670,4 +670,26 @@ function getMonsterTitle(typeId: string): string {
     max-height: calc(90vh - 130px);
   }
 }
+
+/* Mobile full screen styles */
+@media screen and (max-width: 767px) {
+  .item-inspect-modal__content {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    border-radius: 0;
+  }
+  
+  .item-inspect-modal__header {
+    padding: 15px 10px;
+  }
+  
+  .item-inspect-modal__body {
+    padding: 15px 10px;
+  }
+  
+  .item-inspect-modal__title {
+    font-size: 1.4rem;
+  }
+}
 </style> 

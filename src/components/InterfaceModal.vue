@@ -411,4 +411,37 @@ function formatUnits(value: number): string {
 .quit-button {
   margin-top: 1rem;
 }
+
+/* Media queries for responsive design */
+@media screen and (max-width: 767px) {
+  .interface-modal__content {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    border-radius: 0;
+  }
+  
+  .interface-modal__header {
+    padding: 0.75rem;
+  }
+  
+  .interface-modal__tabs {
+    gap: 0.3rem;
+  }
+  
+  .interface-modal__tab {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .interface-modal__body {
+    padding: 0.75rem;
+  }
+  
+  .interface-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 0.75rem;
+    padding: 0.5rem;
+  }
+}
 </style> 
