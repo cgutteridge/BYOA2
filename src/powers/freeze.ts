@@ -71,13 +71,13 @@ export class FreezePower extends ItemPower {
 
     // Log the transformation
     questStore.updateStats(1,0,0,
-        `${monsterTypeInfo.title} was frozen into ice with ${item.name}`)
+        `${monsterTypeInfo.title} was frozen with ${item.name}`)
 
     return true;
   }
 
   generateEffectDescription(item: Item): string {
     const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item transforms ${this.getTargetDescription(item)} into an ice monster of the same level.`;
+    return `This ${qualityTerm} item freezes ${this.getTargetDescription(item)}.`;
   }
 } 
