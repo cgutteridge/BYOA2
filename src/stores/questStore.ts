@@ -353,8 +353,11 @@ export const useQuestStore = defineStore('quest', () => {
       parts.push(`${boozeDisplay} Booze`)
     }
     if( parts.length ==0 ) {
-    parts.push("nothing")}
-    appStore.addNotification( `${actionDesc} ${parts.join(', ')}`)
+      parts.push("nothing")
+    }
+    
+    // Pass the notification message and XP amount to the notification system
+    appStore.addNotification(`${actionDesc} ${parts.join(', ')}`, 'success', 10000, xpAmount);
   }
   
   const endQuest = () => {

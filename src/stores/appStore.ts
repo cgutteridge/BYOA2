@@ -2,6 +2,7 @@ import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
 import type {GPSStatus, Item, Coordinates, GameLocationId, ScreenId} from '../types'
 import {useLocationStore} from "../stores/locationStore";
+import {useLogStore} from "../stores/logStore";
 
 // Notification interface
 interface Notification {
@@ -30,6 +31,7 @@ export const useAppStore = defineStore('app', () => {
   const mapPosition = ref<Coordinates | null>(null)
   const mapZoom = ref<number | null>(null)
   const locationStore = useLocationStore()
+  const logStore = useLogStore()
   
   // Inventory UI state
   const isInterfaceOpen = ref(false)
@@ -47,6 +49,11 @@ export const useAppStore = defineStore('app', () => {
   const isDebugMode = ref(localStorage.getItem('debug_mode') === 'true')
 
   const setScreen = (newScreen: ScreenId) => {
+    // Log quest start
+    if (newScreen === 'intro' && screen.value === 'start_quest') {
+      logStore.addLogEntry('Started the quest', 0);
+    }
+    
     screen.value = newScreen
   }
 
@@ -101,14 +108,17 @@ export const useAppStore = defineStore('app', () => {
   const addNotification = (
     message: string, 
     type: 'success' | 'error' | 'info' | 'warning' = 'info',
-    timeout = 10000
+    timeout = 10000,
+    xp = 0
   ): void => {
     const id = `notification-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const centerIndex = centerNotificationCount.value;
     centerNotificationCount.value++;
     
     notifications.value.push({ id, message, type, timeout, isEntering: true, centerIndex });
-    // console.log("NOTIFICATION: " + message);
+    
+    // Add entry to log store
+    logStore.addLogEntry(message, xp);
     
     // Auto-remove after timeout
     if (timeout > 0) {

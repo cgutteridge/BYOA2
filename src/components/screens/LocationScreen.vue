@@ -83,6 +83,7 @@ import '@/styles/monsterAnimations.css';
 import {computed} from 'vue';
 import {useInventoryStore} from "@/stores/inventoryStore";
 import {useLocationStore} from "@/stores/locationStore";
+import {useLogStore} from "@/stores/logStore";
 import ItemCard from "@/components/ItemCard.vue";
 import ButtonInput from "@/components/forms/ButtonInput.vue";
 import {areAllMonstersDefeated} from "@/quest/monsterUtils";
@@ -93,6 +94,7 @@ const questStore = useQuestStore()
 const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
 const locationStore = useLocationStore()
+const logStore = useLogStore()
 
 // Theme-based styles
 const headerStyle = computed(() => ({
@@ -143,6 +145,11 @@ const tokenItem = computed(() => {
 })
 
 function leaveLocation() {
+  // Add log entry before changing screen or unsetting location
+  if (questStore.currentGameLocation) {
+    logStore.addLogEntry(`Left ${questStore.currentGameLocation.name}`, 0);
+  }
+  
   appStore.setScreen('map')
   questStore.unsetCurrentGameLocation()
 }

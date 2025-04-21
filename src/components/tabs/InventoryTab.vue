@@ -69,7 +69,4 @@ const emptyMessageStyle = computed(() => ({
   padding: 1rem;
 }
 
-.inventory-grid__item {
-  margin-bottom: 1rem;
-}
 </style> 

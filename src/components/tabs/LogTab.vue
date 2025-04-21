@@ -2,36 +2,49 @@
   <div class="log-tab">
     <h2>Quest Log</h2>
     
-    <div class="log-introduction">
+    <div class="log-introduction" v-if="Object.keys(groupedEntries).length === 0">
       <p>Your journey is tracked here. Major events, battles, and discoveries will be recorded.</p>
     </div>
     
     <div class="log-entries">
-      <!-- Placeholder entries that would normally come from the questStore -->
-      <div class="log-entry">
-        <div class="log-entry-time">Just now</div>
-        <div class="log-entry-message">You accessed the quest log for the first time.</div>
-      </div>
-      
-      <div class="log-entry">
-        <div class="log-entry-time">Earlier</div>
-        <div class="log-entry-message">You started your adventure.</div>
-      </div>
-      
-      <div class="log-entry">
-        <div class="log-entry-time">At the beginning</div>
-        <div class="log-entry-message">Your quest began. Excitement and danger await!</div>
+      <div v-for="(entries, hourGroup) in groupedEntries" :key="hourGroup" class="log-hour-group">
+        <div class="log-entries-container">
+          <h3 class="log-hour-header">{{ hourGroup }}</h3>
+          
+          <div v-for="entry in entries" :key="entry.id" class="log-entry">
+            <span class="log-entry-time">{{ formatTime(entry.timestamp) }}</span>
+            - {{ entry.message }}
+            <span v-if="entry.xp > 0" class="log-entry-xp">+{{ entry.xp }} XP</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// Future implementation will pull actual log entries from logStore
-import {useQuestStore} from "@/stores/questStore.ts";
+import { useLogStore } from '@/stores/logStore';
+import { useQuestStore } from '@/stores/questStore';
+import { computed } from 'vue';
 
-const questStore = useQuestStore()
+const questStore = useQuestStore();
+const logStore = useLogStore();
 
+const groupedEntries = computed(() => {
+  return logStore.getGroupedByHourEntries();
+});
+
+/**
+ * Format timestamp to local time (HH:MM)
+ */
+const formatTime = (timestamp: string): string => {
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+};
 </script>
 
 <style scoped>
@@ -51,28 +64,53 @@ const questStore = useQuestStore()
 
 .log-entries {
   display: flex;
-  flex-direction: column-reverse; /* Most recent on top */
-  gap: 1rem;
+  flex-direction: column;
+  gap: 1.5rem;
   max-width: 800px;
   margin: 0 auto;
 }
 
-.log-entry {
-  padding: 1rem;
+.log-hour-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.log-entries-container {
+  padding: 0.75rem 1rem;
   border-radius: 8px;
   background-color: v-bind('questStore.getBackgroundColor("tertiary")');
   border: 1px solid v-bind('questStore.getBorderColor("light")');
 }
 
-.log-entry-time {
-  font-size: 0.85rem;
-  margin-bottom: 0.5rem;
-  opacity: 0.7;
+.log-hour-header {
+  padding: 0.5rem;
+  margin: -0.5rem -0.75rem 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-bottom: 1px solid v-bind('questStore.getBorderColor("light")');
   color: v-bind('questStore.getTextColor("secondary")');
 }
 
-.log-entry-message {
-  font-size: 1rem;
+.log-entry {
+  padding: 0.25rem 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
   color: v-bind('questStore.getTextColor("primary")');
+}
+
+.log-entry:not(:last-child) {
+  border-bottom: 1px solid v-bind('questStore.getBorderColor("light")');
+  border-bottom-style: dashed;
+}
+
+.log-entry-time {
+  font-weight: 500;
+  color: v-bind('questStore.getTextColor("secondary")');
+}
+
+.log-entry-xp {
+  color: #4CAF50;
+  font-weight: 600;
+  margin-left: 0.5rem;
 }
 </style> 
