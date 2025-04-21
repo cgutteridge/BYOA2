@@ -8,10 +8,10 @@
 import {computed, createApp, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import type {Coordinates, GameLocation} from '../types'
-import {useLocationStore} from "../stores/locationStore";
-import {useAppStore} from "../stores/appStore";
-import {locationTypesById} from "@/data/locationTypes.ts";
+import type {Coordinates, GameLocation} from '@/types'
+import {useLocationStore} from "@/stores/locationStore"
+import {useAppStore} from "@/stores/appStore"
+import {locationTypesById} from "@/data/locationTypes"
 import LocationPopup from '@/components/LocationPopup.vue'
 
 // Configuration constants

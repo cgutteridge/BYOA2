@@ -15,9 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import {useAppStore} from "../stores/appStore";
-import {useQuestStore} from "../stores/questStore";
-import ButtonInput from "@/components/forms/ButtonInput.vue";
+import { useAppStore } from '@/stores/appStore'
+import { useQuestStore } from '@/stores/questStore'
+import ButtonInput from '@/components/forms/ButtonInput.vue'
 
 const appStore = useAppStore()
 const questStore = useQuestStore()

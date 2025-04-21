@@ -79,7 +79,7 @@
 import {useAppStore} from "@/stores/appStore";
 import {useQuestStore} from "@/stores/questStore";
 import {GameLocation} from "@/types";
-import '../styles/monsterAnimations.css';
+import '@/styles/monsterAnimations.css';
 import {computed} from 'vue';
 import {useInventoryStore} from "@/stores/inventoryStore";
 import {useLocationStore} from "@/stores/locationStore";

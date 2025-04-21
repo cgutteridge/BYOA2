@@ -19,7 +19,11 @@
 - CSS should use scoped or module approach
 
 # Directory structure
-- Component files go in src/components/
+- All Vue components go in src/components/
+- Screen components go in src/components/screens/
+- Interface tab components go in src/components/tabs/
+- Form components go in src/components/forms/
+- Individual utility components are directly in src/components/
 - Store files go in src/stores/
 - Types go in src/types/
 - Power implementations go in src/powers/
@@ -63,7 +67,7 @@
 # Workflow
 - Keep PRs focused on single concerns
 - Update tests when changing functionality
-- Always check for type errors before committing 
+- Always check for type errors before committing
 
 # Updating Rules
 - If it seems a rule is wrong immediately ask if it should be changed before continuing with any other task

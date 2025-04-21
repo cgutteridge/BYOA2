@@ -105,17 +105,17 @@
 
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from 'vue'
-import {useAppStore} from '../stores/appStore'
-import {startQuest} from "@/quest/startQuest.ts"
+import {useAppStore} from '@/stores/appStore'
+import {startQuest} from "@/quest/startQuest"
 import ListInput from '@/components/forms/ListInput.vue'
 import ButtonSet from '@/components/forms/ButtonSet.vue'
 import ButtonInput from '@/components/forms/ButtonInput.vue'
 import NumberInput from '@/components/forms/NumberInput.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import {GameLocation} from "@/types"
-import {useLocationStore} from "@/stores/locationStore.ts"
-import {useQuestStore} from "@/stores/questStore.ts"
-import {generateQuestTitle} from "@/quest/generateQuestTitle.ts"
+import {useLocationStore} from "@/stores/locationStore"
+import {useQuestStore} from "@/stores/questStore"
+import {generateQuestTitle} from "@/quest/generateQuestTitle"
 
 const appStore = useAppStore()
 const locationStore = useLocationStore()
