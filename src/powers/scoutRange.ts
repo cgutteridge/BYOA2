@@ -23,12 +23,12 @@ export class ScoutRangePower extends ItemPower {
   // Item types for this power
   readonly itemArtifactNames = ["Telescope", "Spy Drone", "Winged Monkey", "Binoculars", "Periscope", "Eagle Eye"];
 
-  applyEffect(item: Item, _monster: Monster): boolean {
+  useWithoutTarget(item: Item): boolean {
     const questStore = useQuestStore();
     
     // Extend scout range by 20 meters
     questStore.setScoutRange(questStore.scoutRange + 20);
-    questStore.updateStats(10,0,0, `Used ${item} to increase maximum scout range.`)
+    questStore.updateStats(10,0,0, `Used ${item.name} to increase maximum scout range.`)
     
     return true;
   }

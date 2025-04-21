@@ -1,72 +1,56 @@
-import type {GameLocation} from '@/types'
+import type {GameLocation, Item} from '@/types'
+import {toItemId} from '@/types';
 import {useQuestStore} from "@/stores/questStore.ts";
-import { useInventoryStore } from "@/stores/inventoryStore.ts";
-import { generateRandomItem } from "@/quest/generateRandomItem.ts";
-import type { Item, ItemPowerId } from "@/types";
-import { toItemId } from '@/types';
+import {useInventoryStore} from "@/stores/inventoryStore.ts";
+import {generateRandomItem} from "@/quest/generateRandomItem.ts";
 import {useLocationStore} from "@/stores/locationStore.ts";
 import initialiseGameLocation from "@/quest/initialiseLocation.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {ChatGPTAPI} from "@/api/chatGPT.ts";
+import {allPowerIds, powerFactory} from "@/powers";
 
 // Function to create unrestricted debug items with pick and pick_type for each power
 function createDebugItems(): Item[] {
-  // Define all available powers
-  const powers: ItemPowerId[] = [
-    'kill', 
-    'transmute', 
-    'spy',
-    'shrink', 
-    'split', 
-    'pickpocket',
-    'banish',
-    'freeze',
-    'petrify',
-    'pacify',
-    'distract',
-    'vegetate',
-    'stun'
-  ];
-  
+
   const items: Item[] = [];
   
   // Create a pick item for each power
-  powers.forEach(power => {
-    // Get capitalized power name for display
-    const powerName = power.charAt(0).toUpperCase() + power.slice(1);
+    allPowerIds.forEach(powerId => {
+        // Get capitalized power name for display
+        const power = powerFactory.getPower(powerId);
+
+        // Create pick item (use on individual monster)
+        const pickItem: Item = {
+            id: toItemId(`debug_pick_${powerId}_${Date.now()}`),
+            name: `DEBUG ${power.displayName}`,
+            description: `Debug item with unrestricted ability to ${powerId}`,
+            uses: 999,
+            level: 6,
+            power: powerId,
+            target: 'pick',
+            targetFilters: {},
+            maxLevel: 'boss',
+            timestamp: Date.now()
+        };
+        items.push(pickItem);
+
+        if (power.itemTargetType === 'monsters') {
+            // Create pick_type item (use on monster type)
+            const pickTypeItem: Item = {
+                id: toItemId(`debug_pick_type_${powerId}_${Date.now()}`),
+                name: `DEBUG ${power.displayName} (Use on Type)`,
+                description: `Debug item with unrestricted ability to ${powerId} all monsters of a type`,
+                uses: 999,
+                level: 6,
+                power: powerId,
+                target: 'pick_type',
+                targetFilters: {},
+                maxLevel: 'boss',
+                timestamp: Date.now()
+            };
+            items.push(pickTypeItem);
+        }
     
-    // Create pick item (use on individual monster)
-    const pickItem: Item = {
-      id: toItemId(`debug_pick_${power}_${Date.now()}`),
-      name: `DEBUG ${powerName} (Use on Monster)`,
-      description: `Debug item with unrestricted ability to ${power} individual monsters`,
-      uses: 999,
-      level: 6,
-      power,
-      target: 'pick',
-      targetFilters: {},
-      maxLevel: 'boss',
-      icon: '🛠️',
-      timestamp: Date.now()
-    };
-    
-    // Create pick_type item (use on monster type)
-    const pickTypeItem: Item = {
-      id: toItemId(`debug_pick_type_${power}_${Date.now()}`),
-      name: `DEBUG ${powerName} (Use on Type)`,
-      description: `Debug item with unrestricted ability to ${power} all monsters of a type`,
-      uses: 999,
-      level: 6,
-      power,
-      target: 'pick_type',
-      targetFilters: {},
-      maxLevel: 'boss',
-      icon: '🛠️',
-      timestamp: Date.now()
-    };
-    
-    items.push(pickItem);
-    items.push(pickTypeItem);
   });
   
   return items;

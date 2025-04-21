@@ -55,6 +55,10 @@ const powerInstances: Record<ItemPowerId, ItemPower> = {
   scoutRange: scoutRangePower,
 };
 
+export const allPowers : ItemPower[] = Object.values(powerInstances);
+
+export const allPowerIds : ItemPowerId[] = Object.keys(powerInstances) as ItemPowerId[];
+
 /**
  * Simplified power factory implementation
  * Just retrieves a power instance by name

@@ -107,11 +107,10 @@ const appStore = useAppStore()
 const questStore = useQuestStore()
 
 // Get modal state from appStore
-const isOpen = computed(() => appStore.inspectedItem !== null)
-const item = computed(() => appStore.inspectedItem || {} as Item)
+const isOpen = computed<boolean>(() => appStore.inspectedItem !== null)
+const item = computed<Item>(() => appStore.inspectedItem || {} as Item)
 
 const power = computed(()=> powerFactory.getPower(item.value.power))
-
 
 // State
 const selectedTargetMonsters = ref<string[]>([])
