@@ -425,19 +425,11 @@ function updatePlayerMarker(coords: Coordinates): void {
     playerMarker.value.remove()
   }
   
-  // Remove existing scout circle and labels
+  // Remove existing scout circle
   if (scoutCircle.value) {
     scoutCircle.value.remove()
   }
   
-  if (scoutTopLabel.value) {
-    scoutTopLabel.value.remove()
-  }
-  
-  if (scoutBottomLabel.value) {
-    scoutBottomLabel.value.remove()
-  }
-
   // Create new marker with a clear icon
   playerMarker.value = L.marker([coords.lat, coords.lng], {
     icon: L.divIcon({
@@ -458,7 +450,7 @@ function updatePlayerMarker(coords: Coordinates): void {
     dashArray: '5, 10'
   }).addTo(theMap)
   
-  // Add the scout range labels
+  // Add the scout range labels - this function will handle cleaning up old labels
   updateScoutRangeLabels(coords, theMap);
   
   // Update the route line to ensure it's properly connected to the player's position
@@ -501,53 +493,36 @@ function updateScoutRangeLabels(coords: Coordinates, theMap: L.Map): void {
   const labelWidth = Math.max(80, Math.min(300, Math.floor(140 * zoomFactor)));
   const labelHeight = Math.max(20, Math.min(80, Math.floor(30 * zoomFactor)));
   
-  if (!scoutTopLabel.value || !scoutBottomLabel.value) {
-    // Initial creation of labels
-    
-    // Create top scout range label with zoom-adjusted size
-    scoutTopLabel.value = L.marker([topPoint.lat, topPoint.lng], {
-      icon: L.divIcon({
-        className: 'scout-range-label',
-        html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
-        iconSize: [labelWidth, labelHeight],
-        iconAnchor: [labelWidth / 2, labelHeight] // Bottom center of the icon
-      })
-    }).addTo(theMap);
-    
-    // Create bottom scout range label with zoom-adjusted size
-    scoutBottomLabel.value = L.marker([bottomPoint.lat, bottomPoint.lng], {
-      icon: L.divIcon({
-        className: 'scout-range-label',
-        html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
-        iconSize: [labelWidth, labelHeight],
-        iconAnchor: [labelWidth / 2, 0] // Top center of the icon
-      })
-    }).addTo(theMap);
-  } else {
-    // Update existing labels
-    
-    // Update positions
-    scoutTopLabel.value.setLatLng([topPoint.lat, topPoint.lng]);
-    scoutBottomLabel.value.setLatLng([bottomPoint.lat, bottomPoint.lng]);
-    
-    // Update text size
-    const topIcon = L.divIcon({
-      className: 'scout-range-label',
-      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
-      iconSize: [labelWidth, labelHeight],
-      iconAnchor: [labelWidth / 2, labelHeight]
-    });
-    
-    const bottomIcon = L.divIcon({
-      className: 'scout-range-label',
-      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
-      iconSize: [labelWidth, labelHeight],
-      iconAnchor: [labelWidth / 2, 0]
-    });
-    
-    scoutTopLabel.value.setIcon(topIcon);
-    scoutBottomLabel.value.setIcon(bottomIcon);
+  // Remove existing labels (important to prevent label duplication)
+  if (scoutTopLabel.value) {
+    scoutTopLabel.value.remove();
+    scoutTopLabel.value = null;
   }
+  
+  if (scoutBottomLabel.value) {
+    scoutBottomLabel.value.remove();
+    scoutBottomLabel.value = null;
+  }
+  
+  // Create top scout range label with zoom-adjusted size
+  scoutTopLabel.value = L.marker([topPoint.lat, topPoint.lng], {
+    icon: L.divIcon({
+      className: 'scout-range-label',
+      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+      iconSize: [labelWidth, labelHeight],
+      iconAnchor: [labelWidth / 2, labelHeight] // Bottom center of the icon
+    })
+  }).addTo(theMap);
+  
+  // Create bottom scout range label with zoom-adjusted size
+  scoutBottomLabel.value = L.marker([bottomPoint.lat, bottomPoint.lng], {
+    icon: L.divIcon({
+      className: 'scout-range-label',
+      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+      iconSize: [labelWidth, labelHeight],
+      iconAnchor: [labelWidth / 2, 0] // Top center of the icon
+    })
+  }).addTo(theMap);
 }
 
 function centerOnPlayer(): void {
