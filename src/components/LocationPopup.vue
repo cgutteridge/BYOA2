@@ -77,7 +77,7 @@
                 <span>{{ group.monsters.length }}x</span>
               </div>
               <div class="monster-info">
-                <div class="monster-title">{{ getMonsterTitle(group.type) }}</div>
+                <div class="monster-title">{{ getMonsterTitle(group) }}</div>
                 <div class="monster-subinfo">{{ getMonsterSpecies(group.type) }} {{ getMonsterLevel(group.type) }}{{ getMonsterTraits(group.type) }}</div>
                 <div class="monster-xp">{{ getMonsterXP(group.type) }} XP</div>
                 <div class="monster-details">
@@ -230,10 +230,13 @@ const isLoading = computed(() => {
   return props.location.scouted && !props.location.description;
 })
 
-function getMonsterTitle(monsterId: string): string {
-  const monsterType = monsterTypes.find(m => m.id === monsterId)
+function getMonsterTitle(group): string {
+  if( group.monsters.length === 1 ) {
+    return group.monsters[0].name
+  }
+  const monsterType = monsterTypes.find(m => m.id === group.type)
 
-  return monsterType?.title || monsterId
+  return monsterType?.title || group.type
 }
 
 function getMonsterDrink(monsterId: string): string {
