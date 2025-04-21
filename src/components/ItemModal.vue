@@ -116,7 +116,7 @@ const power = computed(()=> powerFactory.getPower(item.value.power))
 // State
 const selectedTargetMonsters = ref<string[]>([])
 const selectedTargetMonsterTypes = ref<string[]>([])
-const selectedTargetLocation = ref<string>('')
+const selectedTargetLocations = ref<string[]>([])
 const selectedResult = ref<string>('')
 
 const isChoiceTarget = computed<boolean>(() => {
@@ -145,7 +145,7 @@ const formSatisfied = computed<boolean>(() => {
       ok = false;
     }
   }
-  if (power.value.itemTargetType === 'locations' && selectedTargetLocation.value.length === 0) {
+  if (power.value.itemTargetType === 'locations' && selectedTargetLocations.value.length === 0) {
     ok = false;
   }
   return ok
@@ -170,25 +170,62 @@ function close() {
 }
 
 function useItem(): void {
-
-  switch (item.value.target) {
-    case 'pick':
-      useItemPickMonster();
+  switch (power.value.itemTargetType) {
+    case 'special':
+      useItemSpecial();
       break;
-    case 'random':
-      useItemRandomMonster();
+    case 'locations':
+      switch (item.value.target) {
+        case 'pick':
+          useItemPickLocation();
+          break;
+        case 'random':
+          useItemRandomLocation();
+          break;
+        default:
+          console.warn('Not sure how to use location item')
+      }
       break;
-    case 'pick_type':
-      useItemPickMonsterType();
-      break;
-    case 'random_type':
-      useItemRandomMonsterType();
+    case 'monsters':
+      switch (item.value.target) {
+        case 'pick':
+          useItemPickMonster();
+          break;
+        case 'random':
+          useItemRandomMonster();
+          break;
+        case 'pick_type':
+          useItemPickMonsterType();
+          break;
+        case 'random_type':
+          useItemRandomMonsterType();
+          break;
+        default:
+          console.warn('Not sure how to use monster item')
+      }
       break;
     default:
       console.warn('Not sure how to use item')
   }
   close()
   appStore.closeInterface()
+}
+
+function useItemSpecial() {
+  power.value.useWithoutTarget(item.value)
+}
+
+function useItemRandomLocation() {
+  const target = pickOne(potentialTargetLocations.value)
+  power.value.useOnLocation(item.value, target)
+}
+
+function useItemPickLocation() {
+  const targets = potentialTargetLocations.value.filter(
+      (location:GameLocation)=>selectedTargetLocations.value.includes(location.id))
+  targets.forEach(location => {
+    power.value.useOnLocation(item.value, location)
+  })
 }
 
 function useItemRandomMonster() {

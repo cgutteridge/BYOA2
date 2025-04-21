@@ -15,7 +15,7 @@ export function itemCanBeUsed(item:Item) {
   }
   if (power.itemTargetType === 'special') {
     // for now special items are always possible to use. Might filter it with a function on the power later.
-    return true;
+    return power.canItemBeUsedWithoutTarget(item);
   }
   if (power.itemTargetType === 'locations') {
     return potentialTargetLocationsForItem(item).length > 0

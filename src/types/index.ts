@@ -29,6 +29,7 @@ export type ItemPowerId =
   | 'stun'
   | 'token'
   | 'victory'
+  | 'scoutRange'
 
 // Target modes - how the target is selected
 export type MonsterTargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | undefined

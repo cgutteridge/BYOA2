@@ -39,6 +39,8 @@ export abstract class ItemPower {
     // Item types that can have this power. These are just a cute type appropriate for the item.
     abstract readonly itemArtifactNames: string[];
 
+
+
     abstract readonly itemTargetType: ItemTargetType;
 
 
@@ -117,9 +119,23 @@ export abstract class ItemPower {
         return true
     }
 
+    canItemBeUsedWithoutTarget(_item: Item): boolean {
+        return true
+    }
+
     /* END OF FUNCTIONS FOR FILTERING TARGETS */
 
     /* USE FUNCTIONS */
+
+    useWithoutTarget(_item : Item): boolean {
+        console.warn( `You should probably subclass useWithoutTarget on ${this.displayName}`)
+        return false;
+    }
+
+    useOnLocation(_item : Item, _location: GameLocation): boolean {
+        console.warn( `You should probably subclass useWithLocation on ${this.displayName}`)
+        return false;
+    }
 
     useOnMonster(item: Item, monster: Monster): boolean {
         const success = this.applyEffect(item, monster);
@@ -173,7 +189,6 @@ export abstract class ItemPower {
         return false
     }
 
-    // Execution methods
     protected reduceUses(item: Item, n: number = 1): void {
         const inventoryStore = useInventoryStore();
         const appStore = useAppStore()

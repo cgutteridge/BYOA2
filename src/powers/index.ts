@@ -15,6 +15,7 @@ import { VegetatePower } from './vegetate'
 import { StunPower } from './stun'
 import { TokenPower } from './token'
 import { VictoryPower} from "@/powers/victory.ts";
+import { ScoutRangePower } from './scoutRange'
 
 // Create instances of the power classes
 const banishPower = new BanishPower();
@@ -32,6 +33,7 @@ const vegetatePower = new VegetatePower();
 const stunPower = new StunPower();
 const tokenPower = new TokenPower();
 const victoryPower = new VictoryPower();
+const scoutRangePower = new ScoutRangePower();
 
 // Register all power implementations
 const powerInstances: Record<ItemPowerId, ItemPower> = {
@@ -50,6 +52,7 @@ const powerInstances: Record<ItemPowerId, ItemPower> = {
   stun: stunPower,
   token: tokenPower,
   victory: victoryPower,
+  scoutRange: scoutRangePower,
 };
 
 /**
