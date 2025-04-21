@@ -43,6 +43,9 @@ export const useAppStore = defineStore('app', () => {
   const centerNotifications = ref<CenterNotificationPosition[]>([])
   const centerNotificationCount = ref(0)
 
+  // Debug mode state - initialize from localStorage if available
+  const isDebugMode = ref(localStorage.getItem('debug_mode') === 'true')
+
   const setScreen = (newScreen: ScreenId) => {
     screen.value = newScreen
   }
@@ -163,6 +166,16 @@ export const useAppStore = defineStore('app', () => {
     return locationStore.location(focusGameLocationId.value)
   })
 
+  const setDebugMode = (enabled: boolean): void => {
+    isDebugMode.value = enabled
+    localStorage.setItem('debug_mode', enabled.toString())
+  }
+
+  const toggleDebugMode = (): void => {
+    const newValue = !isDebugMode.value
+    isDebugMode.value = newValue
+    localStorage.setItem('debug_mode', newValue.toString())
+  }
 
   return {
     isFetchingGameLocations,
@@ -178,6 +191,9 @@ export const useAppStore = defineStore('app', () => {
     notifications,
     centerNotifications,
     centerNotificationCount,
+    isDebugMode,
+    setDebugMode,
+    toggleDebugMode,
     setFocusGameLocation,
     unsetFocusGameLocation,
     setScreen,

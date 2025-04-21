@@ -46,25 +46,19 @@
       </div>
     </div>
 
-    <MonsterTypeStats v-if="isDebugMode"/>
+    <MonsterTypeStats v-if="appStore.isDebugMode"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useQuestStore } from '@/stores/questStore'
+import { useAppStore } from '@/stores/appStore'
 import MonsterTypeStats from '@/components/MonsterTypeStats.vue'
 
 // Stores
 const questStore = useQuestStore()
-
-// Debug mode is determined by URL hash
-const isDebugMode = ref(window.location.hash === '#DEBUG')
-
-// Listen for hash changes to update debug mode status
-window.addEventListener('hashchange', () => {
-  isDebugMode.value = window.location.hash === '#DEBUG'
-})
+const appStore = useAppStore()
 
 // Computed styles
 const titleStyle = computed(() => ({

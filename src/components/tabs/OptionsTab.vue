@@ -15,6 +15,19 @@
           </button>
         </div>
       </div>
+      
+      <div class="theme-option">
+        <span class="option-label">Debug Mode:</span>
+        <div class="theme-buttons">
+          <button
+            @click="toggleDebugMode" 
+            class="theme-toggle-button"
+            :class="{ 'debug-active': appStore.isDebugMode }"
+          >
+            {{ appStore.isDebugMode ? '🐞 Disable Debug Mode' : '🐞 Enable Debug Mode' }}
+          </button>
+        </div>
+      </div>
     </div>
     
     <div class="options-section">
@@ -50,6 +63,10 @@ const showQuitConfirmation = ref(false)
 // Methods
 function toggleTheme(): void {
   questStore.toggleTheme()
+}
+
+function toggleDebugMode(): void {
+  appStore.toggleDebugMode()
 }
 
 function quitQuest(): void {
@@ -101,6 +118,11 @@ function quitQuest(): void {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.debug-active {
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
 }
 
 .quit-button {

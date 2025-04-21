@@ -66,7 +66,7 @@ const activeTab = computed({
 const tabs = [
   { id: 'items', label: 'Items', disabled: false },
   { id: 'quest', label: 'Quest', disabled: false },
-  { id: 'log', label: 'Log', disabled: true },
+  { id: 'log', label: 'Log', disabled: false },
   { id: 'options', label: 'Options', disabled: false }
 ]
 

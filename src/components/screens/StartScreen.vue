@@ -12,6 +12,15 @@
         >
           {{ questStore.theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
         </ButtonInput>
+        
+        <ButtonInput
+          @click="appStore.toggleDebugMode" 
+          variant="secondary"
+          size="small"
+          class="debug-toggle"
+        >
+          {{ appStore.isDebugMode ? '🐞 Debug: ON' : '🐞 Debug: OFF' }}
+        </ButtonInput>
       </div>
       
       <LoadingSpinner v-if="isLoading" message="Loading locations from Open Streetmap..." />
@@ -303,21 +312,22 @@ onMounted(() => {
 
 <style scoped>
 .quest-start-screen {
+  width: 100%;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .quest-start-content {
+  width: 100%;
   max-width: 800px;
-  width: 90%;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  margin: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
 .quest-start-content h2 {
@@ -371,6 +381,12 @@ onMounted(() => {
   position: absolute;
   top: 1rem;
   right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.debug-toggle {
+  background-color: rgba(255, 0, 0, 0.05);
 }
 
 .start-button-container {

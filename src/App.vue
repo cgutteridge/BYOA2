@@ -17,7 +17,6 @@ import formatNumber from "@/utils/formatNumber.ts";
 const appStore = useAppStore()
 const questStore = useQuestStore()
 const inventoryStore = useInventoryStore()
-const isDebugMode = ref(false)
 const watchId = ref<number | null>(null)
 const showButtonPulse = ref(false)
 
@@ -33,20 +32,11 @@ watch(() => inventoryStore.itemCount, (newCount, oldCount) => {
   }
 });
 
-// Check if debug mode is enabled via URL fragment
-function checkDebugMode() {
-  isDebugMode.value = window.location.hash === '#DEBUG'
-  // console.log('Debug mode:', isDebugMode.value ? 'ENABLED' : 'disabled')
-}
-
 // Initialize the GPS once
 async function initializeGPS() {
   try {
-    // Check for debug mode
-    checkDebugMode()
-    
     // If in debug mode, use fixed coordinates for Southampton
-    if (isDebugMode.value ) {
+    if (appStore.isDebugMode) {
       const debugCoordinates = {lat: 50.92018, lng: -1.40419 } //southampton
       //const debugCoordinates = {lat: 49.0434, lng: 3.9562}// epernay
       // console.log('DEBUG MODE: Using fixed GPS location:', debugCoordinates)
@@ -80,7 +70,7 @@ function startContinuousTracking() {
   }
   
   // Debug mode doesn't need continuous tracking - it's handled in initializeGPS
-  if (isDebugMode.value ){
+  if (appStore.isDebugMode){
     return
   }
  
@@ -123,19 +113,15 @@ function toggleInterface() {
   appStore.toggleInterface()
 }
 
-
+// Watch for debug mode changes to reinitialize GPS
+watch(() => appStore.isDebugMode, () => {
+  stopContinuousTracking()
+  initializeGPS()
+})
 
 onMounted(() => {
   // console.log('App mounted, initializing GPS...')
   initializeGPS()
-  
-  // Listen for hash changes to toggle debug mode
-  window.addEventListener('hashchange', () => {
-    stopContinuousTracking()
-    checkDebugMode()
-    initializeGPS() // Re-initialize GPS when debug mode changes
-  })
-
 })
 
 onUnmounted(() => {
@@ -153,14 +139,9 @@ onUnmounted(() => {
 
 <template>
   <div class="app">
-    <div v-if="isDebugMode" class="debug-banner">DEBUG MODE</div>
+    <div v-if="appStore.isDebugMode" class="debug-banner">DEBUG MODE</div>
 
     <NotificationSystem />
-    
-    <div class="debug-overlay" v-if="appStore.playerCoordinates">
-      <div>COORDS: {{ appStore.playerCoordinates.lat.toFixed(5) }}, {{ appStore.playerCoordinates.lng.toFixed(5) }}</div>
-      <div>XP: {{ questStore.xp }} | Booze: {{ formatNumber(questStore.booze) }} | Soft: {{ formatNumber(questStore.soft) }}</div>
-    </div>
     
     <div v-if="appStore.gpsStatus === 'initializing'" class="gps-status">
       <div class="loading-spinner"></div>
@@ -172,8 +153,9 @@ onUnmounted(() => {
     </div>
     <div v-else-if="appStore.gpsStatus === 'error'" class="gps-error">
       <p>Unable to get your location. Please enable GPS and refresh the page.</p>
-      <p>
-        <a href="#DEBUG">Enable Debug Mode</a></p>
+      <button @click="appStore.toggleDebugMode" class="debug-button">
+        Enable Debug Mode
+      </button>
     </div>
     <template v-else>
       <!-- Normal game screens -->
@@ -289,20 +271,6 @@ body {
   animation: spin 1s ease-in-out infinite;
 }
 
-.debug-overlay {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 8px;
-  border-radius: 4px;
-  font-size: 50%;
-  z-index: 9999;
-  pointer-events: none; /* Pass through clicks */
-  font-family: monospace;
-}
-
 .debug-banner {
   position: fixed;
   bottom: 0;
@@ -328,5 +296,20 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.debug-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #4a8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.debug-button:hover {
+  background-color: #3a7;
 }
 </style>
