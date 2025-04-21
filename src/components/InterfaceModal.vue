@@ -250,6 +250,7 @@ function close(): void {
 
 function quitQuest(): void {
   appStore.setScreen('start_quest')
+  questStore.endQuest()
   appStore.closeInterface()
 }
 
