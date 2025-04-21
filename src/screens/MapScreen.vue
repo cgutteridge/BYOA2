@@ -45,7 +45,7 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
   }
   const iconPath = `./icons/${locationType.filename}`
 
-  const marker = L.marker([location.lat, location.lng], {
+  const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
     icon: L.icon({
       iconUrl: iconPath,
       iconSize: [67, 83],

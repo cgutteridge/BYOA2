@@ -41,10 +41,8 @@ export const useLocationStore = defineStore('locations', () => {
     try {
       const targetGameLocation = location(locationId)
       const distance = calculateDistance(
-        appStore.playerCoordinates.lat,
-        appStore.playerCoordinates.lng,
-        targetGameLocation.lat,
-        targetGameLocation.lng
+        appStore.playerCoordinates,
+        targetGameLocation.coordinates
       )
       
       return distance <= 20000

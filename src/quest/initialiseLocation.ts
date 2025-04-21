@@ -29,8 +29,8 @@ function calculateDifficulty(location: GameLocation) : GameLocationDifficulty{
         return 'medium'
     }
     // calculate distance to start and end location
-    const distanceFromStart = calculateDistance(questStore.startGameLocation.lat,questStore.startGameLocation.lng,location.lat,location.lng)
-    const distanceFromEnd = calculateDistance(questStore.endGameLocation.lat,questStore.endGameLocation.lng,location.lat,location.lng)
+    const distanceFromStart = calculateDistance(questStore.startGameLocation.coordinates, location.coordinates)
+    const distanceFromEnd = calculateDistance(questStore.endGameLocation.coordinates, location.coordinates)
     const ratio = distanceFromStart / distanceFromEnd
     if(ratio<0.3) { return 'easy'}
     if(ratio>0.7) { return 'hard'}

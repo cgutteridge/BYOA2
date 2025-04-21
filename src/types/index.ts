@@ -66,8 +66,7 @@ export interface GameLocation {
   id: GameLocationId
   name: string
   description?: string
-  lat: number
-  lng: number
+  coordinates: Coordinates
   type: GameLocationTypeId
   difficulty?: GameLocationDifficulty
   monsters?: Monster[]

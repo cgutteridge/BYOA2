@@ -1,4 +1,4 @@
-import {GameLocation} from "@/types";
+import {GameLocation, toGameLocationId, toGameLocationTypeId} from "@/types";
 
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
@@ -27,11 +27,13 @@ export default async function fetchNearbyGameLocations(lat: number, lng: number,
       const locations: GameLocation[] = data.elements
         .filter((element: any) => element.tags && element.tags.name)
         .map((element: any) => ({
-          id: element.id.toString(),
+          id: toGameLocationId(element.id.toString()),
           name: element.tags.name,
-          lat: element.lat ?? element.center.lat,
-          lng: element.lon ?? element.center.lon,
-          locationType: 'location', // Default type, will be randomized later
+          coordinates: {
+            lat: element.lat ?? element.center.lat,
+            lng: element.lon ?? element.center.lon,
+          },
+          type: toGameLocationTypeId('location'), // Default type, will be randomized later
           scouted: false,
         }))
 

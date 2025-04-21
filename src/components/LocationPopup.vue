@@ -139,10 +139,8 @@ const playerDistance = computed(() => {
   if (!appStore.playerCoordinates) return null;
   
   return calculateDistance(
-    appStore.playerCoordinates.lat,
-    appStore.playerCoordinates.lng,
-    props.location.lat,
-    props.location.lng
+    appStore.playerCoordinates,
+    props.location.coordinates
   );
 });
 
