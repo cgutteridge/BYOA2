@@ -206,6 +206,7 @@ function useItem(): void {
     default:
       console.warn('Not sure how to use item')
   }
+
   close()
   appStore.closeInterface()
 }

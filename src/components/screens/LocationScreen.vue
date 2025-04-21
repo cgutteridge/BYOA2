@@ -12,11 +12,11 @@
     </div>
 
     <div class="leave-button-container">
-      <ButtonInput 
-        class="leave-button"
-        :action="leaveLocation"
-        variant="primary"
-        size="medium"
+      <ButtonInput
+          class="leave-button"
+          :action="leaveLocation"
+          variant="primary"
+          size="medium"
       >
         Leave Location
       </ButtonInput>
@@ -24,11 +24,11 @@
 
     <div class="gift-item-section" v-if="questStore.currentGameLocation?.giftItem" :style="sectionStyle">
       <h3><span class="icon">🎁</span> Gift Item Available!</h3>
-      <ItemCard 
-        :item="questStore.currentGameLocation.giftItem"
-        variant="gift"
-        :show-details="true"
-        @action="claimGiftItem"
+      <ItemCard
+          :item="questStore.currentGameLocation.giftItem"
+          variant="gift"
+          :show-details="true"
+          @action="claimGiftItem"
       />
     </div>
 
@@ -36,30 +36,31 @@
       <!-- All monsters in a 3-column flex layout with active ones first -->
       <div class="monsters-container">
         <template v-for="monster in sortedMonsters" :key="monster.id">
-          <MonsterCard 
-            v-if="monster.alive || (monster.item && !monster.alive)"
-            :monster="monster"
+          <MonsterCard
+              v-if="monster.alive || (monster.item && !monster.alive)"
+              :monster="monster"
           />
         </template>
       </div>
 
       <!-- Prize item section -->
-      <div v-if="questStore.currentGameLocation.prizeItem || questStore.currentGameLocation.hasToken" class="prize-item-section" :style="sectionStyle">
+      <div v-if="questStore.currentGameLocation.prizeItem || questStore.currentGameLocation.hasToken"
+           class="prize-item-section" :style="sectionStyle">
         <h3><span class="icon">🏆</span> Quest Prize:</h3>
-        <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.prizeItem" >
-          <div v-if="!allMonstersDefeated" class="monster-item-locked">
+        <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.prizeItem">
+          <div v-if="!allMonstersDefeated" class="item-locked">
             <span class="lock-icon">🔒</span>
           </div>
-          <ItemCard 
-            :item="questStore.currentGameLocation.prizeItem"
-            variant="prize"
-            :show-details="true"
-            :locked="!allMonstersDefeated"
-            @action="claimPrizeItem"
+          <ItemCard
+              :item="questStore.currentGameLocation.prizeItem"
+              variant="prize"
+              :show-details="true"
+              :locked="!allMonstersDefeated"
+              @action="claimPrizeItem"
           />
         </div>
         <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.hasToken">
-          <div v-if="!allMonstersDefeated" class="monster-item-locked">
+          <div v-if="!allMonstersDefeated" class="item-locked">
             <span class="lock-icon">🔒</span>
           </div>
           <ItemCard
@@ -126,7 +127,7 @@ const sortedMonsters = computed(() => {
   if (!questStore.currentGameLocation?.monsters || !questStore.currentGameLocation.monsters.length) {
     return [];
   }
-  
+
   // Simply return the monsters array without reordering
   return [...questStore.currentGameLocation.monsters];
 });
@@ -134,8 +135,8 @@ const sortedMonsters = computed(() => {
 // Compute whether all monsters are defeated here
 const allMonstersDefeated = computed(() => {
   return questStore.currentGameLocation?.monsters
-    ? areAllMonstersDefeated(questStore.currentGameLocation.monsters)
-    : false
+      ? areAllMonstersDefeated(questStore.currentGameLocation.monsters)
+      : false
 })
 
 // Dynamically generate the regular token item when needed
@@ -149,7 +150,7 @@ function leaveLocation() {
   if (questStore.currentGameLocation) {
     logStore.addLogEntry(`Left ${questStore.currentGameLocation.name}`, 0);
   }
-  
+
   appStore.setScreen('map')
   questStore.unsetCurrentGameLocation()
 }
@@ -157,16 +158,16 @@ function leaveLocation() {
 function claimGiftItem() {
   if (questStore.currentGameLocation?.giftItem) {
     const giftItem = questStore.currentGameLocation.giftItem;
-    
+
     // Add to inventory
     inventoryStore.addItem(giftItem);
-    
+
     // Award XP based on item level
     if (giftItem.level) {
       const xpToAward = giftItem.level * 2; // 2 XP per level for gift items
       questStore.updateStats(xpToAward, 0, 0, `Claimed ${giftItem.name}.`);
     }
-    
+
     // Remove from GameLocation
     delete questStore.currentGameLocation.giftItem;
   }
@@ -175,10 +176,10 @@ function claimGiftItem() {
 function claimPrizeItem() {
   if (allMonstersDefeated.value && questStore.currentGameLocation?.prizeItem) {
     const prizeItem = questStore.currentGameLocation.prizeItem;
-    
+
     // Add to inventory
     inventoryStore.addItem(prizeItem);
-    
+
     // Award XP based on item level
     if (prizeItem.level) {
       const xpToAward = prizeItem.level * 3; // 3 XP per level for prize items
@@ -246,7 +247,7 @@ function claimTokenItem() {
   justify-content: center;
 }
 
-.gift-item-section, 
+.gift-item-section,
 .prize-item-section {
   margin: 2rem 0;
   padding: 1rem;
@@ -277,7 +278,7 @@ function claimTokenItem() {
   margin-bottom: 2rem;
 }
 
-.monster-item-locked {
+.item-locked {
   position: absolute;
   top: 0;
   left: 0;
@@ -288,6 +289,7 @@ function claimTokenItem() {
   align-items: center;
   justify-content: center;
   z-index: 10;
+  border-radius: 8px;
 }
 
 .lock-icon {
