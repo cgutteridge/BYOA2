@@ -9,7 +9,7 @@
 import type { Coordinates } from '@/types'
 
 export default function calculateDistance(point1: Coordinates, point2: Coordinates): number {
-    console.log('calculateDistance', point1, point2)
+    // console.log('calculateDistance', point1, point2)
     const R = 6371000 // Earth's radius in meters (was 6371 km)
     const dLat = (point2.lat - point1.lat) * Math.PI / 180
     const dLng = (point2.lng - point1.lng) * Math.PI / 180
@@ -18,6 +18,6 @@ export default function calculateDistance(point1: Coordinates, point2: Coordinat
         Math.sin(dLng/2) * Math.sin(dLng/2)
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
     const distance = R * c  // Distance in meters
-    console.log('distance (meters)', distance)
+    // console.log('distance (meters)', distance)
     return distance
 }

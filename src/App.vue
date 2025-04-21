@@ -36,7 +36,7 @@ watch(() => inventoryStore.itemCount, (newCount, oldCount) => {
 // Check if debug mode is enabled via URL fragment
 function checkDebugMode() {
   isDebugMode.value = window.location.hash === '#DEBUG'
-  console.log('Debug mode:', isDebugMode.value ? 'ENABLED' : 'disabled')
+  // console.log('Debug mode:', isDebugMode.value ? 'ENABLED' : 'disabled')
 }
 
 // Initialize the GPS once
@@ -49,7 +49,7 @@ async function initializeGPS() {
     if (isDebugMode.value ) {
       const debugCoordinates = {lat: 50.92018, lng: -1.40419 } //southampton
       //const debugCoordinates = {lat: 49.0434, lng: 3.9562}// epernay
-      console.log('DEBUG MODE: Using fixed GPS location:', debugCoordinates)
+      // console.log('DEBUG MODE: Using fixed GPS location:', debugCoordinates)
       appStore.setPlayerCoordinates(debugCoordinates)
       appStore.setGPSStatus('success')
       return
@@ -73,7 +73,7 @@ async function initializeGPS() {
 
 // Start continuous GPS tracking
 function startContinuousTracking() {
-  console.log('Starting continuous GPS tracking')
+  // console.log('Starting continuous GPS tracking')
   if (!navigator.geolocation) {
     appStore.setGPSStatus('error')
     return
@@ -92,7 +92,7 @@ function startContinuousTracking() {
         lng: position.coords.longitude
       }
       
-      console.log('GPS update:', coordinates)
+      // console.log('GPS update:', coordinates)
       appStore.setPlayerCoordinates(coordinates)
       appStore.setGPSStatus('success')
     },
@@ -112,7 +112,7 @@ function startContinuousTracking() {
 
 // Stop GPS tracking
 function stopContinuousTracking() {
-  console.log('Stopping GPS tracking')
+  // console.log('Stopping GPS tracking')
   if ( watchId.value !== null) {
     navigator.geolocation.clearWatch(watchId.value)
     watchId.value = null
@@ -126,7 +126,7 @@ function toggleInterface() {
 
 
 onMounted(() => {
-  console.log('App mounted, initializing GPS...')
+  // console.log('App mounted, initializing GPS...')
   initializeGPS()
   
   // Listen for hash changes to toggle debug mode

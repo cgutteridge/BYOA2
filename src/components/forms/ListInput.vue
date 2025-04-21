@@ -210,7 +210,7 @@ function isDisabled(option: PickerOption): boolean {
 
 // Select an option
 function selectOption(option: PickerOption): void {
-  console.log('Selected option:', option)
+  // console.log('Selected option:', option)
   
   if (props.multiple) {
     const valueProperty = props.valueProperty || 'id'

@@ -28,7 +28,7 @@ export class ChatGPTAPI {
     
     for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
       try {
-        console.log(`API attempt ${attempt}/${this.MAX_RETRIES}`)
+        // console.log(`API attempt ${attempt}/${this.MAX_RETRIES}`)
         
         const response = await fetch(this.proxyUrl, {
           method: 'POST',
@@ -52,7 +52,7 @@ export class ChatGPTAPI {
 
         const data = await response.json()
         const content = data.choices[0].message.content || ''
-        console.log(content)
+        // console.log(content)
         
         try {
           return JSON.parse(content) as T
@@ -158,7 +158,7 @@ export class ChatGPTAPI {
       }
     ]
 
-    console.log(messages)
+    // console.log(messages)
     return this.sendMessage(messages)
   }
 

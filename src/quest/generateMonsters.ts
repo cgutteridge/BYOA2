@@ -18,7 +18,7 @@ export default function generateMonsters(location: GameLocation): Monster[] {
 
     // step one is to pick a pattern
     const encounter: Encounter = pickWeightedOne(encounterTable[location.difficulty ?? 'medium'])
-    console.log("encounter", encounter)
+    // console.log("encounter", encounter)
 
     encounter.forEach((unitSpec) => {
         // pick a monster
@@ -38,9 +38,9 @@ export default function generateMonsters(location: GameLocation): Monster[] {
 
         // decide how many monsters of this type to create
         const monsterCount = calculateMonsterCount(unitSpec.level, location.difficulty ?? 'medium')
-        console.log("monsterCount", monsterCount)
-        console.log("monster level", unitSpec.level)
-        console.log("location difficulty", location.difficulty)
+        // console.log("monsterCount", monsterCount)
+        // console.log("monster level", unitSpec.level)
+        // console.log("location difficulty", location.difficulty)
 
         // Create individual monsters with placeholder names that will be replaced by AI
         for (let i = 0; i < monsterCount; i++) {
@@ -59,15 +59,15 @@ export default function generateMonsters(location: GameLocation): Monster[] {
         }
     })
 
-    console.log(monsters)
+    // console.log(monsters)
     return monsters
 }
 
 function calculateMonsterCount(monsterLevel: MonsterLevel, locationLevel: GameLocationDifficulty) {
     const questStore = useQuestStore()
     const players = questStore.playerCount
-    console.log({players})
-    console.log(monsterLevel)
+    // console.log({players})
+    // console.log(monsterLevel)
 
     if (monsterLevel === 'boss') {
         return 1

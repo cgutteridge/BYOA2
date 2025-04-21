@@ -105,7 +105,7 @@ export const useAppStore = defineStore('app', () => {
     centerNotificationCount.value++;
     
     notifications.value.push({ id, message, type, timeout, isEntering: true, centerIndex });
-    console.log("NOTIFICATION: " + message);
+    // console.log("NOTIFICATION: " + message);
     
     // Auto-remove after timeout
     if (timeout > 0) {

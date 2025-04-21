@@ -287,14 +287,14 @@ function generateItemWithPower(power: ItemPowerId, level: number): Item {
  * Log item details for debugging
  */
 export function logItemDetails(item: Item): void {
-  console.log('Item Details:');
-  console.log(`Name: ${item.name}`);
-  console.log(`Power: ${item.power}`);
-  console.log(`Level: ${item.level}`);
-  console.log(`Uses: ${item.uses}`);
-  console.log(`Target Mode: ${item.target}`);
-  console.log(`Target Filters: ${JSON.stringify(item.targetFilters, null, 2)}`);
-  console.log(`Result Mode: ${item.result}`);
-  console.log(`Result Level: ${item.resultLevel}`);
-  console.log(`Result Species: ${item.resultSpecies}`);
+  // console.log('Item Details:');
+  // console.log(`Name: ${item.name}`);
+  // console.log(`Power: ${item.power}`);
+  // console.log(`Level: ${item.level}`);
+  // console.log(`Uses: ${item.uses}`);
+  // console.log(`Target Mode: ${item.target}`);
+  // console.log(`Target Filters: ${JSON.stringify(item.targetFilters, null, 2)}`);
+  // console.log(`Result Mode: ${item.result}`);
+  // console.log(`Result Level: ${item.resultLevel}`);
+  // console.log(`Result Species: ${item.resultSpecies}`);
 } 

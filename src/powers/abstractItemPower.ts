@@ -70,9 +70,9 @@ export abstract class ItemPower {
         const inventoryStore = useInventoryStore();
         const appStore = useAppStore()
         item.uses = Math.max(0, item.uses - n)
-        console.log({uses: item.uses})
+        // console.log({uses: item.uses})
         if (item.uses === 0) {
-            console.log("DUST")
+            // console.log("DUST")
             inventoryStore.removeItem(item.id)
             appStore.addNotification(`${item.name} crumbles to dust.`)
         }
@@ -223,7 +223,7 @@ export abstract class ItemPower {
     }
 
     applyEffect(_item: Item, _monster: Monster): boolean {
-        console.log("applyEffect should be subclassed.")
+        // console.log("applyEffect should be subclassed.")
         return false
     }
 

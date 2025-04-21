@@ -33,7 +33,7 @@ export class BanishPower extends ItemPower {
 
     // Guard: check if current location exists and has monsters
     if (!currentGameLocation || !currentGameLocation.monsters) {
-      console.log('Cannot banish monster: no current location found');
+      console.warn('Cannot banish monster: no current location found');
       return false;
     }
 
@@ -42,7 +42,7 @@ export class BanishPower extends ItemPower {
     
     // Guard: check if monster was found
     if (monsterIndex === -1) {
-      console.log(`Could not find monster ${monster.name} in the current location.`);
+      console.warn(`Could not find monster ${monster.name} in the current location.`);
       return false;
     }
 

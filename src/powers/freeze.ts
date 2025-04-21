@@ -46,28 +46,28 @@ export class FreezePower extends ItemPower {
     
     // Guard: check if we found the monster type
     if (!monsterTypeInfo) {
-      console.log(`Could not find type information for monster ${monster.name}`);
+      console.warn(`Could not find type information for monster ${monster.name}`);
       return false;
     }
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
     if (monsterTypeInfo.level === 'boss') {
-      console.log(`Cannot freeze boss monster ${monster.name}`);
+      console.warn(`Cannot freeze boss monster ${monster.name}`);
       return false;
     }
     
     // Get the appropriate ice monster for this level
-    const frozenTypeId = this.iceMonsterMap[monsterTypeInfo.level];
-    const frozenTypeInfo = monsterTypes.find(t => t.id === frozenTypeId);
+    const iceMonsterTypeId = this.iceMonsterMap[monsterTypeInfo.level];
+    const iceMonsterType = monsterTypes.find(m => m.id === iceMonsterTypeId);
     
     // Guard: check if we found the ice monster type
-    if (!frozenTypeInfo) {
-      console.log(`Could not find ice monster type for level ${monsterTypeInfo.level}`);
+    if (!iceMonsterType) {
+      console.warn(`Could not find ice monster type for level ${monsterTypeInfo.level}`);
       return false;
     }
 
     // Transform the monster to ice
-    monster.type = frozenTypeId;
+    monster.type = iceMonsterTypeId;
 
     // Log the transformation
     questStore.updateStats(1,0,0,

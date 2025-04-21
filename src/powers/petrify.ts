@@ -46,13 +46,13 @@ export class PetrifyPower extends ItemPower {
     
     // Guard: check if we found the monster type
     if (!monsterType) {
-      console.log(`Could not find type information for monster ${monster.name}`);
+      console.warn(`Could not find type information for monster ${monster.name}`);
       return false;
     }
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
     if (monsterType.level === 'boss') {
-      console.log(`Cannot petrify boss monster ${monster.name}`);
+      console.warn(`Cannot petrify boss monster ${monster.name}`);
       return false;
     }
     
@@ -62,19 +62,18 @@ export class PetrifyPower extends ItemPower {
     
     // Guard: check if we found the petrified monster type
     if (!petrifiedMonsterType) {
-      console.log(`Could not find petrified monster type for level ${monsterType.level}`);
+      console.warn(`Could not find petrified monster type for level ${monsterType.level}`);
       return false;
     }
     
     // Transform the monster into a petrified version
     const originalType = monster.type;
     const originalName = monster.name;
-
+    
     // Update the monster's type and name
     monster.type = petrifiedMonsterTypeId;
-    monster.name = petrifiedMonsterType.title;
-    
-    console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
+
+    // console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
     // Log the banishment
     questStore.updateStats(1,0,0,
         `${originalName} was turned to stone with ${item.name}`)

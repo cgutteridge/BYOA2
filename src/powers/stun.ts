@@ -46,13 +46,13 @@ export class StunPower extends ItemPower {
     
     // Guard: check if we found the monster type
     if (!monsterType) {
-      console.log(`Could not find type information for monster ${monster.name}`);
+      console.warn(`Could not find type information for monster ${monster.name}`);
       return false;
     }
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
     if (monsterType.level === 'boss') {
-      console.log(`Cannot stun boss monster ${monster.name}`);
+      console.warn(`Cannot stun boss monster ${monster.name}`);
       return false;
     }
     
@@ -62,7 +62,7 @@ export class StunPower extends ItemPower {
     
     // Guard: check if we found the stunned monster type
     if (!stunnedMonsterType) {
-      console.log(`Could not find stunned monster type for level ${monsterType.level}`);
+      console.warn(`Could not find stunned monster type for level ${monsterType.level}`);
       return false;
     }
     
@@ -73,7 +73,7 @@ export class StunPower extends ItemPower {
     // Update the monster's type and name
     monster.type = stunnedMonsterTypeId;
 
-    console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
+    // console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
     // Log the banishment
     questStore.updateStats(1,0,0,
         `${originalName} was stunned with ${item.name}`)

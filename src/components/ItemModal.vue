@@ -252,7 +252,6 @@ function useItem(): void {
   if (item.value.target === 'pick' || item.value.target === 'random') {
     let targets: Monster[] = []
     if (item.value.target === 'pick') {
-      console.log({v: selectedTargets.value})
       targets = selectedTargets.value.map(monsterId => potentialTargetMonsters.value.find(monster => monster.id === monsterId) as Monster)
     } else {
       targets = [pickOne(potentialTargetMonsters.value)]

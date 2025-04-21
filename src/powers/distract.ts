@@ -46,13 +46,13 @@ export class DistractPower extends ItemPower {
     
     // Guard: check if we found the monster type
     if (!monsterType) {
-      console.log(`Could not find type information for monster ${monster.name}`);
+      console.warn(`Could not find type information for monster ${monster.name}`);
       return false;
     }
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
     if (monsterType.level === 'boss') {
-      console.log(`Cannot distract boss monster ${monster.name}`);
+      console.warn(`Cannot distract boss monster ${monster.name}`);
       return false;
     }
     
@@ -62,7 +62,7 @@ export class DistractPower extends ItemPower {
     
     // Guard: check if we found the distracted monster type
     if (!distractedMonsterType) {
-      console.log(`Could not find distracted monster type for level ${monsterType.level}`);
+      console.warn(`Could not find distracted monster type for level ${monsterType.level}`);
       return false;
     }
 

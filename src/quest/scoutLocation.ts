@@ -69,7 +69,7 @@ export async function scoutLocation(
         extraInstructions = `this is the last location in the quest, where the quest ends. The quest was "${questStore.title}: ${questStore.description}"`
     }
    
-    console.log(location,extraInstructions)
+    // console.log(location,extraInstructions)
 
     let giftItemEffect = ''
     if (location.giftItem) {
