@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {computed, ref, watch} from 'vue'
+import {computed, ref } from 'vue'
 import type {GPSStatus, Item, Coordinates, GameLocationId, ScreenId} from '../types'
 import {useLocationStore} from "../stores/locationStore";
 import {useLogStore} from "../stores/logStore";
