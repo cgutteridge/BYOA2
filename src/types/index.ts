@@ -51,7 +51,6 @@ export interface Item {
   }
   maxLevel?: MonsterLevel
   result?: ResultMode
-  resultLevel?: MonsterLevel
   resultSpecies?: Species
   icon?: string
   timestamp?: number  // To track when the item was added or updated

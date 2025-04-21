@@ -84,8 +84,7 @@ export function generateRandomItem(level: number): Item {
     // Default to a restricted result
     item.result = 'random';
     
-    // Remove resultLevel and resultSpecies properties as they're no longer needed
-    delete item.resultLevel;
+    // Remove resultSpecies properties as they're no longer needed
     delete item.resultSpecies;
   }
   
