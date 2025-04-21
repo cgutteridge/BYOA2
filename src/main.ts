@@ -31,6 +31,10 @@ pinia.use(({store}) => {
     store.$subscribe((mutation, state) => {
         // Save properties
         const stateToSave: Record<string, any> = {}
+        if (!state.persist) {
+            console.warn(`${stateToSave.name} is missing persist property`)
+            return
+        }
         state.persist.map((key: any) => {
             
             stateToSave[key] = state[key]

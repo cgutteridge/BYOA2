@@ -633,7 +633,7 @@ function toggleTeleportMode(): void {
         lng: e.latlng.lng
       }
       
-      // Update player coordinates
+      // Update player coordinates in appStore
       appStore.setPlayerCoordinates(newCoords)
       
       // Disable teleport mode after use

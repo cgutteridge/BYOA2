@@ -49,6 +49,8 @@ export const useAppStore = defineStore('app', () => {
   const centerNotifications = ref<CenterNotificationPosition[]>([])
   const centerNotificationCount = ref(0)
 
+
+
   const setScreen = (newScreen: ScreenId) => {
     // Log quest start
     if (newScreen === 'intro' && screen.value === 'start_quest') {
@@ -219,7 +221,7 @@ export const useAppStore = defineStore('app', () => {
       if (distance > 50) {
         routeStore.addRoutePoint(playerCoordinates.value)
       }
-    }, 60000) // Check every minute
+    }, 1000) // Check every minute
   }
   
   // Stop tracking the player's route
@@ -261,6 +263,7 @@ export const useAppStore = defineStore('app', () => {
     openItemInspectModal,
     closeItemInspectModal,
     startRouteTracking,
-    stopRouteTracking
+    stopRouteTracking,
+    persist:[]
   }
 }) 
