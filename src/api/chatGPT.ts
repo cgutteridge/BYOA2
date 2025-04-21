@@ -139,13 +139,6 @@ export class ChatGPTAPI {
           Generate names for monsters at the location "${locationName}".
           GameLocation description: "${locationDescription}"
           
-          I need unique names for each monster.
-          
-          Here are the monster groups you need to name:
-          ${monsterGroups.map((group, index) => `
-            Group ${index + 1}: ${group.count}x ${group.title} (${group.species} ${group.level})
-          `).join('')}
-          
           For each group, provide unique individual names for each monster.
           
           The names should be creative, funny, and fit the monster's species and the location's atmosphere. 
@@ -153,7 +146,15 @@ export class ChatGPTAPI {
           It is OK to add other qualifiers to the name to make it more interesting or funny.
           
           Respond in JSON format in a 2 dimensional array. The outer array is groups, and item is an array of 
-          strings, one for each monster in the group.
+          strings, one for each monster in the group. eg:
+           [["a","b"],["c"]]
+         
+         Do not provide an outer object.
+         
+         Here are the monster groups you need to name:
+          ${monsterGroups.map((group, index) => `
+            Group ${index + 1}: ${group.count}x ${group.title} (${group.species} ${group.level})
+          `).join('')}
         `
       }
     ]
