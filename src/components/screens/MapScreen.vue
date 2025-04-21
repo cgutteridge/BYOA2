@@ -26,6 +26,8 @@ const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
 const scoutCircle = ref<L.Circle | null>(null)
+const scoutTopLabel = ref<L.Marker | null>(null)
+const scoutBottomLabel = ref<L.Marker | null>(null)
 const locationMarkers = ref<L.Marker[]>([])
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])
@@ -238,7 +240,10 @@ function initializeMap(): void {
     mapInstance.on('zoomend', () => {
       appStore.setMapZoom(mapInstance.getZoom())
       
-      // Remove popup reopening logic
+      // Update scout range labels when zoom changes
+      if (playerCoordinates.value && scoutCircle.value) {
+        updateScoutRangeLabels(playerCoordinates.value, mapInstance)
+      }
     })
 
     // Simplify to just close any open popup when zoom starts
@@ -369,9 +374,17 @@ function updatePlayerMarker(coords: Coordinates): void {
     playerMarker.value.remove()
   }
   
-  // Remove existing scout circle
+  // Remove existing scout circle and labels
   if (scoutCircle.value) {
     scoutCircle.value.remove()
+  }
+  
+  if (scoutTopLabel.value) {
+    scoutTopLabel.value.remove()
+  }
+  
+  if (scoutBottomLabel.value) {
+    scoutBottomLabel.value.remove()
   }
 
   // Create new marker with a clear icon
@@ -393,6 +406,94 @@ function updatePlayerMarker(coords: Coordinates): void {
     weight: 2,
     dashArray: '5, 10'
   }).addTo(theMap)
+  
+  // Add the scout range labels
+  updateScoutRangeLabels(coords, theMap);
+}
+
+// Function to update scout range labels with zoom-dependent sizing
+function updateScoutRangeLabels(coords: Coordinates, theMap: L.Map): void {
+  // Calculate positions for top and bottom labels
+  // Using the haversine formula approximation to determine lat/lng offsets for the given distance
+  const distanceFromEdge = 5 // 5 meters from the edge (closer to the circle)
+  const scoutDistanceWithPadding = questStore.scoutRange + distanceFromEdge
+  
+  // Convert distance to latitude degrees (approximate)
+  // 1 degree of latitude is approximately 111,111 meters
+  const latOffset = scoutDistanceWithPadding / 111111
+  
+  // Calculate top and bottom points
+  const topPoint = {
+    lat: coords.lat + latOffset,
+    lng: coords.lng
+  }
+  
+  const bottomPoint = {
+    lat: coords.lat - latOffset,
+    lng: coords.lng
+  }
+  
+  // Get current zoom level to scale the font size
+  const currentZoom = theMap.getZoom();
+  // Base size for zoom level 16
+  const baseFontSize = 18;
+  const baseZoom = 16;
+  
+  // Calculate zoom factor - double size for each zoom level increase
+  // At zoom 16 it will be the base size (18px)
+  // Each zoom level doubles/halves the size
+  const zoomFactor = Math.pow(1.5, currentZoom - baseZoom);
+  const fontSize = Math.max(10, Math.min(72, Math.floor(baseFontSize * zoomFactor)));
+  const labelWidth = Math.max(80, Math.min(300, Math.floor(140 * zoomFactor)));
+  const labelHeight = Math.max(20, Math.min(80, Math.floor(30 * zoomFactor)));
+  
+  if (!scoutTopLabel.value || !scoutBottomLabel.value) {
+    // Initial creation of labels
+    
+    // Create top scout range label with zoom-adjusted size
+    scoutTopLabel.value = L.marker([topPoint.lat, topPoint.lng], {
+      icon: L.divIcon({
+        className: 'scout-range-label',
+        html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+        iconSize: [labelWidth, labelHeight],
+        iconAnchor: [labelWidth / 2, labelHeight] // Bottom center of the icon
+      })
+    }).addTo(theMap);
+    
+    // Create bottom scout range label with zoom-adjusted size
+    scoutBottomLabel.value = L.marker([bottomPoint.lat, bottomPoint.lng], {
+      icon: L.divIcon({
+        className: 'scout-range-label',
+        html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+        iconSize: [labelWidth, labelHeight],
+        iconAnchor: [labelWidth / 2, 0] // Top center of the icon
+      })
+    }).addTo(theMap);
+  } else {
+    // Update existing labels
+    
+    // Update positions
+    scoutTopLabel.value.setLatLng([topPoint.lat, topPoint.lng]);
+    scoutBottomLabel.value.setLatLng([bottomPoint.lat, bottomPoint.lng]);
+    
+    // Update text size
+    const topIcon = L.divIcon({
+      className: 'scout-range-label',
+      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+      iconSize: [labelWidth, labelHeight],
+      iconAnchor: [labelWidth / 2, labelHeight]
+    });
+    
+    const bottomIcon = L.divIcon({
+      className: 'scout-range-label',
+      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+      iconSize: [labelWidth, labelHeight],
+      iconAnchor: [labelWidth / 2, 0]
+    });
+    
+    scoutTopLabel.value.setIcon(topIcon);
+    scoutBottomLabel.value.setIcon(bottomIcon);
+  }
 }
 
 function centerOnPlayer(): void {
@@ -522,5 +623,14 @@ button {
   :deep(.location-info-popup .leaflet-popup-content) {
     max-height: 70vh;
   }
+}
+
+:deep(.scout-range-text) {
+  color: #4285F4;
+  text-align: center;
+  white-space: nowrap;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8), -1px -1px 2px rgba(255, 255, 255, 0.8);
+  transition: font-size 0.25s ease-in-out, transform 0.25s ease-in-out;
 }
 </style> 
