@@ -1,0 +1,144 @@
+<template>
+  <div class="quest-tab">
+    <h2>Current Quest</h2>
+    
+    <div class="quest-details">
+      <div class="quest-title" :style="titleStyle">{{ questStore.title }}</div>
+      <div class="quest-description" :style="descriptionStyle">{{ questStore.description }}</div>
+      
+      <div class="quest-stats" :style="statsStyle">
+        <div class="stat-group">
+          <div class="stat-label">Experience Points:</div>
+          <div class="stat-value">{{ questStore.xp }}</div>
+        </div>
+        
+        <div class="stat-group">
+          <div class="stat-label">Approximate Alcohol Units:</div>
+          <div class="stat-value">{{ formatUnits(questStore.booze) }}</div>
+        </div>
+        
+        <div class="stat-group">
+          <div class="stat-label">Approximate Soft Drinks:</div>
+          <div class="stat-value">{{ formatUnits(questStore.soft) }}</div>
+        </div>
+        
+        <div class="stat-group">
+          <div class="stat-label">Approximate Player Count:</div>
+          <div class="stat-value">{{ questStore.playerCount }}</div>
+        </div>
+      </div>
+      
+      <div class="quest-locations" :style="locationsStyle">
+        <div class="location">
+          <div class="location-label">Start Location:</div>
+          <div class="location-value">{{ questStore.startGameLocation?.name || 'Unknown' }}</div>
+        </div>
+        
+        <div class="location">
+          <div class="location-label">Current Location:</div>
+          <div class="location-value">{{ questStore.currentGameLocation?.name || 'Not in a location' }}</div>
+        </div>
+        
+        <div class="location">
+          <div class="location-label">Final Location:</div>
+          <div class="location-value">{{ questStore.endGameLocation?.name || 'Unknown' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <MonsterTypeStats v-if="isDebugMode"/>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useQuestStore } from '@/stores/questStore'
+import MonsterTypeStats from '@/components/MonsterTypeStats.vue'
+
+// Stores
+const questStore = useQuestStore()
+
+// Debug mode is determined by URL hash
+const isDebugMode = ref(window.location.hash === '#DEBUG')
+
+// Listen for hash changes to update debug mode status
+window.addEventListener('hashchange', () => {
+  isDebugMode.value = window.location.hash === '#DEBUG'
+})
+
+// Computed styles
+const titleStyle = computed(() => ({
+  color: questStore.getTextColor('primary'),
+}))
+
+const descriptionStyle = computed(() => ({
+  color: questStore.getTextColor('secondary'),
+}))
+
+const statsStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('light'),
+}))
+
+const locationsStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('light'),
+}))
+
+// Helper function to format booze without decimal for whole numbers
+function formatUnits(value: number): string {
+  return value % 1 === 0 ? value.toString() : value.toFixed(1)
+}
+</script>
+
+<style scoped>
+.quest-tab h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.75rem;
+}
+
+.quest-details {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.quest-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.quest-description {
+  margin-bottom: 2rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.quest-stats,
+.quest-locations {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.stat-group,
+.location {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.stat-group:not(:last-child),
+.location:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-label,
+.location-label {
+  font-weight: 500;
+}
+</style> 

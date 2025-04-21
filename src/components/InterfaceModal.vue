@@ -25,170 +25,41 @@
         
         <div class="interface-modal__body" :style="bodyStyle">
           <!-- Items Tab -->
-          <div v-if="activeTab === 'items'" class="interface-tab interface-tab--items">
-            <div v-if="!hasItems" class="interface-tab__empty" :style="emptyMessageStyle">
-              Your inventory is empty.
-            </div>
-            <div v-else class="interface-grid">
-              <div 
-                v-for="item in inventoryItems" 
-                :key="item.id"
-                class="interface-grid__item"
-              >
-                <ItemCard 
-                  :item="item"
-                  variant="inventory"
-                />
-              </div>
-            </div>
-          </div>
+          <InventoryTab v-if="activeTab === 'items'" />
           
           <!-- Quest Tab -->
-          <div v-else-if="activeTab === 'quest'" class="interface-tab interface-tab--quest">
-            <h2>Current Quest</h2>
-            
-            <div class="quest-details">
-              <div class="quest-title" :style="titleStyle">{{ questStore.title }}</div>
-              <div class="quest-description" :style="descriptionStyle">{{ questStore.description }}</div>
-              
-              <div class="quest-stats" :style="statsStyle">
-                <div class="stat-group">
-                  <div class="stat-label">Experience Points:</div>
-                  <div class="stat-value">{{ questStore.xp }}</div>
-                </div>
-                
-                <div class="stat-group">
-                  <div class="stat-label">Approximate Alcohol Units:</div>
-                  <div class="stat-value">{{ formatUnits(questStore.booze) }}</div>
-                </div>
-                
-                <div class="stat-group">
-                  <div class="stat-label">Approximate Soft Drinks:</div>
-                  <div class="stat-value">{{ formatUnits(questStore.soft) }}</div>
-                </div>
-                
-                <div class="stat-group">
-                  <div class="stat-label">Approximate Player Count:</div>
-                  <div class="stat-value">{{ questStore.playerCount }}</div>
-                </div>
-              </div>
-              
-              <div class="quest-locations" :style="locationsStyle">
-                <div class="location">
-                  <div class="location-label">Start GameLocation:</div>
-                  <div class="location-value">{{ questStore.startGameLocation?.name || 'Unknown' }}</div>
-                </div>
-                
-                <div class="location">
-                  <div class="location-label">Current GameLocation:</div>
-                  <div class="location-value">{{ questStore.currentGameLocation?.name || 'Not in a location' }}</div>
-                </div>
-                
-                <div class="location">
-                  <div class="location-label">Final GameLocation:</div>
-                  <div class="location-value">{{ questStore.endGameLocation?.name || 'Unknown' }}</div>
-                </div>
-              </div>
-
-            </div>
-
-            <MonsterTypeStats v-if="isDebugMode"/>
-          </div>
+          <QuestTab v-else-if="activeTab === 'quest'" />
           
-          <!-- Log Tab (disabled for now) -->
-          <div v-else-if="activeTab === 'log'" class="interface-tab interface-tab--log">
-            <h2>Quest Log</h2>
-            <p>Your quest log will be displayed here in a future update.</p>
-          </div>
+          <!-- Log Tab -->
+          <LogTab v-else-if="activeTab === 'log'" />
           
           <!-- Options Tab -->
-          <div v-else-if="activeTab === 'options'" class="interface-tab interface-tab--options">
-            <h2>Game Options</h2>
-            
-            <div class="options-section">
-              <h3>Theme Settings</h3>
-              <div class="theme-option">
-                <span class="option-label">Theme:</span>
-                <div class="theme-buttons">
-                  <button
-                    @click="toggleTheme" 
-                    class="theme-toggle-button"
-                  >
-                    {{ questStore.theme === 'dark' ? '☀️ Switch to Light Mode' : '🌙 Switch to Dark Mode' }}
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            <div class="options-section">
-              <h3>Game Controls</h3>
-              <button class="quit-button" @click="showQuitConfirmation = true">
-                Quit Game
-              </button>
-            </div>
-          </div>
+          <OptionsTab v-else-if="activeTab === 'options'" />
         </div>
       </div>
     </div>
   </Teleport>
-  
-  <ConfirmationModal
-    v-model="showQuitConfirmation"
-    question="Are you sure you want to END THE QUEST? Everything will be LOST!"
-    action-text="Yes, End Quest"
-    cancel-text="No, Continue Playing"
-    :action="quitQuest"
-  />
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue'
-import {useInventoryStore} from '../stores/inventoryStore'
-import {useAppStore} from '../stores/appStore'
-import {useQuestStore} from '../stores/questStore'
-import ItemCard from './ItemCard.vue'
-import MonsterTypeStats from "@/components/MonsterTypeStats.vue"
-import ConfirmationModal from "@/components/forms/ConfirmationModal.vue"
+import { computed } from 'vue'
+import { useAppStore } from '@/stores/appStore'
+import { useQuestStore } from '@/stores/questStore'
+import InventoryTab from '@/components/tabs/InventoryTab.vue'
+import QuestTab from '@/components/tabs/QuestTab.vue'
+import LogTab from '@/components/tabs/LogTab.vue'
+import OptionsTab from '@/components/tabs/OptionsTab.vue'
 
 // Stores
-const inventoryStore = useInventoryStore()
 const appStore = useAppStore()
 const questStore = useQuestStore()
 
-// Debug mode is determined by URL hash
-const isDebugMode = ref(window.location.hash === '#DEBUG');
-
-// Listen for hash changes to update debug mode status
-window.addEventListener('hashchange', () => {
-  isDebugMode.value = window.location.hash === '#DEBUG';
-});
-
-const isOpen = computed(()=>appStore.isInterfaceOpen)
+const isOpen = computed(() => appStore.isInterfaceOpen)
 
 // Computed
 const activeTab = computed({
   get: () => appStore.inventoryTab,
   set: (value) => appStore.setInventoryTab(value)
-})
-const hasItems = computed(() => inventoryStore.hasItems)
-const inventoryItems = computed(() => {
-  return [...inventoryStore.items].sort((a, b) => {
-    // First by timestamp (newest first)
-    if (a.timestamp && b.timestamp) {
-      return b.timestamp - a.timestamp
-    } else if (a.timestamp) {
-      return -1 // a is newer (has timestamp)
-    } else if (b.timestamp) {
-      return 1  // b is newer (has timestamp)
-    }
-    
-    // Then by level descending
-    if (b.level !== a.level) {
-      return b.level - a.level
-    }
-    // Then by name ascending
-    return a.name.localeCompare(b.name)
-  })
 })
 
 // Tabs
@@ -198,9 +69,6 @@ const tabs = [
   { id: 'log', label: 'Log', disabled: true },
   { id: 'options', label: 'Options', disabled: false }
 ]
-
-// Confirmation modal state
-const showQuitConfirmation = ref(false)
 
 // Theme-based styles
 const backdropStyle = computed(() => ({
@@ -221,46 +89,9 @@ const bodyStyle = computed(() => ({
   color: questStore.getTextColor('primary'),
 }))
 
-const emptyMessageStyle = computed(() => ({
-  color: questStore.getTextColor('secondary'),
-}))
-
-const titleStyle = computed(() => ({
-  color: questStore.getTextColor('primary'),
-}))
-
-const descriptionStyle = computed(() => ({
-  color: questStore.getTextColor('secondary'),
-}))
-
-const statsStyle = computed(() => ({
-  backgroundColor: questStore.getBackgroundColor('tertiary'),
-  borderColor: questStore.getBorderColor('light'),
-}))
-
-const locationsStyle = computed(() => ({
-  backgroundColor: questStore.getBackgroundColor('tertiary'),
-  borderColor: questStore.getBorderColor('light'),
-}))
-
 // Methods
 function close(): void {
   appStore.closeInterface()
-}
-
-function quitQuest(): void {
-  appStore.setScreen('start_quest')
-  questStore.endQuest()
-  appStore.closeInterface()
-}
-
-function toggleTheme(): void {
-  questStore.toggleTheme()
-}
-
-// Helper function to format booze without decimal for whole numbers
-function formatUnits(value: number): string {
-  return value % 1 === 0 ? value.toString() : value.toFixed(1);
 }
 </script>
 
