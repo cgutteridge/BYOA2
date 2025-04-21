@@ -1,6 +1,10 @@
 <template>
   <div class="map-container">
     <div id="map" ref="mapContainer"></div>
+    <div v-if="questStore.isDebugMode" class="debug-teleport" @click="toggleTeleportMode" :class="{ active: teleportModeActive }">
+      <div class="debug-teleport-icon">📍</div>
+      <div v-if="teleportModeActive" class="debug-teleport-tooltip">Click on map to teleport</div>
+    </div>
   </div>
 </template>
 
@@ -34,6 +38,8 @@ const locationMarkers = ref<L.Marker[]>([])
 const routeLine = ref<L.Polyline | null>(null)
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])
+const teleportModeActive = ref<boolean>(false)
+const teleportClickHandler = ref<((e: L.LeafletMouseEvent) => void) | null>(null)
 
 // Computed properties
 const playerCoordinates = computed(() => appStore.playerCoordinates)
@@ -177,6 +183,12 @@ function cleanupMap(): void {
   closePopup();
   cleanupPopupApps();
   
+  // Clean up teleport handler
+  if (map.value && teleportClickHandler.value) {
+    map.value.off('click', teleportClickHandler.value)
+    teleportClickHandler.value = null
+  }
+  
   if (map.value) {
     try {
       // Remove markers first
@@ -264,9 +276,12 @@ function initializeMap(): void {
       closePopup()
     })
 
-    // Keep click listener to close popup
-    mapInstance.on('click', () => {
-      closePopup()
+    // Handle map clicks for closing popups (and teleporting in debug mode)
+    mapInstance.on('click', (e: L.LeafletMouseEvent) => {
+      // If teleport mode is active, this will be handled by the teleport click handler
+      if (!teleportModeActive.value) {
+        closePopup()
+      }
     })
 
     L.tileLayer('https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey=090957d4bae841118cdb982b96895428', {
@@ -344,6 +359,13 @@ onMounted(() => {
 onUnmounted(() => {
   closePopup();
   cleanupPopupApps();
+  
+  // Clean up teleport handler
+  if (map.value && teleportClickHandler.value) {
+    map.value.off('click', teleportClickHandler.value)
+    teleportClickHandler.value = null
+  }
+  
   if (map.value) {
     map.value.remove()
     map.value = null
@@ -590,6 +612,44 @@ function updateRouteLine(): void {
 watch(routeCoordinates, () => {
   updateRouteLine()
 })
+
+// Function to toggle teleport mode for debug
+function toggleTeleportMode(): void {
+  if (!map.value || !questStore.isDebugMode) return
+
+  teleportModeActive.value = !teleportModeActive.value
+  
+  // Remove existing click handler if it exists
+  if (teleportClickHandler.value && map.value) {
+    map.value.off('click', teleportClickHandler.value)
+    teleportClickHandler.value = null
+  }
+  
+  // If teleport mode is active, add new click handler
+  if (teleportModeActive.value && map.value) {
+    teleportClickHandler.value = (e: L.LeafletMouseEvent) => {
+      const newCoords: Coordinates = {
+        lat: e.latlng.lat,
+        lng: e.latlng.lng
+      }
+      
+      // Update player coordinates
+      appStore.setPlayerCoordinates(newCoords)
+      
+      // Disable teleport mode after use
+      teleportModeActive.value = false
+      
+      // Remove this click handler
+      if (map.value && teleportClickHandler.value) {
+        map.value.off('click', teleportClickHandler.value)
+        teleportClickHandler.value = null
+      }
+    }
+    
+    // Add the new click handler
+    map.value.on('click', teleportClickHandler.value)
+  }
+}
 </script>
 
 <style scoped>
@@ -606,6 +666,44 @@ watch(routeCoordinates, () => {
   width: 100%;
   height: 100%;
   z-index: 1;
+}
+
+.debug-teleport {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease;
+}
+
+.debug-teleport.active {
+  background-color: rgba(255, 0, 0, 0.9);
+}
+
+.debug-teleport-icon {
+  font-size: 20px;
+  color: white;
+}
+
+.debug-teleport-tooltip {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 button {
