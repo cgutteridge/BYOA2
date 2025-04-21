@@ -17,7 +17,7 @@
       </ButtonInput>
       
       <ButtonInput 
-        v-if="!location.scouted && !isInScoutRange && appStore.isDebugMode && !isLoading"
+        v-if="!location.scouted && !isInScoutRange && questStore.isDebugMode && !isLoading"
         :action="scoutLocationAction"
         class="scout-button debug-button"
         variant="secondary"
@@ -38,7 +38,7 @@
       </ButtonInput>
       
       <ButtonInput 
-        v-if="location.scouted && !isEnterRange && appStore.isDebugMode"
+        v-if="location.scouted && !isEnterRange && questStore.isDebugMode"
         :action="enterLocation"
         class="enter-button debug-button"
         variant="secondary"

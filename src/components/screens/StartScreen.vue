@@ -14,12 +14,12 @@
         </ButtonInput>
         
         <ButtonInput
-          @click="appStore.toggleDebugMode" 
+          @click="questStore.toggleDebugMode" 
           variant="secondary"
           size="small"
           class="debug-toggle"
         >
-          {{ appStore.isDebugMode ? '🐞 Debug: ON' : '🐞 Debug: OFF' }}
+          {{ questStore.isDebugMode ? '🐞 Debug: ON' : '🐞 Debug: OFF' }}
         </ButtonInput>
       </div>
       

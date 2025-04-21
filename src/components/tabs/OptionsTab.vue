@@ -22,9 +22,9 @@
           <button
             @click="toggleDebugMode" 
             class="theme-toggle-button"
-            :class="{ 'debug-active': appStore.isDebugMode }"
+            :class="{ 'debug-active': questStore.isDebugMode }"
           >
-            {{ appStore.isDebugMode ? '🐞 Disable Debug Mode' : '🐞 Enable Debug Mode' }}
+            {{ questStore.isDebugMode ? '🐞 Disable Debug Mode' : '🐞 Enable Debug Mode' }}
           </button>
         </div>
       </div>
@@ -66,7 +66,7 @@ function toggleTheme(): void {
 }
 
 function toggleDebugMode(): void {
-  appStore.toggleDebugMode()
+  questStore.toggleDebugMode()
 }
 
 function quitQuest(): void {

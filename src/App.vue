@@ -2,6 +2,7 @@
 import {onMounted, onUnmounted, ref, watch} from 'vue'
 import {useAppStore} from './stores/appStore'
 import {useInventoryStore} from './stores/inventoryStore'
+import {useQuestStore} from './stores/questStore'
 
 import MapScreen from '@/components/screens/MapScreen.vue'
 import StartScreen from '@/components/screens/StartScreen.vue'
@@ -14,6 +15,7 @@ import NotificationSystem from './components/NotificationSystem.vue'
 
 const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
+const questStore = useQuestStore()
 const watchId = ref<number | null>(null)
 const showButtonPulse = ref(false)
 const hashChangeListener = ref<((event: HashChangeEvent) => void) | null>(null)
@@ -35,7 +37,7 @@ watch(() => inventoryStore.itemCount, (newCount, oldCount) => {
 async function initializeGPS() {
   try {
     // If in debug mode, use fixed coordinates for Southampton
-    if (appStore.isDebugMode) {
+    if (questStore.isDebugMode) {
       const debugCoordinates = {lat: 50.92385, lng: -1.39501} // Southampton
       //const debugCoordinates = {lat: 49.0434, lng: 3.9562}// Epernay
       // console.log('DEBUG MODE: Using fixed GPS location:', debugCoordinates)
@@ -69,7 +71,7 @@ function startContinuousTracking() {
   }
   
   // Debug mode doesn't need continuous tracking - it's handled in initializeGPS
-  if (appStore.isDebugMode){
+  if (questStore.isDebugMode){
     return
   }
  
@@ -113,7 +115,7 @@ function toggleInterface() {
 }
 
 // Watch for debug mode changes to reinitialize GPS
-watch(() => appStore.isDebugMode, () => {
+watch(() => questStore.isDebugMode, () => {
   stopContinuousTracking()
   initializeGPS()
 })
@@ -206,7 +208,7 @@ onUnmounted(() => {
 
 <template>
   <div class="app">
-    <div v-if="appStore.isDebugMode" class="debug-banner">DEBUG MODE</div>
+    <div v-if="questStore.isDebugMode" class="debug-banner">DEBUG MODE</div>
 
     <NotificationSystem />
     
@@ -220,7 +222,7 @@ onUnmounted(() => {
     </div>
     <div v-else-if="appStore.gpsStatus === 'error'" class="gps-error">
       <p>Unable to get your location. Please enable GPS and refresh the page.</p>
-      <button @click="appStore.toggleDebugMode" class="debug-button">
+      <button @click="questStore.toggleDebugMode" class="debug-button">
         Enable Debug Mode
       </button>
     </div>

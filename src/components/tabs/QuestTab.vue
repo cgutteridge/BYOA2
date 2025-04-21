@@ -46,19 +46,19 @@
       </div>
     </div>
 
-    <MonsterTypeStats v-if="appStore.isDebugMode"/>
+    <div v-if="questStore.isDebugMode" class="monster-type-stats">
+      <MonsterTypeStats />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useQuestStore } from '@/stores/questStore'
-import { useAppStore } from '@/stores/appStore'
 import MonsterTypeStats from '@/components/MonsterTypeStats.vue'
 
 // Stores
 const questStore = useQuestStore()
-const appStore = useAppStore()
 
 // Computed styles
 const titleStyle = computed(() => ({

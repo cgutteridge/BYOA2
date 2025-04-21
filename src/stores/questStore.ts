@@ -93,9 +93,10 @@ export const useQuestStore = defineStore('quest', () => {
   const tokenTitle = ref<string>('shard of truth') // Title for token
   const tokenDescription = ref<string>('a shard of truth') // Description for token
   const scoutRange = ref<number>(200) // Scout range in meters
+  const isDebugMode = ref<boolean>(false) // Debug mode state
   const persist = ref(['title', 'description', 'status', 'startGameLocation',
     'endGameLocation', 'currentGameLocation', 'playerCount', 'xp', 'booze', 'soft', 'theme', 'minimumLocations',
-    'tokenTitle', 'tokenDescription', 'scoutRange'])
+    'tokenTitle', 'tokenDescription', 'scoutRange', 'isDebugMode'])
 
   // Color systems for dark and light themes
   const darkColors: ColorSystem = {
@@ -315,6 +316,15 @@ export const useQuestStore = defineStore('quest', () => {
     theme.value = theme.value === 'light' ? 'dark' : 'light'
   }
   
+  // Debug mode management
+  const setDebugMode = (enabled: boolean): void => {
+    isDebugMode.value = enabled
+  }
+  
+  const toggleDebugMode = (): void => {
+    isDebugMode.value = !isDebugMode.value
+  }
+  
   const setMinimumLocations = (count: number): void => {
     minimumLocations.value = count
   }
@@ -406,6 +416,9 @@ export const useQuestStore = defineStore('quest', () => {
     tokenDescription,
     startGameLocationId,
     endGameLocationId,
+    isDebugMode,
+    setDebugMode,
+    toggleDebugMode,
     setStartGameLocationId,
     setEndGameLocationId,
     setCurrentGameLocation,
