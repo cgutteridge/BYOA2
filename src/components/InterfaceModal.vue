@@ -122,7 +122,7 @@
             
             <div class="options-section">
               <h3>Game Controls</h3>
-              <button class="quit-button" @click="handleQuit">
+              <button class="quit-button" @click="showQuitConfirmation = true">
                 Quit Game
               </button>
             </div>
@@ -131,6 +131,14 @@
       </div>
     </div>
   </Teleport>
+  
+  <ConfirmationModal
+    v-model="showQuitConfirmation"
+    question="Are you sure you want to END THE QUEST? Everything will be LOST!"
+    action-text="Yes, End Quest"
+    cancel-text="No, Continue Playing"
+    :action="quitQuest"
+  />
 </template>
 
 <script setup lang="ts">
@@ -140,6 +148,7 @@ import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
 import ItemCard from './ItemCard.vue'
 import MonsterTypeStats from "@/components/MonsterTypeStats.vue"
+import ConfirmationModal from "@/components/forms/ConfirmationModal.vue"
 
 // Stores
 const inventoryStore = useInventoryStore()
@@ -190,6 +199,9 @@ const tabs = [
   { id: 'options', label: 'Options', disabled: false }
 ]
 
+// Confirmation modal state
+const showQuitConfirmation = ref(false)
+
 // Theme-based styles
 const backdropStyle = computed(() => ({
   backgroundColor: questStore.getOverlayColors().background,
@@ -232,16 +244,16 @@ const locationsStyle = computed(() => ({
 }))
 
 // Methods
-function close() {
+function close(): void {
   appStore.closeInterface()
 }
 
-function handleQuit() {
+function quitQuest(): void {
   appStore.setScreen('start_quest')
   appStore.closeInterface()
 }
 
-function toggleTheme() {
+function toggleTheme(): void {
   questStore.toggleTheme()
 }
 
