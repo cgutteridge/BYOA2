@@ -1,4 +1,4 @@
-import type { Item, Monster } from '../types'
+import type {Item, Monster, MonsterType} from '../types'
 import { ItemPower } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
 import { useQuestStore } from '@/stores/questStore.ts'
@@ -48,6 +48,15 @@ export class SplitPower extends ItemPower {
     ['{name} Senior', '{name} Junior'],
     ['{name} 2.0', '{name} Legacy']
   ];
+
+
+  canTargetMonsterType(item: Item, monsterType: MonsterType): boolean {
+    // can't target monsters with no lesser form
+    if( monsterType.lesser === undefined ) {
+      return false
+    }
+    return super.canTargetMonsterType(item, monsterType);
+  }
 
   /**
    * Apply the split effect to a monster, creating lesser versions

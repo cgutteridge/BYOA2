@@ -1,4 +1,4 @@
-import type {Item, Monster } from '../types'
+import type {Item, Monster, MonsterType} from '../types'
 import { ItemPower } from './abstractItemPower'
 import { monsterTypes } from '../data/monsterTypes'
 import { useQuestStore } from '@/stores/questStore.ts'
@@ -47,6 +47,14 @@ export class ShrinkPower extends ItemPower {
     'Bite-Size {name}',
     '{name} the Reduced'
   ];
+
+  canTargetMonsterType(item: Item, monsterType: MonsterType): boolean {
+    // can't target monsters with no lesser form
+    if( monsterType.lesser === undefined ) {
+      return false
+    }
+    return super.canTargetMonsterType(item, monsterType);
+  }
 
   /**
    * Apply the shrink effect to a monster, transforming it to its lesser form

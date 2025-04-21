@@ -80,7 +80,7 @@ export abstract class ItemPower {
         return this.canTargetMonsterType(item, monsterType);
     }
 
-    private canTargetMonsterType(item: Item, monsterType: MonsterType) {
+     canTargetMonsterType(item: Item, monsterType: MonsterType) {
         // Check level restrictions based on maxLevel
         if (item.maxLevel) {
             const levelOrder: MonsterLevel[] = ['minion', 'grunt', 'elite', 'boss'];
