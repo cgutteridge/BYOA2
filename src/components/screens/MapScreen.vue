@@ -12,6 +12,7 @@ import type {Coordinates, GameLocation} from '@/types'
 import {useLocationStore} from "@/stores/locationStore"
 import {useAppStore} from "@/stores/appStore"
 import {useQuestStore} from "@/stores/questStore"
+import {useRouteStore} from "@/stores/routeStore"
 import {locationTypesById} from "@/data/locationTypes"
 import LocationPopup from '@/components/LocationPopup.vue'
 
@@ -22,6 +23,7 @@ const EDGE_OFFSET = 300 // Minimum distance from screen edges  when opening a po
 const appStore = useAppStore()
 const locationStore = useLocationStore()
 const questStore = useQuestStore()
+const routeStore = useRouteStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
@@ -29,6 +31,7 @@ const scoutCircle = ref<L.Circle | null>(null)
 const scoutTopLabel = ref<L.Marker | null>(null)
 const scoutBottomLabel = ref<L.Marker | null>(null)
 const locationMarkers = ref<L.Marker[]>([])
+const routeLine = ref<L.Polyline | null>(null)
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])
 
@@ -37,6 +40,7 @@ const playerCoordinates = computed(() => appStore.playerCoordinates)
 const locations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
+const routeCoordinates = computed(() => routeStore.routeCoordinates)
 
 function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker|undefined {
   if (!mapInstance) {
@@ -185,6 +189,15 @@ function cleanupMap(): void {
       })
       locationMarkers.value = []
       
+      // Remove route line
+      if (routeLine.value) {
+        routeLine.value.remove()
+        routeLine.value = null
+      }
+      
+      // Stop route tracking
+      appStore.stopRouteTracking()
+      
       // Then remove map
       map.value.off()
       map.value.remove()
@@ -300,6 +313,11 @@ function initializeMap(): void {
     // Generate location markers
     generateGameLocationMarkers()
 
+    // Draw the route line if coordinates exist
+    updateRouteLine()
+
+    // Start route tracking
+    appStore.startRouteTracking()
 
   } catch (error) {
     console.error('Error initializing map:', error)
@@ -536,6 +554,41 @@ watch(() => questStore.scoutRange, () => {
   if (playerCoordinates.value && map.value) {
     updatePlayerMarker(playerCoordinates.value)
   }
+})
+
+// Function to update the route line on the map
+function updateRouteLine(): void {
+  if (!map.value) return
+  
+  // Remove existing route line
+  if (routeLine.value) {
+    routeLine.value.remove()
+    routeLine.value = null
+  }
+  
+  // If there are route coordinates, draw the line
+  if (routeCoordinates.value.length > 1) {
+    // Convert coordinates to LatLng array
+    const latLngs = routeCoordinates.value.map(coord => L.latLng(coord.lat, coord.lng))
+    
+    // Create the polyline with dotted red style
+    routeLine.value = L.polyline(latLngs, {
+      color: '#ff0000',
+      weight: 3,
+      opacity: 0.7,
+      dashArray: '10, 10',
+      lineCap: 'round',
+      lineJoin: 'round'
+    })
+    
+    // Add the polyline to the map with type assertion to fix TS error
+    routeLine.value.addTo(map.value as L.Map)
+  }
+}
+
+// Watch for route changes to update the line
+watch(routeCoordinates, () => {
+  updateRouteLine()
 })
 </script>
 

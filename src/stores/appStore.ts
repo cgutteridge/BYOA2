@@ -1,8 +1,10 @@
 import {defineStore} from 'pinia'
-import {computed, ref} from 'vue'
+import {computed, ref, watch} from 'vue'
 import type {GPSStatus, Item, Coordinates, GameLocationId, ScreenId} from '../types'
 import {useLocationStore} from "../stores/locationStore";
 import {useLogStore} from "../stores/logStore";
+import {useRouteStore} from "../stores/routeStore";
+import calculateDistance from "@/utils/calculateDistance";
 
 // Notification interface
 interface Notification {
@@ -32,6 +34,8 @@ export const useAppStore = defineStore('app', () => {
   const mapZoom = ref<number | null>(null)
   const locationStore = useLocationStore()
   const logStore = useLogStore()
+  const routeStore = useRouteStore()
+  const routeTrackingInterval = ref<number | null>(null)
   
   // Inventory UI state
   const isInterfaceOpen = ref(false)
@@ -52,6 +56,15 @@ export const useAppStore = defineStore('app', () => {
     // Log quest start
     if (newScreen === 'intro' && screen.value === 'start_quest') {
       logStore.addLogEntry('Started the quest', 0);
+    }
+    
+    // Handle route tracking based on screen changes
+    if (newScreen === 'map' && screen.value !== 'map') {
+      // Start route tracking when entering map screen
+      startRouteTracking();
+    } else if (newScreen !== 'map' && screen.value === 'map') {
+      // Stop route tracking when leaving map screen
+      stopRouteTracking();
     }
     
     screen.value = newScreen
@@ -187,6 +200,50 @@ export const useAppStore = defineStore('app', () => {
     localStorage.setItem('debug_mode', newValue.toString())
   }
 
+  // Start tracking the player's route
+  const startRouteTracking = (): void => {
+    // Clear any existing interval
+    if (routeTrackingInterval.value) {
+      window.clearInterval(routeTrackingInterval.value)
+    }
+    
+    // Add the initial player position to the route if available
+    if (playerCoordinates.value) {
+      routeStore.addRoutePoint(playerCoordinates.value)
+    }
+    
+    // Set up the interval to check the position every minute
+    routeTrackingInterval.value = window.setInterval(() => {
+      if (!playerCoordinates.value) return
+      
+      // Get the last coordinate from the route
+      const coordinates = routeStore.routeCoordinates
+      const lastCoords = coordinates.length > 0 ? coordinates[coordinates.length - 1] : null
+      
+      if (!lastCoords) {
+        // If there are no coords yet, add the current one
+        routeStore.addRoutePoint(playerCoordinates.value)
+        return
+      }
+      
+      // Calculate distance between current position and last recorded position
+      const distance = calculateDistance(lastCoords, playerCoordinates.value)
+      
+      // If distance is more than 50 meters, add new point to route
+      if (distance > 50) {
+        routeStore.addRoutePoint(playerCoordinates.value)
+      }
+    }, 60000) // Check every minute
+  }
+  
+  // Stop tracking the player's route
+  const stopRouteTracking = (): void => {
+    if (routeTrackingInterval.value) {
+      window.clearInterval(routeTrackingInterval.value)
+      routeTrackingInterval.value = null
+    }
+  }
+
   return {
     isFetchingGameLocations,
     screen,
@@ -219,6 +276,8 @@ export const useAppStore = defineStore('app', () => {
     removeNotification,
     exitCenterAnimation,
     openItemInspectModal,
-    closeItemInspectModal
+    closeItemInspectModal,
+    startRouteTracking,
+    stopRouteTracking
   }
 }) 

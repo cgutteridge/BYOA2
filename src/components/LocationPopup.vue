@@ -177,6 +177,11 @@ const isEnterRange = computed(() => {
   return playerDistance.value !== null && playerDistance.value <= 25;
 });
 
+type MonsterGroup = {
+  type: MonsterTypeId,
+  monsters: Monster[]
+}
+
 // Group undefeated monsters by type for display
 const groupedMonsters = computed(() => {
   if (!props.location?.monsters || !props.location.monsters.length) {
@@ -184,10 +189,7 @@ const groupedMonsters = computed(() => {
   }
   
   // Group undefeated monsters by type
-  const monstersByType = new Map<string, {
-    type: MonsterTypeId,
-    monsters: Monster[]
-  }>();
+  const monstersByType = new Map<string, MonsterGroup>();
   
   // Only include monsters that are still alive
   props.location.monsters.forEach(monster => {
@@ -230,7 +232,7 @@ const isLoading = computed(() => {
   return props.location.scouted && !props.location.description;
 })
 
-function getMonsterTitle(group): string {
+function getMonsterTitle(group:MonsterGroup): string {
   if( group.monsters.length === 1 ) {
     return group.monsters[0].name
   }

@@ -3,13 +3,10 @@ import {ref} from 'vue'
 import type {GameLocationTypeId, GameLocation, GameLocationId} from '../types'
 import {GameLocationDifficulty} from '../types'
 import {useAppStore} from './appStore'
-import {useQuestStore} from './questStore'
 import fetchNearbyGameLocations from "../api/overpass.ts"
-import calculateDistance from '../utils/calculateDistance.ts'
 
 export const useLocationStore = defineStore('locations', () => {
   const appStore = useAppStore()
-  const questStore = useQuestStore()
   const persist = ref(['locations'])
 
   const locations = ref<GameLocation[]>([])

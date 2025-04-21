@@ -49,6 +49,8 @@ if (questStore.status === 'active') {
     // console.log(questStore)
     if (questStore.currentGameLocation === undefined) {
         appStore.setScreen('map')
+        // Start route tracking if we're on the map screen
+        appStore.startRouteTracking()
     } else {
         appStore.setScreen('location')
     }
