@@ -6,21 +6,21 @@
       <div class="interface-modal__content" :style="modalContentStyle">
         <div class="interface-modal__header" :style="headerStyle">
           <div class="interface-modal__tabs">
-            <button-input
+            <div
               v-for="tab in tabs" 
               :key="tab.id"
               class="interface-modal__tab"
               :class="{ 'interface-modal__tab--active': activeTab === tab.id }"
-              :disabled="tab.disabled"
-              @click="activeTab = tab.id"
+              :aria-disabled="tab.disabled"
+              @click="!tab.disabled && (activeTab = tab.id)"
             >
               {{ tab.label }}
-            </button-input>
+            </div>
           </div>
           
-          <button-input class="interface-modal__close" @click="close">
+          <button class="interface-modal__close" @click="close">
             ×
-          </button-input>
+          </button>
         </div>
         
         <div class="interface-modal__body" :style="bodyStyle">
@@ -110,22 +110,21 @@
               <div class="theme-option">
                 <span class="option-label">Theme:</span>
                 <div class="theme-buttons">
-                  <ButtonInput
+                  <button
                     @click="toggleTheme" 
-                    variant="secondary"
-                    size="small"
+                    class="theme-toggle-button"
                   >
                     {{ questStore.theme === 'dark' ? '☀️ Switch to Light Mode' : '🌙 Switch to Dark Mode' }}
-                  </ButtonInput>
+                  </button>
                 </div>
               </div>
             </div>
             
             <div class="options-section">
               <h3>Game Controls</h3>
-              <button-input class="quit-button" @click="handleQuit">
+              <button class="quit-button" @click="handleQuit">
                 Quit Game
-              </button-input>
+              </button>
             </div>
           </div>
         </div>
@@ -141,7 +140,6 @@ import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
 import ItemCard from './ItemCard.vue'
 import MonsterTypeStats from "@/components/MonsterTypeStats.vue"
-import ButtonInput from "@/components/forms/ButtonInput.vue"
 
 // Stores
 const inventoryStore = useInventoryStore()
@@ -295,18 +293,55 @@ function formatUnits(value: number): string {
 
 .interface-modal__tabs {
   display: flex;
-  gap: 0.5rem;
+  gap: 0;
+  border-bottom: 1px solid transparent;
+  overflow-x: auto;
+  -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+  scrollbar-width: none;  /* Hide scrollbar for Firefox */
+}
+
+.interface-modal__tabs::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
 }
 
 .interface-modal__tab {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  font-size: 1.05rem;
+  transition: background-color 0.2s ease;
+}
+
+.interface-modal__tab--active {
+  font-weight: 600;
+  color: inherit;
+  position: relative;
+}
+
+.interface-modal__tab--active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: currentColor;
+}
+
+.interface-modal__tab[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .interface-modal__close {
   font-size: 1.5rem;
   line-height: 1;
   padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
 }
 
 .interface-modal__body {
@@ -408,8 +443,33 @@ function formatUnits(value: number): string {
   gap: 0.5rem;
 }
 
+.theme-toggle-button {
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.theme-toggle-button:hover {
+  background-color: #555;
+}
+
 .quit-button {
   margin-top: 1rem;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.quit-button:hover {
+  background-color: #b71c1c;
 }
 
 /* Media queries for responsive design */
@@ -422,16 +482,22 @@ function formatUnits(value: number): string {
   }
   
   .interface-modal__header {
-    padding: 0.75rem;
+    padding: 0.75rem 0.5rem 0.75rem 0.75rem;
   }
   
   .interface-modal__tabs {
-    gap: 0.3rem;
+    flex: 1;
+    margin-right: 0.5rem;
   }
   
   .interface-modal__tab {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.9rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 1rem;
+  }
+  
+  .interface-modal__close {
+    padding: 0.2rem 0.4rem;
+    font-size: 1.3rem;
   }
   
   .interface-modal__body {
@@ -442,6 +508,30 @@ function formatUnits(value: number): string {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 0.75rem;
     padding: 0.5rem;
+  }
+  
+  .interface-grid__item {
+    margin-bottom: 0;
+  }
+  
+  .interface-tab h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .interface-tab h3 {
+    font-size: 1.1rem;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .interface-modal__tab {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .interface-modal__header {
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
   }
 }
 </style> 
