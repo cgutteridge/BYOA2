@@ -32,13 +32,22 @@ pinia.use(({store}) => {
         // Save properties
         const stateToSave: Record<string, any> = {}
         if (!state.persist) {
-            console.warn(`${stateToSave.name} is missing persist property`)
+            console.warn(`${store.$id} is missing persist property`)
             return
         }
-        state.persist.map((key: any) => {
-            
+        
+        // Handle both ref and regular array persist properties
+        const persistKeys = Array.isArray(state.persist) ? state.persist : state.persist.value
+        
+        if (!Array.isArray(persistKeys)) {
+            console.warn(`${store.$id} has invalid persist property (not an array)`)
+            return
+        }
+        
+        persistKeys.forEach((key: string) => {
             stateToSave[key] = state[key]
         })
+        
         const json = JSON.stringify(stateToSave)
         localStorage.setItem(`pinia-${store.$id}`, json)
     })

@@ -7,7 +7,7 @@ export const useRouteStore = defineStore('route', () => {
   const routeCoordinates = ref<Coordinates[]>([])
   
   // Define which properties should be persisted
-  const persist = ['routeCoordinates']
+  const persist = ref(['routeCoordinates'])
   
   /**
    * Add a new coordinate point to the route

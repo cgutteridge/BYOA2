@@ -37,6 +37,9 @@ export const useAppStore = defineStore('app', () => {
   const routeStore = useRouteStore()
   const routeTrackingInterval = ref<number | null>(null)
   
+  // Define persist array - intentionally empty since this store shouldn't persist
+  const persist = ref<string[]>([])
+  
   // Inventory UI state
   const isInterfaceOpen = ref(false)
   const inventoryTab = ref('items') // 'items', 'quest', 'log', 'options'
@@ -264,6 +267,6 @@ export const useAppStore = defineStore('app', () => {
     closeItemInspectModal,
     startRouteTracking,
     stopRouteTracking,
-    persist:[]
+    persist
   }
 }) 
