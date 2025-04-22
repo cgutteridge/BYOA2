@@ -103,7 +103,7 @@ export class TransmutePower extends ItemPower {
     monster.name = `${prefix} ${resultMonsterType.title}`; 
     
     // Log the transmutation
-    questStore.updateStats(3, 0, 0,
+    questStore.logAndNotifyQuestEvent(3, 0, 0,
         `${originalName} was transmuted from ${originalMonsterType.title} into ${resultMonsterType.title} with ${item.name}`);
 
     return true;

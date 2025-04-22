@@ -165,7 +165,7 @@ function claimGiftItem() {
     // Award XP based on item level
     if (giftItem.level) {
       const xpToAward = giftItem.level * 2; // 2 XP per level for gift items
-      questStore.updateStats(xpToAward, 0, 0, `Claimed ${giftItem.name}.`);
+      questStore.logAndNotifyQuestEvent(xpToAward, 0, 0, `Claimed ${giftItem.name}.`);
     }
 
     // Remove from GameLocation
@@ -183,7 +183,7 @@ function claimPrizeItem() {
     // Award XP based on item level
     if (prizeItem.level) {
       const xpToAward = prizeItem.level * 3; // 3 XP per level for prize items
-      questStore.updateStats(xpToAward, 0, 0, `Claimed ${prizeItem.name}.`);
+      questStore.logAndNotifyQuestEvent(xpToAward, 0, 0, `Claimed ${prizeItem.name}.`);
     }
 
     // Remove from location
@@ -204,7 +204,7 @@ function claimTokenItem() {
     // Mark the location as having had its token claimed
     locationStore.setGameLocationHasToken(questStore.currentGameLocation.id, false);
 
-    questStore.updateStats(10, 0, 0, `Claimed ${tokenItem.value.name}.`);
+    questStore.logAndNotifyQuestEvent(10, 0, 0, `Claimed ${tokenItem.value.name}.`);
   }
 }
 </script>

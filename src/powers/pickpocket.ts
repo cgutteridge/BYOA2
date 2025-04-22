@@ -57,7 +57,7 @@ export class PickpocketPower extends ItemPower {
     monster.item = undefined;
 
     // Log the theft
-    questStore.updateStats(1, 0, 0,
+    questStore.logAndNotifyQuestEvent(1, 0, 0,
       `Stole ${stolenItem.name} from ${monster.name} using ${item.name}`)
 
     return true;

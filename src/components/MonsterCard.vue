@@ -288,7 +288,7 @@ function defeatMonster(): void {
   const xpToAdd = getMonsterXP(props.monster.type);
   const unitsToAdd = getMonsterBooze(props.monster.type);
   const softToAdd = getMonsterSoft(props.monster.type);
-  questStore.updateStats(xpToAdd, unitsToAdd, softToAdd, `Defeated ${props.monster.name} in combat`);
+  questStore.logAndNotifyQuestEvent(xpToAdd, unitsToAdd, softToAdd, `Defeated ${props.monster.name} in combat`);
   
   // Set alive to false
   questStore.currentGameLocation.monsters[monsterIndex].alive = false;
@@ -299,7 +299,7 @@ function defeatMonster(): void {
   // Check if this was the last monster to defeat for quest completion
   if (areAllMonstersDefeated(questStore.currentGameLocation.monsters)) {
     // Award XP for completing all monsters in a location
-    questStore.updateStats(5, 0, 0, `Defeated all monsters at ${questStore.currentGameLocation.name} in combat`);
+    questStore.logAndNotifyQuestEvent(5, 0, 0, `Defeated all monsters at ${questStore.currentGameLocation.name} in combat`);
   }
 }
 
@@ -328,7 +328,7 @@ function claimItem(): void {
   // Award XP based on item level
   if (props.monster.item.level) {
     const xpToAward = props.monster.item.level * 2; // 2 XP per item level
-    questStore.updateStats(xpToAward, 0, 0, `Claiming ${props.monster.item.name}`);
+    questStore.logAndNotifyQuestEvent(xpToAward, 0, 0, `Claiming ${props.monster.item.name}`);
   }
   
   // Clear the item from the monster

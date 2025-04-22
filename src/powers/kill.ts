@@ -34,7 +34,7 @@ export class KillPower extends ItemPower {
     monster.alive = false;
 
     // Log the banishment
-    questStore.updateStats(1,0,0,
+    questStore.logAndNotifyQuestEvent(1,0,0,
         `${monster.name} was destroyed with ${item.name}`)
 
     return true;

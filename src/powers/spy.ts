@@ -42,7 +42,7 @@ export class SpyPower extends ItemPower {
     }
 
     const questStore = useQuestStore();
-    questStore.updateStats(3, 0, 0,
+    questStore.logAndNotifyQuestEvent(3, 0, 0,
         `Used ${item.name} to scope out ${location.name} from a distance.`);
 
     // Scout the location asynchronously without blocking

@@ -29,7 +29,7 @@ export class ScoutRangePower extends ItemPower {
 
     // Extend scout range by 20 meters per use left
     questStore.setScoutRange(questStore.scoutRange + extendSize);
-    questStore.updateStats(10*item.uses,0,0,
+    questStore.logAndNotifyQuestEvent(10*item.uses,0,0,
         `Used ${item.name} ${item.uses>1?item.uses+' times ':''}to increase maximum scout range by ${extendSize}m.`)
     this.reduceUses(item, item.uses);
     return true;

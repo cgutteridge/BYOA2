@@ -346,7 +346,7 @@ export const useQuestStore = defineStore('quest', () => {
    * @param softAmount - Amount of soft drinks to add (can be 0)
    * @param actionDesc - Description of the action (e.g., "defeating water boss")
    */
-  const updateStats = (xpAmount: number, boozeAmount: number, softAmount: number, actionDesc: string) => {
+  const logAndNotifyQuestEvent = (xpAmount: number, boozeAmount: number, softAmount: number, actionDesc: string) => {
     // Update the stats
     if (xpAmount != 0) xp.value += xpAmount;
     if (boozeAmount != 0) booze.value += boozeAmount;
@@ -440,7 +440,7 @@ export const useQuestStore = defineStore('quest', () => {
     setMinimumLocations,
     setTokenTitle,
     setTokenDescription,
-    updateStats,
+    logAndNotifyQuestEvent,
     persist,
     scoutRange,
     setScoutRange,

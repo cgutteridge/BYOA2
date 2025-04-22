@@ -74,7 +74,7 @@ export class DistractPower extends ItemPower {
     monster.type = distractedMonsterTypeId;
 
     // Log the banishment
-    questStore.updateStats(1,0,0,
+    questStore.logAndNotifyQuestEvent(1,0,0,
         `${originalName} was distracted with ${item.name}`)
 
     return true;

@@ -76,7 +76,7 @@ export class StunPower extends ItemPower {
 
     // console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
     // Log the banishment
-    questStore.updateStats(1,0,0,
+    questStore.logAndNotifyQuestEvent(1,0,0,
         `${originalName} was stunned with ${item.name}`)
 
     return true;
