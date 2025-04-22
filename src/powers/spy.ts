@@ -1,8 +1,7 @@
-import type { Item, GameLocation } from '../types'
-import { ItemPower } from './abstractItemPower'
-import { scoutLocation } from '@/quest/scoutLocation.ts'
-import { useAppStore } from '@/stores/appStore.ts'
-import { useQuestStore } from '@/stores/questStore.ts'
+import type {GameLocation, Item} from '../types'
+import {ItemPower} from './abstractItemPower'
+import {scoutLocation} from '@/quest/scoutLocation.ts'
+import {useQuestStore} from '@/stores/questStore.ts'
 
 /**
  * Spy power implementation
@@ -30,31 +29,25 @@ export class SpyPower extends ItemPower {
     return `This ${qualityTerm} item reveals any location without visiting it.`;
   }
 
-  // Override filterLocationTargetsForItem to only return unscouted locations
-  filterLocationTargetsForItem(item: Item, locations: GameLocation[]): GameLocation[] {
-    // Filter to only return unscouted locations
-    return locations.filter(location => !location.scouted);
+  // Override canTargetLocation to only allow un-scouted locations
+  canTargetLocation(_item: Item, location: GameLocation): boolean {
+    // Only allow targeting locations that have not been scouted yet
+    return !location.scouted;
   }
 
   // Use the spy item on a location
   useOnLocation(item: Item, location: GameLocation): boolean {
-    if (location.scouted) {
+    if (!this.canTargetLocation(item, location)) {
       return false;
     }
 
     const questStore = useQuestStore();
-    const appStore = useAppStore();
+    questStore.updateStats(3, 0, 0,
+        `Used ${item.name} to scope out ${location.name} from a distance.`);
 
     // Scout the location asynchronously without blocking
     scoutLocation(location)
-      .then(() => {
-        // Show a notification about successful scouting
-        appStore.addNotification(`Scouted ${location.name} successfully`);
-        
-        // Log the successful use in stats
-        questStore.updateStats(1, 0, 0, 
-          `Used ${item.name} to scout ${location.name} from a distance.`);
-      })
+        .then()
       .catch(error => {
         console.error('Error scouting location:', error);
       });
