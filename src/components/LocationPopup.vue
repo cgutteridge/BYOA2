@@ -28,7 +28,7 @@
       
       <!-- Scouted locations -->
       <ButtonInput 
-        v-if="location.scouted && isEnterRange"
+        v-if="location.scouted && isEnterRange && (!isEndLocation || hasEnoughTokens)"
         :action="enterLocation"
         class="enter-button"
         variant="primary"
@@ -38,7 +38,7 @@
       </ButtonInput>
       
       <ButtonInput 
-        v-if="location.scouted && !isEnterRange && questStore.isDebugMode"
+        v-if="location.scouted && questStore.isDebugMode"
         :action="enterLocation"
         class="enter-button debug-button"
         variant="secondary"
@@ -47,6 +47,13 @@
         Enter Location (DEBUG)
       </ButtonInput>
     </div>
+    
+    <!-- Token requirement message for end location -->
+    <div v-if="showTokenRequirementsMessage" class="token-requirement-message" :style="tokenRequirementStyle">
+      You need {{ questStore.minimumLocations }} {{ questStore.tokenTitle }} to enter this location, but you
+      {{ inventoryStore.tokenCount < 1 ? "have none" : "only have " + inventoryStore.tokenCount }}.
+    </div>
+    
     <div class="location-details">
       <div v-if="location.scouted && location.description">
         <div v-if="location.giftItem" class="gift-info" :style="sectionStyle">
@@ -131,6 +138,7 @@ import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {generateTokenItem} from "@/quest/itemUtils.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
 import '@/styles/monsterAnimations.css'
+import {useInventoryStore} from "@/stores/inventoryStore.ts"
 
 const props = defineProps<{
   location: GameLocation
@@ -138,6 +146,7 @@ const props = defineProps<{
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
+const inventoryStore = useInventoryStore()
 
 // Theme-based styles
 const popupStyle = computed(() => ({
@@ -152,6 +161,12 @@ const sectionStyle = computed(() => ({
 }))
 
 const messageStyle = computed(() => ({
+  color: questStore.getTextColor('secondary'),
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('light')
+}))
+
+const tokenRequirementStyle = computed(() => ({
   color: questStore.getTextColor('secondary'),
   backgroundColor: questStore.getBackgroundColor('tertiary'),
   borderColor: questStore.getBorderColor('light')
@@ -176,6 +191,21 @@ const isInScoutRange = computed(() => {
 // Check if player is within enter range (25m)
 const isEnterRange = computed(() => {
   return playerDistance.value !== null && playerDistance.value <= 25;
+});
+
+// Check if location is the end location
+const isEndLocation = computed(() => {
+  return props.location.id === questStore.endGameLocationId;
+});
+
+// Check if player has enough tokens for the end location
+const hasEnoughTokens = computed(() => {
+  return inventoryStore.tokenCount >= questStore.minimumLocations;
+});
+
+// Check if we should show the token requirements message for end location
+const showTokenRequirementsMessage = computed(() => {
+  return isEndLocation.value && !hasEnoughTokens.value;
 });
 
 type MonsterGroup = {
@@ -369,6 +399,15 @@ function enterLocation(event?: MouseEvent) {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.token-requirement-message {
+  text-align: center;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid;
+  font-weight: 500;
 }
 
 .location-details {
