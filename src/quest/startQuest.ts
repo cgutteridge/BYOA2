@@ -1,5 +1,4 @@
-import type {GameLocation, Item} from '@/types'
-import {toItemId} from '@/types';
+import type {GameLocation } from '@/types'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {useInventoryStore} from "@/stores/inventoryStore.ts";
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
@@ -7,54 +6,7 @@ import {useLocationStore} from "@/stores/locationStore.ts";
 import initialiseGameLocation from "@/quest/initialiseLocation.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {ChatGPTAPI} from "@/api/chatGPT.ts";
-import {allPowerIds, powerFactory} from "@/powers";
-
-// Function to create unrestricted debug items with pick and pick_type for each power
-function createDebugItems(): Item[] {
-
-  const items: Item[] = [];
-  
-  // Create a pick item for each power
-    allPowerIds.forEach(powerId => {
-        // Get capitalized power name for display
-        const power = powerFactory.getPower(powerId);
-
-        // Create pick item (use on individual monster)
-        const pickItem: Item = {
-            id: toItemId(`debug_pick_${powerId}_${Date.now()}`),
-            name: `DEBUG ${power.displayName}`,
-            description: `Debug item with unrestricted ability to ${powerId}`,
-            uses: 999,
-            level: 6,
-            power: powerId,
-            target: 'pick',
-            targetFilters: {},
-            maxLevel: 'boss',
-            timestamp: Date.now()
-        };
-        items.push(pickItem);
-
-        if (power.itemTargetType === 'monsters') {
-            // Create pick_type item (use on monster type)
-            const pickTypeItem: Item = {
-                id: toItemId(`debug_pick_type_${powerId}_${Date.now()}`),
-                name: `DEBUG ${power.displayName} (Use on Type)`,
-                description: `Debug item with unrestricted ability to ${powerId} all monsters of a type`,
-                uses: 999,
-                level: 6,
-                power: powerId,
-                target: 'pick_type',
-                targetFilters: {},
-                maxLevel: 'boss',
-                timestamp: Date.now()
-            };
-            items.push(pickTypeItem);
-        }
-    
-  });
-  
-  return items;
-}
+import {createDebugItems} from "@/quest/debugItems.ts";
 
 export async function startQuest(
     title: string,

@@ -28,7 +28,7 @@ export function generateRandomItem(level: number): Item {
   
   // Step 1: Pick a random power type that fits within our budget
   // Get all available powers
-  const availablePowerIds: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun'];
+  const availablePowerIds: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun', 'randomItem'];
   
   // Filter available powers based on cost
   const affordablePowers = availablePowerIds

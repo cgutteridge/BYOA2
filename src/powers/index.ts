@@ -16,6 +16,7 @@ import { StunPower } from './stun'
 import { TokenPower } from './token'
 import { VictoryPower} from "@/powers/victory.ts";
 import { ScoutRangePower } from './scoutRange'
+import { RandomItemPower } from './randomItem'
 
 // Create instances of the power classes
 const banishPower = new BanishPower();
@@ -34,6 +35,7 @@ const stunPower = new StunPower();
 const tokenPower = new TokenPower();
 const victoryPower = new VictoryPower();
 const scoutRangePower = new ScoutRangePower();
+const randomItemPower = new RandomItemPower();
 
 // Register all power implementations
 const powerInstances: Record<ItemPowerId, ItemPower> = {
@@ -53,6 +55,7 @@ const powerInstances: Record<ItemPowerId, ItemPower> = {
   token: tokenPower,
   victory: victoryPower,
   scoutRange: scoutRangePower,
+  randomItem: randomItemPower,
 };
 
 export const allPowers : ItemPower[] = Object.values(powerInstances);

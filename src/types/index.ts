@@ -30,6 +30,7 @@ export type ItemPowerId =
   | 'token'
   | 'victory'
   | 'scoutRange'
+  | 'randomItem'
 
 // Target modes - how the target is selected
 export type MonsterTargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | undefined
