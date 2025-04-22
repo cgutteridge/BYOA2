@@ -49,11 +49,10 @@ function createDebugItem(powerId: ItemPowerId, items: Item[]): void {
 export function createDebugItems(): Item[] {
   const debugItems: Item[] = [];
 
+  console.log('Creating debug items', allPowerIds.join(', '));
+
   // Add all available powers for debugging
   allPowerIds.forEach(powerId => {
-    // Skip the ones we already added
-    if (['spy', 'kill', 'randomItem'].includes(powerId)) return;
-
     createDebugItem(powerId, debugItems);
   });
 
