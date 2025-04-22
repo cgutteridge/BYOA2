@@ -195,10 +195,10 @@ export abstract class ItemPower {
         item.uses = Math.max(0, item.uses - n)
         // console.log({uses: item.uses})
         if (item.uses === 0) {
-            // console.log("DUST")
             inventoryStore.removeItem(item.id)
             appStore.addNotification(`${item.name} crumbles to dust.`)
         }
+        item.timestamp = Date.now()
     }
 
     /* END OF USE FUNCTIONS */
