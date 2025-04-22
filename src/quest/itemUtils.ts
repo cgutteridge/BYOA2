@@ -3,7 +3,6 @@ import {powerFactory} from '../powers'
 import {useQuestStore} from '@/stores/questStore'
 import {toItemId} from '@/types'
 import {getUniqueMonsterTypes} from "@/quest/monsterUtils.ts";
-import {monsterTypesById} from "@/data";
 import {useLocationStore} from "@/stores/locationStore.ts";
 
 export function itemCanBeUsed(item:Item) {
@@ -43,7 +42,8 @@ export function potentialTargetMonstersTypesForItem(item: Item, location: GameLo
   if (item.target !== 'pick_type' && item.target === 'random_type') {
     return []
   }
-  const allMonsterTypesInLocation = getUniqueMonsterTypes(location.monsters ?? []).map(id => monsterTypesById[id])
+  const aliveMonsters = (location.monsters ?? []).filter(monster => monster.alive)
+  const allMonsterTypesInLocation = getUniqueMonsterTypes(aliveMonsters)
   return power.filterMonsterTypeTargetsForItem(item, allMonsterTypesInLocation);
 }
 

@@ -15,7 +15,7 @@ export class TransmutePower extends ItemPower {
   readonly glowColor = "rgba(138, 43, 226, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = true;
@@ -36,9 +36,23 @@ export class TransmutePower extends ItemPower {
     // Filter monster types to only include those of the same level
     const sameLevel = monsterTypes.filter(type => type.level === monsterType.level);
 
+    // Apply nullification rule:
+    // Non-nullified types can never be transmuted to nullified types
+    // However, nullified types can be transformed to any type
+    const afterNullificationRule = sameLevel.filter(type => {
+      // If source is non-nullified, it can't become nullified
+      if (monsterType.species !== 'nullified' && type.species === 'nullified') {
+        return false;
+      }
+      if( type.species==='chameleonoid') {
+        return false;
+      }
+      return true;
+    });
+
     // Apply result restrictions if they exist
     if (item.resultSpecies) {
-      return sameLevel.filter(type => {
+      return afterNullificationRule.filter(type => {
         // Check species restrictions
         if (item.resultSpecies) {
           if (type.species !== item.resultSpecies) {
@@ -50,7 +64,7 @@ export class TransmutePower extends ItemPower {
       });
     }
 
-    return sameLevel;
+    return afterNullificationRule;
   }
 
   applyEffect(item: Item, monster: Monster, resultMonsterType?: MonsterType): boolean {
@@ -78,6 +92,9 @@ export class TransmutePower extends ItemPower {
     // Store the original monster name for logging
     const originalName = monster.name;
     
+    // Get the original monster type
+    const originalMonsterType = monsterTypesById[monster.type];
+    
     // Perform the transmutation
     monster.type = resultMonsterType.id;
     
@@ -87,10 +104,7 @@ export class TransmutePower extends ItemPower {
     
     // Log the transmutation
     questStore.updateStats(3, 0, 0,
-        `${originalName} was transmuted into ${monster.name} with ${item.name}`);
-    
-    // Notify the user
-    appStore.addNotification(`${originalName} transformed into ${monster.name}!`);
+        `${originalName} was transmuted from ${originalMonsterType.title} into ${resultMonsterType.title} with ${item.name}`);
 
     return true;
   }

@@ -1,4 +1,4 @@
-import type {Monster, MonsterTypeId} from '../types'
+import type {Monster, MonsterType, MonsterTypeId} from '../types'
 import {useQuestStore} from '@/stores/questStore.ts';
 import {monsterTypes, monsterTypesById} from "@/data";
 
@@ -8,7 +8,7 @@ import {monsterTypes, monsterTypesById} from "@/data";
  * @param monsters Array of monsters to extract type IDs from
  * @returns Array of unique monster type IDs
  */
-export function getUniqueMonsterTypes(monsters: Monster[]): MonsterTypeId[] {
+export function getUniqueMonsterTypes(monsters: Monster[]): MonsterType[] {
   if (!monsters || !monsters.length) return []
   
   // Get all unique monster types
@@ -18,7 +18,7 @@ export function getUniqueMonsterTypes(monsters: Monster[]): MonsterTypeId[] {
     types.add(monster.type as MonsterTypeId)
   })
   
-  return Array.from(types)
+  return Array.from(types).map( id=>monsterTypesById[id])
 }
 
 

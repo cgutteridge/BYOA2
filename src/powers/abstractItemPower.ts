@@ -304,7 +304,7 @@ export abstract class ItemPower {
      * Get possible result monster types for this power
      * By default, returns all monster types
      */
-    getPossibleResults(item: Item, monsterType: MonsterType): MonsterType[] {
+    getPossibleResults(_item: Item, _monsterType: MonsterType): MonsterType[] {
         return monsterTypes;
     }
 
