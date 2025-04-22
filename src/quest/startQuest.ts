@@ -6,7 +6,6 @@ import {useLocationStore} from "@/stores/locationStore.ts";
 import initialiseGameLocation from "@/quest/initialiseLocation.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {ChatGPTAPI} from "@/api/chatGPT.ts";
-import {createDebugItems} from "@/quest/debugItems.ts";
 
 export async function startQuest(
     title: string,
