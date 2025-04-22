@@ -5,7 +5,16 @@
     <div class="quest-details">
       <div class="quest-title" :style="titleStyle">{{ questStore.title }}</div>
       <div class="quest-description" :style="descriptionStyle">{{ questStore.description }}</div>
-      
+
+      <div class="token-status" :style="tokenStatusStyle" v-if="questStore.title">
+        <template v-if="inventoryStore.tokenCount >= questStore.minimumLocations">
+          You have all the {{ questStore.tokenTitle }} required to enter {{ questStore.endGameLocation?.name || 'the final location' }}.
+        </template>
+        <template v-else>
+          You have {{ inventoryStore.tokenCount || 'none'}} of the required {{ questStore.minimumLocations }} {{ questStore.tokenTitle }} to enter {{ questStore.endGameLocation?.name || 'the final location' }}.
+        </template>
+      </div>
+
       <div class="quest-stats" :style="statsStyle">
         <div class="stat-group">
           <div class="stat-label">Experience Points:</div>
@@ -27,7 +36,7 @@
           <div class="stat-value">{{ questStore.playerCount }}</div>
         </div>
       </div>
-      
+
       <div class="quest-locations" :style="locationsStyle">
         <div class="location">
           <div class="location-label">Start Location:</div>
@@ -56,9 +65,11 @@
 import { computed } from 'vue'
 import { useQuestStore } from '@/stores/questStore'
 import MonsterTypeStats from '@/components/MonsterTypeStats.vue'
+import { useInventoryStore } from '@/stores/inventoryStore'
 
 // Stores
 const questStore = useQuestStore()
+const inventoryStore = useInventoryStore()
 
 // Computed styles
 const titleStyle = computed(() => ({
@@ -77,6 +88,12 @@ const statsStyle = computed(() => ({
 const locationsStyle = computed(() => ({
   backgroundColor: questStore.getBackgroundColor('tertiary'),
   borderColor: questStore.getBorderColor('light'),
+}))
+
+const tokenStatusStyle = computed(() => ({
+  color: questStore.getTextColor('accent'),
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  borderColor: questStore.getBorderColor('accent'),
 }))
 
 // Helper function to format booze without decimal for whole numbers
@@ -114,6 +131,16 @@ function formatUnits(value: number): string {
 .quest-locations {
   margin-bottom: 2rem;
   padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.token-status {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 500;
+  font-size: 1.1rem;
   border-radius: 8px;
   border: 1px solid;
 }

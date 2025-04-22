@@ -87,7 +87,7 @@ export function generateTokenItem(location: GameLocation): Item {
   return {
     id: toItemId(`token_${location.id}_${Date.now()}`),
     name: `${tokenTitle}`,
-    description: `${tokenDescription} from ${location.name}`,
+    description: `${tokenDescription} Collected from ${location.name}.`,
     uses: 1,
     level: 10,
     power: 'token',

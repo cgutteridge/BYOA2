@@ -12,6 +12,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   const hasItems = computed(() => items.value.length > 0)
   const itemCount = computed(() => items.value.length)
   const hasDebugItems = computed(() => items.value.some(item => item.name.includes('DEBUG')))
+  const tokenCount = computed(() => items.value.filter(item => item.power === 'token').length)
   
   // Actions
   function addItem(newItem: Item) {
@@ -48,6 +49,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     hasItems,
     itemCount,
     hasDebugItems,
+    tokenCount,
     
     // Actions
     addItem,
