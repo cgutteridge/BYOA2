@@ -50,7 +50,7 @@
                   <ListInput
                       v-model="selectedTargetMonsterTypes"
                       :options="potentialTargetMonsterTypes.map(type => ({
-                      key: type,
+                      id: type.id,
                       name: getMonsterTitle(type.id),
                       count: getMonsterCountByType(type.id)
                     }))"
