@@ -29,7 +29,20 @@
               <h3 :style="sectionHeaderStyle">{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
 
               <template v-if="power.itemTargetType==='locations'">
-                Locations!
+                <div class="target-list">
+                  <ListInput
+                    v-model="selectedTargetLocations"
+                    :options="potentialTargetLocations.map(location => ({
+                      id: location.id,
+                      name: location.name,
+                      subtitle: location.scouted ? 'Already scouted' : 'Unscouted location'
+                    }))"
+                    :multiple="true"
+                    :max-selections="item.uses || 1"
+                    :always-show="true"
+                    :disabled="item.target==='random'"
+                  />
+                </div>
               </template>
 
               <template v-if="power.itemTargetType==='monsters'">
