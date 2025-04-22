@@ -1,10 +1,11 @@
 import {defineStore} from 'pinia'
-import {computed, ref } from 'vue'
-import type {GPSStatus, Item, Coordinates, GameLocationId, ScreenId} from '../types'
+import {computed, ref} from 'vue'
+import type {Coordinates, GameLocationId, GPSStatus, Item, ScreenId} from '../types'
 import {useLocationStore} from "../stores/locationStore";
 import {useLogStore} from "../stores/logStore";
 import {useRouteStore} from "../stores/routeStore";
 import calculateDistance from "@/utils/calculateDistance";
+import {useQuestStore} from "@/stores/questStore.ts";
 
 // Notification interface
 interface Notification {
@@ -36,7 +37,7 @@ export const useAppStore = defineStore('app', () => {
   const logStore = useLogStore()
   const routeStore = useRouteStore()
   const routeTrackingInterval = ref<number | null>(null)
-  
+
   // Define persist array - intentionally empty since this store shouldn't persist
   const persist = ref<string[]>([])
   
@@ -52,12 +53,12 @@ export const useAppStore = defineStore('app', () => {
   const centerNotifications = ref<CenterNotificationPosition[]>([])
   const centerNotificationCount = ref(0)
 
-
+  const questStore = useQuestStore()
 
   const setScreen = (newScreen: ScreenId) => {
     // Log quest start
     if (newScreen === 'intro' && screen.value === 'start_quest') {
-      logStore.addLogEntry('Started the quest', 0);
+      questStore.logAndNotifyQuestEvent('Started the quest')
     }
     
     // Handle route tracking based on screen changes
@@ -119,21 +120,19 @@ export const useAppStore = defineStore('app', () => {
     inventoryTab.value = tab
   }
   
-  // Notification methods
+  // This should only be called directly for notifications of issues in the UI that should not be logged in
+  // the quest log.
+  // generally, you should call questStore.logAndNotifyQuestEvent
   const addNotification = (
     message: string, 
     type: 'success' | 'error' | 'info' | 'warning' = 'info',
     timeout = 10000,
-    xp = 0
   ): void => {
     const id = `notification-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const centerIndex = centerNotificationCount.value;
     centerNotificationCount.value++;
     
     notifications.value.push({ id, message, type, timeout, isEntering: true, centerIndex });
-    
-    // Add entry to log store
-    logStore.addLogEntry(message, xp);
     
     // Auto-remove after timeout
     if (timeout > 0) {
