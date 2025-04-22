@@ -274,27 +274,19 @@ async function callStartQuest() {
       return
     }
 
-    // Set our quest minimum locations
-    questStore.setMinimumLocations(minimumLocations.value)
-
-    // Update the player count
-    questStore.setPlayerCount(playerCount.value)
-
     // Map difficulty setting to numeric value
     let difficultyValue = 1
     if (selectedDifficulty.value === 'easy') difficultyValue = 0
     if (selectedDifficulty.value === 'medium') difficultyValue = 1
     if (selectedDifficulty.value === 'hard') difficultyValue = 2
 
-    questStore.setDifficulty(difficultyValue)
-
     // Start the quest but don't wait for it to all init
     startQuest(
         questTitle.value,
         startGameLocation,
         endGameLocation,
-        playerCount.value,
         difficultyValue,
+        playerCount.value,
         minimumLocations.value
     ).then()
 
