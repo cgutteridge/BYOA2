@@ -70,11 +70,6 @@ export async function startQuest(
         inventoryStore.addItem(item);
     }
     
-    // Add debug items with unrestricted pick and pick_type for each power
-    createDebugItems().forEach(item => {
-        inventoryStore.addItem(item);
-    });
-
     await scoutLocation(questStore.startGameLocation as GameLocation);
     questStore.setCurrentGameLocation(startGameLocation.id)
 

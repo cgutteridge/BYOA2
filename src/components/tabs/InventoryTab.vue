@@ -3,7 +3,16 @@
     <div v-if="!hasItems" class="inventory-tab__empty" :style="emptyMessageStyle">
       Your inventory is empty.
     </div>
-    <div v-else class="inventory-grid">
+    <div v-if="shouldShowDebugButton" class="debug-button-container">
+      <button 
+        @click="addDebugItems" 
+        class="debug-button"
+        :style="debugButtonStyle"
+      >
+        Add Debug Items
+      </button>
+    </div>
+    <div v-if="hasItems" class="inventory-grid">
       <div 
         v-for="item in inventoryItems" 
         :key="item.id"
@@ -50,9 +59,24 @@ const inventoryItems = computed(() => {
   })
 })
 
+const shouldShowDebugButton = computed(() => {
+  return questStore.isDebugMode && !inventoryStore.hasDebugItems
+})
+
 const emptyMessageStyle = computed(() => ({
   color: questStore.getTextColor('secondary'),
 }))
+
+const debugButtonStyle = computed(() => ({
+  backgroundColor: 'rgba(255, 0, 0, 0.1)',
+  color: questStore.getTextColor('primary'),
+  borderColor: 'rgba(255, 0, 0, 0.3)',
+}))
+
+// Methods
+function addDebugItems(): void {
+  inventoryStore.addDebugItems()
+}
 </script>
 
 <style scoped>
@@ -69,4 +93,17 @@ const emptyMessageStyle = computed(() => ({
   padding: 1rem;
 }
 
+.debug-button-container {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.debug-button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  border: 1px solid;
+}
 </style> 
