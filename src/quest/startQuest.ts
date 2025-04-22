@@ -6,6 +6,8 @@ import {useLocationStore} from "@/stores/locationStore.ts";
 import initialiseGameLocation from "@/quest/initialiseLocation.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {ChatGPTAPI} from "@/api/chatGPT.ts";
+import {useLogStore} from "@/stores/logStore.ts";
+import {useRouteStore} from "@/stores/routeStore.ts";
 
 export async function startQuest(
     title: string,
@@ -18,6 +20,9 @@ export async function startQuest(
     const questStore = useQuestStore()
     const locationStore = useLocationStore()
     const inventoryStore = useInventoryStore()
+    const logStore = useLogStore()
+    const routeStore = useRouteStore()
+
     const chatGPT = new ChatGPTAPI()
 
     questStore.setStatus('init');
@@ -71,6 +76,10 @@ export async function startQuest(
     
     await scoutLocation(questStore.startGameLocation as GameLocation);
     questStore.setCurrentGameLocation(startGameLocation.id)
+
+    routeStore.clearRoute()
+
+    logStore.clearLog()
 
     questStore.setStatus('active');
 }
