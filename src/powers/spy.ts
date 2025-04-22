@@ -2,6 +2,7 @@ import type { Item, GameLocation } from '../types'
 import { ItemPower } from './abstractItemPower'
 import { scoutLocation } from '@/quest/scoutLocation.ts'
 import { useAppStore } from '@/stores/appStore.ts'
+import { useQuestStore } from '@/stores/questStore.ts'
 
 /**
  * Spy power implementation
@@ -29,29 +30,38 @@ export class SpyPower extends ItemPower {
     return `This ${qualityTerm} item reveals any location without visiting it.`;
   }
 
-  // Override the location targeting to only allow non-scouted locations
-  canTargetLocation(_item: Item, location: GameLocation): boolean {
-    // Only allow targeting locations that have not been scouted yet
-    return !location.scouted;
+  // Override filterLocationTargetsForItem to only return unscouted locations
+  filterLocationTargetsForItem(item: Item, locations: GameLocation[]): GameLocation[] {
+    // Filter to only return unscouted locations
+    return locations.filter(location => !location.scouted);
   }
 
   // Use the spy item on a location
   useOnLocation(item: Item, location: GameLocation): boolean {
-    if (!this.canTargetLocation(item, location)) {
+    if (location.scouted) {
       return false;
     }
+
+    const questStore = useQuestStore();
+    const appStore = useAppStore();
 
     // Scout the location asynchronously without blocking
     scoutLocation(location)
       .then(() => {
         // Show a notification about successful scouting
-        const appStore = useAppStore();
-        appStore.addNotification('Location scouted successfully');
+        appStore.addNotification(`Scouted ${location.name} successfully`);
+        
+        // Log the successful use in stats
+        questStore.updateStats(1, 0, 0, 
+          `Used ${item.name} to scout ${location.name} from a distance.`);
       })
       .catch(error => {
         console.error('Error scouting location:', error);
       });
 
+    // Reduce item uses
+    this.reduceUses(item);
+    
     return true;
   }
 } 
