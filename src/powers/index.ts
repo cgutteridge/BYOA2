@@ -55,7 +55,7 @@ const powerInstances: Record<ItemPowerId, ItemPower> = {
   token: tokenPower,
   victory: victoryPower,
   scoutRange: scoutRangePower,
-  randomItem: lootboxPower,
+  lootbox: lootboxPower,
 };
 
 export const allPowers : ItemPower[] = Object.values(powerInstances);

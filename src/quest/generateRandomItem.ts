@@ -28,7 +28,7 @@ export function generateRandomItem(level: number): Item {
   
   // Step 1: Pick a random power type that fits within our budget
   // Get all available powers
-  const availablePowerIds: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun', 'randomItem'];
+  const availablePowerIds: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun', 'lootbox'];
   
   // Filter available powers based on cost
   const affordablePowers = availablePowerIds
@@ -170,12 +170,12 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
         delete item.targetFilters.species;
         delete item.targetFilters.flags;
       }
-      return remainingPoints - 1;
+      return remainingPoints - 2;
       
     case 'result_restriction':
       // Upgrade to player choice
       item.result = 'pick';
-      return remainingPoints - 1;
+      return remainingPoints - 2;
       
     case 'upgrade_to_pick':
       // Upgrade from random to pick (single target)
