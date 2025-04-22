@@ -228,10 +228,10 @@ function close(): void {
   }
   
   .interface-modal__close {
-    padding: 0.1rem 0.3rem;
-    font-size: 10.7rem;
+    padding: 0 1rem;
+    font-size: 2rem;
   }
-  
+
   .interface-modal__body {
     padding: 0.75rem;
   }
