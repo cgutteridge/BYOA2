@@ -60,30 +60,16 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     return
   }
   const iconPath = `./icons/${locationType.filename}`
-  const shadowPath = './icons/shadow.png'
-
-  // Create a custom HTML for the icon that includes a visited indicator if needed
-  let iconHtml = '';
-  if (location.hasBeenVisited) {
-    // Add a visual indicator for visited locations
-    iconHtml = `
-      <div class="visited-indicator"></div>
-    `;
-  }
 
   const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
-    icon: L.divIcon({
-      className: `location-marker ${location.hasBeenVisited ? 'visited' : ''}`,
-      html: `
-        <div class="location-marker-container">
-          <img src="${shadowPath}" class="location-shadow" />
-          <img src="${iconPath}" class="location-icon" />
-          ${iconHtml}
-        </div>
-      `,
+    icon: L.icon({
+      iconUrl: iconPath,
       iconSize: [67, 83],
       iconAnchor: [34, 83],
-      popupAnchor: [0, -30]
+      popupAnchor: [0, -30],
+      shadowUrl: './icons/shadow.png',
+      shadowSize: [161, 100],
+      shadowAnchor: [10, 90]
     })
   }).addTo(mapInstance)
 
@@ -616,15 +602,6 @@ watch(routeCoordinates, () => {
   updateRouteLine()
 }, { deep: true })
 
-// Watch for location changes to update markers when hasBeenVisited changes
-watch(locations, (newLocations) => {
-  // Only regenerate markers if the map exists and at least one location
-  // has been visited - this prevents unnecessary updates
-  if (map.value && newLocations.some(location => location.hasBeenVisited)) {
-    generateGameLocationMarkers()
-  }
-}, { deep: true })
-
 // Function to toggle teleport mode for debug
 function toggleTeleportMode(): void {
   if (!map.value || !questStore.isDebugMode) return
@@ -684,37 +661,38 @@ function toggleTeleportMode(): void {
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 45px;
-  height: 45px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 5px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease;
 }
 
 .debug-teleport.active {
-  background-color: rgba(255, 100, 100, 0.8);
+  background-color: rgba(255, 0, 0, 0.9);
 }
 
 .debug-teleport-icon {
-  font-size: 1.8rem;
+  font-size: 20px;
+  color: white;
 }
 
 .debug-teleport-tooltip {
   position: absolute;
-  bottom: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  background-color: rgba(0, 0, 0, 0.7);
+  top: 46px;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 button {
@@ -729,11 +707,10 @@ button {
 :deep(.player-dot) {
   width: 20px;
   height: 20px;
-  background-color: #3498db;
+  background-color: #4285F4;
   border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.4);
-  animation: pulse 2s infinite;
+  border: 3px solid white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
 :deep(.leaflet-control-center) {
@@ -789,63 +766,11 @@ button {
 }
 
 :deep(.scout-range-text) {
-  background-color: rgba(66, 133, 244, 0.8);
-  color: white;
-  padding: 3px 8px;
-  border-radius: 10px;
+  color: #4285F4;
   text-align: center;
   white-space: nowrap;
-  font-weight: 500;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-:global(.location-marker-container) {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-:global(.location-icon) {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  position: relative;
-  z-index: 10;
-}
-
-:global(.location-shadow) {
-  position: absolute;
-  width: 161px;
-  height: 100px;
-  bottom: -10px;
-  left: -65px;
-  z-index: 5;
-}
-
-:global(.visited-indicator) {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 15px;
-  height: 15px;
-  background-color: #4CAF50;
-  border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8), -1px -1px 2px rgba(255, 255, 255, 0.8);
+  transition: font-size 0.25s ease-in-out, transform 0.25s ease-in-out;
 }
 </style> 
