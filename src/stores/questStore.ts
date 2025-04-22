@@ -7,6 +7,15 @@ import formatNumber from "@/utils/formatNumber.ts";
 
 export type ThemeType = 'light' | 'dark'
 
+/**
+ * Options for logging a quest event
+ */
+export interface QuestEventOptions {
+  xp?: number;
+  booze?: number;
+  soft?: number;
+}
+
 // Color system interface
 export interface ColorSystem {
   // Text colors
@@ -341,12 +350,14 @@ export const useQuestStore = defineStore('quest', () => {
    * Updates both XP and booze with a notification message
    * Only mentions stats that actually changed
    * 
-   * @param xpAmount - Amount of XP to add (can be 0)
-   * @param boozeAmount - Amount of booze to add (can be 0)
-   * @param softAmount - Amount of soft drinks to add (can be 0)
-   * @param actionDesc - Description of the action (e.g., "defeating water boss")
+   * @param event - Description of the action (e.g., "defeating water boss")
+   * @param options - Options containing xp, booze, and soft amounts to add
    */
-  const logAndNotifyQuestEvent = (xpAmount: number, boozeAmount: number, softAmount: number, actionDesc: string) => {
+  const logAndNotifyQuestEvent = (event: string, options: QuestEventOptions = {}) => {
+    const xpAmount = options.xp || 0;
+    const boozeAmount = options.booze || 0;
+    const softAmount = options.soft || 0;
+    
     // Update the stats
     if (xpAmount != 0) xp.value += xpAmount;
     if (boozeAmount != 0) booze.value += boozeAmount;
@@ -367,7 +378,7 @@ export const useQuestStore = defineStore('quest', () => {
     }
     
     // Pass the notification message and XP amount to the notification system
-    appStore.addNotification(`${actionDesc} ${parts.join(', ')}`, 'success', 10000, xpAmount);
+    appStore.addNotification(`${event} ${parts.join(', ')}`, 'success', 10000, xpAmount);
   }
   
   const endQuest = () => {

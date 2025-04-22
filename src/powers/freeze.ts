@@ -72,8 +72,10 @@ export class FreezePower extends ItemPower {
     monster.type = iceMonsterTypeId;
 
     // Log the transformation
-    questStore.logAndNotifyQuestEvent(1,0,0,
-        `${monsterTypeInfo.title} was frozen with ${item.name}`)
+    questStore.logAndNotifyQuestEvent(
+        `${monsterTypeInfo.title} was frozen with ${item.name}`,
+        { xp: 1 }
+    )
 
     return true;
   }

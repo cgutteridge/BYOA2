@@ -149,8 +149,10 @@ export class SplitPower extends ItemPower {
     location.monsters.splice(monsterIndex, 1);
 
     // Log the banishment
-    questStore.logAndNotifyQuestEvent(1,0,0,
-        `${monster.name} was split into ${count} with ${item.name}`)
+    questStore.logAndNotifyQuestEvent(
+        `${monster.name} was split into ${count} with ${item.name}`,
+        { xp: 1 }
+    )
 
     return true;
   }

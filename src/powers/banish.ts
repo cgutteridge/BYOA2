@@ -52,8 +52,9 @@ export class BanishPower extends ItemPower {
     currentGameLocation.monsters.splice(monsterIndex, 1);
 
     // Log the banishment
-    questStore.logAndNotifyQuestEvent(1,0,0,
-        `${monster.name} was banished with ${item.name}`)
+    questStore.logAndNotifyQuestEvent(
+        `${monster.name} was banished with ${item.name}`, { xp: 1 }
+    )
 
     return true;
   }

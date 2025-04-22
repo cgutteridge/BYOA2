@@ -76,8 +76,10 @@ export class PacifyPower extends ItemPower {
 
     // console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
     // Log the banishment
-    questStore.logAndNotifyQuestEvent(1,0,0,
-        `${originalName} was pacified with ${item.name}`)
+    questStore.logAndNotifyQuestEvent(
+        `${originalName} was pacified with ${item.name}`,
+        { xp: 1 }
+    )
 
     return true;
   }

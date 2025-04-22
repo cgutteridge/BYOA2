@@ -77,8 +77,10 @@ export class VegetatePower extends ItemPower {
     // console.log(`Transformed ${originalName} (${originalType}) into ${monster.name} (${monster.type})`);
 
     // Log the banishment
-    questStore.logAndNotifyQuestEvent(1,0,0,
-        `${originalName} was turned to vegetation with ${item.name}`)
+    questStore.logAndNotifyQuestEvent(
+        `${originalName} was turned to vegetation with ${item.name}`,
+        { xp: 1 }
+    )
 
     return true;
   }

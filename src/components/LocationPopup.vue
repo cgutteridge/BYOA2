@@ -368,7 +368,7 @@ async function scoutLocationAction(event?: MouseEvent) {
   await scoutLocation(props.location)
   
   // Award XP for scouting a location through the UI (using logAndNotifyQuestEvent)
-  questStore.logAndNotifyQuestEvent(1, 0, 0, `Scouted ${props.location.name}.`);
+  questStore.logAndNotifyQuestEvent(`Scouted ${props.location.name}.`, { xp: 1 });
 }
 
 function enterLocation(event?: MouseEvent) {
@@ -387,11 +387,11 @@ function enterLocation(event?: MouseEvent) {
   locationStore.setHasBeenVisited(props.location.id, true)
   
   // Award XP for arriving at a location
-  questStore.logAndNotifyQuestEvent(2, 0, 0, `Entered ${props.location.name}.`);
+  questStore.logAndNotifyQuestEvent(`Entered ${props.location.name}.`, { xp: 2 });
   
   // Award additional XP for first-time visit
   if (isFirstVisit) {
-    questStore.logAndNotifyQuestEvent(3, 0, 0, `First time visiting ${props.location.name}.`);
+    questStore.logAndNotifyQuestEvent(`First time visiting ${props.location.name}.`, { xp: 3 });
   }
 }
 

@@ -36,7 +36,7 @@ export class LootboxPower extends ItemPower {
     inventoryStore.addItem(newItem);
 
     // Award XP for using the item
-    questStore.logAndNotifyQuestEvent(item.uses, 0, 0, `Used ${item.name} to generate ${newItem.name}.`);
+    questStore.logAndNotifyQuestEvent(`Used ${item.name} to generate ${newItem.name}.`, { xp: item.uses });
     
     // Reduce uses by 1
     this.reduceUses(item, 1);

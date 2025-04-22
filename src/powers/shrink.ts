@@ -81,8 +81,9 @@ export class ShrinkPower extends ItemPower {
     monster.type = monsterTypeDef.lesser
 
     // Log the banishment
-    questStore.logAndNotifyQuestEvent(1,0,0,
-        `${originalName} was shrunk down to size with ${item.name}`)
+    questStore.logAndNotifyQuestEvent(
+        `${originalName} was shrunk down to size with ${item.name}`, { xp: 1 }
+    )
 
     return true;
   }
