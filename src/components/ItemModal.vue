@@ -26,7 +26,7 @@
             <!-- Target selection (when in location) -->
           <template v-if="hasValidTargets">
             <div class="item-inspect-modal__target-section" :style="sectionStyle">
-              <h3 :style="sectionHeaderStyle">{{ isChoiceTarget ? 'Choose Target' : 'Possible Targets' }}</h3>
+              <h3 :style="sectionHeaderStyle">{{ isChoiceTarget ? 'Choose Target' : '❓ Possible Targets ❓' }}</h3>
 
               <template v-if="power.itemTargetType==='locations'">
                 <div class="target-list">
@@ -34,8 +34,7 @@
                     v-model="selectedTargetLocations"
                     :options="potentialTargetLocations.map(location => ({
                       id: location.id,
-                      name: location.name,
-                      subtitle: location.scouted ? 'Already scouted' : 'Unscouted location'
+                      name: location.name
                     }))"
                     :multiple="true"
                     :max-selections="item.uses || 1"
@@ -51,7 +50,7 @@
                       v-model="selectedTargetMonsterTypes"
                       :options="potentialTargetMonsterTypes.map(type => ({
                       id: type.id,
-                      name: getMonsterTitle(type.id),
+                      name: `${getMonsterTitle(type.id)} (${getMonsterLevel(type.id)})`,
                       count: getMonsterCountByType(type.id)
                     }))"
                     :multiple="true"
@@ -65,8 +64,7 @@
                       v-model="selectedTargetMonsters"
                       :options="potentialTargetMonsters.map(monster => ({
                       id: monster.id,
-                      name: monster.name,
-                      subtitle: `${getMonsterSpecies(monster.type)} ${getMonsterLevel(monster.type)}`
+                      name: `${monster.name} (${getMonsterSpecies(monster.type)} ${getMonsterLevel(monster.type)})`
                     }))"
                       :multiple="true"
                       :max-selections="item.uses || 1"

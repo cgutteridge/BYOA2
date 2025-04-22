@@ -331,7 +331,7 @@ watch(() => props.modelValue, (newValue) => {
 }
 
 .picker-item {
-  padding: 0.8rem;
+  padding: 0.4rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
