@@ -39,9 +39,14 @@ export abstract class ItemPower {
     // Item types that can have this power. These are just a cute type appropriate for the item.
     abstract readonly itemArtifactNames: string[];
 
+    // Maximum number of targets that can be selected (undefined means unlimited)
+    readonly maxTargets: number|undefined = undefined;
 
+    // Whether the power has results that should be displayed in the UI
+    readonly hasResults: boolean = false;
 
     abstract readonly itemTargetType: ItemTargetType;
+
 
 
     /* FUNCTIONS FOR FILTERING TARGETS */

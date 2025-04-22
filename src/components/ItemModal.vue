@@ -37,7 +37,7 @@
                       name: location.name
                     }))"
                     :multiple="true"
-                    :max-selections="item.uses || 1"
+                    :max-selections="power.maxTargets !== undefined ? power.maxTargets : (item.uses || 1)"
                     :always-show="true"
                     :disabled="item.target==='random'"
                   />
@@ -54,7 +54,7 @@
                       count: getMonsterCountByType(type.id)
                     }))"
                     :multiple="true"
-                    :max-selections="item.uses || 1"
+                    :max-selections="power.maxTargets !== undefined ? power.maxTargets : (item.uses || 1)"
                     :always-show="true"
                       :disabled="item.target==='random_type'"
                   />
@@ -67,7 +67,7 @@
                       name: `${monster.name} (${getMonsterSpecies(monster.type)} ${getMonsterLevel(monster.type)})`
                     }))"
                       :multiple="true"
-                      :max-selections="item.uses || 1"
+                      :max-selections="power.maxTargets !== undefined ? power.maxTargets : (item.uses || 1)"
                       :always-show="true"
                       :disabled="item.target==='random'"
                   />
@@ -78,6 +78,22 @@
                 No valid targets available for this item in current location.
               </p>
 
+            </div>
+            
+            <!-- Results section (when power has results) -->
+            <div v-if="power.hasResults" class="item-inspect-modal__result-section" :style="sectionStyle">
+              <h3 :style="sectionHeaderStyle">Select Result</h3>
+              <div class="result-list">
+                <ListInput
+                  v-model="selectedResult"
+                  :options="resultMonsterTypes.map(type => ({
+                    id: type.id,
+                    name: `${getMonsterTitle(type.id)} (${getMonsterLevel(type.id)})`
+                  }))"
+                  :multiple="false"
+                  :always-show="true"
+                />
+              </div>
             </div>
           </template>
           </div>
@@ -129,6 +145,12 @@ const selectedTargetMonsters = ref<string[]>([])
 const selectedTargetMonsterTypes = ref<string[]>([])
 const selectedTargetLocations = ref<string[]>([])
 const selectedResult = ref<string>('')
+
+// Placeholder for result monster types - to be implemented later
+const resultMonsterTypes = computed<MonsterType[]>(() => {
+  // This is a placeholder and will be implemented properly in the future
+  return []
+})
 
 // Theme-based styles
 const backdropStyle = computed(() => ({
@@ -228,6 +250,10 @@ const formSatisfied = computed<boolean>(() => {
   if (power.value.itemTargetType === 'locations' && selectedTargetLocations.value.length === 0) {
     ok = false;
   }
+  // Check if a result is required and selected
+  if (power.value.hasResults && selectedResult.value === '') {
+    ok = false;
+  }
   return ok
 })
 
@@ -243,6 +269,7 @@ function close() {
   // Reset state when closing
   selectedTargetMonsters.value = []
   selectedTargetMonsterTypes.value = []
+  selectedTargetLocations.value = []
   selectedResult.value = ''
   
   // Use appStore to close modal

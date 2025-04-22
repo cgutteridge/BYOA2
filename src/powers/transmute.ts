@@ -19,6 +19,8 @@ export class TransmutePower extends ItemPower {
   readonly maxLevel = null; // Can target any level
 
   readonly itemTargetType = 'monsters';
+  readonly maxTargets = 1;
+  readonly hasResults = true;
 
   // Item types for this power
   readonly itemArtifactNames = ["Amulet", "Ring", "Medallion", "Talisman", "Charm", "Jewel", "Orb"];
