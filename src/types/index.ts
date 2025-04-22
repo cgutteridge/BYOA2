@@ -78,6 +78,7 @@ export interface GameLocation {
   giftItem?: Item
   prizeItem?: Item
   defeatedEnemies: number
+  hasBeenVisited: boolean
 }
 
 export interface GameLocationType {

@@ -20,6 +20,9 @@ export default function initialiseGameLocation(location: GameLocation) {
 
     // Initialize defeatedEnemies count to 0
     location.defeatedEnemies = 0
+
+    // Initialize hasBeenVisited flag to false
+    location.hasBeenVisited = false
 }
 
 function calculateDifficulty(location: GameLocation) : GameLocationDifficulty{

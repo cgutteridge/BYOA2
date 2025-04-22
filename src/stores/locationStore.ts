@@ -45,6 +45,18 @@ export const useLocationStore = defineStore('locations', () => {
     targetGameLocation.defeatedEnemies = (targetGameLocation.defeatedEnemies || 0) + 1
   }
 
+  // Get hasBeenVisited flag for a specific location
+  const getHasBeenVisited = (locationId: GameLocationId): boolean => {
+    const targetGameLocation = location(locationId)
+    return targetGameLocation.hasBeenVisited
+  }
+
+  // Set hasBeenVisited flag for a specific location
+  const setHasBeenVisited = (locationId: GameLocationId, visited: boolean): void => {
+    const targetGameLocation = location(locationId)
+    targetGameLocation.hasBeenVisited = visited
+  }
+
   const fetchNearbyGameLocationsFromAPI = async () => {
     if (!appStore.playerCoordinates) return
     
@@ -80,6 +92,8 @@ export const useLocationStore = defineStore('locations', () => {
     setGameLocationHasToken,
     getDefeatedEnemiesCount,
     incrementDefeatedEnemiesCount,
+    getHasBeenVisited,
+    setHasBeenVisited,
     persist
   }
 }) 

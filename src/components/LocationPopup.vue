@@ -1,8 +1,13 @@
 <template>
   <div class="location-popup" :style="popupStyle">
     <h2>{{ location.name }}<template v-if="!location.scouted"> ({{ type.title }})</template></h2>
-    <div class="distance-info" v-if="playerDistance !== null">
-      <span>{{ Math.round(playerDistance) }}m away</span>
+    <div class="location-status-badges">
+      <div class="distance-info" v-if="playerDistance !== null">
+        <span>{{ Math.round(playerDistance) }}m away</span>
+      </div>
+      <div class="status-badge visited-badge" v-if="location.hasBeenVisited" :style="badgeStyle">
+        Visited
+      </div>
     </div>
     <div class="action-buttons">
       <!-- Unscouted locations -->
@@ -133,6 +138,8 @@ import {computed} from 'vue'
 import type {GameLocationType, Monster, MonsterTypeId, GameLocation} from '../types'
 import {useAppStore} from "../stores/appStore"
 import {useQuestStore} from "../stores/questStore"
+import {useInventoryStore} from "@/stores/inventoryStore.ts"
+import {useLocationStore} from "@/stores/locationStore.ts"
 import {monsterTypes} from '../data/monsterTypes'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import ItemCard from './ItemCard.vue'
@@ -143,7 +150,6 @@ import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {generateTokenItem} from "@/quest/itemUtils.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
 import '@/styles/monsterAnimations.css'
-import {useInventoryStore} from "@/stores/inventoryStore.ts"
 
 const props = defineProps<{
   location: GameLocation
@@ -152,6 +158,7 @@ const props = defineProps<{
 const appStore = useAppStore()
 const questStore = useQuestStore()
 const inventoryStore = useInventoryStore()
+const locationStore = useLocationStore()
 
 // Theme-based styles
 const popupStyle = computed(() => ({
@@ -368,12 +375,32 @@ function enterLocation(event?: MouseEvent) {
   if (event) {
     event.stopPropagation()
   }
+  
+  // Set current game location
   questStore.setCurrentGameLocation(props.location.id)
   appStore.setScreen('location')
   
-  // Award XP for arriving at a location (using updateStats)
+  // Check if this is the first time visiting this location
+  const isFirstVisit = !props.location.hasBeenVisited
+  
+  // Set hasBeenVisited flag to true
+  locationStore.setHasBeenVisited(props.location.id, true)
+  
+  // Award XP for arriving at a location
   questStore.updateStats(2, 0, 0, `Entered ${props.location.name}.`);
+  
+  // Award additional XP for first-time visit
+  if (isFirstVisit) {
+    questStore.updateStats(3, 0, 0, `First time visiting ${props.location.name}.`);
+  }
 }
+
+// Add a computed style for the status badges
+const badgeStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('secondary'),
+  color: questStore.getTextColor('secondary'),
+  borderColor: questStore.getBorderColor('light')
+}))
 
 </script>
 
@@ -395,9 +422,28 @@ function enterLocation(event?: MouseEvent) {
   font-weight: 600;
 }
 
-.distance-info {
+.location-status-badges {
+  display: flex;
+  gap: 0.75rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid;
+}
+
+.visited-badge {
+  font-weight: 500;
+}
+
+.distance-info {
   font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
 }
 
 .action-buttons {
