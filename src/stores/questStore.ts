@@ -94,8 +94,8 @@ export const useQuestStore = defineStore('quest', () => {
   const tokenDescription = ref<string>('a shard of truth') // Description for token
   const scoutRange = ref<number>(200) // Scout range in meters
   const isDebugMode = ref<boolean>(false) // Debug mode state
-  const persist = ref(['title', 'description', 'status', 'startGameLocation',
-    'endGameLocation', 'currentGameLocation', 'playerCount', 'xp', 'booze', 'soft', 'theme', 'minimumLocations',
+  const persist = ref(['title', 'description', 'status', 'startGameLocationId',
+    'endGameLocationId', 'currentGameLocationId', 'playerCount', 'xp', 'booze', 'soft', 'theme', 'minimumLocations',
     'tokenTitle', 'tokenDescription', 'scoutRange', 'isDebugMode'])
 
   // Color systems for dark and light themes
