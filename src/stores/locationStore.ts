@@ -33,6 +33,18 @@ export const useLocationStore = defineStore('locations', () => {
     targetGameLocation.hasToken = hasToken
   }
 
+  // Get defeatedEnemies count for a specific location
+  const getDefeatedEnemiesCount = (locationId: GameLocationId): number => {
+    const targetGameLocation = location(locationId)
+    return targetGameLocation.defeatedEnemies
+  }
+
+  // Increment defeatedEnemies count for a specific location
+  const incrementDefeatedEnemiesCount = (locationId: GameLocationId): void => {
+    const targetGameLocation = location(locationId)
+    targetGameLocation.defeatedEnemies = (targetGameLocation.defeatedEnemies || 0) + 1
+  }
+
   const fetchNearbyGameLocationsFromAPI = async () => {
     if (!appStore.playerCoordinates) return
     
@@ -66,6 +78,8 @@ export const useLocationStore = defineStore('locations', () => {
     setGameLocationDifficulty,
     setGameLocationType,
     setGameLocationHasToken,
+    getDefeatedEnemiesCount,
+    incrementDefeatedEnemiesCount,
     persist
   }
 }) 

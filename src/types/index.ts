@@ -77,6 +77,7 @@ export interface GameLocation {
   hasToken?: boolean
   giftItem?: Item
   prizeItem?: Item
+  defeatedEnemies: number
 }
 
 export interface GameLocationType {

@@ -17,6 +17,9 @@ export default function initialiseGameLocation(location: GameLocation) {
     // Initialize hasToken flag - true for all locations except start and end
     const isStartOrEnd = location.id === questStore.startGameLocationId || location.id === questStore.endGameLocationId
     locationStore.setGameLocationHasToken(location.id, !isStartOrEnd)
+
+    // Initialize defeatedEnemies count to 0
+    location.defeatedEnemies = 0
 }
 
 function calculateDifficulty(location: GameLocation) : GameLocationDifficulty{

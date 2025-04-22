@@ -23,6 +23,9 @@ export async function scoutLocation(
 
     // Mark the location as scouted
     location.scouted = true
+    
+    // Initialize defeatedEnemies counter if not already set
+    location.defeatedEnemies = 0
 
     // Generate monsters for this location
     const monsters = generateMonsters(location)

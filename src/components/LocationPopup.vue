@@ -67,6 +67,11 @@
         
         <h3 class="monsters-heading">Active Monsters:</h3>
         
+        <!-- Display defeated enemies count -->
+        <div class="defeated-enemies-info" :style="messageStyle">
+          Enemies defeated in combat: {{ location.defeatedEnemies }}
+        </div>
+        
         <!-- Show a message when all monsters are defeated -->
         <div v-if="allMonstersDefeated" class="all-defeated-message" :style="messageStyle">
           All monsters have been defeated!
@@ -438,6 +443,15 @@ function enterLocation(event?: MouseEvent) {
   font-style: italic;
   border-radius: 8px;
   border: 1px solid;
+}
+
+.defeated-enemies-info {
+  text-align: center;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  border: 1px solid;
+  font-weight: 500;
 }
 
 .monster-groups {

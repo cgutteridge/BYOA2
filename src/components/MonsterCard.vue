@@ -81,6 +81,7 @@ import { monsterTypes } from '@/data/monsterTypes';
 import { useQuestStore } from '@/stores/questStore';
 import { useAppStore } from '@/stores/appStore';
 import { useInventoryStore } from '@/stores/inventoryStore';
+import { useLocationStore } from '@/stores/locationStore';
 import { getMonsterXP, getMonsterBooze, getMonsterSoft, areAllMonstersDefeated } from '@/quest/monsterUtils';
 import formatNumber from '@/utils/formatNumber';
 import ItemCard from '@/components/ItemCard.vue';
@@ -100,6 +101,7 @@ const props = defineProps<Props>();
 const questStore = useQuestStore();
 const appStore = useAppStore();
 const inventoryStore = useInventoryStore();
+const locationStore = useLocationStore();
 
 // Track monster dying state
 const timeoutRef = ref<number | null>(null);
@@ -290,6 +292,9 @@ function defeatMonster(): void {
   
   // Set alive to false
   questStore.currentGameLocation.monsters[monsterIndex].alive = false;
+  
+  // Increment the defeatedEnemies count in the current location
+  locationStore.incrementDefeatedEnemiesCount(questStore.currentGameLocation.id);
   
   // Check if this was the last monster to defeat for quest completion
   if (areAllMonstersDefeated(questStore.currentGameLocation.monsters)) {
