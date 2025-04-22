@@ -142,8 +142,8 @@ export abstract class ItemPower {
         return false;
     }
 
-    useOnMonster(item: Item, monster: Monster): boolean {
-        const success = this.applyEffect(item, monster);
+    useOnMonster(item: Item, monster: Monster, resultMonsterType?: MonsterType): boolean {
+        const success = this.applyEffect(item, monster, resultMonsterType);
 
         if (success) {
             this.reduceUses(item);
@@ -152,8 +152,8 @@ export abstract class ItemPower {
         return success
     }
 
-    useOnMonsterType(item: Item, type: MonsterType): boolean {
-        const count = this.applyEffectToMonsterType(item, type);
+    useOnMonsterType(item: Item, type: MonsterType, resultMonsterType?: MonsterType): boolean {
+        const count = this.applyEffectToMonsterType(item, type, resultMonsterType);
 
         if (count > 0) {
             this.reduceUses(item);
@@ -162,7 +162,7 @@ export abstract class ItemPower {
         return false
     }
 
-    applyEffectToMonsterType(item: Item, targetMonsterType: MonsterType): number {
+    applyEffectToMonsterType(item: Item, targetMonsterType: MonsterType, resultMonsterType?: MonsterType): number {
 
         // Get the quest store
         const questStore = useQuestStore();
@@ -181,7 +181,7 @@ export abstract class ItemPower {
         // Kill each monster
         let count = 0;
         monstersOfType.forEach((monster:Monster) => {
-            if (this.applyEffect(item, monster)) {
+            if (this.applyEffect(item, monster, resultMonsterType)) {
                 count++;
             }
         })
@@ -189,7 +189,7 @@ export abstract class ItemPower {
         return count
     }
 
-    applyEffect(_item: Item, _monster: Monster): boolean {
+    applyEffect(_item: Item, _monster: Monster, _resultMonsterType?: MonsterType): boolean {
         // console.log("applyEffect should be subclassed.")
         return false
     }
@@ -300,7 +300,13 @@ export abstract class ItemPower {
         return effect;
     }
 
-
+    /**
+     * Get possible result monster types for this power
+     * By default, returns all monster types
+     */
+    getPossibleResults(item: Item, monsterType: MonsterType): MonsterType[] {
+        return monsterTypes;
+    }
 
 }
 

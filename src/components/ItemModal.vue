@@ -81,7 +81,7 @@
             </div>
             
             <!-- Results section (when power has results) -->
-            <div v-if="power.hasResults" class="item-inspect-modal__result-section" :style="sectionStyle">
+            <div v-if="power.hasResults && resultMonsterTypes.length > 0" class="item-inspect-modal__result-section" :style="sectionStyle">
               <h3 :style="sectionHeaderStyle">Select Result</h3>
               <div class="result-list">
                 <ListInput
@@ -94,6 +94,12 @@
                   :always-show="true"
                 />
               </div>
+            </div>
+            <div v-else-if="power.hasResults" class="item-inspect-modal__result-section" :style="sectionStyle">
+              <h3 :style="sectionHeaderStyle">No Available Results</h3>
+              <p class="no-results" :style="noTargetsStyle">
+                There are no valid results available for this transformation.
+              </p>
             </div>
           </template>
           </div>
@@ -114,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue'
+import {computed, ref, watch} from 'vue'
 import {GameLocation, Item, Monster, MonsterType, toMonsterTypeId} from '../types'
 import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
@@ -148,8 +154,42 @@ const selectedResult = ref<string>('')
 
 // Placeholder for result monster types - to be implemented later
 const resultMonsterTypes = computed<MonsterType[]>(() => {
-  // This is a placeholder and will be implemented properly in the future
-  return []
+  if (!power.value || !power.value.hasResults) {
+    return [];
+  }
+  return possibleResults.value;
+})
+
+// Get possible result monster types from the power
+const possibleResults = computed<MonsterType[]>(() => {
+  if (!power.value || !power.value.hasResults) {
+    return [];
+  }
+  
+  // Get the selected monster type
+  let selectedMonsterType: MonsterType | undefined;
+  
+  // For type-targeting items
+  if (selectedTargetMonsterTypes.value.length > 0) {
+    const typeId = selectedTargetMonsterTypes.value[0];
+    selectedMonsterType = monsterTypesById[toMonsterTypeId(typeId)];
+  } 
+  // For individual monster targeting items
+  else if (selectedTargetMonsters.value.length > 0) {
+    const monsterId = selectedTargetMonsters.value[0];
+    const monster = potentialTargetMonsters.value.find(m => m.id === monsterId);
+    if (monster) {
+      selectedMonsterType = monsterTypesById[monster.type];
+    }
+  }
+  
+  // If no monster type is selected yet, return empty array
+  if (!selectedMonsterType) {
+    return [];
+  }
+  
+  // Pass the selected monster type to the power's getPossibleResults method
+  return power.value.getPossibleResults(item.value, selectedMonsterType);
 })
 
 // Theme-based styles
@@ -338,27 +378,55 @@ function useItemPickLocation() {
 
 function useItemRandomMonster() {
   const target = pickOne(potentialTargetMonsters.value)
-  power.value.useOnMonster(item.value, target)
+  // Include the selected result if the power has results
+  if (power.value.hasResults && selectedResult.value) {
+    // Pass the selected result monster type id along with the item and target
+    const resultMonsterType = monsterTypesById[toMonsterTypeId(selectedResult.value)]
+    power.value.useOnMonster(item.value, target, resultMonsterType)
+  } else {
+    power.value.useOnMonster(item.value, target)
+  }
 }
 
 function useItemPickMonster() {
   let targets: Monster[] = selectedTargetMonsters.value.map(
       monsterId => potentialTargetMonsters.value.find(monster => monster.id === monsterId) as Monster);
   targets.forEach(monster => {
-    power.value.useOnMonster(item.value, monster)
+    // Include the selected result if the power has results
+    if (power.value.hasResults && selectedResult.value) {
+      // Pass the selected result monster type id along with the item and target
+      const resultMonsterType = monsterTypesById[toMonsterTypeId(selectedResult.value)]
+      power.value.useOnMonster(item.value, monster, resultMonsterType)
+    } else {
+      power.value.useOnMonster(item.value, monster)
+    }
   })
 }
 
 function useItemRandomMonsterType() {
   const target = pickOne(potentialTargetMonsterTypes.value)
-  power.value.useOnMonsterType(item.value, target)
+  // Include the selected result if the power has results
+  if (power.value.hasResults && selectedResult.value) {
+    // Pass the selected result monster type id along with the item and target
+    const resultMonsterType = monsterTypesById[toMonsterTypeId(selectedResult.value)]
+    power.value.useOnMonsterType(item.value, target, resultMonsterType)
+  } else {
+    power.value.useOnMonsterType(item.value, target)
+  }
 }
 
 function useItemPickMonsterType() {
   const targets: MonsterType[] = selectedTargetMonsterTypes.value.map(
       monsterTypeId => monsterTypesById[toMonsterTypeId(monsterTypeId)])
   targets.forEach(monsterType => {
-    power.value.useOnMonsterType(item.value, monsterType)
+    // Include the selected result if the power has results
+    if (power.value.hasResults && selectedResult.value) {
+      // Pass the selected result monster type id along with the item and target
+      const resultMonsterType = monsterTypesById[toMonsterTypeId(selectedResult.value)]
+      power.value.useOnMonsterType(item.value, monsterType, resultMonsterType)
+    } else {
+      power.value.useOnMonsterType(item.value, monsterType)
+    }
   })
 }
 
@@ -367,6 +435,11 @@ function getMonsterTitle(typeId: string): string {
   const monsterType = monsterTypes.find(mt => mt.id === typeId)
   return monsterType ? monsterType.title : typeId.charAt(0).toUpperCase() + typeId.slice(1).replace(/_/g, ' ')
 }
+
+// Reset the selected result when target selections change
+watch([selectedTargetMonsters, selectedTargetMonsterTypes], () => {
+  selectedResult.value = '';
+});
 </script>
 
 <style scoped>
