@@ -130,6 +130,7 @@ import {locationTypesById} from "@/data/locationTypes.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {generateTokenItem} from "@/quest/itemUtils.ts";
 import {getMonsterXP} from "../quest/monsterUtils.ts";
+import '@/styles/monsterAnimations.css'
 
 const props = defineProps<{
   location: GameLocation
@@ -277,11 +278,6 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
     style.background = monsterType.style.background
   }
   
-  // If monster has style.backgroundColor, use it (legacy support)
-  if (monsterType.style.background) {
-    style.background = monsterType.style.background
-  }
-
   // If monster has style.borderColor, use it
   if (monsterType.style.borderColor) {
     style.borderColor = monsterType.style.borderColor
