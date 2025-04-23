@@ -5,9 +5,8 @@ import {toItemId} from '@/types'
 import {getUniqueMonsterTypes} from "@/quest/monsterUtils.ts";
 import {useLocationStore} from "@/stores/locationStore.ts";
 
-export function itemCanBeUsed(item:Item) {
+export function itemCanBeUsed(item: Item) {
   const power = powerFactory.getPower(item.power);
-  const questStore = useQuestStore()
 
   if (power.itemTargetType === 'none') {
     return false;
@@ -16,14 +15,19 @@ export function itemCanBeUsed(item:Item) {
     // for now special items are always possible to use. Might filter it with a function on the power later.
     return power.canItemBeUsedWithoutTarget(item);
   }
+  return itemHasValidTargets(item)
+}
+
+export function itemHasValidTargets(item: Item) {
+  const questStore = useQuestStore()
+  const power = powerFactory.getPower(item.power);
   if (power.itemTargetType === 'locations') {
     return potentialTargetLocationsForItem(item).length > 0
   }
   if (power.itemTargetType === 'monsters') {
-    if( item.target === 'pick' || item.target === 'random') {
+    if (item.target === 'pick' || item.target === 'random') {
       return potentialTargetMonstersForItem(item, questStore.currentGameLocation).length > 0
-    }
-    else {
+    } else {
       return potentialTargetMonstersTypesForItem(item, questStore.currentGameLocation).length > 0
     }
   }

@@ -228,9 +228,16 @@ function selectOption(option: PickerOption): void {
     if (index >= 0) {
       // Deselect (remove from array)
       currentValues.splice(index, 1)
-    } else if (!props.maxSelections || currentValues.length < props.maxSelections) {
-      // Select if under max selections
-      currentValues.push(optionValue)
+    } else {
+      // Special case: if maxSelections=1, replace the current selection instead of adding to it
+      if (props.maxSelections === 1) {
+        // Clear the array and add only the new selection
+        currentValues.length = 0
+        currentValues.push(optionValue)
+      } else if (!props.maxSelections || currentValues.length < props.maxSelections) {
+        // Regular multiple selection - add to array if under max selections
+        currentValues.push(optionValue)
+      }
     }
     
     emit('update:modelValue', currentValues)

@@ -23,7 +23,7 @@
               <p :style="textStyle">{{ power.generateEffectDescription(item) }}</p>
             </div>
 
-            <!-- Target selection (when in location) -->
+            <!-- Target selection -->
           <template v-if="hasValidTargets">
             <div class="item-inspect-modal__target-section" :style="sectionStyle">
               <h3 :style="sectionHeaderStyle">{{ isChoiceTarget ? 'Choose Target' : '❓ Possible Targets ❓' }}</h3>
@@ -104,7 +104,7 @@
           </template>
           </div>
           
-          <div v-if="hasValidTargets" class="item-inspect-modal__footer" :style="footerStyle">
+          <div v-if="canBeUsed" class="item-inspect-modal__footer" :style="footerStyle">
             <button
                 :disabled="!formSatisfied"
               class="item-inspect-modal__use-btn"
@@ -125,7 +125,7 @@ import {GameLocation, Item, Monster, MonsterType, toMonsterTypeId} from '../type
 import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
 import {
-  itemCanBeUsed,
+  itemCanBeUsed, itemHasValidTargets,
   potentialTargetLocationsForItem,
   potentialTargetMonstersForItem,
   potentialTargetMonstersTypesForItem
@@ -274,7 +274,9 @@ const potentialTargetMonsters = computed<Monster[]>(
 const potentialTargetLocations = computed<GameLocation[]>(
     () => potentialTargetLocationsForItem(item.value)
 )
-const hasValidTargets = computed<boolean>(() => itemCanBeUsed(item.value))
+const canBeUsed = computed<boolean>(() => itemCanBeUsed(item.value))
+
+const hasValidTargets = computed<boolean>(() => itemHasValidTargets(item.value))
 
 // true if all the pick elements have been completed
 const formSatisfied = computed<boolean>(() => {
