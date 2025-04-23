@@ -3,23 +3,23 @@
     <div v-if="!hasItems" class="inventory-tab__empty" :style="emptyMessageStyle">
       Your inventory is empty.
     </div>
-    <div v-if="shouldShowDebugButton" class="debug-button-container">
-      <button 
-        @click="addDebugItems" 
-        class="debug-button"
+    <div v-if="shouldShowDebugButtons" class="debug-buttons-row">
+      <ButtonInput 
+        variant="secondary"
+        size="small"
+        :action="addDebugItems"
         :style="debugButtonStyle"
       >
         Add Debug Items
-      </button>
-    </div>
-    <div v-if="shouldShowDemoButton" class="debug-button-container">
-      <button 
-        @click="addDemoItems" 
-        class="debug-button"
+      </ButtonInput>
+      <ButtonInput 
+        variant="secondary"
+        size="small"
+        :action="addDemoItems"
         :style="demoButtonStyle"
       >
         Add Demo Items
-      </button>
+      </ButtonInput>
     </div>
     <div v-if="hasItems" class="inventory-grid">
       <div 
@@ -41,6 +41,7 @@ import { computed } from 'vue'
 import { useInventoryStore } from '@/stores/inventoryStore'
 import { useQuestStore } from '@/stores/questStore'
 import ItemCard from '@/components/ItemCard.vue'
+import ButtonInput from '@/components/forms/ButtonInput.vue'
 
 // Stores
 const inventoryStore = useInventoryStore()
@@ -68,12 +69,8 @@ const inventoryItems = computed(() => {
   })
 })
 
-const shouldShowDebugButton = computed(() => {
-  return questStore.isDebugMode && !inventoryStore.hasDebugItems
-})
-
-const shouldShowDemoButton = computed(() => {
-  return questStore.isDebugMode && !inventoryStore.hasDemoItems
+const shouldShowDebugButtons = computed(() => {
+  return questStore.isDebugMode && (!inventoryStore.hasDebugItems || !inventoryStore.hasDemoItems)
 })
 
 const emptyMessageStyle = computed(() => ({
@@ -82,13 +79,11 @@ const emptyMessageStyle = computed(() => ({
 
 const debugButtonStyle = computed(() => ({
   backgroundColor: 'rgba(255, 0, 0, 0.1)',
-  color: questStore.getTextColor('primary'),
   borderColor: 'rgba(255, 0, 0, 0.3)',
 }))
 
 const demoButtonStyle = computed(() => ({
   backgroundColor: 'rgba(0, 0, 255, 0.1)',
-  color: questStore.getTextColor('primary'),
   borderColor: 'rgba(0, 0, 255, 0.3)',
 }))
 
@@ -116,17 +111,10 @@ function addDemoItems(): void {
   padding: 1rem;
 }
 
-.debug-button-container {
+.debug-buttons-row {
   display: flex;
   justify-content: center;
+  gap: 1rem;
   margin: 1rem 0;
-}
-
-.debug-button {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  border: 1px solid;
 }
 </style> 
