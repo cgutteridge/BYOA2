@@ -221,10 +221,14 @@ export abstract class ItemPower {
         switch (level) {
             case 1: return "crap";
             case 2: return "mediocre";
-            case 3: return "decent";
+            case 3: return "half-decent";
             case 4: return "superior";
             case 5: return "excellent";
             case 6: return "legendary";
+            case 7: return "mythic";
+            case 8: return "transcendent";
+            case 9: return "divine";
+            case 10: return "cosmic";
             default: return "unknown quality";
         }
     }

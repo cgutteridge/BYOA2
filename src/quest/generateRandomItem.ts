@@ -64,11 +64,6 @@ export function generateRandomItem(level: number): Item {
     maxLevel: 'minion'
   };
   
-  // Apply level-specific restrictions if any
-  if (power.maxLevel) {
-    item.maxLevel = power.maxLevel;
-  }
-  
   // Step 2: Apply target restrictions if applicable
   if (power.canHaveTargetRestriction && item.targetFilters) {
     // By default, add a species restriction (50%) or flag restriction (50%)
@@ -140,15 +135,15 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   } else if (item.target === 'random_type' && remainingPoints >= 1) {
     availableUpgrades.push('upgrade_to_pick_type');
   }
-  
+
   // Increase monster level targeting
-  if (item.maxLevel === 'minion' && remainingPoints >= 1) {
+  if (item.maxLevel === 'minion' && remainingPoints >= 1 && item.maxLevel !== 'minion') {
     availableUpgrades.push('level_grunt');
   }
-  if (item.maxLevel === 'grunt' && remainingPoints >= 2) {
+  if (item.maxLevel === 'grunt' && remainingPoints >= 2 && item.maxLevel !== 'grunt') {
     availableUpgrades.push('level_elite');
   }
-  if (item.maxLevel === 'elite' && remainingPoints >= 4 && !power.maxLevel) {
+  if (item.maxLevel === 'elite' && remainingPoints >= 4 && item.maxLevel !== 'elite') {
     availableUpgrades.push('level_boss');
   }
   
