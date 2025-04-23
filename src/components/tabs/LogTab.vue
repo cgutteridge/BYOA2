@@ -14,7 +14,9 @@
           <div v-for="entry in entries" :key="entry.id" class="log-entry">
             <span class="log-entry-time">{{ formatTime(entry.timestamp) }}</span>
             - {{ entry.message }}
-            <span v-if="entry.xp > 0" class="log-entry-xp">+{{ entry.xp }} XP</span>
+            <span v-if="entry.change?.xp && entry.change.xp > 0" class="log-entry-xp">+{{ entry.change.xp }} XP</span>
+            <span v-if="entry.change?.booze && entry.change.booze > 0" class="log-entry-booze">+{{ entry.change.booze }} Booze</span>
+            <span v-if="entry.change?.soft && entry.change.soft > 0" class="log-entry-soft">+{{ entry.change.soft }} Soft</span>
           </div>
         </div>
       </div>
@@ -110,6 +112,18 @@ const formatTime = (timestamp: string): string => {
 
 .log-entry-xp {
   color: #4CAF50;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.log-entry-booze {
+  color: #F57C00;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.log-entry-soft {
+  color: #2196F3;
   font-weight: 600;
   margin-left: 0.5rem;
 }

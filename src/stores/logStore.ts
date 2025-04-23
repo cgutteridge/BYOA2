@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { QuestEventOptions } from './questStore'
 
 export interface LogEntry {
   id: string;
   timestamp: string; // ISO string in UTC
   message: string;
-  xp: number;
+  change: QuestEventOptions;
 }
 
 export const useLogStore = defineStore('log', () => {
@@ -13,9 +14,9 @@ export const useLogStore = defineStore('log', () => {
   const persist = ref(['logEntries']); // Add this to persist logs between sessions
 
   /**
-   * Add a log entry with the provided message and XP
+   * Add a log entry with the provided message and changes
    */
-  const addLogEntry = (message: string, xp: number = 0): void => {
+  const addLogEntry = (message: string, change: QuestEventOptions = {}): void => {
     const id = `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const timestamp = new Date().toISOString();
     
@@ -23,7 +24,7 @@ export const useLogStore = defineStore('log', () => {
       id,
       timestamp,
       message,
-      xp
+      change
     });
   };
 

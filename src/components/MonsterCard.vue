@@ -288,7 +288,7 @@ function defeatMonster(): void {
   const xpToAdd = getMonsterXP(props.monster.type);
   const unitsToAdd = getMonsterBooze(props.monster.type);
   const softToAdd = getMonsterSoft(props.monster.type);
-  questStore.logAndNotifyQuestEvent(`Defeated ${props.monster.name} in combat`, { xp: xpToAdd, booze: unitsToAdd, soft: softToAdd });
+  questStore.logAndNotifyQuestEvent(`Defeated ${props.monster.name} in combat.`, { xp: xpToAdd, booze: unitsToAdd, soft: softToAdd });
   
   // Set alive to false
   questStore.currentGameLocation.monsters[monsterIndex].alive = false;
@@ -299,7 +299,7 @@ function defeatMonster(): void {
   // Check if this was the last monster to defeat for quest completion
   if (areAllMonstersDefeated(questStore.currentGameLocation.monsters)) {
     // Award XP for completing all monsters in a location
-    questStore.logAndNotifyQuestEvent(`Defeated all monsters at ${questStore.currentGameLocation.name} in combat`, { xp: 5 });
+    questStore.logAndNotifyQuestEvent(`Defeated all monsters at ${questStore.currentGameLocation.name} in combat.`, { xp: 5 });
   }
 }
 

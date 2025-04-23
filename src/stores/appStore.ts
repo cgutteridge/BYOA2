@@ -2,7 +2,6 @@ import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
 import type {Coordinates, GameLocationId, GPSStatus, Item, ScreenId} from '../types'
 import {useLocationStore} from "../stores/locationStore";
-import {useLogStore} from "../stores/logStore";
 import {useRouteStore} from "../stores/routeStore";
 import calculateDistance from "@/utils/calculateDistance";
 import {useQuestStore} from "@/stores/questStore.ts";
@@ -34,7 +33,6 @@ export const useAppStore = defineStore('app', () => {
   const mapPosition = ref<Coordinates | null>(null)
   const mapZoom = ref<number | null>(null)
   const locationStore = useLocationStore()
-  const logStore = useLogStore()
   const routeStore = useRouteStore()
   const routeTrackingInterval = ref<number | null>(null)
 

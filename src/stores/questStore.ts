@@ -3,6 +3,7 @@ import {computed, ref} from 'vue'
 import type {GameLocationId, QuestState} from '@/types'
 import {useLocationStore} from './locationStore'
 import {useAppStore} from './appStore'
+import {useLogStore} from './logStore'
 import formatNumber from "@/utils/formatNumber.ts";
 
 export type ThemeType = 'light' | 'dark'
@@ -85,6 +86,7 @@ export interface ColorSystem {
 export const useQuestStore = defineStore('quest', () => {
   const locationStore = useLocationStore()
   const appStore = useAppStore()
+  const logStore = useLogStore()
 
   const title = ref<string>('foo')
   const description = ref<string>('foo')
@@ -347,7 +349,7 @@ export const useQuestStore = defineStore('quest', () => {
   }
   
   /**
-   * Updates both XP and booze with a notification message
+   * Updates stats, adds a notification, and logs the quest event
    * Only mentions stats that actually changed
    * 
    * @param event - Description of the action (e.g., "defeating water boss")
@@ -377,8 +379,14 @@ export const useQuestStore = defineStore('quest', () => {
       parts.push("nothing")
     }
     
+    // Create the message for display
+    const message = `${event} ${parts.join(', ')}`;
+    
+    // Add to the log store with the full options object
+    logStore.addLogEntry(message, options);
+    
     // Pass the notification message and XP amount to the notification system
-    appStore.addNotification(`${event} ${parts.join(', ')}`, 'success', 10000, xpAmount);
+    appStore.addNotification(message, 'success', 10000);
   }
   
   const endQuest = () => {
