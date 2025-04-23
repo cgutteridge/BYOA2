@@ -328,7 +328,7 @@ function claimItem(): void {
   // Award XP based on item level
   if (props.monster.item.level) {
     const xpToAward = props.monster.item.level * 2; // 2 XP per item level
-    questStore.logAndNotifyQuestEvent(`Claiming ${props.monster.item.name}`, { xp: xpToAward });
+    questStore.logAndNotifyQuestEvent(`Claimed ${props.monster.item.name}.`, { xp: xpToAward });
   }
   
   // Clear the item from the monster

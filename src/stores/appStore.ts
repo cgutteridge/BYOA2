@@ -56,7 +56,7 @@ export const useAppStore = defineStore('app', () => {
   const setScreen = (newScreen: ScreenId) => {
     // Log quest start
     if (newScreen === 'intro' && screen.value === 'start_quest') {
-      questStore.logAndNotifyQuestEvent('Started the quest')
+      questStore.logAndNotifyQuestEvent('Started the quest.')
     }
     
     // Handle route tracking based on screen changes

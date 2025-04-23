@@ -375,10 +375,7 @@ export const useQuestStore = defineStore('quest', () => {
     if( boozeAmount != 0 && !Number.isNaN(boozeAmount) ) {
       parts.push(`${boozeDisplay} Booze`)
     }
-    if( parts.length == 0 ) {
-      parts.push("nothing")
-    }
-    
+
     // Create the notification message with XP and Booze info (but not soft)
     const notificationMessage = `${event} ${parts.join(', ')}`;
     
