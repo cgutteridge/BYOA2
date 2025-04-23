@@ -12,6 +12,15 @@
         Add Debug Items
       </button>
     </div>
+    <div v-if="shouldShowDemoButton" class="debug-button-container">
+      <button 
+        @click="addDemoItems" 
+        class="debug-button"
+        :style="demoButtonStyle"
+      >
+        Add Demo Items
+      </button>
+    </div>
     <div v-if="hasItems" class="inventory-grid">
       <div 
         v-for="item in inventoryItems" 
@@ -63,6 +72,10 @@ const shouldShowDebugButton = computed(() => {
   return questStore.isDebugMode && !inventoryStore.hasDebugItems
 })
 
+const shouldShowDemoButton = computed(() => {
+  return questStore.isDebugMode && !inventoryStore.hasDemoItems
+})
+
 const emptyMessageStyle = computed(() => ({
   color: questStore.getTextColor('secondary'),
 }))
@@ -73,9 +86,19 @@ const debugButtonStyle = computed(() => ({
   borderColor: 'rgba(255, 0, 0, 0.3)',
 }))
 
+const demoButtonStyle = computed(() => ({
+  backgroundColor: 'rgba(0, 0, 255, 0.1)',
+  color: questStore.getTextColor('primary'),
+  borderColor: 'rgba(0, 0, 255, 0.3)',
+}))
+
 // Methods
 function addDebugItems(): void {
   inventoryStore.addDebugItems()
+}
+
+function addDemoItems(): void {
+  inventoryStore.addDemoItems()
 }
 </script>
 
