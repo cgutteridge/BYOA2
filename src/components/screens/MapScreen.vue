@@ -1,7 +1,8 @@
 <template>
   <div class="map-container">
     <div id="map" ref="mapContainer"></div>
-    <div v-if="questStore.isDebugMode" class="debug-teleport" @click="toggleTeleportMode" :class="{ active: teleportModeActive }">
+    <div v-if="questStore.isDebugMode" class="debug-teleport" @click="toggleTeleportMode"
+         :class="{ active: teleportModeActive }">
       <div class="debug-teleport-icon">📍</div>
       <div v-if="teleportModeActive" class="debug-teleport-tooltip">Click on map to teleport</div>
     </div>
@@ -47,15 +48,15 @@ const playerCoordinates = computed(() => appStore.playerCoordinates)
 const locations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
-const routeCoordinates = computed(() => routeStore.routeCoordinates)
+const routeCoordinates = computed(() => [...routeStore.routeCoordinates, playerCoordinates.value])
 
-function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker|undefined {
+function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker | undefined {
   if (!mapInstance) {
     throw new Error('No map instance provided for marker creation')
   }
 
   const locationType = locationTypesById[location.type]
-  if( !locationType ) {
+  if (!locationType) {
     console.error(`Location type is missing ${location.type}`)
     return
   }
@@ -90,19 +91,19 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     // Create the popup content with Vue
     const container = document.createElement('div')
     container.className = 'popup-vue-container'
-    
+
     // Create a new Vue app with our component
     const app = createApp(LocationPopup, {location})
-    
+
     // Mount the app to our container
     app.mount(container)
-    
+
     // Add to list of mounted apps for cleanup
     mountedPopupApps.value.push(app)
 
     // First, set the content of the popup
     popup.setContent(container)
-    
+
     // After the Vue component has rendered, update popup position to ensure proper positioning
     setTimeout(() => {
       if (map.value && popup.isOpen()) {
@@ -115,10 +116,10 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
           // Y is BOTTOM_OFFSET from bottom of screen
           // X follows our rules for horizontal positioning
 
-          
+
           // Get current popup position in pixels
           const markerPoint = map.value.latLngToContainerPoint(marker.getLatLng());
-          
+
           // Calculate where we want it in pixels
           let targetX = markerPoint.x;
           if (mapSize.x < EDGE_OFFSET * 2) {
@@ -132,23 +133,23 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
               targetX = mapSize.x - EDGE_OFFSET;
             }
           }
-          
+
           // The Y position: BOTTOM_OFFSET from bottom
           const targetY = mapSize.y - BOTTOM_OFFSET;
-          
+
           // Calculate how far we need to move in pixels
           const deltaX = targetX - markerPoint.x;
           const deltaY = targetY - markerPoint.y;
-          
+
           // Convert that pixel offset to a change in the map center
           // We need to move the map in the opposite direction
           const newCenter = map.value.containerPointToLatLng([
-            mapSize.x/2 - deltaX,
-            mapSize.y/2 - deltaY
+            mapSize.x / 2 - deltaX,
+            mapSize.y / 2 - deltaY
           ]);
-          
+
           // Pan the map to the new center
-          map.value.panTo(newCenter, { animate: true });
+          map.value.panTo(newCenter, {animate: true});
         } catch (e) {
           console.error('Error positioning map:', e);
         }
@@ -183,13 +184,13 @@ function cleanupMap(): void {
   // First make sure all popups are closed and Vue apps unmounted
   closePopup();
   cleanupPopupApps();
-  
+
   // Clean up teleport handler
   if (map.value && teleportClickHandler.value) {
     map.value.off('click', teleportClickHandler.value)
     teleportClickHandler.value = null
   }
-  
+
   if (map.value) {
     try {
       // Remove markers first
@@ -201,16 +202,16 @@ function cleanupMap(): void {
         }
       })
       locationMarkers.value = []
-      
+
       // Remove route line
       if (routeLine.value) {
         routeLine.value.remove()
         routeLine.value = null
       }
-      
+
       // Stop route tracking
       appStore.stopRouteTracking()
-      
+
       // Then remove map
       map.value.off()
       map.value.remove()
@@ -248,10 +249,10 @@ function initializeMap(): void {
       coordinates = playerCoordinates.value
       zoom = 16
     } else {
-      coordinates = { lat: 51.505, lng: -0.09 }
+      coordinates = {lat: 51.505, lng: -0.09}
       zoom = 13
     }
-    
+
     const mapInstance = L.map('map', {
       preferCanvas: true,
       zoomControl: false  // Disable the default zoom control
@@ -260,12 +261,12 @@ function initializeMap(): void {
     // Add event listeners for map movement and zoom
     mapInstance.on('moveend', () => {
       const center = mapInstance.getCenter()
-      appStore.setMapPosition({ lat: center.lat, lng: center.lng })
+      appStore.setMapPosition({lat: center.lat, lng: center.lng})
     })
 
     mapInstance.on('zoomend', () => {
       appStore.setMapZoom(mapInstance.getZoom())
-      
+
       // Update scout range labels when zoom changes
       if (playerCoordinates.value && scoutCircle.value) {
         updateScoutRangeLabels(playerCoordinates.value, mapInstance)
@@ -301,7 +302,7 @@ function initializeMap(): void {
         position: 'bottomright'
       },
 
-      onAdd: function() {
+      onAdd: function () {
         const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
         const link = L.DomUtil.create('a', 'leaflet-control-center', container);
         link.innerHTML = '⊕';
@@ -309,8 +310,8 @@ function initializeMap(): void {
         link.title = 'Center on player';
 
         L.DomEvent
-          .on(link, 'click', L.DomEvent.preventDefault)
-          .on(link, 'click', () => centerOnPlayer());
+            .on(link, 'click', L.DomEvent.preventDefault)
+            .on(link, 'click', () => centerOnPlayer());
 
         return container;
       }
@@ -360,13 +361,13 @@ onMounted(() => {
 onUnmounted(() => {
   closePopup();
   cleanupPopupApps();
-  
+
   // Clean up teleport handler
   if (map.value && teleportClickHandler.value) {
     map.value.off('click', teleportClickHandler.value)
     teleportClickHandler.value = null
   }
-  
+
   if (map.value) {
     map.value.remove()
     map.value = null
@@ -377,18 +378,18 @@ onUnmounted(() => {
 watch(playerCoordinates, (newCoordinates, oldCoordinates) => {
   if (newCoordinates && map.value) {
     updatePlayerMarker(newCoordinates)
-    
+
     // If we have previous coordinates, calculate distance and possibly add to route
     if (oldCoordinates && routeCoordinates.value.length > 0) {
       const distance = calculateDistance(oldCoordinates, newCoordinates)
-      
+
       // If distance is significant (more than 25 meters), add to route
       if (distance > 25) {
         routeStore.addRoutePoint(newCoordinates)
       }
     }
   }
-}, { immediate: true })
+}, {immediate: true})
 
 // Watch for game mode changes
 // @ts-ignore
@@ -397,11 +398,11 @@ watch(() => appStore.screen, (newMode, _oldMode) => {
     closePopup()
     cleanupMap()
   }
-}, { immediate: true })
+}, {immediate: true})
 
 function generateGameLocationMarkers(): void {
   if (!map.value) return;
-  
+
   // Clear existing markers
   locationMarkers.value.forEach(marker => marker.remove());
   locationMarkers.value = [];
@@ -409,7 +410,7 @@ function generateGameLocationMarkers(): void {
   // Create new markers
   locations.value.forEach((location: GameLocation) => {
     const marker = createGameLocationMarker(location, map.value as L.Map)
-    if(marker){
+    if (marker) {
       locationMarkers.value.push(marker)
     }
     return marker
@@ -424,12 +425,12 @@ function updatePlayerMarker(coords: Coordinates): void {
   if (playerMarker.value) {
     playerMarker.value.remove()
   }
-  
+
   // Remove existing scout circle
   if (scoutCircle.value) {
     scoutCircle.value.remove()
   }
-  
+
   // Create new marker with a clear icon
   playerMarker.value = L.marker([coords.lat, coords.lng], {
     icon: L.divIcon({
@@ -439,7 +440,7 @@ function updatePlayerMarker(coords: Coordinates): void {
       iconAnchor: [10, 10]
     })
   }).addTo(theMap)
-  
+
   // Create scout range circle
   scoutCircle.value = L.circle([coords.lat, coords.lng], {
     radius: questStore.scoutRange,
@@ -449,10 +450,10 @@ function updatePlayerMarker(coords: Coordinates): void {
     weight: 2,
     dashArray: '5, 10'
   }).addTo(theMap)
-  
+
   // Add the scout range labels - this function will handle cleaning up old labels
   updateScoutRangeLabels(coords, theMap);
-  
+
   // Update the route line to ensure it's properly connected to the player's position
   updateRouteLine();
 }
@@ -463,28 +464,28 @@ function updateScoutRangeLabels(coords: Coordinates, theMap: L.Map): void {
   // Using the haversine formula approximation to determine lat/lng offsets for the given distance
   const distanceFromEdge = 5 // 5 meters from the edge (closer to the circle)
   const scoutDistanceWithPadding = questStore.scoutRange + distanceFromEdge
-  
+
   // Convert distance to latitude degrees (approximate)
   // 1 degree of latitude is approximately 111,111 meters
   const latOffset = scoutDistanceWithPadding / 111111
-  
+
   // Calculate top and bottom points
   const topPoint = {
     lat: coords.lat + latOffset,
     lng: coords.lng
   }
-  
+
   const bottomPoint = {
     lat: coords.lat - latOffset,
     lng: coords.lng
   }
-  
+
   // Get current zoom level to scale the font size
   const currentZoom = theMap.getZoom();
   // Base size for zoom level 16
   const baseFontSize = 18;
   const baseZoom = 16;
-  
+
   // Calculate zoom factor - double size for each zoom level increase
   // At zoom 16 it will be the base size (18px)
   // Each zoom level doubles/halves the size
@@ -492,18 +493,18 @@ function updateScoutRangeLabels(coords: Coordinates, theMap: L.Map): void {
   const fontSize = Math.max(10, Math.min(72, Math.floor(baseFontSize * zoomFactor)));
   const labelWidth = Math.max(80, Math.min(300, Math.floor(140 * zoomFactor)));
   const labelHeight = Math.max(20, Math.min(80, Math.floor(30 * zoomFactor)));
-  
+
   // Remove existing labels (important to prevent label duplication)
   if (scoutTopLabel.value) {
     scoutTopLabel.value.remove();
     scoutTopLabel.value = null;
   }
-  
+
   if (scoutBottomLabel.value) {
     scoutBottomLabel.value.remove();
     scoutBottomLabel.value = null;
   }
-  
+
   // Create top scout range label with zoom-adjusted size
   scoutTopLabel.value = L.marker([topPoint.lat, topPoint.lng], {
     icon: L.divIcon({
@@ -513,7 +514,7 @@ function updateScoutRangeLabels(coords: Coordinates, theMap: L.Map): void {
       iconAnchor: [labelWidth / 2, labelHeight] // Bottom center of the icon
     })
   }).addTo(theMap);
-  
+
   // Create bottom scout range label with zoom-adjusted size
   scoutBottomLabel.value = L.marker([bottomPoint.lat, bottomPoint.lng], {
     icon: L.divIcon({
@@ -527,11 +528,11 @@ function updateScoutRangeLabels(coords: Coordinates, theMap: L.Map): void {
 
 function centerOnPlayer(): void {
   if (!map.value || !playerCoordinates.value) return
-  
+
   map.value.setView(
-    [playerCoordinates.value.lat, playerCoordinates.value.lng],
-    16,
-    { animate: true }
+      [playerCoordinates.value.lat, playerCoordinates.value.lng],
+      16,
+      {animate: true}
   )
 }
 
@@ -570,18 +571,17 @@ watch(() => questStore.scoutRange, () => {
 // Function to update the route line on the map
 function updateRouteLine(): void {
   if (!map.value) return
-  
   // Remove existing route line
   if (routeLine.value) {
     routeLine.value.remove()
     routeLine.value = null
   }
-  
+
   // If there are route coordinates, draw the line
   if (routeCoordinates.value.length > 1) {
     // Convert coordinates to LatLng array
     const latLngs = routeCoordinates.value.map(coord => L.latLng(coord.lat, coord.lng))
-    
+
     // Create the polyline with dotted red style
     routeLine.value = L.polyline(latLngs, {
       color: '#ff0000',
@@ -591,7 +591,7 @@ function updateRouteLine(): void {
       lineCap: 'round',
       lineJoin: 'round'
     })
-    
+
     // Add the polyline to the map with type assertion to fix TS error
     routeLine.value.addTo(map.value as L.Map)
   }
@@ -600,20 +600,20 @@ function updateRouteLine(): void {
 // Watch for route changes to update the line
 watch(routeCoordinates, () => {
   updateRouteLine()
-}, { deep: true })
+}, {deep: true})
 
 // Function to toggle teleport mode for debug
 function toggleTeleportMode(): void {
   if (!map.value || !questStore.isDebugMode) return
 
   teleportModeActive.value = !teleportModeActive.value
-  
+
   // Remove existing click handler if it exists
   if (teleportClickHandler.value && map.value) {
     map.value.off('click', teleportClickHandler.value)
     teleportClickHandler.value = null
   }
-  
+
   // If teleport mode is active, add new click handler
   if (teleportModeActive.value && map.value) {
     teleportClickHandler.value = (e: L.LeafletMouseEvent) => {
@@ -621,20 +621,20 @@ function toggleTeleportMode(): void {
         lat: e.latlng.lat,
         lng: e.latlng.lng
       }
-      
+
       // Update player coordinates in appStore
       appStore.setPlayerCoordinates(newCoords)
-      
+
       // Disable teleport mode after use
       teleportModeActive.value = false
-      
+
       // Remove this click handler
       if (map.value && teleportClickHandler.value) {
         map.value.off('click', teleportClickHandler.value)
         teleportClickHandler.value = null
       }
     }
-    
+
     // Add the new click handler
     map.value.on('click', teleportClickHandler.value)
   }
@@ -710,7 +710,7 @@ button {
   background-color: #4285F4;
   border-radius: 50%;
   border: 3px solid white;
-  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 :deep(.leaflet-control-center) {
@@ -759,7 +759,7 @@ button {
   :deep(.location-info-popup) {
     max-width: 95vw !important;
   }
-  
+
   :deep(.location-info-popup .leaflet-popup-content) {
     max-height: 70vh;
   }
