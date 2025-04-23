@@ -13,7 +13,7 @@ export class TokenPower extends ItemPower {
   readonly glowColor = "rgba(255, 215, 0, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 100;
+  readonly baseCost = 100; // prevent generation
   readonly canHaveTargetRestriction = false;
   readonly supportsTypeTargeting = false;
   readonly canHaveResultRestriction = false;

@@ -1,7 +1,7 @@
 import type { Item, Species, MonsterFlag, ItemPowerId } from '../types';
 import { toItemId } from '../types';
 import pickOne from "@/utils/pickOne.ts";
-import { powerFactory } from "@/powers/index.ts";
+import {allPowerIds, powerFactory} from "@/powers/index.ts";
 
 // Available species for targeting
 const AVAILABLE_SPECIES: Species[] = [
@@ -27,11 +27,9 @@ export function generateRandomItem(level: number): Item {
   let remainingPoints = totalPoints;
   
   // Step 1: Pick a random power type that fits within our budget
-  // Get all available powers
-  const availablePowerIds: ItemPowerId[] = ['kill', 'transmute', 'spy', 'shrink', 'split', 'pickpocket', 'banish', 'freeze', 'petrify', 'pacify', 'distract', 'vegetate', 'stun', 'lootbox'];
-  
+
   // Filter available powers based on cost
-  const affordablePowers = availablePowerIds
+  const affordablePowers = allPowerIds
     .map(powerId => ({ id: powerId, power: powerFactory.getPower(powerId) }))
     .filter(({ power }) => power && power.baseCost <= remainingPoints)
     .map(({ id }) => id);
@@ -225,18 +223,17 @@ function generateItemName(powerId: ItemPowerId, targetMode?: string): string {
   const itemType = pickOne(powerInstance?.itemArtifactNames || ["Artifact"]);
 
   // Combine parts into full name
-  const baseName = `${material} ${itemType}`;
-  
-  // Add target mode suffix if applicable
-  if (targetMode === 'pick') {
-    return `${baseName} of Precision`;
-  } else if (targetMode === 'random_type') {
-    return `${baseName} of Havoc`;
-  } else if (targetMode === 'pick_type') {
-    return `${baseName} of Judgment`;
+  let name = `${material} ${itemType}`;
+
+  if( powerInstance.itemTargetType !== 'special' && powerInstance.itemTargetType !== 'none' ) {}
+
+  // Add target mode
+  if (targetMode === 'random' || targetMode === 'random_type') {
+    const suffixes = ['Chaotic','Unstable','Wayward','Mercurial','Fickle','Rogue','Arnarchic']
+    name = `${pickOne(suffixes)} ${name}`;
   }
   
-  return baseName;
+  return name;
 }
 
 
