@@ -25,7 +25,7 @@ export class VegetatePower extends ItemPower {
   readonly itemTargetType = 'monsters';
 
   // Item types for this power
-  readonly itemArtifactNames = ["Juice Box", "Fruit Extract", "Plant Seed", "Green Elixir", "Growth Potion", "Verdant Crystal"];
+  readonly itemArtifactNames = ["Magic Seed", "Green Elixir", "Plant Potion", "Verdant Crystal"];
 
   // Map from level to appropriate plant monster
   private readonly plantMonsterMap: Record<MonsterLevel, MonsterTypeId> = {
