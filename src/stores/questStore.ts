@@ -375,18 +375,18 @@ export const useQuestStore = defineStore('quest', () => {
     if( boozeAmount != 0 && !Number.isNaN(boozeAmount) ) {
       parts.push(`${boozeDisplay} Booze`)
     }
-    if( parts.length ==0 ) {
+    if( parts.length == 0 ) {
       parts.push("nothing")
     }
     
-    // Create the message for display
-    const message = `${event} ${parts.join(', ')}`;
+    // Create the notification message with XP and Booze info (but not soft)
+    const notificationMessage = `${event} ${parts.join(', ')}`;
     
-    // Add to the log store with the full options object
-    logStore.addLogEntry(message, options);
+    // Add to the log store with just the event message and the full options object
+    logStore.addLogEntry(event, options);
     
-    // Pass the notification message and XP amount to the notification system
-    appStore.addNotification(message, 'success', 10000);
+    // Pass the notification message with XP/Booze details to the notification system
+    appStore.addNotification(notificationMessage, 'info', 10000);
   }
   
   const endQuest = () => {
