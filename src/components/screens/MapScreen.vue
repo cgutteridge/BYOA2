@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import {computed, createApp, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
-import L from 'leaflet'
+import L, {IconOptions} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type {Coordinates, GameLocation} from '@/types'
 import {useLocationStore} from "@/stores/locationStore"
@@ -48,7 +48,7 @@ const playerCoordinates = computed(() => appStore.playerCoordinates)
 const locations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
-const routeCoordinates = computed(() => [...routeStore.routeCoordinates, playerCoordinates.value])
+const routeCoordinates = computed(() : Coordinates[] => [...routeStore.routeCoordinates, playerCoordinates.value] as Coordinates[])
 
 function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker | undefined {
   if (!mapInstance) {
@@ -60,18 +60,25 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     console.error(`Location type is missing ${location.type}`)
     return
   }
-  const iconPath = `./icons/${locationType.filename}`
+  const iconProperties : IconOptions= {
+    iconUrl: `./icons/${locationType.filename}`,
+    iconSize: [67, 83],
+    iconAnchor: [34, 83],
+    popupAnchor: [0, -30],
+    shadowUrl: './icons/shadow.png',
+    shadowSize: [161, 100],
+    shadowAnchor: [10, 90],
+  }
+  if (location.type === 'stash') {
+    iconProperties.iconSize = [33, 41]
+    iconProperties.iconAnchor = [17, 41]
+    iconProperties.popupAnchor= [0, -15]
+    iconProperties.shadowSize = [80, 50]
+    iconProperties.shadowAnchor = [5, 45]
+  }
 
   const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
-    icon: L.icon({
-      iconUrl: iconPath,
-      iconSize: [67, 83],
-      iconAnchor: [34, 83],
-      popupAnchor: [0, -30],
-      shadowUrl: './icons/shadow.png',
-      shadowSize: [161, 100],
-      shadowAnchor: [10, 90]
-    })
+    icon: L.icon(iconProperties),
   }).addTo(mapInstance)
 
   // Create popup for this location
@@ -409,6 +416,10 @@ function generateGameLocationMarkers(): void {
 
   // Create new markers
   locations.value.forEach((location: GameLocation) => {
+    // skip empty stashes
+    if( location.type==='stash' && location.scouted && location.giftItem===undefined ) {
+      return;
+    }
     const marker = createGameLocationMarker(location, map.value as L.Map)
     if (marker) {
       locationMarkers.value.push(marker)

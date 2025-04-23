@@ -1,4 +1,4 @@
-import type {GameLocation } from '@/types'
+import {GameLocation, toGameLocationTypeId} from '@/types'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {useInventoryStore} from "@/stores/inventoryStore.ts";
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
@@ -8,6 +8,8 @@ import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {ChatGPTAPI} from "@/api/chatGPT.ts";
 import {useLogStore} from "@/stores/logStore.ts";
 import {useRouteStore} from "@/stores/routeStore.ts";
+import {fetchSecondaryGameLocations} from "@/api/overpass.ts";
+import calculateDistance from "@/utils/calculateDistance.ts";
 
 export async function startQuest(
     title: string,
@@ -62,7 +64,21 @@ export async function startQuest(
     locationStore.locations.forEach((location:GameLocation) => {
         initialiseGameLocation(location)
     })
-    
+
+    // later around start location
+    const extraLocations = await fetchSecondaryGameLocations(startGameLocation.coordinates, 1000)
+    console.log(extraLocations)
+    // add extras one by one unless they are too near another location
+    extraLocations.forEach((extraLocation) => {
+        // only add it if it's more than 100m away from all current locations
+        if( locationStore.locations.every(
+            (currentLocation:GameLocation)=>calculateDistance(extraLocation.coordinates, currentLocation.coordinates)>100)
+        ) {
+            extraLocation.type = toGameLocationTypeId('stash')
+            locationStore.locations.push( extraLocation )
+        }
+    })
+
     // Clear any existing inventory items
     while (inventoryStore.items.length > 0) {
         inventoryStore.removeItem(inventoryStore.items[0].id);

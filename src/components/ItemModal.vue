@@ -79,7 +79,7 @@
               </p>
 
             </div>
-            
+            SSS
             <!-- Results section (when power has results) -->
             <div v-if="power.hasResults && resultMonsterTypes.length > 0" class="item-inspect-modal__result-section" :style="sectionStyle">
               <h3 :style="sectionHeaderStyle">Select Result</h3>
@@ -88,7 +88,7 @@
                   v-model="selectedResult"
                   :options="resultMonsterTypes.map(type => ({
                     id: type.id,
-                    name: `${getMonsterTitle(type.id)} (${getMonsterLevel(type.id)})`
+                    name: `${getMonsterTitle(type.id)} (${getMonsterLevel(type.id)}) - ${type.drink}`,
                   }))"
                   :multiple="false"
                   :always-show="true"
@@ -133,7 +133,7 @@ import {
 import {monsterTypes, monsterTypesById} from '../data/monsterTypes.ts'
 import {powerFactory} from "@/powers";
 import pickOne from "@/utils/pickOne.ts";
-import {getMonsterLevel, getMonsterSpecies} from "@/quest/monsterUtils.ts";
+import { getMonsterLevel, getMonsterSpecies} from "@/quest/monsterUtils.ts";
 import ListInput from "@/components/forms/ListInput.vue";
 
 // Stores

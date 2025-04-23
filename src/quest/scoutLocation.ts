@@ -1,4 +1,4 @@
-import type {Monster, GameLocation} from '../types'
+import type {GameLocation, Monster} from '../types'
 import {ChatGPTAPI} from '../api/chatGPT.ts'
 import generateMonsters from './generateMonsters.ts'
 import {monsterTypes} from "@/data/monsterTypes.ts";
@@ -9,6 +9,8 @@ import {locationGiftItem} from "@/quest/locationGiftItem.ts";
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {generateVictoryItem} from "@/quest/itemUtils.ts";
 import {powerFactory} from "@/powers";
+import {generateRandomItem} from "@/quest/generateRandomItem.ts";
+import pickOne from "@/utils/pickOne.ts";
 
 /**
  * Scout a location, generating its description, monsters, and prize
@@ -17,7 +19,7 @@ import {powerFactory} from "@/powers";
  */
 export async function scoutLocation(
     location: GameLocation,
-): Promise<boolean> {
+): Promise<void> {
     const chatGPT = new ChatGPTAPI()
     const questStore = useQuestStore()
 
@@ -29,6 +31,33 @@ export async function scoutLocation(
 
     // Initialize hasBeenVisited flag to false
     location.hasBeenVisited = false
+
+    // Stash locations just have a gift item
+    if (location.type === 'stash') {
+        const points = pickOne([1,2,3,4])+pickOne([1,2,3,4])-1
+        location.giftItem = generateRandomItem(points);
+
+        const giftItemPower = powerFactory.getPower(location.giftItem.power)
+        let giftItemEffect = "??"
+        if (giftItemPower) {
+            giftItemEffect = giftItemPower.generateEffectDescription(location.giftItem)
+        }
+        // Generate location description, name, and item details from AI
+        const {
+            locationName,
+            locationDescription,
+            itemName,
+            itemDescription
+        } = await chatGPT.generateGameLocationStashDescription(
+            location.name,
+            giftItemEffect
+        )
+        location.name = locationName
+        location.description = locationDescription
+        location.giftItem.name = itemName
+        location.giftItem.description = itemDescription
+        return
+    }
 
     // Generate monsters for this location
     const monsters = generateMonsters(location)
@@ -175,8 +204,6 @@ export async function scoutLocation(
             });
         });
     }
-
-    return true;
 }
 
 /**

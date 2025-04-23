@@ -148,7 +148,7 @@ const tokenItem = computed(() => {
 function leaveLocation() {
   // Add log entry before changing screen or unsetting location
   if (questStore.currentGameLocation) {
-    logStore.addLogEntry(`Left ${questStore.currentGameLocation.name}`, 0);
+    logStore.addLogEntry(`Left ${questStore.currentGameLocation.name}.`);
   }
 
   appStore.setScreen('map')

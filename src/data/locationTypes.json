@@ -128,5 +128,10 @@
     "id": "battlefield",
     "title": "Battlefield",
     "filename": "battlefield.png"
+  },
+  {
+    "id": "stash",
+    "title": "Stash",
+    "filename": "stash.png"
   }
 ] 

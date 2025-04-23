@@ -12,7 +12,9 @@ export default function initialiseGameLocation(location: GameLocation) {
     locationStore.setGameLocationDifficulty(location.id, calculateDifficulty(location))
 
     // set type
-    locationStore.setGameLocationType(location.id, pickOne(locationTypesList))
+    locationStore.setGameLocationType(location.id, pickOne(locationTypesList.filter(
+        locationId=>locationId!=='stash'))
+    )
 
     // Initialize hasToken flag - true for all locations except start and end
     const isStartOrEnd = location.id === questStore.startGameLocationId || location.id === questStore.endGameLocationId

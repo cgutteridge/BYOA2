@@ -1,9 +1,9 @@
 import {defineStore} from 'pinia'
 import {ref} from 'vue'
-import type {GameLocationTypeId, GameLocation, GameLocationId} from '../types'
+import {GameLocation, GameLocationId, GameLocationTypeId} from '../types'
 import {GameLocationDifficulty} from '../types'
 import {useAppStore} from './appStore'
-import fetchNearbyGameLocations from "../api/overpass.ts"
+import {fetchNearbyGameLocations} from "@/api/overpass.ts";
 
 export const useLocationStore = defineStore('locations', () => {
   const appStore = useAppStore()
@@ -62,8 +62,7 @@ export const useLocationStore = defineStore('locations', () => {
     
     appStore.isFetchingGameLocations = true
     try {
-      const { lat, lng } = appStore.playerCoordinates
-      const newGameLocations = await fetchNearbyGameLocations(lat, lng, 3000)
+      const newGameLocations = await fetchNearbyGameLocations(appStore.playerCoordinates, 3000)
       setLocations(newGameLocations)
     } catch (error) {
       console.error('Error fetching locations:', error)

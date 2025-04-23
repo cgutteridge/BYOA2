@@ -77,6 +77,18 @@ export function getMonsterXP(monsterTypeId: MonsterTypeId): number {
   return monsterType.xp * multiplier;
 }
 
+/**
+ * Get the drink required to defeat the monster
+ * @returns The name of the drink value
+ * @param monsterTypeId
+ */
+export function getMonsterDrink(monsterTypeId: MonsterTypeId): string {
+  // Find the monster type definition
+  const monsterType = monsterTypesById[monsterTypeId]
+  if (!monsterType) return "?"
+
+  return monsterType.drink
+}
 
 /**
  * Get the monster alchol Units, accounting for player count scaling if applicable

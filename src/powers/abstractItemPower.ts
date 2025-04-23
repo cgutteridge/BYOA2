@@ -35,7 +35,7 @@ export abstract class ItemPower {
 
     // Maximum monster level this power works on (or null for any level)
     abstract readonly maxLevel: MonsterLevel | null;
-    
+
     // Item types that can have this power. These are just a cute type appropriate for the item.
     abstract readonly itemArtifactNames: string[];
 
@@ -46,6 +46,9 @@ export abstract class ItemPower {
     readonly hasResults: boolean = false;
 
     abstract readonly itemTargetType: ItemTargetType;
+
+    // Minimum monster level this power works on
+    readonly minLevel: MonsterLevel = 'minion'
 
 
 

@@ -70,16 +70,11 @@
           />
         </div>
         
-        <h3 class="monsters-heading">Active Monsters:</h3>
-        
-        <!-- Display defeated enemies count -->
-        <div class="defeated-enemies-info" :style="messageStyle">
-          Enemies defeated in combat: {{ location.defeatedEnemies }}
-        </div>
+        <h3 class="monsters-heading">Active Enemies:</h3>
         
         <!-- Show a message when all monsters are defeated -->
         <div v-if="allMonstersDefeated" class="all-defeated-message" :style="messageStyle">
-          All monsters have been defeated!
+          All enemies have been defeated!
         </div>
         
         <!-- Group monsters by type and display -->

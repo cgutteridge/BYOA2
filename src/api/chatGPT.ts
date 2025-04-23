@@ -14,7 +14,8 @@ export class ChatGPTAPI {
     role: 'system',
     content: `You are a chaotic, sarcastic dungeon master narrating a ridiculous adventure. 
         Don't say things are quirky or funny, just show it. Be either deadpan or over the top.
-        Be wild, cheeky, and risque.  Be outrageous. Your target audience is 18-35 year old nerds. Output JSON only. 
+        Be wild, cheeky, and risque.  Be outrageous. Be anachronistic and maybe mix in real world, scifi
+         and any other themes. Your target audience is 18-35 year old nerds. Output JSON only. 
         Do not include backticks in the JSON response. `
   }
 
@@ -75,6 +76,44 @@ export class ChatGPTAPI {
     // This should never be reached due to the throw in the loop,
     // but TypeScript needs it for type safety
     throw new Error('All retry attempts failed')
+  }
+  //generateGameLocationStashDescription
+
+  async generateGameLocationStashDescription(
+      locationName: string,
+      giftItemPower: string
+  ): Promise<{
+    locationName: string,
+    locationDescription: string,
+    itemName: string,
+    itemDescription: string
+  }> {
+    const stopWords = ['junction','of','','street','avenue','lane','road','way','&']
+    const parts = locationName.toLowerCase().split(' ').filter(
+        word=>!stopWords.includes(word)
+    )
+    const messages: Message[] = [
+      this.SYSTEM_ROLE,
+      {
+        role: 'user',
+        content: `
+           Generate a JSON object for a minor outdoor location in the storyline of the adventure you are running.
+           Use the words from "${parts.join('","')}" as inspiration for the story and item the players receieve here. 
+
+           In this case, The players will find or be given an item with this power: "${giftItemPower}". Do not promise additional rewards or powers. 
+
+        name: the name of the location
+        itemName: the name of the item the players discover or are given     
+        itemDescription: the backstory of the item the players discover or are given
+        description: description, in the 2nd person, of the location and how the players discover or are given the item 
+        
+        Respond in JSON format with the following fields: 
+        "locationName", "locationDescription","itemName", "itemDescription"
+        `
+      }
+    ]
+
+    return this.sendMessage(messages)
   }
 
   async generateGameLocationDescription(

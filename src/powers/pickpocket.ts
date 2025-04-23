@@ -67,6 +67,6 @@ export class PickpocketPower extends ItemPower {
 
   generateEffectDescription(item: Item): string {
     const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item lets you steal from ${this.getTargetDescription(item)}.`;
+    return `This ${qualityTerm} item lets you steal an item from ${this.getTargetDescription(item)}.`;
   }
 } 

@@ -18,7 +18,8 @@ export class SplitPower extends ItemPower {
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
-  readonly maxLevel = 'elite'; // Can target up to elite monsters
+  readonly maxLevel = 'boss'; // Can target up to boss monsters
+  readonly minLevel = 'grunt';
 
   readonly itemTargetType = 'monsters';
   

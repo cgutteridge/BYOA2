@@ -59,7 +59,7 @@ export function generateRandomItem(level: number): Item {
     level: level,
     target: defaultTargetMode,
     targetFilters: {},
-    maxLevel: 'minion'
+    maxLevel: power.minLevel,
   };
   
   // Step 2: Apply target restrictions if applicable
@@ -154,8 +154,8 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
 function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): number {
   switch (upgrade) {
     case 'uses':
-      item.uses = (item.uses || 1) + 2;
-      return remainingPoints - 1;
+      item.uses = (item.uses || 1) + 1;
+      return remainingPoints - 2;
       
     case 'target_restriction':
       // Remove species and flag restrictions
