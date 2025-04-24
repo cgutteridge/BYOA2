@@ -32,7 +32,7 @@
       />
     </div>
 
-    <div class="combat-container" v-if="questStore.currentGameLocation?.monsters && !allMonstersDefeated" :style="combatContainerStyle">
+    <div class="combat-container" v-if="showCombat" :style="combatContainerStyle">
       <!-- All monsters in a 3-column flex layout with active ones first -->
       <div class="monsters-container">
         <template v-for="monster in sortedMonsters" :key="monster.id">
@@ -45,15 +45,15 @@
     </div>
 
     <!-- Prize item section -->
-    <div v-if="questStore.currentGameLocation.prizeItem || questStore.currentGameLocation.hasToken"
+    <div v-if="questStore.currentGameLocation?.prizeItem || questStore.currentGameLocation?.hasToken"
          class="prize-item-section" :style="sectionStyle">
       <h3><span class="icon">🏆</span> Quest Prize:</h3>
-      <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.prizeItem">
+      <div class="prize-item-wrapper" v-if="questStore.currentGameLocation?.prizeItem">
         <div v-if="!allMonstersDefeated" class="item-locked">
           <span class="lock-icon">🔒</span>
         </div>
         <ItemCard
-            :item="questStore.currentGameLocation.prizeItem"
+            :item="questStore.currentGameLocation?.prizeItem"
             variant="prize"
             :show-details="true"
             :locked="!allMonstersDefeated"
@@ -100,9 +100,9 @@ const logStore = useLogStore()
 
 // Theme-based styles
 const headerStyle = computed(() => ({
- // backgroundColor: questStore.getBackgroundColor('secondary'),
+  // backgroundColor: questStore.getBackgroundColor('secondary'),
   color: questStore.getTextColor('primary'),
- // borderBottom: `1px solid ${questStore.getBorderColor('medium')}`,
+  // borderBottom: `1px solid ${questStore.getBorderColor('medium')}`,
 }))
 
 const sectionStyle = computed(() => ({
@@ -132,6 +132,17 @@ const allMonstersDefeated = computed(() => {
   return questStore.currentGameLocation?.monsters
       ? areAllMonstersDefeated(questStore.currentGameLocation.monsters)
       : false
+})
+
+// Compute whether all monsters are defeated here
+const monstersHaveItems = computed((): boolean => {
+  return questStore.currentGameLocation?.monsters
+      ? questStore.currentGameLocation.monsters.some(monster => monster.item !== undefined)
+      : false
+})
+
+const showCombat = computed(() => {
+  return questStore.currentGameLocation?.monsters && !allMonstersDefeated.value || monstersHaveItems.value
 })
 
 // Dynamically generate the regular token item when needed
