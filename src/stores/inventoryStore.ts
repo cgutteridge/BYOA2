@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import type { Item } from '../types'
-import { createDebugItems } from '@/quest/debugItems'
-import { createDemoItems } from '@/quest/demoItems'
+import {defineStore} from 'pinia'
+import {computed, ref} from 'vue'
+import type {Item} from '../types'
+import {createDebugItems} from '@/quest/debugItems'
+import {createDemoItems} from '@/quest/demoItems'
 
 export const useInventoryStore = defineStore('inventory', () => {
   // State
@@ -47,6 +47,10 @@ export const useInventoryStore = defineStore('inventory', () => {
     demoItems.forEach(item => addItem(item))
   }
 
+  function emptyInventory(): void {
+    items.value = []
+  }
+
   return {
     // State
     items,
@@ -63,6 +67,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     addItem,
     removeItem,
     addDebugItems,
-    addDemoItems
+    addDemoItems,
+    emptyInventory,
   }
 }) 

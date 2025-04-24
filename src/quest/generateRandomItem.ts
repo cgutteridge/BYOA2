@@ -135,13 +135,13 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   }
 
   // Increase monster level targeting
-  if (item.maxLevel === 'minion' && remainingPoints >= 1 && item.maxLevel !== 'minion') {
+  if (item.maxLevel === 'minion' && remainingPoints >= 1 && power.maxLevel !== 'minion') {
     availableUpgrades.push('level_grunt');
   }
-  if (item.maxLevel === 'grunt' && remainingPoints >= 2 && item.maxLevel !== 'grunt') {
+  if (item.maxLevel === 'grunt' && remainingPoints >= 2 && power.maxLevel !== 'grunt') {
     availableUpgrades.push('level_elite');
   }
-  if (item.maxLevel === 'elite' && remainingPoints >= 4 && item.maxLevel !== 'elite') {
+  if (item.maxLevel === 'elite' && remainingPoints >= 4 && power.maxLevel !== 'elite') {
     availableUpgrades.push('level_boss');
   }
   

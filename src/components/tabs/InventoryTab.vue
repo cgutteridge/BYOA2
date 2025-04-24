@@ -20,6 +20,14 @@
       >
         Add Demo Items
       </ButtonInput>
+      <ButtonInput
+          variant="secondary"
+          size="small"
+          :action="emptyInventory"
+          :style="emptyButtonStyle"
+      >
+        Empty Items
+      </ButtonInput>
     </div>
     <div v-if="hasItems" class="inventory-grid">
       <div 
@@ -71,7 +79,7 @@ const inventoryItems = computed(() => {
 })
 
 const shouldShowDebugButtons = computed(() => {
-  return questStore.isDebugMode && (!inventoryStore.hasDebugItems || !inventoryStore.hasDemoItems)
+  return questStore.isDebugMode
 })
 
 const emptyMessageStyle = computed(() => ({
@@ -79,13 +87,18 @@ const emptyMessageStyle = computed(() => ({
 }))
 
 const debugButtonStyle = computed(() => ({
-  backgroundColor: 'rgba(255, 0, 0, 0.1)',
-  borderColor: 'rgba(255, 0, 0, 0.3)',
+  backgroundColor: 'rgba(0, 255, 0, 0.1)',
+  borderColor: 'rgba(0, 0, 255, 0.3)',
 }))
 
 const demoButtonStyle = computed(() => ({
   backgroundColor: 'rgba(0, 0, 255, 0.1)',
   borderColor: 'rgba(0, 0, 255, 0.3)',
+}))
+
+const emptyButtonStyle = computed(() => ({
+  backgroundColor: 'rgba(255, 0, 0, 0.1)',
+  borderColor: 'rgba(255, 0, 0, 0.3)',
 }))
 
 // Methods
@@ -95,6 +108,10 @@ function addDebugItems(): void {
 
 function addDemoItems(): void {
   inventoryStore.addDemoItems()
+}
+
+function emptyInventory(): void {
+  inventoryStore.emptyInventory()
 }
 </script>
 
