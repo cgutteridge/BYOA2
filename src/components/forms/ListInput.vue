@@ -1,5 +1,5 @@
 <template>
-  <div class="picker-container" :style="containerStyle">
+  <div class="picker-container" :style="containerStyle" ref="containerRef">
     <h3 v-if="title" :style="titleStyle">{{ title }}</h3>
     
     <!-- Search field (optional) -->
@@ -8,14 +8,16 @@
       type="text" 
       v-model="searchText" 
       :placeholder="placeholder || 'Search...'"
-      @focus="showList = true"
+      @focus="handleFocus"
+      @mousedown="handleMouseDown"
       @input="showList = true"
       class="picker-search"
       :style="inputStyle"
+      ref="inputRef"
     />
     
     <!-- Options list -->
-    <div v-if="shouldShowList" class="picker-list" :style="listStyle">
+    <div v-if="shouldShowList" class="picker-list" :style="listStyle" ref="listRef">
       <div 
         v-for="(option, index) in filteredOptions" 
         :key="`option-${option.id || index}`" 
@@ -25,7 +27,7 @@
           'disabled': isDisabled(option)
         }"
         :style="getItemStyle(isSelected(option), isDisabled(option))"
-        @click="!isDisabled(option) && selectOption(option)"
+        @mousedown.prevent="!isDisabled(option) && selectOption(option)"
       >
         <div class="picker-item-count" v-if="option.count">
           {{ option.count }}x
@@ -44,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useQuestStore } from '@/stores/questStore'
 
 interface PickerOption {
@@ -71,6 +73,7 @@ const props = defineProps<{
   valueProperty?: string
   disabled?: boolean
   disabledOptions?: any[]
+  forceMobile?: boolean // Add this prop for testing
 }>()
 
 const emit = defineEmits(['update:modelValue', 'selection-change'])
@@ -79,6 +82,101 @@ const questStore = useQuestStore()
 // Local state
 const searchText = ref('')
 const showList = ref(props.alwaysShow || false)
+const containerRef = ref<HTMLElement | null>(null)
+const inputRef = ref<HTMLInputElement | null>(null)
+const listRef = ref<HTMLElement | null>(null)
+const isMobileDevice = ref(false)
+const isKeyboardOpen = ref(false)
+
+// Check if device is mobile
+function checkIfMobile(): boolean {
+  // Allow forcing mobile mode for testing on laptops
+  if (props.forceMobile) {
+    return true
+  }
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+}
+
+// Handle input focus event
+function handleFocus(event: FocusEvent): void {
+  if (!showList.value) {
+    showList.value = true
+  }
+  
+  // For mobile devices, position at top on next tick
+  if (isMobileDevice.value && !isKeyboardOpen.value) {
+    isKeyboardOpen.value = true
+    
+    // Use requestAnimationFrame for smoother positioning
+    requestAnimationFrame(() => {
+      positionAtTop()
+    })
+  }
+}
+
+// Position the component at the top of the viewport
+function positionAtTop(): void {
+  // Early return if not on mobile or no container
+  if (!containerRef.value || !isMobileDevice.value) return
+  
+  // Get container reference once to avoid null checks
+  const container = containerRef.value
+  
+  // Fix the container width before any positioning happens
+  const containerWidth = container.offsetWidth || 300
+  document.body.style.overflow = 'hidden' // Prevent page scrolling
+  
+  // Set all positioning properties in one go
+  const styles = {
+    position: 'fixed',
+    top: '10px',
+    left: '10px',
+    right: '10px',
+    width: `${containerWidth}px`,
+    zIndex: '1000'
+  }
+  
+  // Apply all styles at once to minimize reflows
+  Object.assign(container.style, styles)
+  
+  // Adjust list max height on next frame
+  requestAnimationFrame(() => {
+    if (listRef.value) {
+      const viewportHeight = window.innerHeight
+      const inputHeight = inputRef.value?.offsetHeight || 0
+      const titleHeight = container.querySelector('h3')?.offsetHeight || 0
+      const availableHeight = viewportHeight - 40 - inputHeight - titleHeight
+      listRef.value.style.maxHeight = `${Math.min(300, availableHeight)}px`
+    }
+  })
+}
+
+// Reset the component to its original position
+function resetPosition(): void {
+  if (!containerRef.value) return
+  
+  // Get container reference once to avoid null checks
+  const container = containerRef.value
+  
+  document.body.style.overflow = '' // Restore page scrolling
+  
+  // Reset all positioning properties at once
+  const resetStyles = {
+    position: '',
+    top: '',
+    left: '',
+    right: '',
+    width: '',
+    zIndex: ''
+  }
+  
+  // Apply all resets at once
+  Object.assign(container.style, resetStyles)
+  
+  if (listRef.value) {
+    listRef.value.style.maxHeight = ''
+  }
+}
 
 // Set showList to true if alwaysShow is true
 if (props.alwaysShow) {
@@ -257,29 +355,79 @@ function selectOption(option: PickerOption): void {
       const displayProperty = props.displayProperty || 'name'
       searchText.value = typeof option === 'object' ? (option[displayProperty] || option.title || option.label || '') : String(option)
       showList.value = false
+      
+      // Reset position after selection
+      if (isMobileDevice.value) {
+        isKeyboardOpen.value = false
+        resetPosition()
+      }
     }
   }
 }
 
 // Click outside to close dropdown
-function handleOutsideClick(event: MouseEvent) {
-  const pickerContainer = document.querySelector('.picker-container') as Element
-  if (pickerContainer && !pickerContainer.contains(event.target as Node)) {
+function handleOutsideClick(event: MouseEvent): void {
+  // Don't process if clicking the input
+  if (event.target === inputRef.value) {
+    return
+  }
+  
+  // Check if click is outside container
+  if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
     showList.value = false
+    
+    // Reset position if keyboard was open
+    if (isKeyboardOpen.value) {
+      isKeyboardOpen.value = false
+      resetPosition()
+    }
+  }
+}
+
+// Handle window resize
+function handleResize(): void {
+  if (isMobileDevice.value && isKeyboardOpen.value) {
+    positionAtTop()
+  }
+}
+
+// Prevent mousedown from triggering document click handler
+function handleMouseDown(event: MouseEvent): void {
+  // Always show list on mousedown
+  if (!showList.value) {
+    // Use stopPropagation to prevent outside click handler from firing
+    event.stopPropagation()
+    showList.value = true
+    
+    // For mobile devices, position at top immediately
+    if (isMobileDevice.value && !isKeyboardOpen.value) {
+      isKeyboardOpen.value = true
+      requestAnimationFrame(() => {
+        positionAtTop()
+      })
+    }
   }
 }
 
 // Mount and cleanup event listeners
 onMounted(() => {
+  isMobileDevice.value = checkIfMobile()
+  
   if (!props.alwaysShow) {
     document.addEventListener('click', handleOutsideClick)
   }
+  
+  window.addEventListener('resize', handleResize)
+  window.addEventListener('orientationchange', handleResize)
 })
 
 onUnmounted(() => {
   if (!props.alwaysShow) {
     document.removeEventListener('click', handleOutsideClick)
   }
+  
+  window.removeEventListener('resize', handleResize)
+  window.removeEventListener('orientationchange', handleResize)
 })
 
 // Watch for model changes and update search text
@@ -306,6 +454,7 @@ watch(() => props.modelValue, (newValue) => {
 .picker-container {
   position: relative;
   margin: 1rem 0;
+  transition: all 0.3s ease;
 }
 
 .picker-container h3 {
