@@ -321,13 +321,10 @@ export const useQuestStore = defineStore('quest', () => {
     const oldLevel = xpToLevel(xp.value)
     xp.value += amount
     const newLevel = xpToLevel(xp.value)
-    console.log('level', {newLevel, oldLevel})
     if (newLevel > oldLevel) {
-      console.log('bing')
       let levelCounter: number = oldLevel
       while (levelCounter < newLevel) {
         levelCounter++
-        console.log('level up ', levelCounter)
         logAndNotifyQuestEvent(`⭐️ LEVEL UP! - You are now Level ${levelCounter}.`)
       }
     }

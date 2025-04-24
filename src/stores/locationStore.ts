@@ -59,7 +59,8 @@ export const useLocationStore = defineStore('locations', () => {
 
   const fetchNearbyGameLocationsFromAPI = async () => {
     if (!appStore.playerCoordinates) return
-    
+
+    setLocations([])
     appStore.isFetchingGameLocations = true
     try {
       const newGameLocations = await fetchNearbyGameLocations(appStore.playerCoordinates, 3000)
@@ -67,7 +68,6 @@ export const useLocationStore = defineStore('locations', () => {
     } catch (error) {
       console.error('Error fetching locations:', error)
       // Set empty locations array on error
-      setLocations([])
     } finally {
       appStore.isFetchingGameLocations = false
     }

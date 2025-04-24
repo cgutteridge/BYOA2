@@ -48,7 +48,6 @@ type OverpassElement = {
 
 function parseRoads(elements: OverpassElement[]) {
   const nodes: Record<number, OverpassElement> = {}
-  console.log(elements)
   elements.forEach((element) => {
     if (element.type !== 'node') {
       return

@@ -184,14 +184,6 @@ watch([endLocationId], () => {
 }, {immediate: true})
 
 const canStartQuest = computed(() => {
-  // Debug log
-  console.log('Checking if can start quest:', {
-    selectedStartGameLocation: selectedStartLocation.value,
-    selectedEndGameLocation: selectedEndLocation.value,
-    startGameLocationId: startLocationId.value,
-    endGameLocationId: endLocationId.value,
-    questTitle: questTitle.value
-  })
 
   // We have locations selected either via objects or IDs
   const hasStartLocation = !!(selectedStartLocation.value || startLocationId.value)
@@ -210,7 +202,7 @@ const canStartQuest = computed(() => {
 
 // Helper functions for the ListInput
 function updateStartLocation(location: GameLocation | string | null) {
-  console.log('Setting start location:', location)
+  // console.log('Setting start location:', location)
   if (location === null) {
     selectedStartLocation.value = null
     startLocationId.value = ''
@@ -231,7 +223,7 @@ function updateStartLocation(location: GameLocation | string | null) {
 }
 
 function updateEndLocation(location: GameLocation | string | null) {
-  console.log('Setting end location:', location)
+  // console.log('Setting end location:', location)
   if (location === null) {
     selectedEndLocation.value = null
     endLocationId.value = ''
@@ -251,19 +243,9 @@ function updateEndLocation(location: GameLocation | string | null) {
   }
 }
 
-// Watch for changes in selected location and quest title to help debug
-watch([selectedStartLocation, selectedEndLocation, questTitle], () => {
-  console.log('Quest state updated:', {
-    startGameLocation: selectedStartLocation.value,
-    endGameLocation: selectedEndLocation.value,
-    title: questTitle.value,
-    canStart: canStartQuest.value
-  })
-}, {deep: true})
-
 async function callStartQuest() {
   if (canStartQuest.value) {
-    console.log('Starting quest...')
+    // console.log('Starting quest...')
 
     // Make sure we have the full location objects
     let startGameLocation = selectedStartLocation.value
@@ -307,7 +289,7 @@ async function callStartQuest() {
 
 // Load locations when the component is mounted
 onMounted(() => {
-  console.log('mounted StartScreen')
+  // console.log('mounted StartScreen')
   locationStore.fetchNearbyGameLocations()
 })
 </script>

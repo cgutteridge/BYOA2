@@ -91,7 +91,6 @@ function handleClick(): void {
 
 // Function to trigger level up animation
 function triggerLevelUpAnimation(): void {
-  console.log('triggerLevelUpAnimation')
   showLevelUpAnimation.value = true
   
   // Reset the animation after some time

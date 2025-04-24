@@ -67,7 +67,7 @@ export async function startQuest(
 
     // later around start location
     const extraLocations = await fetchSecondaryGameLocations(startGameLocation.coordinates, 1000)
-    console.log(extraLocations)
+
     // add extras one by one unless they are too near another location
     extraLocations.forEach((extraLocation) => {
         // only add it if it's more than 100m away from all current locations
