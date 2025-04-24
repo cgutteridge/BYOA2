@@ -123,6 +123,7 @@ function selectOption(option: ButtonOption): void {
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
   font-weight: 500;
+  text-align: center;
 }
 
 .button-options {
@@ -136,5 +137,6 @@ function selectOption(option: ButtonOption): void {
 .picker-button {
   flex: 1;
   min-width: 80px;
+  text-align: center;
 }
 </style> 

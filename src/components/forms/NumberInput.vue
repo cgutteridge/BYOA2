@@ -117,6 +117,7 @@ function decrement() {
 
 <style scoped>
 /* Base styles */
+
 .counter-picker {
   margin: 1rem 0;
 }
@@ -125,6 +126,7 @@ function decrement() {
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
   font-weight: 500;
+  text-align: center;
 }
 
 .counter-control {

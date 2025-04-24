@@ -2,19 +2,28 @@
   <div class="picker-container" :style="containerStyle" ref="containerRef">
     <h3 v-if="title" :style="titleStyle">{{ title }}</h3>
     
-    <!-- Search field (optional) -->
-    <input 
-      v-if="searchable"
-      type="text" 
-      v-model="searchText" 
-      :placeholder="placeholder || 'Search...'"
-      @focus="handleFocus"
-      @mousedown="handleMouseDown"
-      @input="showList = true"
-      class="picker-search"
-      :style="inputStyle"
-      ref="inputRef"
-    />
+    <!-- Search field with clear button -->
+    <div v-if="searchable" class="input-wrapper" :class="{ 'has-value': hasValidSelection }">
+      <input 
+        type="text" 
+        v-model="searchText" 
+        :placeholder="placeholder || 'Search...'"
+        @focus="handleFocus"
+        @mousedown="handleMouseDown"
+        @input="showList = true"
+        class="picker-search"
+        :style="getInputStyle"
+        ref="inputRef"
+      />
+      <button 
+        v-if="hasValidSelection" 
+        class="clear-button" 
+        @mousedown.prevent="clearSelection"
+        :style="clearButtonStyle"
+      >
+        ✕
+      </button>
+    </div>
     
     <!-- Options list -->
     <div v-if="shouldShowList" class="picker-list" :style="listStyle" ref="listRef">
@@ -190,12 +199,6 @@ const containerStyle = computed(() => ({
 
 const titleStyle = computed(() => ({
   color: questStore.getTextColor('primary')
-}))
-
-const inputStyle = computed(() => ({
-  backgroundColor: questStore.getBackgroundColor('tertiary'),
-  color: questStore.getTextColor('primary'),
-  borderColor: questStore.getBorderColor('medium')
 }))
 
 const listStyle = computed(() => ({
@@ -448,6 +451,63 @@ watch(() => props.modelValue, (newValue) => {
     }
   }
 }, { immediate: true })
+
+// Check if there's a valid selection
+const hasValidSelection = computed((): boolean => {
+  if (props.multiple && Array.isArray(props.modelValue)) {
+    return props.modelValue.length > 0
+  }
+  
+  return props.modelValue !== null && props.modelValue !== undefined && props.modelValue !== ''
+})
+
+// Get the input style based on validation state
+const getInputStyle = computed(() => {
+  const baseStyle = {
+    backgroundColor: questStore.getBackgroundColor('tertiary'),
+    color: questStore.getTextColor('primary'),
+    borderColor: questStore.getBorderColor('medium')
+  }
+  
+  if (hasValidSelection.value) {
+    return {
+      ...baseStyle,
+      borderColor: questStore.getBorderColor('accent'),
+      backgroundColor: 'rgba(40, 167, 69, 0.1)' // Dim green background
+    }
+  }
+  
+  return baseStyle
+})
+
+// Clear button style
+const clearButtonStyle = computed(() => ({
+  color: questStore.getTextColor('secondary'),
+  fontWeight: 'bold'
+}))
+
+// Clear the current selection
+function clearSelection(event: MouseEvent): void {
+  event.stopPropagation()
+  
+  if (props.multiple) {
+    emit('update:modelValue', [])
+    emit('selection-change', [])
+  } else {
+    emit('update:modelValue', null)
+    emit('selection-change', null)
+  }
+  
+  searchText.value = ''
+  showList.value = true
+  
+  // Focus the input after clearing
+  nextTick(() => {
+    if (inputRef.value) {
+      inputRef.value.focus()
+    }
+  })
+}
 </script>
 
 <style scoped>
@@ -463,9 +523,17 @@ watch(() => props.modelValue, (newValue) => {
   font-weight: 500;
 }
 
+.input-wrapper {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .picker-search {
   width: 100%;
-  padding: 0.8rem;
+  /* Always leave space for the X button and balance it on the left */
+  padding: 0.8rem 2.5rem;
+  text-align: center;
   font-size: 1rem;
   border-radius: 8px;
   margin-bottom: 0.5rem;
@@ -473,6 +541,34 @@ watch(() => props.modelValue, (newValue) => {
   border-style: solid;
   outline: none;
   transition: all 0.3s ease;
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.clear-button {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  margin-top: -0.25rem; /* Adjust for the bottom margin of the input */
+  z-index: 2; /* Ensure it's above the input */
+}
+
+.clear-button:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .picker-list {
