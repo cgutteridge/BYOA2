@@ -98,7 +98,7 @@ export class ChatGPTAPI {
         role: 'user',
         content: `
            Generate a JSON object for a minor outdoor location in the storyline of the adventure you are running.
-           Use the words from "${parts.join('","')}" as inspiration for the story and item the players receieve here. 
+           Use the words "${parts.join('","')}" as inspiration for the story and item the players receieve here. 
 
            In this case, The players will find or be given an item with this power: "${giftItemPower}". Do not promise additional rewards or powers. 
 
