@@ -1,6 +1,9 @@
 <template>
-  <div class="story-block">
-    <slot></slot>
+  <div class="story-block-container">
+    <div class="story-block-bloom"></div>
+    <div class="story-block">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -11,19 +14,38 @@ const questStore = useQuestStore();
 </script>
 
 <style scoped>
+.story-block-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+/* Inverse bloom effect */
+.story-block-bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 105%;
+  height: 105%;
+  background: v-bind('questStore.theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.5)"');
+  filter: blur(15px);
+  z-index: 0;
+  border-radius: 2px;
+}
+
 .story-block {
   padding: 1.5rem;
   line-height: 1.5;
   font-style: italic;
-  margin-bottom: 1rem;
   position: relative;
-  background-color: v-bind('questStore.theme === "dark" ? "rgba(60, 50, 40, 0.85)" : "#f5f0e5"');
+  background-color: v-bind('questStore.theme === "dark" ? "rgba(60, 50, 40, 0.85)" : "rgba(250, 245, 235, 0.5)"');
   color: v-bind('questStore.getTextColor("primary")');
+  z-index: 1;
   
   /* Parchment background */
   background-image: url('/images/canvas.jpg');
   background-size: cover;
-  background-blend-mode: v-bind('questStore.theme === "dark" ? "soft-light" : "multiply"');
+  background-blend-mode: v-bind('questStore.theme === "dark" ? "soft-light" : "screen"');
   
   /* Torn parchment effect */
   border: none;
