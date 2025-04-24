@@ -6,6 +6,16 @@
       <!-- Background circle -->
       <circle cx="35" cy="35" r="32" fill="black" />
       
+      <!-- Unmet progress indicator (dark red) -->
+      <circle 
+        cx="35" 
+        cy="35" 
+        r="30"
+        stroke="#5a0000"
+        stroke-width="4"
+        fill="transparent"
+      />
+      
       <!-- Progress indicator - simple circular segment approach -->
       <circle 
         v-if="questStore.levelProgress > 0"
@@ -13,7 +23,7 @@
         cy="35" 
         r="30"
         class="progress-indicator"
-        stroke="#ff3e3e"
+        stroke="#00cc44"
         stroke-width="4"
         :stroke-dasharray="`${progressArc} ${fullCircle - progressArc}`"
         stroke-dashoffset="0"
@@ -125,7 +135,7 @@ function getParticleStyle(index: number): Record<string, string> {
 
 .progress-indicator {
   transition: stroke-dasharray 0.5s ease-out;
-  filter: drop-shadow(0 0 3px rgba(255, 62, 62, 0.5));
+  filter: drop-shadow(0 0 3px rgba(0, 204, 68, 0.5));
 }
 
 .level-text {
