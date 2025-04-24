@@ -35,6 +35,7 @@ const questStore = useQuestStore();
 
 .story-block {
   padding: 1.5rem;
+  padding-bottom: 3.5rem; /* Increased from 2rem to accommodate the larger rip effect */
   line-height: 1.5;
   font-style: italic;
   position: relative;
@@ -44,7 +45,8 @@ const questStore = useQuestStore();
   
   /* Parchment background */
   background-image: url('/images/canvas.jpg');
-  background-size: cover;
+  background-size: auto;
+  background-repeat: repeat;
   background-blend-mode: v-bind('questStore.theme === "dark" ? "soft-light" : "screen"');
   
   /* Torn parchment effect */
@@ -53,12 +55,45 @@ const questStore = useQuestStore();
     0 2px 4px rgba(0, 0, 0, 0.2),
     0 0 0 1px rgba(0, 0, 0, 0.05);
   
-  /* Rough, uneven edges */
+  /* Rip effect with fixed top and bottom heights */
+  --rip-height: 40px; /* Increased from 10px to 40px (4x more pronounced) */
   clip-path: polygon(
-    0% 3%, 2% 0%, 8% 1%, 15% 0%, 20% 2%, 30% 0%, 35% 3%,
-    40% 1%, 50% 0%, 60% 2%, 65% 0%, 75% 1%, 85% 0%, 95% 2%, 100% 1%, 
-    100% 96%, 98% 100%, 92% 99%, 85% 100%, 80% 98%, 70% 100%, 65% 97%, 
-    60% 99%, 50% 100%, 40% 98%, 35% 100%, 25% 99%, 15% 100%, 5% 98%, 0% 99%
+    /* Top edge */
+    0% calc(0% + var(--rip-height) * 0.3), 
+    2% 0%, 
+    8% calc(0% + var(--rip-height) * 0.1), 
+    15% 0%, 
+    20% calc(0% + var(--rip-height) * 0.2), 
+    30% 0%, 
+    35% calc(0% + var(--rip-height) * 0.3),
+    40% calc(0% + var(--rip-height) * 0.1), 
+    50% 0%, 
+    60% calc(0% + var(--rip-height) * 0.2), 
+    65% 0%, 
+    75% calc(0% + var(--rip-height) * 0.1), 
+    85% 0%, 
+    95% calc(0% + var(--rip-height) * 0.2), 
+    100% calc(0% + var(--rip-height) * 0.1),
+    
+    /* Right edge */
+    100% calc(100% - var(--rip-height) * 0.4),
+    
+    /* Bottom edge */
+    100% calc(100% - var(--rip-height) * 0.4), 
+    98% 100%, 
+    92% calc(100% - var(--rip-height) * 0.1), 
+    85% 100%, 
+    80% calc(100% - var(--rip-height) * 0.2), 
+    70% 100%, 
+    65% calc(100% - var(--rip-height) * 0.3), 
+    60% calc(100% - var(--rip-height) * 0.1), 
+    50% 100%, 
+    40% calc(100% - var(--rip-height) * 0.2), 
+    35% 100%, 
+    25% calc(100% - var(--rip-height) * 0.1), 
+    15% 100%, 
+    5% calc(100% - var(--rip-height) * 0.2), 
+    0% calc(100% - var(--rip-height) * 0.1)
   );
 }
 

@@ -8,16 +8,15 @@
     
     <div class="log-entries">
       <div v-for="(entries, hourGroup) in groupedEntries" :key="hourGroup" class="log-hour-group">
-        <div class="log-entries-container">
+        <StoryBlock>
           <h3 class="log-hour-header">{{ hourGroup }}</h3>
-          
           <div v-for="entry in entries" :key="entry.id" class="log-entry">
             <span class="log-entry-time">{{ formatTime(entry.timestamp) }}</span>
             - {{ entry.message }}
             <span v-if="entry.change?.xp && entry.change.xp > 0" class="log-entry-xp">+{{ entry.change.xp }} XP</span>
             <span v-if="entry.change?.booze && entry.change.booze > 0" class="log-entry-booze">+{{ entry.change.booze }} Booze</span>
           </div>
-        </div>
+        </StoryBlock>
       </div>
     </div>
   </div>
@@ -27,6 +26,7 @@
 import { useLogStore } from '@/stores/logStore';
 import { useQuestStore } from '@/stores/questStore';
 import { computed } from 'vue';
+import StoryBlock from '@/components/StoryBlock.vue';
 
 const questStore = useQuestStore();
 const logStore = useLogStore();
@@ -76,20 +76,14 @@ const formatTime = (timestamp: string): string => {
   flex-direction: column;
 }
 
-.log-entries-container {
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
-  border: 1px solid v-bind('questStore.getBorderColor("light")');
-}
-
 .log-hour-header {
-  padding: 0.5rem;
-  margin: -0.5rem -0.75rem 0.75rem;
   font-size: 1.25rem;
   font-weight: 600;
-  border-bottom: 1px solid v-bind('questStore.getBorderColor("light")');
   color: v-bind('questStore.getTextColor("secondary")');
+  margin-bottom: 1rem;
+  text-align: center;
+  border-bottom: 1px solid v-bind('questStore.theme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.15)"');
+  padding-bottom: 0.5rem;
 }
 
 .log-entry {
@@ -100,7 +94,7 @@ const formatTime = (timestamp: string): string => {
 }
 
 .log-entry:not(:last-child) {
-  border-bottom: 1px solid v-bind('questStore.getBorderColor("light")');
+  border-bottom: 1px solid v-bind('questStore.theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"');
   border-bottom-style: dashed;
 }
 
