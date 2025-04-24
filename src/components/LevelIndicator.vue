@@ -94,8 +94,10 @@ function triggerLevelUpAnimation(): void {
 
 // Generate dynamic styles for particles
 function getParticleStyle(index: number): Record<string, string> {
-  const angle = (index / 24) * 360
-  const distance = 400 + Math.random() * 300 // Much larger distance to cover half the screen
+  // Generate random angle between up (270 degrees) and right (0/360 degrees)
+  // This maps to the range: 270-360 degrees
+  const angle = 270 + (Math.random() * 90)
+  const distance = 800 + Math.random() * 600 // Doubled distance (was 400 + random 300)
   const rotationAmount = 180 + Math.random() * 720 // Up to 2.5 full rotations
   const rotationDirection = Math.random() > 0.5 ? 1 : -1
   const delay = Math.random() * 0.7
@@ -127,6 +129,8 @@ function getParticleStyle(index: number): Record<string, string> {
 .level-indicator {
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
+  z-index: 210;
 }
 
 .level-indicator:hover {
@@ -170,6 +174,7 @@ function getParticleStyle(index: number): Record<string, string> {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 190;
 }
 
 .particle {
@@ -179,7 +184,7 @@ function getParticleStyle(index: number): Record<string, string> {
   transform: translate(-50%, -50%);
   transform-origin: center;
   animation: spin-out-fade ease-out forwards;
-  z-index: 1001;
+  z-index: 190;
 }
 
 @keyframes spin-out-fade {
