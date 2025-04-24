@@ -1,7 +1,7 @@
 <template>
   <div class="level-indicator-container">
     <svg class="level-indicator" width="70" height="70" viewBox="0 0 70 70" :style="indicatorStyle"
-         @click="triggerLevelUpAnimation()" :class="{ 'level-up': showLevelUpAnimation }"
+         @click="handleClick()" :class="{ 'level-up': showLevelUpAnimation }"
     >
       <!-- Background circle -->
       <circle cx="35" cy="35" r="32" fill="black" />
@@ -52,8 +52,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useQuestStore } from '@/stores/questStore'
+import { useAppStore } from '@/stores/appStore'
 
 const questStore = useQuestStore()
+const appStore = useAppStore()
 const showLevelUpAnimation = ref(false)
 
 // Circumference of the progress circle
@@ -80,6 +82,12 @@ watch(() => questStore.level, (newLevel, oldLevel) => {
     triggerLevelUpAnimation()
   }
 })
+
+// Function to handle click on the level indicator
+function handleClick(): void {
+  // Then open the interface on the quest tab
+  appStore.openInterface('quest')
+}
 
 // Function to trigger level up animation
 function triggerLevelUpAnimation(): void {
