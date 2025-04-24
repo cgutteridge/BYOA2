@@ -32,7 +32,7 @@
       />
     </div>
 
-    <div class="combat-container" v-if="questStore.currentGameLocation?.monsters" :style="combatContainerStyle">
+    <div class="combat-container" v-if="questStore.currentGameLocation?.monsters && !allMonstersDefeated" :style="combatContainerStyle">
       <!-- All monsters in a 3-column flex layout with active ones first -->
       <div class="monsters-container">
         <template v-for="monster in sortedMonsters" :key="monster.id">
@@ -42,35 +42,35 @@
           />
         </template>
       </div>
+    </div>
 
-      <!-- Prize item section -->
-      <div v-if="questStore.currentGameLocation.prizeItem || questStore.currentGameLocation.hasToken"
-           class="prize-item-section" :style="sectionStyle">
-        <h3><span class="icon">🏆</span> Quest Prize:</h3>
-        <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.prizeItem">
-          <div v-if="!allMonstersDefeated" class="item-locked">
-            <span class="lock-icon">🔒</span>
-          </div>
-          <ItemCard
-              :item="questStore.currentGameLocation.prizeItem"
-              variant="prize"
-              :show-details="true"
-              :locked="!allMonstersDefeated"
-              @action="claimPrizeItem"
-          />
+    <!-- Prize item section -->
+    <div v-if="questStore.currentGameLocation.prizeItem || questStore.currentGameLocation.hasToken"
+         class="prize-item-section" :style="sectionStyle">
+      <h3><span class="icon">🏆</span> Quest Prize:</h3>
+      <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.prizeItem">
+        <div v-if="!allMonstersDefeated" class="item-locked">
+          <span class="lock-icon">🔒</span>
         </div>
-        <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.hasToken">
-          <div v-if="!allMonstersDefeated" class="item-locked">
-            <span class="lock-icon">🔒</span>
-          </div>
-          <ItemCard
-              :item="tokenItem"
-              variant="prize"
-              :show-details="true"
-              @action="claimTokenItem"
-              :locked="!allMonstersDefeated"
-          />
+        <ItemCard
+            :item="questStore.currentGameLocation.prizeItem"
+            variant="prize"
+            :show-details="true"
+            :locked="!allMonstersDefeated"
+            @action="claimPrizeItem"
+        />
+      </div>
+      <div class="prize-item-wrapper" v-if="questStore.currentGameLocation.hasToken">
+        <div v-if="!allMonstersDefeated" class="item-locked">
+          <span class="lock-icon">🔒</span>
         </div>
+        <ItemCard
+            :item="tokenItem"
+            variant="prize"
+            :show-details="true"
+            @action="claimTokenItem"
+            :locked="!allMonstersDefeated"
+        />
       </div>
     </div>
   </div>
@@ -99,9 +99,9 @@ const logStore = useLogStore()
 
 // Theme-based styles
 const headerStyle = computed(() => ({
-  backgroundColor: questStore.getBackgroundColor('secondary'),
+ // backgroundColor: questStore.getBackgroundColor('secondary'),
   color: questStore.getTextColor('primary'),
-  borderBottom: `1px solid ${questStore.getBorderColor('medium')}`,
+ // borderBottom: `1px solid ${questStore.getBorderColor('medium')}`,
 }))
 
 const descriptionStyle = computed(() => ({
@@ -165,7 +165,7 @@ function claimGiftItem() {
     // Award XP based on item level
     if (giftItem.level) {
       const xpToAward = giftItem.level * 2; // 2 XP per level for gift items
-      questStore.logAndNotifyQuestEvent(`Claimed ${giftItem.name}.`, { xp: xpToAward });
+      questStore.logAndNotifyQuestEvent(`Claimed ${giftItem.name}.`, {xp: xpToAward});
     }
 
     // Remove from GameLocation
@@ -183,7 +183,7 @@ function claimPrizeItem() {
     // Award XP based on item level
     if (prizeItem.level) {
       const xpToAward = prizeItem.level * 3; // 3 XP per level for prize items
-      questStore.logAndNotifyQuestEvent(`Claimed ${prizeItem.name}.`, { xp: xpToAward });
+      questStore.logAndNotifyQuestEvent(`Claimed ${prizeItem.name}.`, {xp: xpToAward});
     }
 
     // Remove from location
@@ -204,7 +204,7 @@ function claimTokenItem() {
     // Mark the location as having had its token claimed
     locationStore.setGameLocationHasToken(questStore.currentGameLocation.id, false);
 
-    questStore.logAndNotifyQuestEvent(`Claimed ${tokenItem.value.name}.`, { xp: 10 });
+    questStore.logAndNotifyQuestEvent(`Claimed ${tokenItem.value.name}.`, {xp: 10});
   }
 }
 </script>
@@ -218,9 +218,6 @@ function claimTokenItem() {
 .location-header {
   text-align: center;
   padding: 1rem;
-  margin-bottom: 1rem;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
 }
 
 .location-header h2 {
