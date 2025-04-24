@@ -6,9 +6,9 @@
 
     <!-- GameLocation description section -->
     <div class="location-description-section" v-if="questStore.currentGameLocation?.description">
-      <div class="location-description" :style="descriptionStyle">
+      <StoryBlock>
         {{ questStore.currentGameLocation.description }}
-      </div>
+      </StoryBlock>
     </div>
 
     <div class="leave-button-container">
@@ -90,6 +90,7 @@ import ButtonInput from "@/components/forms/ButtonInput.vue";
 import {areAllMonstersDefeated} from "@/quest/monsterUtils";
 import {generateTokenItem} from "@/quest/itemUtils";
 import MonsterCard from "@/components/MonsterCard.vue";
+import StoryBlock from "@/components/StoryBlock.vue";
 
 const questStore = useQuestStore()
 const appStore = useAppStore()
@@ -102,12 +103,6 @@ const headerStyle = computed(() => ({
  // backgroundColor: questStore.getBackgroundColor('secondary'),
   color: questStore.getTextColor('primary'),
  // borderBottom: `1px solid ${questStore.getBorderColor('medium')}`,
-}))
-
-const descriptionStyle = computed(() => ({
-  backgroundColor: questStore.getBackgroundColor('tertiary'),
-  color: questStore.getTextColor('secondary'),
-  borderColor: questStore.getBorderColor('light'),
 }))
 
 const sectionStyle = computed(() => ({
@@ -228,15 +223,6 @@ function claimTokenItem() {
 
 .location-description-section {
   margin-bottom: 2rem;
-}
-
-.location-description {
-  padding: 1rem;
-  border-radius: 8px;
-  border-width: 1px;
-  border-style: solid;
-  line-height: 1.5;
-  font-style: italic;
 }
 
 .leave-button-container {

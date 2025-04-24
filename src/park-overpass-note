@@ -1,0 +1,16 @@
+[out:json][timeout:25];
+// Replace {{bbox}} with e.g. 51.5,-0.1,51.6,0.0
+(
+  nwr["leisure"~"park|garden|playground"]["access"!~"private"]["indoor"!~"yes"]({{bbox}});
+  nwr["historic"~"monument|memorial"]["access"!~"private"]["indoor"!~"yes"]({{bbox}});
+  nwr["tourism"~"viewpoint|artwork|attraction"]["access"!~"private"]["indoor"!~"yes"]({{bbox}});
+);
+out center;
+
+
+[out:json][timeout:25];
+// Replace {{bbox}} with e.g. 51.5,-0.1,51.6,0.0
+(
+  way["highway"~"secondary|tertiary|residential"]({{bbox}});
+);
+out geom;

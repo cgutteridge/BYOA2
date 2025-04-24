@@ -14,9 +14,9 @@
 
         <div class="item-inspect-modal__body">
             <!-- Item description (if available) -->
-            <div v-if="item.description" class="item-inspect-modal__description" :style="sectionStyle">
-              <p :style="textStyle">{{ item.description }}</p>
-            </div>
+            <StoryBlock v-if="item.description">
+              {{ item.description }}
+            </StoryBlock>
             
             <!-- Effect description -->
             <div class="item-inspect-modal__effect" :style="sectionStyle">
@@ -135,6 +135,7 @@ import {powerFactory} from "@/powers";
 import pickOne from "@/utils/pickOne.ts";
 import { getMonsterLevel, getMonsterSpecies} from "@/quest/monsterUtils.ts";
 import ListInput from "@/components/forms/ListInput.vue";
+import StoryBlock from "@/components/StoryBlock.vue";
 
 // Stores
 const appStore = useAppStore()
@@ -528,19 +529,17 @@ watch([selectedTargetMonsters, selectedTargetMonsterTypes], () => {
 }
 
 .item-inspect-modal__effect,
-.item-inspect-modal__description,
 .item-inspect-modal__target-section,
 .item-inspect-modal__result-section,
 .results-content {
-  margin-bottom: 20px;
-  padding: 15px;
+  margin-bottom: 1rem;
+  padding: 0 15px;
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   text-align: center;
 }
 
 .item-inspect-modal__effect h3,
-.item-inspect-modal__description h3,
 .item-inspect-modal__target-section h3,
 .item-inspect-modal__result-section h3,
 .results-content h3 {
@@ -549,7 +548,6 @@ watch([selectedTargetMonsters, selectedTargetMonsterTypes], () => {
 }
 
 .item-inspect-modal__effect p,
-.item-inspect-modal__description p,
 .item-modal-view p,
 .item-results-view p {
   text-align: center;
