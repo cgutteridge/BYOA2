@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="monster-card"
     :class="[
       monster.alive ? getMonsterClasses(monster.type) : 'item-only', 
@@ -25,15 +25,15 @@
           </div>
         </div>
         <div class="monster-controls">
-          <span 
-            v-if="monster.item" 
-            class="monster-has-item" 
-            title="This monster has an item" 
+          <span
+            v-if="monster.item"
+            class="monster-has-item"
+            title="This monster has an item"
             @click="viewItemDetails"
           >🎁</span>
-          <button 
-            class="monster-toggle-btn" 
-            :class="{ 
+          <button
+            class="monster-toggle-btn"
+            :class="{
               'kill-btn': monster.alive && !isMonsterDying, 
               'cancel-btn': isMonsterDying,
               'unkill-btn': !monster.alive 
@@ -53,16 +53,16 @@
           </button>
         </div>
       </div>
-      
+
       <!-- Monster drink bottom bar -->
       <div class="monster-drink-bar">
         {{ getMonsterDrink(monster.type) }}
       </div>
     </template>
-    
+
     <!-- Item view (only shown when monster is dead and has an item) -->
     <template v-else-if="monster.item">
-      <ItemCard 
+      <ItemCard
         :item="monster.item"
         variant="drop"
         :show-details="true"
@@ -85,6 +85,8 @@ import { useLocationStore } from '@/stores/locationStore';
 import { getMonsterXP, getMonsterBooze, getMonsterSoft, areAllMonstersDefeated } from '@/quest/monsterUtils';
 import formatNumber from '@/utils/formatNumber';
 import ItemCard from '@/components/ItemCard.vue';
+import pickOne from "@/utils/pickOne.ts";
+import {generateRandomItem} from "@/quest/generateRandomItem.ts";
 
 // Constants
 const MONSTER_DEFEAT_DELAY_MS = 1000;
@@ -136,7 +138,7 @@ function getMonsterDrink(monsterId: string): string {
 function getMonsterSpecies(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId);
   if (!monster) return "Unknown";
-  
+
   // Capitalize first letter of species
   return monster.species.charAt(0).toUpperCase() + monster.species.slice(1);
 }
@@ -144,7 +146,7 @@ function getMonsterSpecies(monsterId: string): string {
 function getMonsterLevel(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId);
   if (!monster) return "Unknown";
-  
+
   // Capitalize first letter of level
   return monster.level.charAt(0).toUpperCase() + monster.level.slice(1);
 }
@@ -152,7 +154,7 @@ function getMonsterLevel(monsterId: string): string {
 function getMonsterFlags(monsterId: string): string[] {
   const monster = monsterTypes.find(m => m.id === monsterId);
   if (!monster || !monster.flags) return [];
-  
+
   return monster.flags;
 }
 
@@ -175,7 +177,7 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
 function getMonsterStyle(monsterId: string): Record<string, string> {
   const monster = monsterTypes.find(m => m.id === monsterId);
   if (!monster || !monster.style) return {};
-  
+
   const style: Record<string, string> = {
     backgroundColor: questStore.getBackgroundColor('card'),
     borderColor: questStore.getBorderColor('medium'),
@@ -191,7 +193,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   if (monster.style.borderColor) {
     style.borderColor = monster.style.borderColor;
   }
-  
+
   // If monster has style.color, use it
   if (monster.style.color) {
     style.color = monster.style.color;
@@ -201,7 +203,7 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   if (monster.style.boxShadow) {
     style.boxShadow = monster.style.boxShadow;
   }
-  
+
   return style;
 }
 
@@ -244,7 +246,7 @@ function toggleMonsterStatus(): void {
       cancelDefeatCountdown();
       return;
     }
-    
+
     // Start defeat countdown
     startDefeatCountdown();
   } else {
@@ -256,7 +258,7 @@ function toggleMonsterStatus(): void {
 // Start defeat countdown for the monster
 function startDefeatCountdown(): void {
   dyingStartTime.value = Date.now();
-  
+
   // Set timeout for defeat
   timeoutRef.value = window.setTimeout(() => {
     // Actually defeat the monster
@@ -280,22 +282,27 @@ function cancelDefeatCountdown(): void {
 function defeatMonster(): void {
   if (!questStore.currentGameLocation?.monsters) return;
 
-  // Find the monster in the location
-  const monsterIndex = questStore.currentGameLocation.monsters.findIndex(m => m.id === props.monster.id);
-  if (monsterIndex === -1) return;
-
   // Update stats
   const xpToAdd = getMonsterXP(props.monster.type);
   const unitsToAdd = getMonsterBooze(props.monster.type);
   const softToAdd = getMonsterSoft(props.monster.type);
   questStore.logAndNotifyQuestEvent(`Defeated ${props.monster.name} in combat.`, { xp: xpToAdd, booze: unitsToAdd, soft: softToAdd });
-  
+
+  // Maybe add a minor loot drop?
+  if (!props.monster.item && pickOne([true, false])) {
+    console.log( "GENERATE ITEM")
+    const monsterType = monsterTypes.find(m => m.id === props.monster.type);
+    const item = generateRandomItem(pickOne([1,2]))
+   // item.maxLevel = monsterType?.level || "minion"
+    props.monster.item = item
+  }
+
   // Set alive to false
-  questStore.currentGameLocation.monsters[monsterIndex].alive = false;
-  
+  props.monster.alive = false;
+
   // Increment the defeatedEnemies count in the current location
   locationStore.incrementDefeatedEnemiesCount(questStore.currentGameLocation.id);
-  
+
   // Check if this was the last monster to defeat for quest completion
   if (areAllMonstersDefeated(questStore.currentGameLocation.monsters)) {
     // Award XP for completing all monsters in a location
@@ -310,7 +317,7 @@ function reviveMonster(): void {
   // Find the monster in the location
   const monsterIndex = questStore.currentGameLocation.monsters.findIndex(m => m.id === props.monster.id);
   if (monsterIndex === -1) return;
-  
+
   // Set alive to true
   questStore.currentGameLocation.monsters[monsterIndex].alive = true;
 }
@@ -321,16 +328,16 @@ function claimItem(): void {
   if (!props.monster.item || props.monster.alive) {
     return;
   }
-  
+
   // Add item to inventory
   inventoryStore.addItem(props.monster.item);
-  
+
   // Award XP based on item level
   if (props.monster.item.level) {
     const xpToAward = props.monster.item.level * 2; // 2 XP per item level
     questStore.logAndNotifyQuestEvent(`Claimed ${props.monster.item.name}.`, { xp: xpToAward });
   }
-  
+
   // Clear the item from the monster
   if (questStore.currentGameLocation?.monsters) {
     const monsterIndex = questStore.currentGameLocation.monsters.findIndex(m => m.id === props.monster.id);
@@ -433,7 +440,7 @@ function claimItem(): void {
   position: relative;
   opacity: 0;
   filter: grayscale(1);
-  transition: opacity var(--transition-duration, 1s) ease-in, 
+  transition: opacity var(--transition-duration, 1s) ease-in,
               filter var(--transition-duration, 1s) ease-in;
 }
 
