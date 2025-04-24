@@ -347,6 +347,7 @@ export abstract class ItemPower {
 
                 return text
         }
+        return ''
     }
 }
 
