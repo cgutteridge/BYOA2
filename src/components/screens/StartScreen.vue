@@ -3,106 +3,106 @@
 
     <div class="quest-start-content" :style="contentStyle">
       <h2>Start Your Quest</h2>
-      
+      <h3>The quest for</h3>
+      <input
+          v-model="questTitle"
+          type="text"
+          placeholder="Quest Title"
+          class="quest-input"
+          :style="inputStyle"
+      />
+
       <div class="theme-toggle">
         <ButtonInput
-          @click="questStore.toggleTheme" 
-          variant="secondary"
-          size="small"
+            @click="questStore.toggleTheme"
+            variant="secondary"
+            size="small"
         >
           {{ questStore.theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode' }}
         </ButtonInput>
-        
+
         <ButtonInput
-          @click="questStore.toggleDebugMode" 
-          variant="secondary"
-          size="small"
-          class="debug-toggle"
+            @click="questStore.toggleDebugMode"
+            variant="secondary"
+            size="small"
+            class="debug-toggle"
         >
           {{ questStore.isDebugMode ? '🐞 Debug: ON' : '🐞 Debug: OFF' }}
         </ButtonInput>
       </div>
-      
-      <LoadingSpinner v-if="isLoading" message="Loading locations from Open Streetmap..." />
-      
+
+      <LoadingSpinner v-if="isLoading" message="Loading locations from Open Streetmap..."/>
+
       <div v-else class="quest-form">
         <div class="location-selection">
           <div class="location-selector">
             <h3>Start Location</h3>
             <ListInput
-              v-model="startLocationId"
-              :options="locationStore.locations"
-              searchable
-              placeholder="Search for a location..."
-              value-property="id"
-              display-property="name"
-              @selection-change="updateStartLocation"
+                v-model="startLocationId"
+                :options="locationStore.locations"
+                searchable
+                placeholder="Search for a location..."
+                value-property="id"
+                display-property="name"
+                @selection-change="updateStartLocation"
             />
           </div>
-          
+
           <div class="location-selector">
             <h3>End Location</h3>
             <ListInput
-              v-model="endLocationId"
-              :options="locationStore.locations"
-              searchable
-              placeholder="Search for a location..."
-              value-property="id"
-              display-property="name"
-              @selection-change="updateEndLocation"
+                v-model="endLocationId"
+                :options="locationStore.locations"
+                searchable
+                placeholder="Search for a location..."
+                value-property="id"
+                display-property="name"
+                @selection-change="updateEndLocation"
             />
           </div>
         </div>
-        
+
         <div class="quest-details">
-          <input 
-            v-model="questTitle" 
-            type="text" 
-            placeholder="Quest Title"
-            class="quest-input"
-            :style="inputStyle"
-          />
-          
+
+
           <div class="difficulty-selector">
             <ButtonSet
-              v-model="selectedDifficulty"
-              :options="[
+                v-model="selectedDifficulty"
+                :options="[
                 { id: 'easy', name: 'Easy' },
                 { id: 'medium', name: 'Medium' },
                 { id: 'hard', name: 'Hard' }
               ]"
-              title="Difficulty Level"
+                title="Difficulty Level"
             />
           </div>
-          
+
           <div class="player-count-selector">
             <NumberInput
-              v-model="playerCount"
-              title="Number of Players"
-              :min="1"
-              :max="20"
-              description="Monsters scale with player count:<br>• Minions: 2× player count<br>• Grunts: 1× player count<br>• Elites: Fixed (1) or scaled on hard difficulty<br>• Bosses: Always 1"
+                v-model="playerCount"
+                title="Number of Players"
+                :min="1"
+                :max="20"
             />
           </div>
-          
+
           <div class="min-locations-selector">
             <NumberInput
-              v-model="minimumLocations"
-              title="Minimum Locations"
-              :min="3"
-              description="Minimum number of locations to visit in the quest"
+                v-model="minimumLocations"
+                title="Minimum Locations"
+                :min="3"
             />
           </div>
         </div>
-        
+
         <div class="start-button-container">
           <ButtonInput
-            :action="callStartQuest"
-            :locked="!canStartQuest"
-            size="large"
-            variant="primary"
-            fullWidth
-            class="start-quest-button"
+              :action="callStartQuest"
+              :locked="!canStartQuest"
+              size="large"
+              variant="primary"
+              fullWidth
+              class="start-quest-button"
           >
             Start Quest
           </ButtonInput>
@@ -158,30 +158,30 @@ watch(() => locationStore.locations, (newLocations) => {
   if (newLocations.length > 0) {
     isLoading.value = false
   }
-}, { immediate: true })
+}, {immediate: true})
 
 // Watch for id changes to update the location objects
 watch([startLocationId], () => {
   if (startLocationId.value) {
-    const location = locationStore.locations.find((p:GameLocation) => p.id === startLocationId.value)
+    const location = locationStore.locations.find((p: GameLocation) => p.id === startLocationId.value)
     if (location) {
       selectedStartLocation.value = location
     }
   } else {
     selectedStartLocation.value = null
   }
-}, { immediate: true })
+}, {immediate: true})
 
 watch([endLocationId], () => {
   if (endLocationId.value) {
-    const location = locationStore.locations.find((p:GameLocation) => p.id === endLocationId.value)
+    const location = locationStore.locations.find((p: GameLocation) => p.id === endLocationId.value)
     if (location) {
       selectedEndLocation.value = location
     }
   } else {
     selectedEndLocation.value = null
   }
-}, { immediate: true })
+}, {immediate: true})
 
 const canStartQuest = computed(() => {
   // Debug log
@@ -192,30 +192,35 @@ const canStartQuest = computed(() => {
     endGameLocationId: endLocationId.value,
     questTitle: questTitle.value
   })
-  
+
   // We have locations selected either via objects or IDs
   const hasStartLocation = !!(selectedStartLocation.value || startLocationId.value)
   const hasEndLocation = !!(selectedEndLocation.value || endLocationId.value)
-  
+
   // The locations are different
   const differentGameLocations =
-    (selectedStartLocation.value?.id !== selectedEndLocation.value?.id) &&
-    (startLocationId.value !== endLocationId.value)
-  
+      (selectedStartLocation.value?.id !== selectedEndLocation.value?.id) &&
+      (startLocationId.value !== endLocationId.value)
+
   // We have a quest title
   const hasTitle = questTitle.value.trim() !== ''
-  
+
   return hasStartLocation && hasEndLocation && differentGameLocations && hasTitle
 })
 
 // Helper functions for the ListInput
-function updateStartLocation(location: GameLocation | string) {
+function updateStartLocation(location: GameLocation | string | null) {
   console.log('Setting start location:', location)
-  
+  if (location === null) {
+    selectedStartLocation.value = null
+    startLocationId.value = ''
+    return
+  }
+
   // If we're getting an ID instead of a GameLocation object
   if (typeof location === 'string') {
     startLocationId.value = location
-    const found = locationStore.locations.find((p:GameLocation) => p.id === location)
+    const found = locationStore.locations.find((p: GameLocation) => p.id === location)
     if (found) {
       selectedStartLocation.value = found
     }
@@ -225,13 +230,18 @@ function updateStartLocation(location: GameLocation | string) {
   }
 }
 
-function updateEndLocation(location: GameLocation | string) {
+function updateEndLocation(location: GameLocation | string | null) {
   console.log('Setting end location:', location)
-  
+  if (location === null) {
+    selectedEndLocation.value = null
+    endLocationId.value = ''
+    return
+  }
+
   // If we're getting an ID instead of a GameLocation object
   if (typeof location === 'string') {
     endLocationId.value = location
-    const found = locationStore.locations.find((p:GameLocation) => p.id === location)
+    const found = locationStore.locations.find((p: GameLocation) => p.id === location)
     if (found) {
       selectedEndLocation.value = found
     }
@@ -249,23 +259,23 @@ watch([selectedStartLocation, selectedEndLocation, questTitle], () => {
     title: questTitle.value,
     canStart: canStartQuest.value
   })
-}, { deep: true })
+}, {deep: true})
 
 async function callStartQuest() {
   if (canStartQuest.value) {
     console.log('Starting quest...')
-    
+
     // Make sure we have the full location objects
     let startGameLocation = selectedStartLocation.value
     let endGameLocation = selectedEndLocation.value
-    
+
     // If we only have IDs, find the full location objects
     if (!startGameLocation && startLocationId.value) {
-      startGameLocation = locationStore.locations.find((p:GameLocation) => p.id === startLocationId.value) || null
+      startGameLocation = locationStore.locations.find((p: GameLocation) => p.id === startLocationId.value) || null
     }
-    
+
     if (!endGameLocation && endLocationId.value) {
-      endGameLocation = locationStore.locations.find((p:GameLocation) => p.id === endLocationId.value) || null
+      endGameLocation = locationStore.locations.find((p: GameLocation) => p.id === endLocationId.value) || null
     }
 
     // Safety check
@@ -325,8 +335,14 @@ onMounted(() => {
 .quest-start-content h2 {
   font-size: 2rem;
   margin-bottom: 1.5rem;
+  text-align: center;
 }
 
+.quest-start-content h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
 .quest-form {
   margin-top: 2rem;
 }
@@ -346,6 +362,7 @@ onMounted(() => {
 .location-selector h3 {
   margin-bottom: 0.5rem;
   font-weight: 500;
+  text-align: center;
 }
 
 .quest-details {
@@ -354,13 +371,14 @@ onMounted(() => {
 
 .quest-input {
   width: 100%;
-  padding: 1rem;
+  padding: 1rem 0;
   font-size: 1.2rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
   border-width: 1px;
   border-style: solid;
   outline: none;
+  text-align: center;
 }
 
 .difficulty-selector,
