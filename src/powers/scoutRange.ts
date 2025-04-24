@@ -38,7 +38,6 @@ export class ScoutRangePower extends ItemPower {
   }
   
   generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item extends your scout range by 20 meters each time it's used.`;
+    return `Extend your scout range by ${item.uses*20} meters.`;
   }
 } 

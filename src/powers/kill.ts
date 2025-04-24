@@ -43,7 +43,6 @@ export class KillPower extends ItemPower {
   }
 
   generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item instantly defeats ${this.getTargetDescription(item)}.`;
+    return `Instantly defeat ${this.getTargetDescription(item)}.`;
   }
 } 

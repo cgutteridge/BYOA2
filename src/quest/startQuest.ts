@@ -10,6 +10,7 @@ import {useLogStore} from "@/stores/logStore.ts";
 import {useRouteStore} from "@/stores/routeStore.ts";
 import {fetchSecondaryGameLocations} from "@/api/overpass.ts";
 import calculateDistance from "@/utils/calculateDistance.ts";
+import pickWeightedOne from "@/utils/pickWeightedOne.ts";
 
 export async function startQuest(
     title: string,
@@ -83,7 +84,11 @@ export async function startQuest(
         if( locationStore.locations.every(
             (currentLocation:GameLocation)=>calculateDistance(extraLocation.coordinates, currentLocation.coordinates)>100)
         ) {
-            extraLocation.type = toGameLocationTypeId('stash')
+            extraLocation.type = toGameLocationTypeId(pickWeightedOne(
+                [
+                    {weight: 5, value: 'stash'},
+                    {weight: 1, value: 'shop'}
+                    ]))
             locationStore.locations.push( extraLocation )
         }
     })

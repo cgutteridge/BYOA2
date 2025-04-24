@@ -32,6 +32,18 @@
       />
     </div>
 
+    <div v-if="questStore.currentGameLocation?.wares" class="gift-info" :style="sectionStyle">
+      <h3>Wares:</h3>
+      <div v-for="item in questStore.currentGameLocation.wares" style="margin-bottom: 0.5rem">
+        <ItemCard
+            :item="item"
+            variant="gift"
+            :show-details="true"
+            @action="claimShopItem"
+        />
+      </div>
+    </div>
+
     <div class="combat-container" v-if="showCombat" :style="combatContainerStyle">
       <!-- All monsters in a 3-column flex layout with active ones first -->
       <div class="monsters-container">
@@ -79,7 +91,7 @@
 <script setup lang="ts">
 import {useAppStore} from "@/stores/appStore";
 import {useQuestStore} from "@/stores/questStore";
-import {GameLocation} from "@/types";
+import {GameLocation, Item} from "@/types";
 import '@/styles/monsterAnimations.css';
 import {computed} from 'vue';
 import {useInventoryStore} from "@/stores/inventoryStore";
@@ -177,6 +189,21 @@ function claimGiftItem() {
     // Remove from GameLocation
     delete questStore.currentGameLocation.giftItem;
   }
+}
+
+function claimShopItem(item: Item) {
+
+  // Add to inventory
+  inventoryStore.addItem(item);
+
+  // Award XP based on item level
+  if (item.level) {
+    const xpToAward = item.level * 2; // 2 XP per level for gift items
+    questStore.logAndNotifyQuestEvent(`Purchased ${item.name}.`, {xp: xpToAward});
+  }
+
+  // Remove from GameLocation
+  delete questStore.currentGameLocation?.wares
 }
 
 function claimPrizeItem() {

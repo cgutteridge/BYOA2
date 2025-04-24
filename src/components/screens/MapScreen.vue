@@ -48,7 +48,7 @@ const playerCoordinates = computed(() => appStore.playerCoordinates)
 const locations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
-const routeCoordinates = computed(() : Coordinates[] => [...routeStore.routeCoordinates, playerCoordinates.value] as Coordinates[])
+const routeCoordinates = computed((): Coordinates[] => [...routeStore.routeCoordinates, playerCoordinates.value] as Coordinates[])
 
 function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker | undefined {
   if (!mapInstance) {
@@ -60,7 +60,7 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     console.error(`Location type is missing ${location.type}`)
     return
   }
-  const iconProperties : IconOptions= {
+  const iconProperties: IconOptions = {
     iconUrl: `./icons/${locationType.filename}`,
     iconSize: [67, 83],
     iconAnchor: [34, 83],
@@ -69,12 +69,19 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     shadowSize: [161, 100],
     shadowAnchor: [10, 90],
   }
-  if (location.type === 'stash') {
+  if (location.type === 'stash' ) {
     iconProperties.iconSize = [33, 41]
     iconProperties.iconAnchor = [17, 41]
-    iconProperties.popupAnchor= [0, -15]
+    iconProperties.popupAnchor = [0, -15]
     iconProperties.shadowSize = [80, 50]
     iconProperties.shadowAnchor = [5, 45]
+  }
+  if (location.type === 'shop') {
+    iconProperties.iconSize = [50, 61]
+    iconProperties.iconAnchor = [25, 61]
+    iconProperties.popupAnchor = [0, -22]
+    iconProperties.shadowSize = [120, 75]
+    iconProperties.shadowAnchor = [8, 67]
   }
 
   const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
@@ -417,7 +424,7 @@ function generateGameLocationMarkers(): void {
   // Create new markers
   locations.value.forEach((location: GameLocation) => {
     // skip empty stashes
-    if( location.type==='stash' && location.scouted && location.giftItem===undefined ) {
+    if (location.type === 'stash' && location.scouted && location.giftItem === undefined) {
       return;
     }
     const marker = createGameLocationMarker(location, map.value as L.Map)

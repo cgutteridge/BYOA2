@@ -44,8 +44,7 @@ export class LootboxPower extends ItemPower {
     return true;
   }
   
-  generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item generates a random item with power level equal to the number of uses remaining.`;
+  generateEffectDescription(_item: Item): string {
+    return `Generates items.`;
   }
 } 

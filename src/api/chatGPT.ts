@@ -116,6 +116,38 @@ export class ChatGPTAPI {
     return this.sendMessage(messages)
   }
 
+  async generateGameLocationShopDescription(
+      locationName: string
+  ): Promise<{
+    locationName: string,
+    locationDescription: string
+  }> {
+    const stopWords = ['junction','of','','street','avenue','lane','road','way','&']
+    const parts = locationName.toLowerCase().split(' ').filter(
+        word=>!stopWords.includes(word)
+    )
+    const messages: Message[] = [
+      this.SYSTEM_ROLE,
+      {
+        role: 'user',
+        content: `
+           Generate a JSON object for a shop, stall or market in the storyline of the adventure you are running.
+           Use the words "${parts.join('","')}" as inspiration for the story.
+           The players can only get one item from the items available; make up a reason why. Either not enough gold, 
+           or time pressure, or a law, or a grumpy seller etc.
+           
+        name: the name of the location
+        description: description, in the 2nd person, of the location and how the players discover or are given the item 
+        
+        Respond in JSON format with the following fields: 
+        "locationName", "locationDescription"
+        `
+      }
+    ]
+
+    return this.sendMessage(messages)
+  }
+
   async generateGameLocationDescription(
     locationName: string, 
     locationType: string, 

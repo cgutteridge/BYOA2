@@ -79,6 +79,7 @@ export interface GameLocation {
   prizeItem?: Item
   defeatedEnemies: number
   hasBeenVisited: boolean
+  wares? : Item[]
 }
 
 export interface GameLocationType {

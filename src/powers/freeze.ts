@@ -81,7 +81,6 @@ export class FreezePower extends ItemPower {
   }
 
   generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item freezes ${this.getTargetDescription(item)}.`;
+    return `Freeze ${this.getTargetDescription(item)}.`;
   }
 } 

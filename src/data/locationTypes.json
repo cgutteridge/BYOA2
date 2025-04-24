@@ -133,5 +133,10 @@
     "id": "stash",
     "title": "Stash",
     "filename": "stash.png"
+  },
+  {
+    "id": "shop",
+    "title": "Shop",
+    "filename": "shop.png"
   }
 ] 

@@ -112,8 +112,6 @@ export class TransmutePower extends ItemPower {
   }
 
   generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    
     let resultDescription = "another creature of the same level";
     
     // If we have a specific result species, include it in the description
@@ -125,6 +123,6 @@ export class TransmutePower extends ItemPower {
       resultDescription = this.getResultDescription(item);
     }
     
-    return `This ${qualityTerm} item transforms ${this.getTargetDescription(item)} into ${resultDescription}.`;
+    return `Transform ${this.getTargetDescription(item)} into ${resultDescription}.`;
   }
 } 

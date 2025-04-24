@@ -159,7 +159,6 @@ export class SplitPower extends ItemPower {
   }
 
   generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item splits ${this.getTargetDescription(item)} into multiple but weaker enemies.`;
+    return `Split ${this.getTargetDescription(item)} into multiple but weaker enemies.`;
   }
 } 

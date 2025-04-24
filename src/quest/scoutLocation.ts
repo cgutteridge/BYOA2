@@ -34,7 +34,7 @@ export async function scoutLocation(
 
     // Stash locations just have a gift item
     if (location.type === 'stash') {
-        const points = pickOne([1,2,3,4])+pickOne([1,2,3,4])
+        const points = pickOne([1, 2, 3, 4]) + pickOne([1, 2, 3, 4])
         location.giftItem = generateRandomItem(points);
 
         const giftItemPower = powerFactory.getPower(location.giftItem.power)
@@ -58,6 +58,28 @@ export async function scoutLocation(
         location.giftItem.description = itemDescription
         return
     }
+
+    // Shop locations have wares to choose from
+    if (location.type === 'shop') {
+        const spread = pickOne([[12, 2], [8, 3], [6, 4], [3, 8]])
+        const wares = []
+        for(let i=0; i<spread[0]; i++ ) {
+            wares.push(generateRandomItem(spread[1]))
+        }
+        location.wares = wares
+
+        // Generate location description, name, and item details from AI
+        const {
+            locationName,
+            locationDescription
+        } = await chatGPT.generateGameLocationShopDescription(
+            location.name
+        )
+        location.name = locationName
+        location.description = locationDescription
+        return
+    }
+
 
     // Generate monsters for this location
     const monsters = generateMonsters(location)

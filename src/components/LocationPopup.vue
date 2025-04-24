@@ -71,8 +71,18 @@
               :show-details="true"
           />
         </div>
+        <div v-if="location.wares" class="gift-info" :style="sectionStyle">
+          <h3>Wares:</h3>
+          <div v-for="item in location.wares" style="margin-bottom: 0.5rem">
+            <ItemCard
+                :item="item"
+                variant="gift"
+                :show-details="true"
+            />
+          </div>
+        </div>
 
-        <template v-if="location.type !=='stash'">
+        <template v-if="location.type !=='stash' && location.type !=='shop'">
           <h3 class="monsters-heading">Active Enemies:</h3>
 
           <!-- Show a message when all monsters are defeated -->

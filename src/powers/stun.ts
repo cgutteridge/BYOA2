@@ -84,7 +84,6 @@ export class StunPower extends ItemPower {
   }
 
   generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item stuns ${this.getTargetDescription(item)}.`;
+    return `Stun ${this.getTargetDescription(item)}.`;
   }
 } 

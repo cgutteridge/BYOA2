@@ -85,7 +85,6 @@ export class PacifyPower extends ItemPower {
   }
 
   generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item pacifies ${this.getTargetDescription(item)}.`;
+    return `Pacify ${this.getTargetDescription(item)}.`;
   }
 } 

@@ -86,7 +86,6 @@ export class VegetatePower extends ItemPower {
   }
 
   generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item vegetates ${this.getTargetDescription(item)}.`;
+    return `Vegetate ${this.getTargetDescription(item)}.`;
   }
 } 

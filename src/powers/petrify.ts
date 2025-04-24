@@ -85,7 +85,6 @@ export class PetrifyPower extends ItemPower {
   }
 
   generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item turns ${this.getTargetDescription(item)} into stone.`;
+    return `Turn ${this.getTargetDescription(item)} into stone.`;
   }
 } 
