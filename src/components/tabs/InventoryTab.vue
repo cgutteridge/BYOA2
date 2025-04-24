@@ -30,6 +30,7 @@
         <ItemCard 
           :item="item"
           variant="inventory"
+          :show-restrictions="true"
         />
       </div>
     </div>

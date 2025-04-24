@@ -18,6 +18,7 @@
     <div class="item-card__content">
       <div class="item-card__name">{{ item.name }}</div>
       <div class="item-card__power" v-if="showDetails">{{ itemEffect }}</div>
+      <div class="item-card__power" v-if="showRestrictions">{{ itemRestrictions }}</div>
     </div>
     <div class="item-card__uses">{{ item.uses !== undefined ? item.uses : '∞' }}</div>
   </div>
@@ -39,6 +40,7 @@ const props = defineProps<{
   variant?: 'inventory' | 'prize' | 'gift' | 'drop'
   compact?: boolean
   showDetails?: boolean
+  showRestrictions?: boolean
 }>()
 
 // Define emits for item actions
@@ -56,6 +58,11 @@ const getItemPowerIcon = (power: ItemPowerId | undefined): string => {
 const itemEffect = computed(()=> {
   const powerObj = powerFactory.getPower(props.item.power)
   return powerObj?.generateEffectDescription(props.item) || 'unknown'
+})
+
+const itemRestrictions = computed(()=> {
+  const powerObj = powerFactory.getPower(props.item.power)
+  return powerObj?.generateRestrictionText(props.item) || ''
 })
 
 // Check if this item has valid targets in the current location

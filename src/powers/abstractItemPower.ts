@@ -315,6 +315,41 @@ export abstract class ItemPower {
         return monsterTypes;
     }
 
+    generateRestrictionText( item:Item ) : string {
+
+        switch (this.itemTargetType) {
+            case 'special':
+                return '';
+            case 'locations':
+                return `${item.target} location`
+                switch (item.target) {
+                    case 'pick':
+                        return `chosen location`
+                    case 'random':
+                        return `random location`
+                    default:
+                        return '?'
+                }
+            case 'monsters':
+                let filter = ''
+                if (item.targetFilters?.flags && item.targetFilters.flags.length > 0) {
+                    filter = " "+item.targetFilters.flags.join('/');
+                }
+                if (item.targetFilters?.species && item.targetFilters.species.length > 0) {
+                    filter = " "+item.targetFilters.species.join('/');
+                }
+                let map = {
+                    pick: `chosen${filter} ${item.maxLevel}`,
+                    random: `random${filter} ${item.maxLevel}`,
+                    pick_type: `chosen${filter} ${item.maxLevel} group`,
+                    random_type: `random${filter} ${item.maxLevel} group`,
+                    '': ''
+                }
+                let text = map[item.target??''] as string
+
+                return text
+        }
+    }
 }
 
 // Power factory to provide UI properties and functionality
