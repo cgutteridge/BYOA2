@@ -42,7 +42,7 @@
     <!-- Level up animations container -->
     <div v-if="showLevelUpAnimation" class="animation-container">
       <!-- Stars and emojis -->
-      <div v-for="i in 24" :key="i" class="particle" :style="getParticleStyle(i)">
+      <div v-for="i in 24" :key="i" class="particle" :style="getParticleStyle()">
         {{ i % 4 === 0 ? '⭐' : i % 4 === 1 ? '✨' : i % 4 === 2 ? '🎉' : '🎊' }}
       </div>
     </div>
@@ -100,7 +100,7 @@ function triggerLevelUpAnimation(): void {
 }
 
 // Generate dynamic styles for particles
-function getParticleStyle(index: number): Record<string, string> {
+function getParticleStyle(): Record<string, string> {
   // Generate random angle between up (270 degrees) and right (0/360 degrees)
   // This maps to the range: 270-360 degrees
   const angle = 270 + (Math.random() * 90)

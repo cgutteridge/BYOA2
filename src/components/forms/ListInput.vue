@@ -111,7 +111,7 @@ function checkIfMobile(): boolean {
 }
 
 // Handle input focus event
-function handleFocus(event: FocusEvent): void {
+function handleFocus(_event: FocusEvent): void {
   if (!showList.value) {
     showList.value = true
   }
@@ -469,17 +469,6 @@ const hasValidSelection = computed((): boolean => {
   }
   
   return props.modelValue !== null && props.modelValue !== undefined && props.modelValue !== ''
-})
-
-// Get the input style based on validation state
-const getInputStyle = computed(() => {
-  const baseStyle = {
-    backgroundColor: questStore.getBackgroundColor('tertiary'),
-    color: questStore.getTextColor('primary'),
-    borderColor: questStore.getBorderColor('medium')
-  }
-  
-  return baseStyle
 })
 
 // Style for selected input
