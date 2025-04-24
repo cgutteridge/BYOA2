@@ -1,54 +1,186 @@
 <template>
-  <div class="level-indicator" :style="indicatorStyle">
-    <div class="level-text">LEVEL</div>
-    <div class="level-value">{{ questStore.level }}</div>
+  <div class="level-indicator-container" :class="{ 'level-up': showLevelUpAnimation }">
+    <svg class="level-indicator" width="70" height="70" viewBox="0 0 70 70" :style="indicatorStyle">
+      <!-- Background circle -->
+      <circle cx="35" cy="35" r="32" class="level-bg" :style="backgroundStyle" />
+      
+      <!-- Progress circle -->
+      <circle 
+        cx="35" 
+        cy="35" 
+        r="32" 
+        class="level-progress" 
+        :style="progressStyle"
+        stroke-dasharray="201.1"
+        :stroke-dashoffset="progressOffset"
+      />
+      
+      <!-- Level text group -->
+      <g class="level-text-group">
+        <text x="35" y="22" class="level-text" text-anchor="middle">LEVEL</text>
+        <text x="35" y="48" class="level-value" text-anchor="middle">{{ questStore.level }}</text>
+      </g>
+    </svg>
+    
+    <!-- Level up animations container -->
+    <div v-if="showLevelUpAnimation" class="animation-container">
+      <!-- Stars and emojis -->
+      <div v-for="i in 24" :key="i" class="particle" :style="getParticleStyle(i)">
+        {{ i % 4 === 0 ? '⭐' : i % 4 === 1 ? '✨' : i % 4 === 2 ? '🎉' : '🎊' }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useQuestStore } from '@/stores/questStore'
 
 const questStore = useQuestStore()
+const showLevelUpAnimation = ref(false)
+
+// Calculate the progress offset based on level progress
+const progressOffset = computed(() => {
+  // Circle circumference is 2 * PI * r = 2 * 3.14159 * 32 ≈ 201.1
+  // Offset starts at 201.1 (empty circle) and goes to 0 (full circle)
+  const circumference = 201.1
+  return circumference - (circumference * questStore.levelProgress / 100)
+})
 
 // Compute styles based on theme
-const indicatorStyle = computed(() => ({
-  backgroundColor: 'black',
-  color: 'white',
-  boxShadow: `0 4px 8px ${questStore.getBorderColor('dark')}`
+const backgroundStyle = computed(() => ({
+  fill: 'black'
 }))
+
+const progressStyle = computed(() => ({
+  stroke: '#ff3e3e',
+  strokeWidth: '5px',
+  fill: 'transparent',
+  transition: 'all 0.3s ease'
+}))
+
+const indicatorStyle = computed(() => {
+  const isDarkMode = questStore.theme === 'dark'
+  return {
+    filter: isDarkMode 
+      ? 'drop-shadow(0 4px 6px rgba(255, 255, 255, 0.2))' 
+      : 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4))',
+    transition: 'all 0.3s ease'
+  }
+})
+
+// Watch level changes to trigger animation
+watch(() => questStore.level, (newLevel, oldLevel) => {
+  if (newLevel > oldLevel) {
+    triggerLevelUpAnimation()
+  }
+})
+
+// Function to trigger level up animation
+function triggerLevelUpAnimation(): void {
+  showLevelUpAnimation.value = true
+  
+  // Reset the animation after some time
+  setTimeout(() => {
+    showLevelUpAnimation.value = false
+  }, 5000)
+}
+
+// Generate dynamic styles for particles
+function getParticleStyle(index: number): Record<string, string> {
+  const angle = (index / 24) * 360
+  const distance = 400 + Math.random() * 300 // Much larger distance to cover half the screen
+  const rotationAmount = 180 + Math.random() * 720 // Up to 2.5 full rotations
+  const rotationDirection = Math.random() > 0.5 ? 1 : -1
+  const delay = Math.random() * 0.7
+  const duration = 2.5 + Math.random() * 1.5
+  const size = 18 + Math.floor(Math.random() * 14)
+  
+  return {
+    animationDelay: `${delay}s`,
+    animationDuration: `${duration}s`,
+    fontSize: `${size}px`,
+    '--angle': `${angle}deg`,
+    '--distance': `${distance}px`,
+    '--rotation': `${rotationAmount * rotationDirection}deg`
+  }
+}
 </script>
 
 <style scoped>
-.level-indicator {
+.level-indicator-container {
   position: fixed;
   bottom: 5px;
   left: 5px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family: Arial, sans-serif;
   z-index: 200;
+  width: 70px;
+  height: 70px;
+  transition: all 0.3s ease;
+}
+
+.level-indicator {
+  cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.level-indicator:hover {
+  transform: scale(1.1);
 }
 
 .level-text {
   font-size: 10px;
   font-weight: bold;
   text-transform: uppercase;
-  margin-bottom: -2px;
+  fill: white;
 }
 
 .level-value {
   font-size: 24px;
   font-weight: bold;
+  fill: white;
 }
 
-.level-indicator:hover {
-  transform: scale(1.1);
+/* Level up animation */
+.level-up {
+  animation: big-pulse 0.6s ease-in-out 4;
+  z-index: 1000;
+}
+
+@keyframes big-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.animation-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  animation: spin-out-fade ease-out forwards;
+  z-index: 1001;
+}
+
+@keyframes spin-out-fade {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--angle)) translateX(0) rotate(0deg);
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(var(--distance)) rotate(var(--rotation));
+    scale: 0.3;
+  }
 }
 </style> 
