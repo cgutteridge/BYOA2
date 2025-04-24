@@ -3,18 +3,31 @@
     <h3 v-if="title" :style="titleStyle">{{ title }}</h3>
     
     <!-- Search field (optional) -->
-    <input 
-      v-if="searchable"
-      type="text" 
-      v-model="searchText" 
-      :placeholder="placeholder || 'Search...'"
-      @focus="handleFocus"
-      @mousedown="handleMouseDown"
-      @input="showList = true"
-      class="picker-search"
-      :style="inputStyle"
-      ref="inputRef"
-    />
+    <div class="input-wrapper" :class="{ 'has-selection': hasValidSelection }">
+      <input 
+        v-if="searchable"
+        type="text" 
+        v-model="searchText" 
+        :placeholder="placeholder || 'Search...'"
+        @focus="handleFocus"
+        @mousedown="handleMouseDown"
+        @input="showList = true"
+        class="picker-search"
+        :class="{ 'has-selection': hasValidSelection }"
+        :style="hasValidSelection ? getSelectedInputStyle : inputStyle"
+        :disabled="hasValidSelection"
+        ref="inputRef"
+      />
+      <button 
+        v-if="hasValidSelection" 
+        class="clear-button" 
+        :style="clearButtonStyle" 
+        @mousedown.prevent="clearSelection($event)"
+        aria-label="Clear selection"
+      >
+        ×
+      </button>
+    </div>
     
     <!-- Options list -->
     <div v-if="shouldShowList" class="picker-list" :style="listStyle" ref="listRef">
@@ -466,20 +479,20 @@ const getInputStyle = computed(() => {
     borderColor: questStore.getBorderColor('medium')
   }
   
-  if (hasValidSelection.value) {
-    return {
-      ...baseStyle,
-      borderColor: questStore.getBorderColor('accent'),
-      backgroundColor: 'rgba(40, 167, 69, 0.1)' // Dim green background
-    }
-  }
-  
   return baseStyle
 })
 
+// Style for selected input
+const getSelectedInputStyle = computed(() => ({
+  backgroundColor: 'rgba(20, 80, 20, 0.8)', // Dark green background
+  color: '#ffffff', // White text for better contrast
+  borderColor: questStore.getBorderColor('accent'),
+  cursor: 'default' // Show non-editable cursor
+}))
+
 // Clear button style
 const clearButtonStyle = computed(() => ({
-  color: questStore.getTextColor('secondary'),
+  color: '#ffffff', // White color for better visibility on dark green
   fontWeight: 'bold'
 }))
 
@@ -541,6 +554,11 @@ function clearSelection(event: MouseEvent): void {
   box-sizing: border-box; /* Include padding in width calculation */
 }
 
+.picker-search.has-selection {
+  padding-left: 2.5rem; /* Match right padding for symmetry */
+  font-weight: 500; /* Make selected value more prominent */
+}
+
 .clear-button {
   position: absolute;
   right: 0.5rem;
@@ -548,7 +566,7 @@ function clearSelection(event: MouseEvent): void {
   transform: translateY(-50%);
   background: none;
   border: none;
-  font-size: 1.1rem;
+  font-size: 1.5rem; /* Increased from 1.1rem for better visibility */
   font-weight: bold;
   width: 1.5rem;
   height: 1.5rem;
@@ -557,7 +575,7 @@ function clearSelection(event: MouseEvent): void {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.9; /* Increased from 0.7 for better visibility */
   transition: all 0.2s ease;
   margin-top: -0.25rem; /* Adjust for the bottom margin of the input */
   z-index: 2; /* Ensure it's above the input */
@@ -565,7 +583,11 @@ function clearSelection(event: MouseEvent): void {
 
 .clear-button:hover {
   opacity: 1;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.2); /* Light background for hover effect */
+}
+
+.input-wrapper.has-selection .clear-button {
+  display: flex; /* Ensure visibility when selection is made */
 }
 
 .picker-list {
