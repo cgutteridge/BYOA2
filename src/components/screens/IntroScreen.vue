@@ -4,16 +4,14 @@
       <h2>{{ questStore.title }}</h2>
       
       <div class="quest-details">
-        <p class="description">{{ questStore.description }}</p>
+        <story-block>{{ questStore.description }}</story-block>
 
         <div class="location-info">
           <div class="location-card" :style="locationCardStyle">
-            <h3>Start Location</h3>
             <p>{{ questStore.startGameLocation?.name || 'Not selected' }}</p>
           </div>
-
+          <div>to</div>
           <div class="location-card" :style="locationCardStyle">
-            <h3>End Location</h3>
             <p>{{ questStore.endGameLocation?.name || 'Not selected' }}</p>
           </div>
         </div>
@@ -43,6 +41,7 @@ import { useAppStore } from "@/stores/appStore";
 import { useQuestStore } from "@/stores/questStore";
 import ButtonInput from "@/components/forms/ButtonInput.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
+import StoryBlock from "@/components/StoryBlock.vue";
 
 const questStore = useQuestStore();
 const appStore = useAppStore();
@@ -96,6 +95,7 @@ function start(): void {
   display: flex;
   gap: 2rem;
   margin: 2rem 0;
+  align-items: center;
 }
 
 .location-card {
