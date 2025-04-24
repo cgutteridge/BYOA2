@@ -155,7 +155,7 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
   switch (upgrade) {
     case 'uses':
       item.uses = (item.uses || 1) + 1;
-      return remainingPoints - 2;
+      return remainingPoints - 1;
       
     case 'target_restriction':
       // Remove species and flag restrictions
@@ -168,12 +168,12 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
     case 'result_restriction':
       // Upgrade to player choice
       item.result = 'pick';
-      return remainingPoints - 2;
+      return remainingPoints - 1;
       
     case 'upgrade_to_pick':
       // Upgrade from random to pick (single target)
       item.target = 'pick';
-      return remainingPoints - 1;
+      return remainingPoints - 2;
       
     case 'upgrade_to_random_type':
       // Upgrade from pick to random_type
