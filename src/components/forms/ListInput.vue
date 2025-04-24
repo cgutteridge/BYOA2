@@ -2,28 +2,19 @@
   <div class="picker-container" :style="containerStyle" ref="containerRef">
     <h3 v-if="title" :style="titleStyle">{{ title }}</h3>
     
-    <!-- Search field with clear button -->
-    <div v-if="searchable" class="input-wrapper" :class="{ 'has-value': hasValidSelection }">
-      <input 
-        type="text" 
-        v-model="searchText" 
-        :placeholder="placeholder || 'Search...'"
-        @focus="handleFocus"
-        @mousedown="handleMouseDown"
-        @input="showList = true"
-        class="picker-search"
-        :style="getInputStyle"
-        ref="inputRef"
-      />
-      <button 
-        v-if="hasValidSelection" 
-        class="clear-button" 
-        @mousedown.prevent="clearSelection"
-        :style="clearButtonStyle"
-      >
-        ✕
-      </button>
-    </div>
+    <!-- Search field (optional) -->
+    <input 
+      v-if="searchable"
+      type="text" 
+      v-model="searchText" 
+      :placeholder="placeholder || 'Search...'"
+      @focus="handleFocus"
+      @mousedown="handleMouseDown"
+      @input="showList = true"
+      class="picker-search"
+      :style="inputStyle"
+      ref="inputRef"
+    />
     
     <!-- Options list -->
     <div v-if="shouldShowList" class="picker-list" :style="listStyle" ref="listRef">
@@ -199,6 +190,12 @@ const containerStyle = computed(() => ({
 
 const titleStyle = computed(() => ({
   color: questStore.getTextColor('primary')
+}))
+
+const inputStyle = computed(() => ({
+  backgroundColor: questStore.getBackgroundColor('tertiary'),
+  color: questStore.getTextColor('primary'),
+  borderColor: questStore.getBorderColor('medium')
 }))
 
 const listStyle = computed(() => ({
