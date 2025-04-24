@@ -17,8 +17,13 @@ const questStore = useQuestStore();
   font-style: italic;
   margin-bottom: 1rem;
   position: relative;
-  background-color: v-bind('questStore.theme === "dark" ? "#2c2417" : "#f5f0e5"');
+  background-color: v-bind('questStore.theme === "dark" ? "rgba(60, 50, 40, 0.85)" : "#f5f0e5"');
   color: v-bind('questStore.getTextColor("primary")');
+  
+  /* Parchment background */
+  background-image: url('/images/canvas.jpg');
+  background-size: cover;
+  background-blend-mode: v-bind('questStore.theme === "dark" ? "soft-light" : "multiply"');
   
   /* Torn parchment effect */
   border: none;
@@ -35,7 +40,7 @@ const questStore = useQuestStore();
   );
 }
 
-/* Parchment texture */
+/* Parchment texture overlay */
 .story-block::before {
   content: "";
   position: absolute;
@@ -45,6 +50,7 @@ const questStore = useQuestStore();
   bottom: 0;
   background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.08"/></svg>');
   background-repeat: repeat;
+  opacity: v-bind('questStore.theme === "dark" ? 0.2 : 0.08');
   pointer-events: none;
   z-index: 1;
 }
