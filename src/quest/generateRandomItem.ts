@@ -22,6 +22,8 @@ const AVAILABLE_FLAGS: MonsterFlag[] = [
 export function generateRandomItem(level: number): Item {
   // Use level directly as points
   const totalPoints = level;
+
+  // console.log( `\nGENERATION: ${totalPoints} `)
   
   // Track points spent
   let remainingPoints = totalPoints;
@@ -80,16 +82,19 @@ export function generateRandomItem(level: number): Item {
     // Remove resultSpecies properties as they're no longer needed
     delete item.resultSpecies;
   }
-  
+
+  // console.log( `power : ${item.power}`)
   // Step 4: Spend remaining points on upgrades
   while (remainingPoints > 0) {
     const availableUpgrades = getAvailableUpgrades(item, remainingPoints, selectedPower);
-    
+    // console.log( `pts ${remainingPoints}, upgrades: ${availableUpgrades.join(', ')}`);
+
     // Break if no more upgrades possible
     if (availableUpgrades.length === 0) break;
     
     // Pick a random upgrade
     const selectedUpgrade = pickOne(availableUpgrades);
+    // console.log( `selectedUpgrade : ${selectedUpgrade}`)
     
     // Apply the upgrade and reduce remaining points
     remainingPoints = applyUpgrade(item, selectedUpgrade, remainingPoints);
@@ -138,10 +143,10 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   if (item.maxLevel === 'minion' && remainingPoints >= 1 && power.maxLevel !== 'minion') {
     availableUpgrades.push('level_grunt');
   }
-  if (item.maxLevel === 'grunt' && remainingPoints >= 2 && power.maxLevel !== 'grunt') {
+  if (item.maxLevel === 'grunt' && remainingPoints >= 1 && power.maxLevel !== 'grunt') {
     availableUpgrades.push('level_elite');
   }
-  if (item.maxLevel === 'elite' && remainingPoints >= 4 && power.maxLevel !== 'elite') {
+  if (item.maxLevel === 'elite' && remainingPoints >= 1 && power.maxLevel !== 'elite') {
     availableUpgrades.push('level_boss');
   }
   
@@ -191,14 +196,14 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
       return remainingPoints - 1;
       
     case 'level_elite':
-      // Upgrade from grunt to elite (cost: 2)
+      // Upgrade from grunt to elite (cost: 1)
       item.maxLevel = 'elite';
-      return remainingPoints - 2;
+      return remainingPoints - 1;
       
     case 'level_boss':
-      // Upgrade from elite to boss (cost: 4)
+      // Upgrade from elite to boss (cost: 1)
       item.maxLevel = 'boss';
-      return remainingPoints - 4;
+      return remainingPoints - 1;
       
     default:
       return remainingPoints;
