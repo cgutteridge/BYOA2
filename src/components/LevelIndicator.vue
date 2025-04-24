@@ -1,6 +1,8 @@
 <template>
-  <div class="level-indicator-container" :class="{ 'level-up': showLevelUpAnimation }">
-    <svg class="level-indicator" width="70" height="70" viewBox="0 0 70 70" :style="indicatorStyle">
+  <div class="level-indicator-container">
+    <svg class="level-indicator" width="70" height="70" viewBox="0 0 70 70" :style="indicatorStyle"
+         @click="triggerLevelUpAnimation()" :class="{ 'level-up': showLevelUpAnimation }"
+    >
       <!-- Background circle -->
       <circle cx="35" cy="35" r="32" fill="black" />
       
@@ -22,7 +24,7 @@
       
       <!-- Level text group -->
       <g class="level-text-group">
-        <text x="35" y="22" class="level-text" text-anchor="middle">LEVEL</text>
+        <text x="35" y="26" class="level-text" text-anchor="middle">LEVEL</text>
         <text x="35" y="48" class="level-value" text-anchor="middle">{{ questStore.level }}</text>
       </g>
     </svg>
@@ -71,6 +73,7 @@ watch(() => questStore.level, (newLevel, oldLevel) => {
 
 // Function to trigger level up animation
 function triggerLevelUpAnimation(): void {
+  console.log('triggerLevelUpAnimation')
   showLevelUpAnimation.value = true
   
   // Reset the animation after some time
