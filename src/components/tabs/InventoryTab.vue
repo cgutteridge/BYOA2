@@ -127,6 +127,7 @@ function emptyInventory(): void {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1rem;
   padding: 1rem;
+  align-items: center;
 }
 
 .debug-buttons-row {
