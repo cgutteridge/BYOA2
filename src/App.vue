@@ -12,6 +12,7 @@ import VictoryScreen from '@/components/screens/VictoryScreen.vue'
 import InterfaceModal from './components/InterfaceModal.vue'
 import ItemModal from './components/ItemModal.vue'
 import NotificationSystem from './components/NotificationSystem.vue'
+import LevelIndicator from './components/LevelIndicator.vue'
 
 const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
@@ -245,6 +246,11 @@ onUnmounted(() => {
         🎒
       </button>
       
+      <!-- Level Indicator (only show during gameplay) -->
+      <LevelIndicator
+        v-if="(appStore.screen === 'location' || appStore.screen === 'map')"
+      />
+      
       <!-- Interface Modal -->
       <InterfaceModal />
       
@@ -350,7 +356,7 @@ body {
   text-align: center;
   padding: 5px;
   font-weight: bold;
-  z-index: 9999;
+  z-index: 100;
 }
 
 @keyframes spin {

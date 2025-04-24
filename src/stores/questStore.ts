@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {computed, ref} from 'vue'
+import {computed, ref, watch} from 'vue'
 import type {GameLocationId, QuestState} from '@/types'
 import {useLocationStore} from './locationStore'
 import {useAppStore} from './appStore'
@@ -294,14 +294,27 @@ export const useQuestStore = defineStore('quest', () => {
     endGameLocationId.value = id
   }
   
+  // Function to calculate level based on XP (1 level per 100 XP)
+  const level = computed( (): number => {
+    return Math.floor(xp.value / 100) + 1
+  })
+
+  watch( level, (from, to)=>{
+    if( from!==to) {
+      logAndNotifyQuestEvent("LEVEL UP!")
+    }
+  })
+
+  // Set XP and recalculate level
   const setXP = (newXP: number) => {
     xp.value = newXP
   }
-  
+
+  // Add XP and recalculate level
   const addXP = (amount: number) => {
     xp.value += amount
   }
-  
+
   const setBooze = (newBooze: number) => {
     booze.value = newBooze
   }
@@ -387,7 +400,19 @@ export const useQuestStore = defineStore('quest', () => {
   }
   
   const endQuest = () => {
-    setStatus('no_quest')
+    // Reset quest-specific data but maintain global player stats
+    status.value = 'no_quest'
+    startGameLocationId.value = undefined
+    endGameLocationId.value = undefined
+    currentGameLocationId.value = undefined
+    
+    // Go back to intro screen
+    appStore.setScreen('start_quest')
+    
+    // Reset app state
+    appStore.closeInterface()
+    appStore.closeItemInspectModal()
+    appStore.setInventoryTab('inventory')
   }
 
   const startGameLocation = computed(() => {
@@ -424,6 +449,7 @@ export const useQuestStore = defineStore('quest', () => {
     playerCount,
     difficulty,
     xp,
+    level,
     booze,
     soft,
     theme,
@@ -467,6 +493,6 @@ export const useQuestStore = defineStore('quest', () => {
     getBorderColor,
     getButtonColors,
     getOverlayColors,
-    getGradient
+    getGradient,
   }
 }) 
