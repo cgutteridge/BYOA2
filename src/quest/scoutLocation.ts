@@ -34,7 +34,7 @@ export async function scoutLocation(
 
     // Stash locations just have a gift item
     if (location.type === 'stash') {
-        const points = pickOne([1,2,3,4])+pickOne([1,2,3,4])-1
+        const points = pickOne([1,2,3,4])+pickOne([1,2,3,4])
         location.giftItem = generateRandomItem(points);
 
         const giftItemPower = powerFactory.getPower(location.giftItem.power)
