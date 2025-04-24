@@ -296,12 +296,16 @@ export const useQuestStore = defineStore('quest', () => {
   
   // Function to calculate level based on XP (1 level per 100 XP)
   const level = computed( (): number => {
+    if( !xp.value ) { return 1 }
     return Math.floor(xp.value / 100) + 1
   })
 
   watch( level, (from, to)=>{
-    if( from!==to) {
-      logAndNotifyQuestEvent("LEVEL UP!")
+    if( to >= from ) { return }
+    let levelCounter : number = from
+    while( levelCounter<to) {
+      levelCounter++
+      logAndNotifyQuestEvent(`LEVEL UP! - You are now Level ${levelCounter}.`)
     }
   })
 
