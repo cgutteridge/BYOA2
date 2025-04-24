@@ -321,15 +321,13 @@ export abstract class ItemPower {
             case 'special':
                 return '';
             case 'locations':
-                return `${item.target} location`
                 switch (item.target) {
                     case 'pick':
                         return `chosen location`
                     case 'random':
                         return `random location`
-                    default:
-                        return '?'
                 }
+                return "?"
             case 'monsters':
                 let filter = ''
                 if (item.targetFilters?.flags && item.targetFilters.flags.length > 0) {
