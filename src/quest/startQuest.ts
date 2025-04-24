@@ -1,4 +1,4 @@
-import {GameLocation, toGameLocationTypeId} from '@/types'
+import {Coordinates, GameLocation, toGameLocationTypeId} from '@/types'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {useInventoryStore} from "@/stores/inventoryStore.ts";
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
@@ -28,7 +28,7 @@ export async function startQuest(
     const chatGPT = new ChatGPTAPI()
 
     questStore.setStatus('init');
-    
+
     // Initialize quest details using ChatGPT
     try {
         const questData = await chatGPT.initializeQuest(
@@ -37,7 +37,7 @@ export async function startQuest(
             minimumLocations,
             title
         )
-        
+
         questStore.setTitle(title);
         questStore.setDescription(questData.questDescription);
         questStore.setTokenTitle(questData.tokenTitle);
@@ -50,7 +50,7 @@ export async function startQuest(
         questStore.setTokenTitle('shard of truth');
         questStore.setTokenDescription('a magical shard that contains a piece of ancient knowledge');
     }
-    
+
     questStore.setStartGameLocationId(startGameLocation.id);
     questStore.setEndGameLocationId(endGameLocation.id);
     questStore.setPlayerCount(players);
@@ -65,8 +65,17 @@ export async function startQuest(
         initialiseGameLocation(location)
     })
 
-    // later around start location
-    const extraLocations = await fetchSecondaryGameLocations(startGameLocation.coordinates, 1000)
+    const midPoint : Coordinates = {
+        lat: (startGameLocation.coordinates.lat, endGameLocation.coordinates.lat) / 2,
+        lng: (startGameLocation.coordinates.lng, endGameLocation.coordinates.lng) / 2
+    }
+
+    // later around start location and end location
+    const extraLocations = [
+        ...await fetchSecondaryGameLocations(startGameLocation.coordinates, 1000),
+        ...await fetchSecondaryGameLocations(midPoint, 1000),
+        ...await fetchSecondaryGameLocations(endGameLocation.coordinates, 1000)
+    ]
 
     // add extras one by one unless they are too near another location
     extraLocations.forEach((extraLocation) => {
@@ -86,12 +95,15 @@ export async function startQuest(
     
     // Add one level 1 item per player
     for (let i = 0; i < players; i++) {
-        const item = generateRandomItem(1);
+        const item = generateRandomItem(2);
         inventoryStore.addItem(item);
     }
     
     await scoutLocation(questStore.startGameLocation as GameLocation);
     questStore.setCurrentGameLocation(startGameLocation.id)
+    startGameLocation.hasBeenVisited = true
+
+    await scoutLocation(questStore.endGameLocation as GameLocation);
 
     routeStore.clearRoute()
 
