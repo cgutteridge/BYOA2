@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {computed, ref, watch} from 'vue'
+import {computed, ref} from 'vue'
 import type {GameLocationId, QuestState} from '@/types'
 import {useLocationStore} from './locationStore'
 import {useAppStore} from './appStore'
@@ -295,18 +295,20 @@ export const useQuestStore = defineStore('quest', () => {
   }
   
   // Function to calculate level based on XP (1 level per 100 XP)
-  const level = computed( (): number => {
-    if( !xp.value ) { return 1 }
-    return Math.floor(xp.value / 100) + 1
-  })
+  const level = computed((): number => xpToLevel(xp.value))
 
-  watch( level, (from, to)=>{
-    if( to >= from ) { return }
-    let levelCounter : number = from
-    while( levelCounter<to) {
-      levelCounter++
-      logAndNotifyQuestEvent(`LEVEL UP! - You are now Level ${levelCounter}.`)
+  const xpToLevel = (xpValue: number | undefined) => {
+    if (!xpValue) {
+      return 1
     }
+    return Math.floor(xpValue / 100) + 1
+  }
+
+  const levelProgress = computed((): number => {
+    if (!xp.value) {
+      return 0
+    }
+    return xp.value % 100
   })
 
   // Set XP and recalculate level
@@ -316,7 +318,19 @@ export const useQuestStore = defineStore('quest', () => {
 
   // Add XP and recalculate level
   const addXP = (amount: number) => {
+    const oldLevel = xpToLevel(xp.value)
     xp.value += amount
+    const newLevel = xpToLevel(xp.value)
+    console.log('level', {newLevel, oldLevel})
+    if (newLevel > oldLevel) {
+      console.log('bing')
+      let levelCounter: number = oldLevel
+      while (levelCounter < newLevel) {
+        levelCounter++
+        console.log('level up ', levelCounter)
+        logAndNotifyQuestEvent(`⭐️ LEVEL UP! - You are now Level ${levelCounter}.`)
+      }
+    }
   }
 
   const setBooze = (newBooze: number) => {
@@ -378,9 +392,9 @@ export const useQuestStore = defineStore('quest', () => {
     const softAmount = options.soft || 0;
     
     // Update the stats
-    if (xpAmount != 0) xp.value += xpAmount;
-    if (boozeAmount != 0) booze.value += boozeAmount;
-    if (softAmount != 0) soft.value += softAmount;
+    if (xpAmount != 0) addXP(xpAmount);
+    if (boozeAmount != 0) addBooze(boozeAmount);
+    if (softAmount != 0) addSoft(softAmount);
 
     // Format booze, soft without decimal for whole numbers
     const boozeDisplay = formatNumber(boozeAmount,true)
@@ -481,6 +495,7 @@ export const useQuestStore = defineStore('quest', () => {
     addBooze,
     setSoft,
     addSoft,
+    levelProgress,
     setTheme,
     toggleTheme,
     setMinimumLocations,
