@@ -1,6 +1,8 @@
 <template>
   <div class="location-popup" :style="popupStyle">
-    <h2>{{ location.name }}<template v-if="!location.scouted"> ({{ type.title }})</template></h2>
+    <h2>{{ location.name }}
+      <template v-if="!location.scouted"> ({{ type.title }})</template>
+    </h2>
     <div class="location-status-badges">
       <div class="distance-info" v-if="playerDistance !== null">
         <span>{{ Math.round(playerDistance) }}m away</span>
@@ -11,117 +13,123 @@
     </div>
     <div class="action-buttons">
       <!-- Unscouted locations -->
-      <ButtonInput 
-        v-if="!location.scouted && isInScoutRange && !isLoading"
-        :action="scoutLocationAction"
-        class="scout-button"
-        variant="primary"
-        size="medium"
+      <ButtonInput
+          v-if="!location.scouted && isInScoutRange && !isLoading"
+          :action="scoutLocationAction"
+          class="scout-button"
+          variant="primary"
+          size="medium"
       >
         Scout Location
       </ButtonInput>
-      
-      <ButtonInput 
-        v-if="!location.scouted && !isInScoutRange && questStore.isDebugMode && !isLoading"
-        :action="scoutLocationAction"
-        class="scout-button debug-button"
-        variant="secondary"
-        size="medium"
+
+      <ButtonInput
+          v-if="!location.scouted && !isInScoutRange && questStore.isDebugMode && !isLoading"
+          :action="scoutLocationAction"
+          class="scout-button debug-button"
+          variant="secondary"
+          size="medium"
       >
         Scout (DEBUG)
       </ButtonInput>
-      
+
       <!-- Scouted locations -->
-      <ButtonInput 
-        v-if="location.scouted && isEnterRange && (!isEndLocation || hasEnoughTokens)"
-        :action="enterLocation"
-        class="enter-button"
-        variant="primary"
-        size="medium"
+      <ButtonInput
+          v-if="location.scouted && isEnterRange && (!isEndLocation || hasEnoughTokens)"
+          :action="enterLocation"
+          class="enter-button"
+          variant="primary"
+          size="medium"
       >
         Enter Location
       </ButtonInput>
-      
-      <ButtonInput 
-        v-if="location.scouted && questStore.isDebugMode"
-        :action="enterLocation"
-        class="enter-button debug-button"
-        variant="secondary"
-        size="medium"
+
+      <ButtonInput
+          v-if="location.scouted && questStore.isDebugMode"
+          :action="enterLocation"
+          class="enter-button debug-button"
+          variant="secondary"
+          size="medium"
       >
         Enter Location (DEBUG)
       </ButtonInput>
     </div>
-    
+
     <!-- Token requirement message for end location -->
     <div v-if="showTokenRequirementsMessage" class="token-requirement-message" :style="tokenRequirementStyle">
       You need {{ questStore.minimumLocations }} {{ questStore.tokenTitle }} to enter this location, but you
       {{ inventoryStore.tokenCount < 1 ? "have none" : "only have " + inventoryStore.tokenCount }}.
     </div>
-    
+
     <div class="location-details">
       <div v-if="location.scouted && location.description">
         <div v-if="location.giftItem" class="gift-info" :style="sectionStyle">
-          <h3>Gift:</h3>
-          <ItemCard 
-            :item="location.giftItem"
-            variant="gift"
-            :show-details="true"
+          <h3>Item available :</h3>
+          <ItemCard
+              :item="location.giftItem"
+              variant="gift"
+              :show-details="true"
           />
         </div>
-        
-        <h3 class="monsters-heading">Active Enemies:</h3>
-        
-        <!-- Show a message when all monsters are defeated -->
-        <div v-if="allMonstersDefeated" class="all-defeated-message" :style="messageStyle">
-          All enemies have been defeated!
-        </div>
-        
-        <!-- Group monsters by type and display -->
-        <div v-else-if="groupedMonsters.length > 0" class="monster-groups">
-          <div v-for="(group, gIndex) in groupedMonsters" :key="gIndex" class="monster-type-group">
-            <div 
-              class="monster-card"
-              :class="getMonsterClasses(group.type)"
-              :style="getMonsterStyle(group.type)"
-            >
-              <div class="monster-count">
-                <span>{{ group.monsters.length }}x</span>
-              </div>
-              <div class="monster-info">
-                <div class="monster-title">{{ getMonsterTitle(group) }}</div>
-                <div class="monster-subinfo">{{ getMonsterSpecies(group.type) }} {{ getMonsterLevel(group.type) }}{{ getMonsterTraits(group.type) }}</div>
-                <div class="monster-xp">{{ getMonsterXP(group.type) }} XP</div>
-                <div class="monster-details">
-                  <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(group.type) }}</div>
+
+        <template v-if="location.type !=='stash'">
+          <h3 class="monsters-heading">Active Enemies:</h3>
+
+          <!-- Show a message when all monsters are defeated -->
+          <div v-if="allMonstersDefeated" class="all-defeated-message" :style="messageStyle">
+            All enemies have been defeated!
+          </div>
+
+          <!-- Group monsters by type and display -->
+          <div v-else-if="groupedMonsters.length > 0" class="monster-groups">
+            <div v-for="(group, gIndex) in groupedMonsters" :key="gIndex" class="monster-type-group">
+              <div
+                  class="monster-card"
+                  :class="getMonsterClasses(group.type)"
+                  :style="getMonsterStyle(group.type)"
+              >
+                <div class="monster-count">
+                  <span>{{ group.monsters.length }}x</span>
+                </div>
+                <div class="monster-info">
+                  <div class="monster-title">{{ getMonsterTitle(group) }}</div>
+                  <div class="monster-subinfo">{{ getMonsterSpecies(group.type) }} {{
+                      getMonsterLevel(group.type)
+                    }}{{ getMonsterTraits(group.type) }}
+                  </div>
+                  <div class="monster-xp">{{ getMonsterXP(group.type) }} XP</div>
+                  <div class="monster-details">
+                    <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(group.type) }}</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        
-        <div v-if="location.prizeItem" class="prize-info" :style="sectionStyle">
-          <h3>Reward:</h3>
-          <div class="prize-item-wrapper">
-            <ItemCard 
-              :item="location.prizeItem"
-              variant="prize"
-              :show-details="true"
-            />
+
+          <div v-if="location.prizeItem" class="prize-info" :style="sectionStyle">
+            <h3>Reward:</h3>
+            <div class="prize-item-wrapper">
+              <ItemCard
+                  :item="location.prizeItem"
+                  variant="prize"
+                  :show-details="true"
+              />
+            </div>
+            <div class="prize-item-wrapper" v-if="location.hasToken">
+              <ItemCard
+                  :item="tokenItem"
+                  variant="prize"
+                  :show-details="true"
+              />
+            </div>
           </div>
-          <div class="prize-item-wrapper" v-if="location.hasToken">
-            <ItemCard
-                :item="tokenItem"
-                variant="prize"
-                :show-details="true"
-            />
-          </div>
-        </div>
+
+        </template><!-- end of enemies section -->
 
       </div>
-      
+
       <!-- Loading state when scouting -->
-      <LoadingSpinner v-else-if="isLoading" message="Scouting Location..." />
+      <LoadingSpinner v-else-if="isLoading" message="Scouting Location..."/>
 
     </div>
 
@@ -130,7 +138,7 @@
 
 <script setup lang="ts">
 import {computed} from 'vue'
-import type {GameLocationType, Monster, MonsterTypeId, GameLocation} from '../types'
+import type {GameLocation, GameLocationType, Monster, MonsterTypeId} from '../types'
 import {useAppStore} from "../stores/appStore"
 import {useQuestStore} from "../stores/questStore"
 import {useInventoryStore} from "@/stores/inventoryStore.ts"
@@ -183,10 +191,10 @@ const type = computed((): GameLocationType => locationTypesById[props.location.t
 
 const playerDistance = computed(() => {
   if (!appStore.playerCoordinates) return null;
-  
+
   return calculateDistance(
-    appStore.playerCoordinates,
-    props.location.coordinates
+      appStore.playerCoordinates,
+      props.location.coordinates
   );
 });
 
@@ -225,30 +233,30 @@ const groupedMonsters = computed(() => {
   if (!props.location?.monsters || !props.location.monsters.length) {
     return [];
   }
-  
+
   // Group undefeated monsters by type
   const monstersByType = new Map<string, MonsterGroup>();
-  
+
   // Only include monsters that are still alive
   props.location.monsters.forEach(monster => {
     // Skip defeated monsters
     if (!monster.alive) return;
-    
+
     if (!monstersByType.has(monster.type)) {
       monstersByType.set(monster.type, {
         type: monster.type,
         monsters: []
       });
     }
-    
+
     const group = monstersByType.get(monster.type)!;
     group.monsters.push(monster);
   });
-  
+
   // Filter out empty groups
   const nonEmptyGroups = Array.from(monstersByType.values())
-    .filter(group => group.monsters.length > 0);
-  
+      .filter(group => group.monsters.length > 0);
+
   return nonEmptyGroups;
 });
 
@@ -257,7 +265,7 @@ const allMonstersDefeated = computed(() => {
   if (!props.location?.monsters || props.location.monsters.length === 0) {
     return false;
   }
-  
+
   return props.location.monsters.every(monster => !monster.alive);
 });
 
@@ -270,8 +278,8 @@ const isLoading = computed(() => {
   return props.location.scouted && !props.location.description;
 })
 
-function getMonsterTitle(group:MonsterGroup): string {
-  if( group.monsters.length === 1 ) {
+function getMonsterTitle(group: MonsterGroup): string {
+  if (group.monsters.length === 1) {
     return group.monsters[0].name
   }
   const monsterType = monsterTypes.find(m => m.id === group.type)
@@ -288,7 +296,7 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
   const monsterType = monsterTypes.find(m => m.id === monsterId)
   if (!monsterType) return {}
 
-  const classes : Record<string, boolean>= {}
+  const classes: Record<string, boolean> = {}
 
   // Add additional classes from monster style
   if (monsterType.style?.additionalClasses) {
@@ -303,7 +311,7 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
 function getMonsterStyle(monsterId: string): Record<string, string> {
   const monsterType = monsterTypes.find(m => m.id === monsterId)
   if (!monsterType || !monsterType.style) return {}
-  
+
   const style: Record<string, string> = {
     backgroundColor: questStore.getBackgroundColor('card'),
     borderColor: questStore.getBorderColor('medium'),
@@ -314,12 +322,12 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   if (monsterType.style.background) {
     style.background = monsterType.style.background
   }
-  
+
   // If monster has style.borderColor, use it
   if (monsterType.style.borderColor) {
     style.borderColor = monsterType.style.borderColor
   }
-  
+
   // If monster has style.color, use it
   if (monsterType.style.color) {
     style.color = monsterType.style.color
@@ -329,14 +337,14 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   if (monsterType.style.boxShadow) {
     style.boxShadow = monsterType.style.boxShadow
   }
-  
+
   return style
 }
 
 function getMonsterSpecies(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   if (!monster) return ""
-  
+
   // Capitalize first letter of species
   return monster.species.charAt(0).toUpperCase() + monster.species.slice(1)
 }
@@ -344,7 +352,7 @@ function getMonsterSpecies(monsterId: string): string {
 function getMonsterLevel(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   if (!monster) return ""
-  
+
   // Capitalize first letter of level
   return monster.level.charAt(0).toUpperCase() + monster.level.slice(1)
 }
@@ -352,7 +360,7 @@ function getMonsterLevel(monsterId: string): string {
 function getMonsterTraits(monsterId: string): string {
   const monster = monsterTypes.find(m => m.id === monsterId)
   if (!monster || !monster.flags || monster.flags.length === 0) return ""
-  
+
   return `, ${monster.flags.join(', ')}`
 }
 
@@ -361,32 +369,32 @@ async function scoutLocationAction(event?: MouseEvent) {
     event.stopPropagation()
   }
   await scoutLocation(props.location)
-  
+
   // Award XP for scouting a location through the UI (using logAndNotifyQuestEvent)
-  questStore.logAndNotifyQuestEvent(`Scouted ${props.location.name}.`, { xp: 1 });
+  questStore.logAndNotifyQuestEvent(`Scouted ${props.location.name}.`, {xp: 1});
 }
 
 function enterLocation(event?: MouseEvent) {
   if (event) {
     event.stopPropagation()
   }
-  
+
   // Set current game location
   questStore.setCurrentGameLocation(props.location.id)
   appStore.setScreen('location')
-  
+
   // Check if this is the first time visiting this location
   const isFirstVisit = !props.location.hasBeenVisited
-  
+
   // Set hasBeenVisited flag to true
   locationStore.setHasBeenVisited(props.location.id, true)
-  
+
   // Award XP for arriving at a location
-  questStore.logAndNotifyQuestEvent(`Entered ${props.location.name}.`, { xp: 2 });
-  
+  questStore.logAndNotifyQuestEvent(`Entered ${props.location.name}.`, {xp: 2});
+
   // Award additional XP for first-time visit
   if (isFirstVisit) {
-    questStore.logAndNotifyQuestEvent(`First time visiting ${props.location.name}.`, { xp: 3 });
+    questStore.logAndNotifyQuestEvent(`First time visiting ${props.location.name}.`, {xp: 3});
   }
 }
 
