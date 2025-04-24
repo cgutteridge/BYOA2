@@ -39,7 +39,7 @@ export class ChatGPTAPI {
           body: JSON.stringify({
             model: this.model,
             messages,
-            temperature: 0.1,
+            temperature: 1.3,
             frequency_penalty: 0.3,
             presence_penalty: 0.3,
             max_tokens: 1000
