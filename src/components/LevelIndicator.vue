@@ -2,17 +2,22 @@
   <div class="level-indicator-container" :class="{ 'level-up': showLevelUpAnimation }">
     <svg class="level-indicator" width="70" height="70" viewBox="0 0 70 70" :style="indicatorStyle">
       <!-- Background circle -->
-      <circle cx="35" cy="35" r="32" class="level-bg" :style="backgroundStyle" />
+      <circle cx="35" cy="35" r="32" fill="black" />
       
-      <!-- Progress circle -->
+      <!-- Progress indicator - simple circular segment approach -->
       <circle 
+        v-if="questStore.levelProgress > 0"
         cx="35" 
         cy="35" 
-        r="32" 
-        class="level-progress" 
-        :style="progressStyle"
-        stroke-dasharray="201.1"
-        :stroke-dashoffset="progressOffset"
+        r="30"
+        class="progress-indicator"
+        stroke="#ff3e3e"
+        stroke-width="4"
+        :stroke-dasharray="`${progressArc} ${fullCircle - progressArc}`"
+        stroke-dashoffset="0"
+        stroke-linecap="round"
+        fill="transparent"
+        transform="rotate(-90, 35, 35)"
       />
       
       <!-- Level text group -->
@@ -39,25 +44,13 @@ import { useQuestStore } from '@/stores/questStore'
 const questStore = useQuestStore()
 const showLevelUpAnimation = ref(false)
 
-// Calculate the progress offset based on level progress
-const progressOffset = computed(() => {
-  // Circle circumference is 2 * PI * r = 2 * 3.14159 * 32 ≈ 201.1
-  // Offset starts at 201.1 (empty circle) and goes to 0 (full circle)
-  const circumference = 201.1
-  return circumference - (circumference * questStore.levelProgress / 100)
+// Circumference of the progress circle
+const fullCircle = 188.5 // 2 * PI * r where r = 30
+
+// Calculate the progress arc length
+const progressArc = computed((): number => {
+  return (questStore.levelProgress / 100) * fullCircle
 })
-
-// Compute styles based on theme
-const backgroundStyle = computed(() => ({
-  fill: 'black'
-}))
-
-const progressStyle = computed(() => ({
-  stroke: '#ff3e3e',
-  strokeWidth: '5px',
-  fill: 'transparent',
-  transition: 'all 0.3s ease'
-}))
 
 const indicatorStyle = computed(() => {
   const isDarkMode = questStore.theme === 'dark'
@@ -125,6 +118,11 @@ function getParticleStyle(index: number): Record<string, string> {
 
 .level-indicator:hover {
   transform: scale(1.1);
+}
+
+.progress-indicator {
+  transition: stroke-dasharray 0.5s ease-out;
+  filter: drop-shadow(0 0 3px rgba(255, 62, 62, 0.5));
 }
 
 .level-text {
