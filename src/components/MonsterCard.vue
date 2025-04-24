@@ -290,10 +290,9 @@ function defeatMonster(): void {
 
   // Maybe add a minor loot drop?
   if (!props.monster.item && pickOne([true, false])) {
-    console.log( "GENERATE ITEM")
     const monsterType = monsterTypes.find(m => m.id === props.monster.type);
     const item = generateRandomItem(pickOne([1,2]))
-   // item.maxLevel = monsterType?.level || "minion"
+    item.maxLevel = monsterType?.level || "minion"
     props.monster.item = item
   }
 
