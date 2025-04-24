@@ -35,7 +35,7 @@ const questStore = useQuestStore();
 
 .story-block {
   padding: 1.5rem;
-  padding-bottom: 3.5rem; /* Increased from 2rem to accommodate the larger rip effect */
+  padding-bottom: 2rem; /* Increased from 2rem to accommodate the larger rip effect */
   line-height: 1.5;
   font-style: italic;
   position: relative;
