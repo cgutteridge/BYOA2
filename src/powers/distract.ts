@@ -17,6 +17,7 @@ export class DistractPower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 1;
+  readonly generateWeight = 6;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;

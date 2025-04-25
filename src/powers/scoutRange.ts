@@ -13,6 +13,7 @@ export class ScoutRangePower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 1;
+  readonly generateWeight = 12;
   readonly canHaveTargetRestriction = false;
   readonly supportsTypeTargeting = false;
   readonly canHaveResultRestriction = false;

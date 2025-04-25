@@ -13,6 +13,7 @@ export class BanishPower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 1;
+  readonly generateWeight = 12;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;

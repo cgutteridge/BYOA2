@@ -15,6 +15,7 @@ export class SplitPower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 3;
+  readonly generateWeight = 24;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;

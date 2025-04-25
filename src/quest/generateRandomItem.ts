@@ -1,6 +1,7 @@
-import type { Item, Species, MonsterFlag, ItemPowerId } from '../types';
+import type { Item, Species, MonsterFlag, ItemPowerId, WeightedList } from '../types';
 import { toItemId } from '../types';
 import pickOne from "@/utils/pickOne.ts";
+import pickWeightedOne from "@/utils/pickWeightedOne.ts";
 import {allPowerIds, powerFactory} from "@/powers/index.ts";
 
 // Available species for targeting
@@ -30,18 +31,23 @@ export function generateRandomItem(level: number): Item {
   
   // Step 1: Pick a random power type that fits within our budget
 
-  // Filter available powers based on cost
-  const affordablePowers = allPowerIds
+  // Filter available powers based on cost and create weighted list
+  const affordablePowersData = allPowerIds
     .map(powerId => ({ id: powerId, power: powerFactory.getPower(powerId) }))
-    .filter(({ power }) => power && power.baseCost <= remainingPoints)
-    .map(({ id }) => id);
+    .filter(({ power }) => power && power.baseCost <= remainingPoints);
     
-  if (affordablePowers.length === 0) {
+  if (affordablePowersData.length === 0) {
     // Fallback to most basic power if no powers fit
-    affordablePowers.push('kill');
+    affordablePowersData.push({ id: 'kill', power: powerFactory.getPower('kill') });
   }
   
-  const selectedPower = pickOne(affordablePowers);
+  // Convert to weighted list format for pickWeightedOne
+  const weightedPowers: WeightedList<ItemPowerId> = affordablePowersData.map(({ id, power }) => ({
+    value: id,
+    weight: power?.generateWeight || 12 // Default to 12 if not specified
+  }));
+  
+  const selectedPower = pickWeightedOne(weightedPowers);
   const power = powerFactory.getPower(selectedPower);
   if (!power) {
     throw new Error(`Power ${selectedPower} not found`);

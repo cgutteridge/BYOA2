@@ -14,6 +14,7 @@ export class ShrinkPower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 2;
+  readonly generateWeight = 12;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;

@@ -15,6 +15,7 @@ export class GrowPower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 3;
+  readonly generateWeight = 12;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;
@@ -80,7 +81,6 @@ export class GrowPower extends ItemPower {
     if (!higherForm) return false;
 
     const originalName = monster.name;
-    const originalType = monsterTypeDef;
 
     // Generate a fun name for the grown monster
     const randomNameIndex = Math.floor(Math.random() * this.growNames.length);

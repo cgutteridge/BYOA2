@@ -15,6 +15,7 @@ export class PickpocketPower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 1;
+  readonly generateWeight = 6;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = false; // Can't target monster types
   readonly canHaveResultRestriction = false;

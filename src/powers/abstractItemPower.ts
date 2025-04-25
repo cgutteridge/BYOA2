@@ -21,6 +21,9 @@ export abstract class ItemPower {
     // Item generation constants
     // Base cost in points when generating items
     abstract readonly baseCost: number;
+    
+    // Item generation weight - higher values make this power more likely to be selected
+    readonly generateWeight: number = 12;
 
     // USED IN ITEM GENERATION
 

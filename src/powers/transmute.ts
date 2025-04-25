@@ -16,6 +16,7 @@ export class TransmutePower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 0;
+  readonly generateWeight = 36;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = true;

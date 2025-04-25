@@ -12,7 +12,8 @@ export class KillPower extends ItemPower {
   readonly glowColor = "rgba(255, 0, 0, 0.8)";
   
   // Item generation constants
-  readonly baseCost = 2;
+  readonly baseCost = 1;
+  readonly generateWeight = 24;
   readonly canHaveTargetRestriction = true;
   readonly supportsTypeTargeting = true;
   readonly canHaveResultRestriction = false;

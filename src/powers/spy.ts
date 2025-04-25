@@ -14,6 +14,7 @@ export class SpyPower extends ItemPower {
   
   // Item generation constants
   readonly baseCost = 2;
+  readonly generateWeight = 12;
   readonly canHaveTargetRestriction = false;
   readonly supportsTypeTargeting = false;
   readonly canHaveResultRestriction = false;
