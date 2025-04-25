@@ -1,4 +1,4 @@
-import {GameLocationDifficulty, GameLocation} from "@/types";
+import {GameLocation, GameLocationDifficulty} from "@/types";
 import {useQuestStore} from "@/stores/questStore.ts";
 import calculateDistance from "@/utils/calculateDistance.ts";
 import pickOne from "@/utils/pickOne.ts";
@@ -13,7 +13,7 @@ export default function initialiseGameLocation(location: GameLocation) {
 
     // set type
     locationStore.setGameLocationType(location.id, pickOne(locationTypesList.filter(
-        locationId=>locationId!=='stash'))
+        locationId => locationId !== 'stash' && locationId !== 'shop'))
     )
 
     // Initialize hasToken flag - true for all locations except start and end
