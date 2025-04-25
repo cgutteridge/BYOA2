@@ -9,10 +9,32 @@ interface MapTileOption {
 }
 
 const mapTiles: Record<string, MapTileOption> = {
+  osm: {
+    id: 'osm',
+    name: 'OpenStreetMap',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  },
+  stamenWatercolor: {
+    id: 'stamenWatercolor',
+    name: 'Stamen Watercolor',
+    url: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Hosted by <a href="https://stadiamaps.com/">Stadia Maps</a>',
+    maxZoom: 18
+  },
   pioneer: {
     id: 'pioneer',
     name: 'Pioneer (Thunderforest)',
     url: 'https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey={apikey}',
+    attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 22,
+    apiKeyRequired: true
+  },
+  spinal: {
+    id: 'spinal',
+    name: 'Spinal Map (Thunderforest)',
+    url: 'https://{s}.tile.thunderforest.com/spinal-map/{z}/{x}/{y}{r}.png?apikey={apikey}',
     attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 22,
     apiKeyRequired: true
@@ -33,14 +55,6 @@ const mapTiles: Record<string, MapTileOption> = {
     maxZoom: 22,
     apiKeyRequired: true
   },
-  spinal: {
-    id: 'spinal',
-    name: 'Spinal Map (Thunderforest)',
-    url: 'https://{s}.tile.thunderforest.com/spinal-map/{z}/{x}/{y}{r}.png?apikey={apikey}',
-    attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 22,
-    apiKeyRequired: true
-  },
   cycle: {
     id: 'cycle',
     name: 'OpenCycleMap (Thunderforest)',
@@ -57,13 +71,6 @@ const mapTiles: Record<string, MapTileOption> = {
     maxZoom: 22,
     apiKeyRequired: true
   },
-  osm: {
-    id: 'osm',
-    name: 'OpenStreetMap',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 19
-  },
   osmHOT: {
     id: 'osmHOT',
     name: 'OSM Humanitarian',
@@ -75,13 +82,6 @@ const mapTiles: Record<string, MapTileOption> = {
     id: 'stamenTerrain',
     name: 'Stamen Terrain',
     url: 'https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png',
-    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Hosted by <a href="https://stadiamaps.com/">Stadia Maps</a>',
-    maxZoom: 18
-  },
-  stamenWatercolor: {
-    id: 'stamenWatercolor',
-    name: 'Stamen Watercolor',
-    url: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Hosted by <a href="https://stadiamaps.com/">Stadia Maps</a>',
     maxZoom: 18
   },
