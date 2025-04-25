@@ -61,18 +61,15 @@ if (originalDimensions.width > originalDimensions.height) {
 // Generate shadow image - proper shadow for Leaflet markers
 const shadowPath = path.join(shadowDir, `${iconName}.png`);
 
-// This command:
-// 1. Creates a silhouette (removes alpha and makes it black)
-// 2. Applies a shear transformation to skew the image
-// 3. Blurs the shadow
-// 4. Adds transparency and offsets it slightly
+// This command creates a shadow by:
+// 1. Converting all pixels to black but preserving the alpha channel
+// 2. Skewing the image
+// 3. Adding blur and adjusting transparency
 const shadowCommand = `convert "${iconPath}" \\
-  -alpha extract \\
-  -background black -alpha shape \\
-  -shear 20x0 \\
-  -blur 0x5 \\
+  -fill black -colorize 100 \\
+  -shear 15x0 \\
+  -blur 0x4 \\
   -alpha set -channel A -evaluate multiply 0.5 +channel \\
-  -gravity south -background none -extent ${originalDimensions.width + 20}x${originalDimensions.height + 15} \\
   "${shadowPath}"`;
 
 console.log('Generating shadow image...');
