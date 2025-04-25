@@ -18,6 +18,7 @@ import {useLocationStore} from "@/stores/locationStore"
 import {useAppStore} from "@/stores/appStore"
 import {useQuestStore} from "@/stores/questStore"
 import {useRouteStore} from "@/stores/routeStore"
+import {useInventoryStore} from "@/stores/inventoryStore"
 import {locationTypesById} from "@/data/locationTypes"
 import LocationPopup from '@/components/LocationPopup.vue'
 import calculateDistance from "@/utils/calculateDistance"
@@ -30,6 +31,7 @@ const appStore = useAppStore()
 const locationStore = useLocationStore()
 const questStore = useQuestStore()
 const routeStore = useRouteStore()
+const inventoryStore = useInventoryStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<L.Map | null>(null)
 const playerMarker = ref<L.Marker | null>(null)
@@ -652,8 +654,13 @@ function updateDestinationMarker(): void {
   const zoomFactor = Math.pow(1.5, currentZoom - baseZoom)
   const circleSize = Math.max(60, Math.min(300, Math.floor(baseSize * zoomFactor)))
   
+  // Check if player has enough tokens to enter the end location
+  const hasEnoughTokens = inventoryStore.tokenCount >= questStore.minimumLocations
+  
   // Use a vibrant color that stands out, with alpha transparency for the fade
-  const primaryColor = '#FF5500' // Bright orange color
+  // Change color to green if player has enough tokens, red otherwise
+  const primaryColor = hasEnoughTokens ? '#22DD33' : '#FF5500' // Green or bright orange
+  const shadowColor = hasEnoughTokens ? 'rgba(34, 221, 51, 0.6)' : 'rgba(255, 85, 0, 0.6)'
   
   // Create SVG with radial gradient for fade effect
   const svgSize = circleSize * 2
@@ -674,7 +681,7 @@ function updateDestinationMarker(): void {
   // Create the destination marker with the SVG icon
   destinationMarker.value = L.marker([destinationCoordinates.value.lat, destinationCoordinates.value.lng], {
     icon: L.divIcon({
-      className: 'destination-marker',
+      className: hasEnoughTokens ? 'destination-marker accessible' : 'destination-marker',
       html: svg,
       iconSize: [svgSize, svgSize],
       iconAnchor: [svgSize/2, svgSize/2]
@@ -703,6 +710,13 @@ watch(destinationCoordinates, () => {
     generateGameLocationMarkers()
   }
 }, { deep: true })
+
+// Watch for token count changes to update the destination marker color
+watch(() => inventoryStore.tokenCount, () => {
+  if (map.value && destinationCoordinates.value) {
+    updateDestinationMarker()
+  }
+})
 
 // Function to toggle teleport mode for debug
 function toggleTeleportMode(): void {
@@ -889,6 +903,10 @@ button {
   filter: drop-shadow(0 0 8px rgba(255, 85, 0, 0.6));
   animation: pulse 3s infinite ease-in-out;
   z-index: -1 !important;
+}
+
+:deep(.destination-marker.accessible svg) {
+  filter: drop-shadow(0 0 8px rgba(34, 221, 51, 0.6));
 }
 
 @keyframes pulse {
