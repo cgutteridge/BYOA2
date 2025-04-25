@@ -105,9 +105,10 @@ export const useQuestStore = defineStore('quest', () => {
   const tokenDescription = ref<string>('a shard of truth') // Description for token
   const scoutRange = ref<number>(200) // Scout range in meters
   const isDebugMode = ref<boolean>(false) // Debug mode state
+  const mapTileId = ref<string>('pioneer') // Map tile preference, defaulting to pioneer
   const persist = ref(['title', 'description', 'status', 'startGameLocationId',
     'endGameLocationId', 'currentGameLocationId', 'playerCount', 'xp', 'booze', 'soft', 'theme', 'minimumLocations',
-    'tokenTitle', 'tokenDescription', 'scoutRange', 'isDebugMode'])
+    'tokenTitle', 'tokenDescription', 'scoutRange', 'isDebugMode', 'mapTileId'])
 
   // Color systems for dark and light themes
   const darkColors: ColorSystem = {
@@ -453,6 +454,11 @@ export const useQuestStore = defineStore('quest', () => {
     scoutRange.value = range
   }
 
+  // Map tile preference management
+  const setMapTileId = (newMapTileId: string): void => {
+    mapTileId.value = newMapTileId
+  }
+
   return {
     startGameLocation,
     endGameLocation,
@@ -510,5 +516,7 @@ export const useQuestStore = defineStore('quest', () => {
     getButtonColors,
     getOverlayColors,
     getGradient,
+    mapTileId,
+    setMapTileId,
   }
 }) 

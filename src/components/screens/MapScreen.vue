@@ -22,6 +22,7 @@ import {useInventoryStore} from "@/stores/inventoryStore"
 import {locationTypesById} from "@/data/locationTypes"
 import LocationPopup from '@/components/LocationPopup.vue'
 import calculateDistance from "@/utils/calculateDistance"
+import mapTiles from '@/data/mapTiles'
 
 // Configuration constants
 const BOTTOM_OFFSET = 20 // Distance from bottom of screen  when opening a popup in pixels
@@ -55,6 +56,11 @@ const routeCoordinates = computed((): Coordinates[] => [...routeStore.routeCoord
 const destinationCoordinates = computed((): Coordinates | null => {
   // Use the endGameLocation from questStore as the destination
   return questStore.endGameLocation?.coordinates || null;
+})
+const currentMapTile = computed(() => {
+  // Get the selected map tile or fall back to 'pioneer' as default
+  const tileId = questStore.mapTileId || 'pioneer'
+  return mapTiles[tileId] || mapTiles.pioneer
 })
 
 function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker | undefined {
@@ -313,9 +319,16 @@ function initializeMap(): void {
       }
     })
 
-    L.tileLayer('https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}{r}.png?apikey=090957d4bae841118cdb982b96895428', {
-      attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 22
+    // Get the current map tile options
+    const tile = currentMapTile.value
+    const tileUrl = tile.apiKeyRequired 
+      ? tile.url.replace('{apikey}', '090957d4bae841118cdb982b96895428') 
+      : tile.url
+    
+    L.tileLayer(tileUrl, {
+      attribution: tile.attribution,
+      maxZoom: tile.maxZoom,
+      minZoom: tile.minZoom
     }).addTo(mapInstance);
 
     // Add zoom control after map is initialized
@@ -431,6 +444,27 @@ watch(() => appStore.screen, (newMode, _oldMode) => {
     cleanupMap()
   }
 }, {immediate: true})
+
+// Watch for map tile style changes
+watch(() => questStore.mapTileId, () => {
+  // We need to reinitialize the map when the tile style changes
+  if (map.value) {
+    // Store current position and zoom
+    const currentPosition = mapPosition.value
+    const currentZoom = mapZoom.value
+    
+    // Clean up and reinitialize
+    cleanupMap()
+    setTimeout(() => {
+      initializeMap()
+      
+      // If we had a map position and zoom level, restore it
+      if (currentPosition && map.value) {
+        map.value.setView([currentPosition.lat, currentPosition.lng], currentZoom || 16)
+      }
+    }, 100)
+  }
+}, { immediate: false })
 
 function generateGameLocationMarkers(): void {
   if (!map.value) return;

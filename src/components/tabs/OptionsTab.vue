@@ -31,6 +31,10 @@
     </div>
     
     <div class="options-section">
+      <MapTileSelector />
+    </div>
+    
+    <div class="options-section">
       <h3>Game Controls</h3>
       <button class="quit-button" @click="showQuitConfirmation = true">
         Quit Game
@@ -52,6 +56,7 @@ import { ref } from 'vue'
 import { useQuestStore } from '@/stores/questStore'
 import { useAppStore } from '@/stores/appStore' 
 import ConfirmationModal from '@/components/forms/ConfirmationModal.vue'
+import MapTileSelector from '@/components/forms/MapTileSelector.vue'
 
 // Stores
 const questStore = useQuestStore()
