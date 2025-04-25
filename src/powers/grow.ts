@@ -90,23 +90,21 @@ export class GrowPower extends ItemPower {
     monster.type = higherForm.id;
 
     // Give the grown monster a power item based on its new level
-    if (originalType.level === 'grunt' && higherForm.level === 'elite') {
-      // Generate a random item with power level 8 (transcendent) for elite
-      monster.item = generateRandomItem(8);
-    } else if (originalType.level === 'elite' && higherForm.level === 'boss') {
-      // Generate a random item with power level 10 (cosmic) for boss
-      monster.item = generateRandomItem(10);
+    switch( higherForm.level ) {
+      case 'grunt': monster.item = generateRandomItem(6); break;
+      case 'elite': monster.item = generateRandomItem(8); break;
+      case 'boss': monster.item = generateRandomItem(10); break;
     }
 
     // Log the transformation
     questStore.logAndNotifyQuestEvent(
-        `${originalName} grew into ${monster.name} with ${item.name}`, { xp: 2 }
+        `Grew ${originalName} into ${monster.name} with ${item.name}`, { xp: 2 }
     );
 
     return true;
   }
 
   generateEffectDescription(item: Item): string {
-    return `Enhance the power of ${this.getTargetDescription(item)}.`;
+    return `Enhance the power of ${this.getTargetDescription(item)}. May also give it great loot.`;
   }
 } 
