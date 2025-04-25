@@ -697,8 +697,7 @@ function updateDestinationMarker(): void {
   // Use a vibrant color that stands out, with alpha transparency for the fade
   // Change color to green if player has enough tokens, red otherwise
   const primaryColor = hasEnoughTokens ? '#22DD33' : '#FF5500' // Green or bright orange
-  const shadowColor = hasEnoughTokens ? 'rgba(34, 221, 51, 0.6)' : 'rgba(255, 85, 0, 0.6)'
-  
+
   // Create SVG with radial gradient for fade effect
   const svgSize = circleSize * 2
   const svg = `
