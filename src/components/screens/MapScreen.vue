@@ -445,6 +445,9 @@ function generateGameLocationMarkers(): void {
     if (location.type === 'stash' && location.scouted && location.giftItem === undefined) {
       return;
     }
+    if (location.type === 'shop' && location.scouted && location.wares === undefined) {
+      return;
+    }
     const marker = createGameLocationMarker(location, map.value as L.Map)
     if (marker) {
       locationMarkers.value.push(marker)
