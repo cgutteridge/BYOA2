@@ -260,6 +260,8 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
   return marker
 }
 
+
+
 /**
  * Generate all game location markers
  */
@@ -308,6 +310,8 @@ function cleanupMarkers(): void {
   locationMarkers.value = []
 }
 
+
+
 // Initialize markers when the component is mounted and map is ready
 onMounted(() => {
   const initMarkers = () => {
@@ -317,7 +321,7 @@ onMounted(() => {
       setTimeout(initMarkers, 100)
     }
   }
-  
+
   initMarkers()
 })
 

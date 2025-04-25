@@ -1,18 +1,18 @@
 <template>
   <div id="map" ref="mapContainer">
-    <PlayerMarker v-if="mapInstance" />
-    <LocationMarkers v-if="mapInstance" />
-    <RouteTracker v-if="mapInstance" />
-    <DestinationMarker v-if="mapInstance" />
+    <PlayerMarker v-if="mapInstance"/>
+    <LocationMarkers v-if="mapInstance"/>
+    <RouteTracker v-if="mapInstance"/>
+    <DestinationMarker v-if="mapInstance"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, provide, computed, nextTick, watch } from 'vue'
-import L from 'leaflet'
+import {computed, nextTick, onMounted, onUnmounted, provide, ref, watch} from 'vue'
+import L, {ZoomAnimEvent} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { useAppStore } from '@/stores/appStore'
-import { useQuestStore } from '@/stores/questStore'
+import {useAppStore} from '@/stores/appStore'
+import {useQuestStore} from '@/stores/questStore'
 import mapTiles from '@/data/mapTiles'
 import PlayerMarker from './PlayerMarker.vue'
 import LocationMarkers from './LocationMarkers.vue'
@@ -60,7 +60,7 @@ function initializeMap(): void {
       coordinates = playerCoordinates.value
       zoom = 16
     } else {
-      coordinates = { lat: 51.505, lng: -0.09 }
+      coordinates = {lat: 51.505, lng: -0.09}
       zoom = 13
     }
 
@@ -82,7 +82,7 @@ function initializeMap(): void {
     // Add event listeners for map movement and zoom
     map.on('moveend', () => {
       const center = map.getCenter()
-      appStore.setMapPosition({ lat: center.lat, lng: center.lng })
+      appStore.setMapPosition({lat: center.lat, lng: center.lng})
     })
 
     map.on('zoomend', () => {
@@ -107,8 +107,8 @@ function initializeMap(): void {
     console.log(`Using map tile provider: ${tile.provider || 'none'}, API Key available: ${apiKey ? 'Yes' : 'No'}`)
 
     const tileUrl = tile.apiKeyRequired
-      ? tile.url.replace('{apikey}', apiKey || '')
-      : tile.url
+        ? tile.url.replace('{apikey}', apiKey || '')
+        : tile.url
 
     L.tileLayer(tileUrl, {
       attribution: tile.attribution,
@@ -125,12 +125,40 @@ function initializeMap(): void {
     // Start route tracking
     appStore.startRouteTracking()
 
+    // When a zoom starts, do a thing that updates the appStore with our exact zoom level
+    mapInstance.value.on('zoomstart', zoomStart)
+    mapInstance.value.on('zoomanim', zoomAnim)
+
   } catch (error) {
     console.error('Error initializing map:', error)
   } finally {
     isInitializing.value = false
   }
 }
+
+let startZoom = 0
+let endZoom = 0
+let startZoomT = 0
+
+function zoomStart(): void {
+  startZoomT = Date.now()
+  startZoom = appStore.mapZoom || 0
+}
+
+function zoomAnim(e: ZoomAnimEvent) {
+  console.log(appStore.mapZoom)
+  endZoom = e.zoom
+  setTimeout(animateZoom, 25)
+}
+
+function animateZoom(): void {
+  const progress = Math.min(1, (Date.now() - startZoomT) / 250)
+  if (progress !== 1) {
+    setTimeout(animateZoom, 25)
+  }
+  appStore.mapZoomFine = startZoom + (endZoom - startZoom) * progress
+}
+
 
 /**
  * Add custom controls to the map
@@ -155,8 +183,8 @@ function addMapControls(map: any): void {
       link.title = 'Center on player'
 
       L.DomEvent
-        .on(link, 'click', L.DomEvent.preventDefault)
-        .on(link, 'click', () => centerOnPlayer())
+          .on(link, 'click', L.DomEvent.preventDefault)
+          .on(link, 'click', () => centerOnPlayer())
 
       return container
     }
@@ -173,9 +201,9 @@ function centerOnPlayer(): void {
   if (!mapInstance.value || !playerCoordinates.value) return
 
   mapInstance.value.setView(
-    [playerCoordinates.value.lat, playerCoordinates.value.lng],
-    16,
-    { animate: true }
+      [playerCoordinates.value.lat, playerCoordinates.value.lng],
+      16,
+      {animate: true}
   )
 }
 
@@ -284,7 +312,7 @@ watch(() => appStore.screen, (newMode) => {
     closePopup()
     cleanupMap()
   }
-}, { immediate: true })
+}, {immediate: true})
 
 // Watch for map tile style changes
 watch(() => questStore.mapTileId, () => {
@@ -305,7 +333,7 @@ watch(() => questStore.mapTileId, () => {
       }
     }, 100)
   }
-}, { immediate: false })
+}, {immediate: false})
 
 // Provide map instance to child components
 provide('mapInstance', mapInstance)
