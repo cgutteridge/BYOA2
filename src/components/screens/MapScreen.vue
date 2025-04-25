@@ -201,7 +201,6 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     // If no shadowSize is defined but we have size, calculate it (fallback)
     else if (locationType.size) {
       // The shadow is approximately 20-25% wider than the original due to skew
-      const originalAspectRatio = locationType.size[0] / locationType.size[1]
       const shadowWidth = Math.round(locationType.size[0] * 1.25 * zoomFactor * sizeReduction * globalSizeReduction)
       let shadowHeight = Math.round(locationType.size[1] * zoomFactor * sizeReduction * globalSizeReduction)
       
@@ -501,7 +500,7 @@ function initializeMap(): void {
       
       // Update markers with the current zoom transition
       if (playerCoordinates.value) {
-        updatePlayerMarkerDuringZoom(playerCoordinates.value, zoomStartLevel.value, zoomTargetLevel.value, zoomProgress.value)
+        updatePlayerMarkerDuringZoom(zoomStartLevel.value, zoomTargetLevel.value, zoomProgress.value)
       }
       
       // Update all location markers during zoom transition
@@ -1113,7 +1112,7 @@ function toggleTeleportMode(): void {
 }
 
 // Function to update player marker during zoom animation
-function updatePlayerMarkerDuringZoom(coords: Coordinates, startZoom: number, targetZoom: number, progress: number): void {
+function updatePlayerMarkerDuringZoom(startZoom: number, targetZoom: number, progress: number): void {
   if (!map.value || !playerMarker.value) return
   
   // Get the players icon from the location types
@@ -1124,7 +1123,7 @@ function updatePlayerMarkerDuringZoom(coords: Coordinates, startZoom: number, ta
   const interpolatedZoom = startZoom + (targetZoom - startZoom) * progress
   
   // Update player marker for the current zoom level
-  updatePlayerMarkerForZoom(coords, interpolatedZoom)
+  updatePlayerMarkerForZoom(interpolatedZoom)
 }
 
 // Update the markers during zoom animation
@@ -1146,12 +1145,12 @@ function updateMarkersForZoomAnimation(startZoom: number, targetZoom: number, pr
   
   // Update destination marker
   if (destinationMarker.value && destinationCoordinates.value) {
-    updateDestinationMarkerForZoom(destinationCoordinates.value, interpolatedZoom)
+    updateDestinationMarkerForZoom(interpolatedZoom)
   }
   
   // Update scout range labels
   if (playerCoordinates.value && map.value) {
-    updateScoutRangeLabelsForZoom(playerCoordinates.value, interpolatedZoom)
+    updateScoutRangeLabelsForZoom(interpolatedZoom)
   }
 }
 
@@ -1226,7 +1225,7 @@ function updateMarkerIconForZoom(marker: any, location: GameLocation, zoomLevel:
 }
 
 // New helper function for player marker during zoom
-function updatePlayerMarkerForZoom(coords: Coordinates, zoomLevel: number): void {
+function updatePlayerMarkerForZoom(zoomLevel: number): void {
   if (!map.value || !playerMarker.value) return
   
   const playersType = locationTypesById['players' as keyof typeof locationTypesById]
@@ -1299,7 +1298,7 @@ function updatePlayerMarkerForZoom(coords: Coordinates, zoomLevel: number): void
 }
 
 // New helper function for destination marker during zoom
-function updateDestinationMarkerForZoom(coords: Coordinates, zoomLevel: number): void {
+function updateDestinationMarkerForZoom(zoomLevel: number): void {
   if (!map.value || !destinationMarker.value) return
   
   // Calculate size based on zoom level
@@ -1339,24 +1338,9 @@ function updateDestinationMarkerForZoom(coords: Coordinates, zoomLevel: number):
 }
 
 // New helper function for scout range labels during zoom
-function updateScoutRangeLabelsForZoom(coords: Coordinates, zoomLevel: number): void {
+function updateScoutRangeLabelsForZoom(zoomLevel: number): void {
   if (!map.value) return
-  
-  // Calculate positions for top and bottom labels
-  const distanceFromEdge = 5
-  const scoutDistanceWithPadding = questStore.scoutRange + distanceFromEdge
-  const latOffset = scoutDistanceWithPadding / 111111
-  
-  const topPoint = {
-    lat: coords.lat + latOffset,
-    lng: coords.lng
-  }
-  
-  const bottomPoint = {
-    lat: coords.lat - latOffset,
-    lng: coords.lng
-  }
-  
+
   // Calculate size based on zoom level
   const baseFontSize = 18
   const baseZoom = 16
