@@ -25,16 +25,20 @@ if (!fs.existsSync(iconPath)) {
   process.exit(1);
 }
 
-// Create directories if they don't exist
+// Create shadows directory if it doesn't exist
 const shadowDir = path.join(projectRoot, 'public', 'newicons', 'shadows');
-const infoDir = path.join(projectRoot, 'public', 'newicons', 'iconinfo');
 
 if (!fs.existsSync(shadowDir)) {
   fs.mkdirSync(shadowDir, { recursive: true });
 }
 
-if (!fs.existsSync(infoDir)) {
-  fs.mkdirSync(infoDir, { recursive: true });
+// Path to locationTypes.json
+const locationTypesPath = path.join(projectRoot, 'src', 'data', 'locationTypes.json');
+
+// Check if locationTypes.json exists
+if (!fs.existsSync(locationTypesPath)) {
+  console.error(`locationTypes.json not found at ${locationTypesPath}`);
+  process.exit(1);
 }
 
 // Get image dimensions using ImageMagick
@@ -63,15 +67,16 @@ const shadowPath = path.join(shadowDir, `${iconName}.png`);
 
 // This command creates a shadow by:
 // 1. Converting all pixels to black but preserving the alpha channel
-// 2. Skewing the image
-// 3. Adding blur and adjusting transparency
+// 2. Skewing the image with a dramatic angle
+// 3. Adding blur and adjusting transparency to be half as opaque
 // 4. Ensuring a fully transparent background
 const shadowCommand = `convert "${iconPath}" \\
   -fill black -colorize 100 \\
   -background none \\
-  -shear 15x0 \\
-  -blur 0x4 \\
-  -alpha set -channel A -evaluate multiply 0.5 +channel \\
+  -blur 0x5 \\
+  -resample 100%x80% \\
+  -shear 50x0 \\
+  -alpha set -channel A -evaluate multiply 0.25 +channel \\
   -background none -flatten \\
   "${shadowPath}"`;
 
@@ -86,28 +91,52 @@ console.log(`Shadow dimensions: ${shadowDimensions.width}x${shadowDimensions.hei
 const scaledShadowWidth = Math.round(scaledWidth * (shadowDimensions.width / originalDimensions.width));
 const scaledShadowHeight = Math.round(scaledHeight * (shadowDimensions.height / originalDimensions.height));
 
-// Create the icon info JSON file
-const iconInfo = {
-  originalSize: {
-    width: originalDimensions.width,
-    height: originalDimensions.height
-  },
-  originalShadowSize: {
-    width: shadowDimensions.width,
-    height: shadowDimensions.height
-  },
-  scaledSize: {
-    width: scaledWidth,
-    height: scaledHeight
-  },
-  scaledShadowSize: {
-    width: scaledShadowWidth,
-    height: scaledShadowHeight
-  }
-};
+// Calculate anchor points (bottom center of the icon)
+const anchorX = Math.floor(scaledWidth / 2);
+const anchorY = scaledHeight;
 
-const iconInfoPath = path.join(infoDir, `${iconName}.json`);
-fs.writeFileSync(iconInfoPath, JSON.stringify(iconInfo, null, 2));
+// Calculate shadow anchor points (adjust based on the shadow position)
+const shadowAnchorX = anchorX
+const shadowAnchorY = scaledShadowHeight
+
+// Read the locationTypes.json file
+let locationTypes;
+try {
+  const fileContent = fs.readFileSync(locationTypesPath, 'utf8');
+  locationTypes = JSON.parse(fileContent);
+} catch (error) {
+  console.error(`Error reading locationTypes.json: ${error.message}`);
+  process.exit(1);
+}
+
+// Find or create the location type entry
+let locationTypeEntry = locationTypes.find(location => location.id === iconName);
+if (!locationTypeEntry) {
+  // Create a new entry if not found
+  locationTypeEntry = {
+    id: iconName,
+    title: iconName.charAt(0).toUpperCase() + iconName.slice(1).replace(/_/g, ' '),
+    filename: `${iconName}.png`
+  };
+  locationTypes.push(locationTypeEntry);
+  console.log(`Added new location type: ${iconName}`);
+}
+
+// Update the location type with scaling information
+locationTypeEntry.scale = true;
+locationTypeEntry.size = [scaledWidth, scaledHeight];
+locationTypeEntry.anchor = [anchorX, anchorY];
+locationTypeEntry.shadowAnchor = [shadowAnchorX, shadowAnchorY];
+locationTypeEntry.shadowSize = [scaledShadowWidth, scaledShadowHeight];
+
+// Write the updated locationTypes.json file
+try {
+  fs.writeFileSync(locationTypesPath, JSON.stringify(locationTypes, null, 2), 'utf8');
+  console.log(`Updated locationTypes.json for ${iconName}`);
+} catch (error) {
+  console.error(`Error writing locationTypes.json: ${error.message}`);
+  process.exit(1);
+}
 
 console.log(`
 Processing complete for ${iconName}:
@@ -116,5 +145,5 @@ Processing complete for ${iconName}:
 - Scaled size (max 64x64): ${scaledWidth}x${scaledHeight}
 - Scaled shadow size: ${scaledShadowWidth}x${scaledShadowHeight}
 - Shadow saved to: ${shadowPath}
-- Info saved to: ${iconInfoPath}
+- locationTypes.json updated
 `); 

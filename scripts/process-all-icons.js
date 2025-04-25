@@ -11,6 +11,18 @@ const projectRoot = path.resolve(__dirname, '..');
 
 // Path to the newicons directory
 const iconsDir = path.join(projectRoot, 'public', 'newicons');
+const iconInfoDir = path.join(iconsDir, 'iconinfo');
+
+// Clean up the iconinfo directory if it exists (we're no longer using it)
+if (fs.existsSync(iconInfoDir)) {
+  try {
+    console.log('Cleaning up iconinfo directory...');
+    fs.rmSync(iconInfoDir, { recursive: true, force: true });
+    console.log('Removed iconinfo directory');
+  } catch (error) {
+    console.error(`Warning: Failed to remove iconinfo directory: ${error.message}`);
+  }
+}
 
 // Get all icon files
 const iconFiles = fs.readdirSync(iconsDir)
