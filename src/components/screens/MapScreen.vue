@@ -47,6 +47,12 @@ const mountedPopupApps = ref<any[]>([])
 const teleportModeActive = ref<boolean>(false)
 const teleportClickHandler = ref<((e: L.LeafletMouseEvent) => void) | null>(null)
 
+// Add a variable to track zoom animation state
+const isZooming = ref<boolean>(false)
+const zoomStartLevel = ref<number>(16)
+const zoomTargetLevel = ref<number>(16)
+const zoomProgress = ref<number>(0)
+
 // Computed properties
 const playerCoordinates = computed(() => appStore.playerCoordinates)
 const locations = computed(() => locationStore.locations)
@@ -250,6 +256,11 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
   const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
     icon: L.icon(iconProperties),
   }).addTo(mapInstance)
+  
+  // Store location data directly in marker instance using Leaflet's internal properties
+  // This allows us to retrieve it later during zoom animations
+  // @ts-ignore - we're adding a custom property to the marker
+  marker.locationData = location
 
   // Create popup for this location
   const popup = L.popup({
@@ -438,7 +449,10 @@ function initializeMap(): void {
 
     const mapInstance = L.map('map', {
       preferCanvas: true,
-      zoomControl: false  // Disable the default zoom control
+      zoomControl: false,  // Disable the default zoom control
+      zoomAnimation: true, // Explicitly enable zoom animation
+      markerZoomAnimation: true, // Enable marker zoom animation
+      fadeAnimation: true // Enable fade animation
     }).setView([coordinates.lat, coordinates.lng], zoom)
     
     // Create a custom pane for destination markers that sits below regular markers
@@ -451,8 +465,37 @@ function initializeMap(): void {
       appStore.setMapPosition({lat: center.lat, lng: center.lng})
     })
 
+    // Listen for zoom animation events
+    mapInstance.on('zoomstart', () => {
+      closePopup()
+      zoomStartLevel.value = mapInstance.getZoom()
+      isZooming.value = true
+      zoomProgress.value = 0
+    })
+    
+    mapInstance.on('zoomanim', (e) => {
+      // Get the target zoom level and calculate progress
+      zoomTargetLevel.value = e.zoom
+      
+      // Calculate interpolation factor between 0 and 1
+      const totalZoomChange = zoomTargetLevel.value - zoomStartLevel.value
+      if (totalZoomChange !== 0) {
+        // e.zoom is the current interpolated zoom level
+        zoomProgress.value = (e.zoom - zoomStartLevel.value) / totalZoomChange
+      }
+      
+      // Update markers with the current zoom transition
+      if (playerCoordinates.value) {
+        updatePlayerMarkerDuringZoom(playerCoordinates.value, zoomStartLevel.value, zoomTargetLevel.value, zoomProgress.value)
+      }
+      
+      // Update all location markers during zoom transition
+      updateMarkersForZoomAnimation(zoomStartLevel.value, zoomTargetLevel.value, zoomProgress.value)
+    })
+
     mapInstance.on('zoomend', () => {
       appStore.setMapZoom(mapInstance.getZoom())
+      isZooming.value = false
 
       // Update scout range labels when zoom changes
       if (playerCoordinates.value && scoutCircle.value) {
@@ -466,11 +509,6 @@ function initializeMap(): void {
       
       // Regenerate location markers to apply correct scaling for the new zoom level
       generateGameLocationMarkers()
-    })
-
-    // Simplify to just close any open popup when zoom starts
-    mapInstance.on('zoomstart', () => {
-      closePopup()
     })
 
     // Handle map clicks for closing popups (and teleporting in debug mode)
@@ -1037,6 +1075,280 @@ function toggleTeleportMode(): void {
     map.value.on('click', teleportClickHandler.value)
   }
 }
+
+// Function to update player marker during zoom animation
+function updatePlayerMarkerDuringZoom(coords: Coordinates, startZoom: number, targetZoom: number, progress: number): void {
+  if (!map.value || !playerMarker.value) return
+  
+  // Get the players icon from the location types
+  const playersType = locationTypesById['players' as keyof typeof locationTypesById]
+  if (!playersType || !playersType.scale || !playersType.size) return
+  
+  // Calculate interpolated zoom level
+  const interpolatedZoom = startZoom + (targetZoom - startZoom) * progress
+  
+  // Update player marker for the current zoom level
+  updatePlayerMarkerForZoom(coords, interpolatedZoom)
+}
+
+// Update the markers during zoom animation
+function updateMarkersForZoomAnimation(startZoom: number, targetZoom: number, progress: number): void {
+  if (!map.value) return
+  
+  // Calculate interpolated zoom level
+  const interpolatedZoom = startZoom + (targetZoom - startZoom) * progress
+  
+  // Update each marker individually to avoid breaking Leaflet's animations
+  locationMarkers.value.forEach((marker) => {
+    // @ts-ignore - we're accessing our custom property
+    const location = marker.locationData as GameLocation
+    if (!location) return
+    
+    // Update marker during animation
+    updateMarkerIconForZoom(marker, location, interpolatedZoom)
+  })
+  
+  // Update destination marker
+  if (destinationMarker.value && destinationCoordinates.value) {
+    updateDestinationMarkerForZoom(destinationCoordinates.value, interpolatedZoom)
+  }
+  
+  // Update scout range labels
+  if (playerCoordinates.value && map.value) {
+    updateScoutRangeLabelsForZoom(playerCoordinates.value, interpolatedZoom)
+  }
+}
+
+// New utility function to update a marker's icon based on zoom level without breaking animations
+function updateMarkerIconForZoom(marker: any, location: GameLocation, zoomLevel: number): void {
+  // Get the location type
+  let locationType = locationTypesById[location.type]
+  if (!locationType || !locationType.scale || !locationType.size) return
+  
+  // Calculate new size
+  const baseZoom = 16
+  const zoomFactor = Math.pow(2.0, zoomLevel - baseZoom)
+  const sizeReduction = location.type === 'stash' ? 0.5 : 1.0
+  const globalSizeReduction = 0.36
+  
+  // Calculate dimensions
+  let scaledWidth = Math.floor(locationType.size[0] * zoomFactor * sizeReduction * globalSizeReduction)
+  let scaledHeight = Math.floor(locationType.size[1] * zoomFactor * sizeReduction * globalSizeReduction)
+  
+  // Enforce minimum size while preserving aspect ratio
+  const minSize = 20
+  const originalAspectRatio = locationType.size[0] / locationType.size[1]
+  
+  if (scaledWidth < minSize || scaledHeight < minSize) {
+    if (originalAspectRatio >= 1) {
+      // Wider than tall
+      if (scaledWidth < minSize) {
+        scaledWidth = minSize
+        scaledHeight = Math.max(minSize / 2, Math.floor(scaledWidth / originalAspectRatio))
+      }
+    } else {
+      // Taller than wide
+      if (scaledHeight < minSize) {
+        scaledHeight = minSize
+        scaledWidth = Math.max(minSize / 2, Math.floor(scaledHeight * originalAspectRatio))
+      }
+    }
+  }
+  
+  // Create updated icon properties
+  const iconProperties: IconOptions = {
+    iconUrl: `./newicons/${locationType.filename}`,
+    shadowUrl: `./newicons/shadows/${locationType.filename}`,
+    iconSize: [scaledWidth, scaledHeight],
+    iconAnchor: [scaledWidth / 2, scaledHeight],
+    popupAnchor: [0, -Math.round(scaledHeight * 0.2)],
+  }
+  
+  // Set anchor if available
+  if (locationType.anchor) {
+    const anchorX = Math.floor(locationType.anchor[0] * zoomFactor * sizeReduction * globalSizeReduction)
+    const anchorY = Math.floor(locationType.anchor[1] * zoomFactor * sizeReduction * globalSizeReduction)
+    iconProperties.iconAnchor = [anchorX, anchorY]
+  }
+  
+  // Set shadow size if available
+  if (locationType.shadowSize) {
+    const shadowWidth = Math.floor(locationType.shadowSize[0] * zoomFactor * sizeReduction * globalSizeReduction)
+    const shadowHeight = Math.floor(locationType.shadowSize[1] * zoomFactor * sizeReduction * globalSizeReduction)
+    iconProperties.shadowSize = [shadowWidth, shadowHeight]
+  }
+  
+  // Set shadow anchor if available
+  if (locationType.shadowAnchor) {
+    const shadowAnchorX = Math.floor(locationType.shadowAnchor[0] * zoomFactor * sizeReduction * globalSizeReduction)
+    const shadowAnchorY = Math.floor(locationType.shadowAnchor[1] * zoomFactor * sizeReduction * globalSizeReduction)
+    iconProperties.shadowAnchor = [shadowAnchorX, shadowAnchorY]
+  }
+  
+  // Update the marker's icon with the new size
+  marker.setIcon(L.icon(iconProperties))
+}
+
+// New helper function for player marker during zoom
+function updatePlayerMarkerForZoom(coords: Coordinates, zoomLevel: number): void {
+  if (!map.value || !playerMarker.value) return
+  
+  const playersType = locationTypesById['players' as keyof typeof locationTypesById]
+  if (!playersType || !playersType.scale || !playersType.size) return
+  
+  // Calculate size based on zoom level
+  const baseZoom = 16
+  const zoomFactor = Math.pow(2.0, zoomLevel - baseZoom)
+  const globalSizeReduction = 0.36
+  
+  // Create icon properties
+  const iconProperties: IconOptions = {
+    iconUrl: `./newicons/${playersType.filename}`,
+    shadowUrl: `./newicons/shadows/${playersType.filename}`,
+    iconSize: [67, 83],
+    iconAnchor: [34, 83],
+    popupAnchor: [0, -30],
+    shadowSize: [161, 100],
+    shadowAnchor: [10, 90],
+  }
+  
+  // Set scaled dimensions
+  if (playersType.size) {
+    let scaledWidth = Math.floor(playersType.size[0] * zoomFactor * globalSizeReduction)
+    let scaledHeight = Math.floor(playersType.size[1] * zoomFactor * globalSizeReduction)
+    
+    // Enforce minimum size while preserving aspect ratio
+    const minSize = 20
+    const originalAspectRatio = playersType.size[0] / playersType.size[1]
+    
+    if (scaledWidth < minSize || scaledHeight < minSize) {
+      if (originalAspectRatio >= 1) {
+        if (scaledWidth < minSize) {
+          scaledWidth = minSize
+          scaledHeight = Math.max(minSize / 2, Math.floor(scaledWidth / originalAspectRatio))
+        }
+      } else {
+        if (scaledHeight < minSize) {
+          scaledHeight = minSize
+          scaledWidth = Math.max(minSize / 2, Math.floor(scaledHeight * originalAspectRatio))
+        }
+      }
+    }
+    
+    iconProperties.iconSize = [scaledWidth, scaledHeight]
+  }
+  
+  // Set anchor if available
+  if (playersType.anchor) {
+    const scaledAnchorX = Math.floor(playersType.anchor[0] * zoomFactor * globalSizeReduction)
+    const scaledAnchorY = Math.floor(playersType.anchor[1] * zoomFactor * globalSizeReduction)
+    iconProperties.iconAnchor = [scaledAnchorX, scaledAnchorY]
+  }
+  
+  // Set shadow size/anchor if available
+  if (playersType.shadowSize) {
+    const scaledShadowWidth = Math.floor(playersType.shadowSize[0] * zoomFactor * globalSizeReduction)
+    const scaledShadowHeight = Math.floor(playersType.shadowSize[1] * zoomFactor * globalSizeReduction)
+    iconProperties.shadowSize = [scaledShadowWidth, scaledShadowHeight]
+  }
+  
+  if (playersType.shadowAnchor) {
+    const scaledShadowAnchorX = Math.floor(playersType.shadowAnchor[0] * zoomFactor * globalSizeReduction)
+    const scaledShadowAnchorY = Math.floor(playersType.shadowAnchor[1] * zoomFactor * globalSizeReduction)
+    iconProperties.shadowAnchor = [scaledShadowAnchorX, scaledShadowAnchorY]
+  }
+  
+  // Update the player marker's icon
+  playerMarker.value.setIcon(L.icon(iconProperties))
+}
+
+// New helper function for destination marker during zoom
+function updateDestinationMarkerForZoom(coords: Coordinates, zoomLevel: number): void {
+  if (!map.value || !destinationMarker.value) return
+  
+  // Calculate size based on zoom level
+  const baseSize = 240
+  const baseZoom = 16
+  const zoomFactor = Math.pow(2.0, zoomLevel - baseZoom)
+  const circleSize = Math.max(60, Math.min(300, Math.floor(baseSize * zoomFactor)))
+  
+  // Check if player has enough tokens to enter the end location
+  const hasEnoughTokens = inventoryStore.tokenCount >= questStore.minimumLocations
+  
+  // Create SVG with radial gradient for fade effect
+  const svgSize = circleSize * 2
+  const primaryColor = hasEnoughTokens ? '#22DD33' : '#FF5500'
+  
+  const svg = `
+    <svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="fade" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <stop offset="0%" stop-color="${primaryColor}" stop-opacity="1" />
+          <stop offset="50%" stop-color="${primaryColor}" stop-opacity="0.5" />
+          <stop offset="80%" stop-color="${primaryColor}" stop-opacity="0.2" />
+          <stop offset="100%" stop-color="${primaryColor}" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <circle cx="${svgSize/2}" cy="${svgSize/2}" r="${svgSize/2}" fill="url(#fade)" />stroke="white" stroke-width="3" />
+    </svg>
+  `
+  
+  // Update the destination marker's icon
+  destinationMarker.value.setIcon(L.divIcon({
+    className: hasEnoughTokens ? 'destination-marker accessible' : 'destination-marker',
+    html: svg,
+    iconSize: [svgSize, svgSize],
+    iconAnchor: [svgSize/2, svgSize/2]
+  }))
+}
+
+// New helper function for scout range labels during zoom
+function updateScoutRangeLabelsForZoom(coords: Coordinates, zoomLevel: number): void {
+  if (!map.value) return
+  
+  // Calculate positions for top and bottom labels
+  const distanceFromEdge = 5
+  const scoutDistanceWithPadding = questStore.scoutRange + distanceFromEdge
+  const latOffset = scoutDistanceWithPadding / 111111
+  
+  const topPoint = {
+    lat: coords.lat + latOffset,
+    lng: coords.lng
+  }
+  
+  const bottomPoint = {
+    lat: coords.lat - latOffset,
+    lng: coords.lng
+  }
+  
+  // Calculate size based on zoom level
+  const baseFontSize = 18
+  const baseZoom = 16
+  const zoomFactor = Math.pow(2.0, zoomLevel - baseZoom)
+  const fontSize = Math.max(10, Math.min(72, Math.floor(baseFontSize * zoomFactor)))
+  const labelWidth = Math.max(80, Math.min(300, Math.floor(140 * zoomFactor)))
+  const labelHeight = Math.max(20, Math.min(80, Math.floor(30 * zoomFactor)))
+  
+  // Update top label if it exists
+  if (scoutTopLabel.value) {
+    scoutTopLabel.value.setIcon(L.divIcon({
+      className: 'scout-range-label',
+      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+      iconSize: [labelWidth, labelHeight],
+      iconAnchor: [labelWidth / 2, labelHeight]
+    }))
+  }
+  
+  // Update bottom label if it exists
+  if (scoutBottomLabel.value) {
+    scoutBottomLabel.value.setIcon(L.divIcon({
+      className: 'scout-range-label',
+      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+      iconSize: [labelWidth, labelHeight],
+      iconAnchor: [labelWidth / 2, 0]
+    }))
+  }
+}
 </script>
 
 <style scoped>
@@ -1202,5 +1514,26 @@ button {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* Style for leaflet icons to ensure smooth transitions during zoom */
+:deep(.leaflet-marker-icon) {
+  /* Don't disable all transitions, just don't add any extra ones */
+}
+
+:deep(.leaflet-marker-icon img) {
+  width: 100%;
+  height: 100%;
+}
+
+/* Don't disable Leaflet's zoom animations */
+/* :deep(.leaflet-zoom-animated) {
+  transition: none !important;
+} */
+
+/* Ensure the SVG scales correctly in the destination marker */
+:deep(.destination-marker svg) {
+  width: 100%;
+  height: 100%;
 }
 </style> 

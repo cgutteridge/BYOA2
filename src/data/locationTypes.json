@@ -5,19 +5,19 @@
     "filename": "wizards_tower.png",
     "scale": true,
     "size": [
-      27,
+      19,
       64
     ],
     "anchor": [
-      13,
+      9,
       64
     ],
     "shadowAnchor": [
-      13,
+      9,
       43
     ],
     "shadowSize": [
-      75,
+      68,
       43
     ]
   },
@@ -90,7 +90,24 @@
   {
     "id": "mountain",
     "title": "Mountain",
-    "filename": "mountain.png"
+    "filename": "mountain.png",
+    "scale": true,
+    "size": [
+      64,
+      63
+    ],
+    "anchor": [
+      32,
+      63
+    ],
+    "shadowAnchor": [
+      32,
+      43
+    ],
+    "shadowSize": [
+      105,
+      43
+    ]
   },
   {
     "id": "mine",
@@ -139,7 +156,24 @@
   {
     "id": "magical_activity",
     "title": "Magical Activity",
-    "filename": "magical_activity.png"
+    "filename": "magical_activity.png",
+    "scale": true,
+    "size": [
+      61,
+      64
+    ],
+    "anchor": [
+      30,
+      64
+    ],
+    "shadowAnchor": [
+      30,
+      43
+    ],
+    "shadowSize": [
+      103,
+      43
+    ]
   },
   {
     "id": "magic_shop",
@@ -169,26 +203,43 @@
     "filename": "magic_portal.png",
     "scale": true,
     "size": [
-      52,
+      42,
       64
     ],
     "anchor": [
-      26,
+      21,
       64
     ],
     "shadowAnchor": [
-      26,
+      21,
       43
     ],
     "shadowSize": [
-      96,
+      87,
       43
     ]
   },
   {
     "id": "lair",
     "title": "Lair",
-    "filename": "lair.png"
+    "filename": "lair.png",
+    "scale": true,
+    "size": [
+      64,
+      60
+    ],
+    "anchor": [
+      32,
+      60
+    ],
+    "shadowAnchor": [
+      32,
+      41
+    ],
+    "shadowSize": [
+      102,
+      41
+    ]
   },
   {
     "id": "jungle",
@@ -215,7 +266,24 @@
   {
     "id": "haunted_house",
     "title": "Haunted House",
-    "filename": "haunted_house.png"
+    "filename": "haunted_house.png",
+    "scale": true,
+    "size": [
+      50,
+      64
+    ],
+    "anchor": [
+      25,
+      64
+    ],
+    "shadowAnchor": [
+      25,
+      43
+    ],
+    "shadowSize": [
+      94,
+      43
+    ]
   },
   {
     "id": "grove",
@@ -330,7 +398,24 @@
   {
     "id": "eldrich_horror",
     "title": "Eldritch Horror",
-    "filename": "eldrich_horror.png"
+    "filename": "eldrich_horror.png",
+    "scale": true,
+    "size": [
+      59,
+      64
+    ],
+    "anchor": [
+      29,
+      64
+    ],
+    "shadowAnchor": [
+      29,
+      43
+    ],
+    "shadowSize": [
+      101,
+      43
+    ]
   },
   {
     "id": "cursed_Location",
@@ -340,7 +425,24 @@
   {
     "id": "crystal_forest",
     "title": "Crystal Forest",
-    "filename": "crystal_forest.png"
+    "filename": "crystal_forest.png",
+    "scale": true,
+    "size": [
+      64,
+      59
+    ],
+    "anchor": [
+      32,
+      59
+    ],
+    "shadowAnchor": [
+      32,
+      40
+    ],
+    "shadowSize": [
+      102,
+      40
+    ]
   },
   {
     "id": "castle",
@@ -433,7 +535,24 @@
   {
     "id": "shop",
     "title": "Shop",
-    "filename": "shop.png"
+    "filename": "shop.png",
+    "scale": true,
+    "size": [
+      64,
+      64
+    ],
+    "anchor": [
+      32,
+      64
+    ],
+    "shadowAnchor": [
+      32,
+      43
+    ],
+    "shadowSize": [
+      106,
+      43
+    ]
   },
   {
     "id": "chest",
@@ -499,6 +618,28 @@
     "shadowSize": [
       91,
       43
+    ]
+  },
+  {
+    "id": "Untitled",
+    "title": "Untitled",
+    "filename": "Untitled.png",
+    "scale": true,
+    "size": [
+      64,
+      60
+    ],
+    "anchor": [
+      32,
+      60
+    ],
+    "shadowAnchor": [
+      32,
+      41
+    ],
+    "shadowSize": [
+      102,
+      41
     ]
   }
 ]
