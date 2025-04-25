@@ -58,9 +58,9 @@ const destinationCoordinates = computed((): Coordinates | null => {
   return questStore.endGameLocation?.coordinates || null;
 })
 const currentMapTile = computed(() => {
-  // Get the selected map tile or fall back to 'pioneer' as default
-  const tileId = questStore.mapTileId || 'pioneer'
-  return mapTiles[tileId] || mapTiles.pioneer
+  // Get the selected map tile or fall back to 'stamenWatercolor' as default
+  const tileId = questStore.mapTileId || 'stamenWatercolor'
+  return mapTiles[tileId] || mapTiles.stamenWatercolor
 })
 
 function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker | undefined {
