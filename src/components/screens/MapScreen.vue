@@ -51,7 +51,6 @@ const teleportClickHandler = ref<((e: L.LeafletMouseEvent) => void) | null>(null
 // Add a variable to track zoom animation state
 const isZooming = ref<boolean>(false)
 const zoomStartLevel = ref<number>(16)
-const zoomTargetLevel = ref<number>(16)
 const zoomProgress = ref<number>(0)
 
 // Computed properties
@@ -382,14 +381,14 @@ function initializeMap(): void {
       preferCanvas: false, // Use DOM rendering for marker animations
       zoomControl: false,  // Disable the default zoom control
       zoomAnimation: true, // Explicitly enable zoom animation
-      markerZoomAnimation: true, // Enable Leaflet's built-in marker animation
-      fadeAnimation: true, // Enable fade animation
-      zoomAnimationThreshold: 3, // Increase animation threshold for smoother transitions
-      wheelDebounceTime: 40, // Debounce wheel events for smoother zooming
+    //  markerZoomAnimation: true, // Enable Leaflet's built-in marker animation
+   //   fadeAnimation: true, // Enable fade animation
+      //zoomAnimationThreshold: 3, // Increase animation threshold for smoother transitions
+      //wheelDebounceTime: 40, // Debounce wheel events for smoother zooming
       inertia: true, // Enable inertia for panning
       inertiaDeceleration: 2000, // Inertia deceleration rate (px/s²)
       maxZoom: currentMapTile.value.maxZoom || 19,
-      minZoom: currentMapTile.value.minZoom || 1
+      minZoom: currentMapTile.value.minZoom || 1,
     }).setView([coordinates.lat, coordinates.lng], zoom)
 
     // Create a custom pane for destination markers that sits below regular markers
@@ -416,14 +415,7 @@ function initializeMap(): void {
 
     mapInstance.on('zoomanim', (e) => {
       // Get the target zoom level and calculate progress
-      zoomTargetLevel.value = e.zoom
-
-      // Calculate interpolation factor
-      const totalZoomChange = zoomTargetLevel.value - zoomStartLevel.value
-      if (totalZoomChange !== 0) {
-        // e.zoom is the current interpolated zoom level
-        zoomProgress.value = (e.zoom - zoomStartLevel.value) / totalZoomChange
-      }
+     console.log('zoom', e)
     })
 
 
