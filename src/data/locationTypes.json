@@ -641,5 +641,27 @@
       102,
       41
     ]
+  },
+  {
+    "id": "cursed_location",
+    "title": "Cursed location",
+    "filename": "cursed_location.png",
+    "scale": true,
+    "size": [
+      64,
+      62
+    ],
+    "anchor": [
+      32,
+      62
+    ],
+    "shadowAnchor": [
+      32,
+      42
+    ],
+    "shadowSize": [
+      104,
+      42
+    ]
   }
 ]

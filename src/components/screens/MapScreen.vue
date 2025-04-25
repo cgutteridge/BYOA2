@@ -23,6 +23,7 @@ import {locationTypesById} from "@/data/locationTypes"
 import LocationPopup from '@/components/LocationPopup.vue'
 import calculateDistance from "@/utils/calculateDistance"
 import mapTiles from '@/data/mapTiles'
+import {toGameLocationTypeId} from '@/types'
 
 // Configuration constants
 const BOTTOM_OFFSET = 20 // Distance from bottom of screen  when opening a popup in pixels
@@ -77,10 +78,12 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
   // Get the location type or use tower as fallback if the type doesn't exist
   let locationType = locationTypesById[location.type]
   
-  // If location type doesn't exist, log warning and use tower as fallback
+  // If location type doesn't exist, convert the location to tower type
   if (!locationType) {
-    console.warn(`Location type '${location.type}' not found. Using tower as fallback.`)
-    locationType = locationTypesById['tower' as keyof typeof locationTypesById]
+    console.warn(`Location type '${location.type}' not found. Converting to tower type.`)
+    // Change the actual location type to 'tower' instead of just using visual fallback
+    location.type = toGameLocationTypeId('tower')
+    locationType = locationTypesById[location.type]
     
     // If tower doesn't exist for some reason, we can't continue
     if (!locationType) {
