@@ -129,13 +129,19 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
   if (item.result && item.result !== 'pick') {
     availableUpgrades.push('result_restriction');
   }
+
   
-  // Target mode upgrade path: random -> pick -> random_type -> pick_type (+1 point each)
   if (item.target === 'random' && remainingPoints >= 1) {
     availableUpgrades.push('upgrade_to_pick');
-  } else if (item.target === 'pick' && remainingPoints >= 1 && power.supportsTypeTargeting) {
+  }
+  if (item.target === 'random' && remainingPoints >= 1 && power.supportsTypeTargeting) {
     availableUpgrades.push('upgrade_to_random_type');
-  } else if (item.target === 'random_type' && remainingPoints >= 1) {
+  }
+
+  if (item.target === 'pick' && remainingPoints >= 1 && power.supportsTypeTargeting) {
+    availableUpgrades.push('upgrade_to_pick_type');
+  }
+  if (item.target === 'random_type' && remainingPoints >= 1) {
     availableUpgrades.push('upgrade_to_pick_type');
   }
 
@@ -178,7 +184,7 @@ function applyUpgrade(item: Item, upgrade: string, remainingPoints: number): num
     case 'upgrade_to_pick':
       // Upgrade from random to pick (single target)
       item.target = 'pick';
-      return remainingPoints - 2;
+      return remainingPoints - 1;
       
     case 'upgrade_to_random_type':
       // Upgrade from pick to random_type
