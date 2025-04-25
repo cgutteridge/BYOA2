@@ -2,7 +2,24 @@
   {
     "id": "wizards_tower",
     "title": "Wizard's Tower",
-    "filename": "wizards_tower.png"
+    "filename": "wizards_tower.png",
+    "scale": true,
+    "size": [
+      27,
+      64
+    ],
+    "anchor": [
+      13,
+      64
+    ],
+    "shadowAnchor": [
+      13,
+      43
+    ],
+    "shadowSize": [
+      75,
+      43
+    ]
   },
   {
     "id": "tower",
@@ -132,12 +149,46 @@
   {
     "id": "magic_shop",
     "title": "Magic Shop",
-    "filename": "magic_shop.png"
+    "filename": "magic_shop.png",
+    "scale": true,
+    "size": [
+      52,
+      64
+    ],
+    "anchor": [
+      26,
+      64
+    ],
+    "shadowAnchor": [
+      26,
+      43
+    ],
+    "shadowSize": [
+      95,
+      43
+    ]
   },
   {
     "id": "magic_portal",
     "title": "Magic Portal",
-    "filename": "magic_portal.png"
+    "filename": "magic_portal.png",
+    "scale": true,
+    "size": [
+      52,
+      64
+    ],
+    "anchor": [
+      26,
+      64
+    ],
+    "shadowAnchor": [
+      26,
+      43
+    ],
+    "shadowSize": [
+      96,
+      43
+    ]
   },
   {
     "id": "lair",
@@ -157,7 +208,24 @@
   {
     "id": "grove",
     "title": "Grove",
-    "filename": "grove.png"
+    "filename": "grove.png",
+    "scale": true,
+    "size": [
+      64,
+      59
+    ],
+    "anchor": [
+      32,
+      59
+    ],
+    "shadowAnchor": [
+      32,
+      40
+    ],
+    "shadowSize": [
+      102,
+      40
+    ]
   },
   {
     "id": "graveyard",
@@ -172,7 +240,24 @@
   {
     "id": "fortress",
     "title": "Fortress",
-    "filename": "fortress.png"
+    "filename": "fortress.png",
+    "scale": true,
+    "size": [
+      58,
+      64
+    ],
+    "anchor": [
+      29,
+      64
+    ],
+    "shadowAnchor": [
+      29,
+      43
+    ],
+    "shadowSize": [
+      100,
+      43
+    ]
   },
   {
     "id": "forest",

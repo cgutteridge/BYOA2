@@ -105,9 +105,29 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     
     // Use the size from the location type and apply zoom scaling
     if (locationType.size) {
-      // Calculate scaled dimensions with size reduction for stash applied
-      const scaledWidth = Math.max(20, Math.floor(locationType.size[0] * zoomFactor * sizeReduction * globalSizeReduction))
-      const scaledHeight = Math.max(20, Math.floor(locationType.size[1] * zoomFactor * sizeReduction * globalSizeReduction))
+      // Calculate initial scaled dimensions with size reduction
+      let scaledWidth = Math.floor(locationType.size[0] * zoomFactor * sizeReduction * globalSizeReduction)
+      let scaledHeight = Math.floor(locationType.size[1] * zoomFactor * sizeReduction * globalSizeReduction)
+      
+      // Enforce minimum size while preserving aspect ratio
+      const minSize = 20
+      const originalAspectRatio = locationType.size[0] / locationType.size[1]
+      
+      if (scaledWidth < minSize || scaledHeight < minSize) {
+        if (originalAspectRatio >= 1) {
+          // Wider than tall
+          if (scaledWidth < minSize) {
+            scaledWidth = minSize
+            scaledHeight = Math.max(minSize / 2, Math.floor(scaledWidth / originalAspectRatio))
+          }
+        } else {
+          // Taller than wide
+          if (scaledHeight < minSize) {
+            scaledHeight = minSize
+            scaledWidth = Math.max(minSize / 2, Math.floor(scaledHeight * originalAspectRatio))
+          }
+        }
+      }
       
       iconProperties.iconSize = [scaledWidth, scaledHeight]
       
@@ -134,18 +154,63 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     
     // Use the shadowSize from the location type, scaled with zoom
     if (locationType.shadowSize) {
-      const scaledShadowWidth = Math.max(20, Math.floor(locationType.shadowSize[0] * zoomFactor * sizeReduction * globalSizeReduction))
-      const scaledShadowHeight = Math.max(10, Math.floor(locationType.shadowSize[1] * zoomFactor * sizeReduction * globalSizeReduction))
+      // Calculate initial scaled dimensions with size reduction
+      let scaledShadowWidth = Math.floor(locationType.shadowSize[0] * zoomFactor * sizeReduction * globalSizeReduction)
+      let scaledShadowHeight = Math.floor(locationType.shadowSize[1] * zoomFactor * sizeReduction * globalSizeReduction)
+      
+      // Enforce minimum size while preserving aspect ratio
+      const minSize = 20
+      const shadowAspectRatio = locationType.shadowSize[0] / locationType.shadowSize[1]
+      
+      if (scaledShadowWidth < minSize || scaledShadowHeight < minSize) {
+        if (shadowAspectRatio >= 1) {
+          // Wider than tall
+          if (scaledShadowWidth < minSize) {
+            scaledShadowWidth = minSize
+            scaledShadowHeight = Math.max(minSize / 2, Math.floor(scaledShadowWidth / shadowAspectRatio))
+          }
+        } else {
+          // Taller than wide
+          if (scaledShadowHeight < minSize) {
+            scaledShadowHeight = minSize
+            scaledShadowWidth = Math.max(minSize / 2, Math.floor(scaledShadowHeight * shadowAspectRatio))
+          }
+        }
+      }
       
       iconProperties.shadowSize = [scaledShadowWidth, scaledShadowHeight]
     }
     // If no shadowSize is defined but we have size, calculate it (fallback)
     else if (locationType.size) {
       // The shadow is approximately 20-25% wider than the original due to skew
-      const shadowWidth = Math.round(locationType.size[0] * 1.25 * zoomFactor * sizeReduction * globalSizeReduction);
-      const shadowHeight = Math.round(locationType.size[1] * zoomFactor * sizeReduction * globalSizeReduction);
+      const originalAspectRatio = locationType.size[0] / locationType.size[1]
+      const shadowWidth = Math.round(locationType.size[0] * 1.25 * zoomFactor * sizeReduction * globalSizeReduction)
+      let shadowHeight = Math.round(locationType.size[1] * zoomFactor * sizeReduction * globalSizeReduction)
       
-      iconProperties.shadowSize = [shadowWidth, shadowHeight];
+      // Enforce minimum size while preserving aspect ratio
+      const minSize = 20
+      const shadowAspectRatio = shadowWidth / shadowHeight
+      
+      let finalShadowWidth = shadowWidth
+      let finalShadowHeight = shadowHeight
+      
+      if (finalShadowWidth < minSize || finalShadowHeight < minSize) {
+        if (shadowAspectRatio >= 1) {
+          // Wider than tall
+          if (finalShadowWidth < minSize) {
+            finalShadowWidth = minSize
+            finalShadowHeight = Math.max(minSize / 2, Math.floor(finalShadowWidth / shadowAspectRatio))
+          }
+        } else {
+          // Taller than wide
+          if (finalShadowHeight < minSize) {
+            finalShadowHeight = minSize
+            finalShadowWidth = Math.max(minSize / 2, Math.floor(finalShadowHeight * shadowAspectRatio))
+          }
+        }
+      }
+      
+      iconProperties.shadowSize = [finalShadowWidth, finalShadowHeight]
     }
   } else {
     // Use standard icons
@@ -366,7 +431,11 @@ function initializeMap(): void {
       preferCanvas: true,
       zoomControl: false  // Disable the default zoom control
     }).setView([coordinates.lat, coordinates.lng], zoom)
-
+    
+    // Create a custom pane for destination markers that sits below regular markers
+    mapInstance.createPane('destinationPane');
+    mapInstance.getPane('destinationPane')!.style.zIndex = '400';
+    
     // Add event listeners for map movement and zoom
     mapInstance.on('moveend', () => {
       const center = mapInstance.getCenter()
@@ -793,7 +862,7 @@ function updateDestinationMarker(): void {
     </svg>
   `
 
-  // Create the destination marker with the SVG icon
+  // Create the destination marker with the SVG icon, specifying the destinationPane
   destinationMarker.value = L.marker([destinationCoordinates.value.lat, destinationCoordinates.value.lng], {
     icon: L.divIcon({
       className: hasEnoughTokens ? 'destination-marker accessible' : 'destination-marker',
@@ -801,7 +870,7 @@ function updateDestinationMarker(): void {
       iconSize: [svgSize, svgSize],
       iconAnchor: [svgSize/2, svgSize/2]
     }),
-    zIndexOffset: -1000 // Ensure it's below other markers
+    pane: 'destinationPane' // Use our custom pane that's below the marker pane
   }).addTo(theMap)
 }
 
@@ -1011,13 +1080,11 @@ button {
   border: none;
   pointer-events: none;
   transition: all 0.25s ease-in-out;
-  z-index: -1 !important;
 }
 
 :deep(.destination-marker svg) {
   filter: drop-shadow(0 0 8px rgba(255, 85, 0, 0.6));
   animation: pulse 3s infinite ease-in-out;
-  z-index: -1 !important;
 }
 
 :deep(.destination-marker.accessible svg) {
