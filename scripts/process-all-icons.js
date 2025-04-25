@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
 // Path to the newicons directory
-const iconsDir = path.join(projectRoot, 'public', 'newicons');
+const iconsDir = path.join(projectRoot, 'public', 'icons');
 const iconInfoDir = path.join(iconsDir, 'iconinfo');
 
 // Clean up the iconinfo directory if it exists (we're no longer using it)

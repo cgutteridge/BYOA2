@@ -17,7 +17,7 @@ if (process.argv.length < 3) {
 
 // Get icon name from command line argument (without extension)
 const iconName = process.argv[2].replace('.png', '');
-const iconPath = path.join(projectRoot, 'public', 'newicons', `${iconName}.png`);
+const iconPath = path.join(projectRoot, 'public', 'icons', `${iconName}.png`);
 
 // Check if icon exists
 if (!fs.existsSync(iconPath)) {
@@ -26,7 +26,7 @@ if (!fs.existsSync(iconPath)) {
 }
 
 // Create shadows directory if it doesn't exist
-const shadowDir = path.join(projectRoot, 'public', 'newicons', 'shadows');
+const shadowDir = path.join(projectRoot, 'public', 'icons', 'shadows');
 
 if (!fs.existsSync(shadowDir)) {
   fs.mkdirSync(shadowDir, { recursive: true });

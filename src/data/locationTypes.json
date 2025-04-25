@@ -616,28 +616,6 @@
     ]
   },
   {
-    "id": "Untitled",
-    "title": "Untitled",
-    "filename": "Untitled.png",
-    "scale": true,
-    "size": [
-      64,
-      60
-    ],
-    "anchor": [
-      32,
-      60
-    ],
-    "shadowAnchor": [
-      32,
-      41
-    ],
-    "shadowSize": [
-      102,
-      41
-    ]
-  },
-  {
     "id": "cursed_location",
     "title": "Cursed location",
     "filename": "cursed_location.png",

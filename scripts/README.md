@@ -26,7 +26,7 @@ For example:
 npm run process-icon castle
 ```
 
-To process all icons in the `public/newicons` directory:
+To process all icons in the `public/icons` directory:
 
 ```bash
 npm run process-all-icons
@@ -35,12 +35,12 @@ npm run process-all-icons
 ## Output
 
 The script will:
-1. Create a shadow version in `public/newicons/shadows/<icon-name>.png`
+1. Create a shadow version in `public/icons/shadows/<icon-name>.png`
    - The shadow maintains the exact shape of the original icon
    - The shadow is skewed horizontally (approx. 15 degrees)
    - The shadow is blurred slightly for a more realistic effect
    - The shadow has 50% opacity
-2. Generate a JSON file with metadata in `public/newicons/iconinfo/<icon-name>.json`
+2. Generate a JSON file with metadata in `public/icons/iconinfo/<icon-name>.json`
 
 The JSON file contains:
 - Original icon dimensions

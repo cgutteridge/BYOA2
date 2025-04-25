@@ -115,8 +115,8 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
   
   // Use new scaled icons if the location type has scale=true
   if (locationType.scale) {
-    iconProperties.iconUrl = `./newicons/${locationType.filename}`
-    iconProperties.shadowUrl = `./newicons/shadows/${locationType.filename}`
+    iconProperties.iconUrl = `./icons/${locationType.filename}`
+    iconProperties.shadowUrl = `./icons/shadows/${locationType.filename}`
     
     // Calculate zoom factor - scale smoothly with zoom
     const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
@@ -727,8 +727,8 @@ function updatePlayerMarker(coords: Coordinates): void {
     
     // Get icon configuration
     const iconProperties: IconOptions = {
-      iconUrl: `./newicons/${playersType.filename}`,
-      shadowUrl: `./newicons/shadows/${playersType.filename}`,
+      iconUrl: `./icons/${playersType.filename}`,
+      shadowUrl: `./icons/shadows/${playersType.filename}`,
       iconSize: [67, 83],
       iconAnchor: [34, 83],
       popupAnchor: [0, -30],
@@ -1160,8 +1160,8 @@ function updateMarkerIconForZoom(marker: any, location: GameLocation, zoomLevel:
   
   // Create updated icon properties
   const iconProperties: IconOptions = {
-    iconUrl: `./newicons/${locationType.filename}`,
-    shadowUrl: `./newicons/shadows/${locationType.filename}`,
+    iconUrl: `./icons/${locationType.filename}`,
+    shadowUrl: `./icons/shadows/${locationType.filename}`,
     iconSize: [scaledWidth, scaledHeight],
     iconAnchor: [scaledWidth / 2, scaledHeight],
     popupAnchor: [0, -Math.round(scaledHeight * 0.2)],
@@ -1206,8 +1206,8 @@ function updatePlayerMarkerForZoom(coords: Coordinates, zoomLevel: number): void
   
   // Create icon properties
   const iconProperties: IconOptions = {
-    iconUrl: `./newicons/${playersType.filename}`,
-    shadowUrl: `./newicons/shadows/${playersType.filename}`,
+    iconUrl: `./icons/${playersType.filename}`,
+    shadowUrl: `./icons/shadows/${playersType.filename}`,
     iconSize: [67, 83],
     iconAnchor: [34, 83],
     popupAnchor: [0, -30],
