@@ -459,6 +459,11 @@ function initializeMap(): void {
         updateScoutRangeLabels(playerCoordinates.value, mapInstance)
       }
       
+      // Update player marker to adjust for new zoom level
+      if (playerCoordinates.value) {
+        updatePlayerMarker(playerCoordinates.value)
+      }
+      
       // Regenerate location markers to apply correct scaling for the new zoom level
       generateGameLocationMarkers()
     })
@@ -632,13 +637,21 @@ function generateGameLocationMarkers(): void {
 
   // Create new markers
   locations.value.forEach((location: GameLocation) => {
-    // skip empty stashes
+    // Skip special location types
+    if (location.type === 'players') {
+      return;
+    }
+    
+    // Skip empty stashes
     if (location.type === 'stash' && location.scouted && location.giftItem === undefined) {
       return;
     }
+    
+    // Skip empty shops
     if (location.type === 'shop' && location.scouted && location.wares === undefined) {
       return;
     }
+    
     const marker = createGameLocationMarker(location, map.value as L.Map)
     if (marker) {
       locationMarkers.value.push(marker)
@@ -660,16 +673,92 @@ function updatePlayerMarker(coords: Coordinates): void {
   if (scoutCircle.value) {
     scoutCircle.value.remove()
   }
-
-  // Create new marker with a clear icon
-  playerMarker.value = L.marker([coords.lat, coords.lng], {
-    icon: L.divIcon({
-      className: 'player-marker',
-      html: '<div class="player-dot"></div>',
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
-    })
-  }).addTo(theMap)
+  
+  // Get the players icon from the location types
+  const playersType = locationTypesById['players' as keyof typeof locationTypesById]
+  
+  if (playersType) {
+    // Calculate size based on the current zoom
+    const currentZoom = theMap.getZoom()
+    const baseZoom = 16
+    const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
+    const globalSizeReduction = 0.36  // Same as location icons
+    
+    // Get icon configuration
+    const iconProperties: IconOptions = {
+      iconUrl: `./newicons/${playersType.filename}`,
+      shadowUrl: `./newicons/shadows/${playersType.filename}`,
+      iconSize: [67, 83],
+      iconAnchor: [34, 83],
+      popupAnchor: [0, -30],
+      shadowSize: [161, 100],
+      shadowAnchor: [10, 90],
+    }
+    
+    // Set scaled dimensions if available
+    if (playersType.scale && playersType.size) {
+      // Calculate initial scaled dimensions with size reduction
+      let scaledWidth = Math.floor(playersType.size[0] * zoomFactor * globalSizeReduction)
+      let scaledHeight = Math.floor(playersType.size[1] * zoomFactor * globalSizeReduction)
+      
+      // Enforce minimum size while preserving aspect ratio
+      const minSize = 20
+      const originalAspectRatio = playersType.size[0] / playersType.size[1]
+      
+      if (scaledWidth < minSize || scaledHeight < minSize) {
+        if (originalAspectRatio >= 1) {
+          // Wider than tall
+          if (scaledWidth < minSize) {
+            scaledWidth = minSize
+            scaledHeight = Math.max(minSize / 2, Math.floor(scaledWidth / originalAspectRatio))
+          }
+        } else {
+          // Taller than wide
+          if (scaledHeight < minSize) {
+            scaledHeight = minSize
+            scaledWidth = Math.max(minSize / 2, Math.floor(scaledHeight * originalAspectRatio))
+          }
+        }
+      }
+      
+      iconProperties.iconSize = [scaledWidth, scaledHeight]
+    }
+    
+    // Set anchor if available
+    if (playersType.anchor) {
+      iconProperties.iconAnchor = playersType.anchor.map(val => 
+        Math.floor(val * zoomFactor * globalSizeReduction)) as [number, number]
+    }
+    
+    // Set shadow size if available
+    if (playersType.shadowSize) {
+      iconProperties.shadowSize = playersType.shadowSize.map(val => 
+        Math.floor(val * zoomFactor * globalSizeReduction)) as [number, number]
+    }
+    
+    // Set shadow anchor if available
+    if (playersType.shadowAnchor) {
+      iconProperties.shadowAnchor = playersType.shadowAnchor.map(val => 
+        Math.floor(val * zoomFactor * globalSizeReduction)) as [number, number]
+    }
+    
+    // Create new marker with the players icon
+    playerMarker.value = L.marker([coords.lat, coords.lng], {
+      icon: L.icon(iconProperties),
+      zIndexOffset: 1000 // Ensure player is above other markers
+    }).addTo(theMap)
+  } else {
+    // Fallback to the original dot if players icon not found
+    playerMarker.value = L.marker([coords.lat, coords.lng], {
+      icon: L.divIcon({
+        className: 'player-marker',
+        html: '<div class="player-dot"></div>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      }),
+      zIndexOffset: 1000 // Ensure player is above other markers
+    }).addTo(theMap)
+  }
 
   // Create scout range circle
   scoutCircle.value = L.circle([coords.lat, coords.lng], {
