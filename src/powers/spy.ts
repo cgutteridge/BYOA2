@@ -24,9 +24,8 @@ export class SpyPower extends ItemPower {
   // Item types for this power
   readonly itemArtifactNames = ["Eyeglass", "Looking Glass", "Lens", "Scope", "Mirror", "Spyglass", "Crystal Ball"];
 
-  generateEffectDescription(item: Item): string {
-    const qualityTerm = this.getLevelQualityTerm(item.level);
-    return `This ${qualityTerm} item reveals any location without visiting it.`;
+  generateEffectDescription(_item: Item): string {
+    return `Reveals any location without visiting it.`;
   }
 
   // Override canTargetLocation to only allow un-scouted locations
