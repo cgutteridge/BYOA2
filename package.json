@@ -10,7 +10,9 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test-chatgpt": "vite build --config vite.test-chatgpt.config.ts && node dist-test/test-chatgpt.js"
+    "test-chatgpt": "vite build --config vite.test-chatgpt.config.ts && node dist-test/test-chatgpt.js",
+    "process-icon": "node scripts/process-icon.js",
+    "process-all-icons": "node scripts/process-all-icons.js"
   },
   "dependencies": {
     "@vueuse/core": "^13.1.0",
