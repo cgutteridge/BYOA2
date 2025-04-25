@@ -509,7 +509,96 @@ function initializeMap(): void {
         zoomProgress.value = (e.zoom - zoomStartLevel.value) / totalZoomChange
       }
       
-      // Let Leaflet handle marker animations - no custom updates needed
+      // Update marker sizes during zoom
+      requestAnimationFrame(() => {
+        // Calculate zoom factor ratio for size scaling
+        const baseZoom = 16
+        const zoomFactor = Math.pow(2.0, e.zoom - baseZoom)
+        const globalSizeReduction = 0.36
+        
+        // Update location marker sizes
+        locationMarkers.value.forEach(marker => {
+          const markerIcon = marker.getElement() as HTMLElement
+          if (markerIcon) {
+            // Get location data from marker
+            // @ts-ignore - accessing custom property
+            const location = marker.locationData as GameLocation
+            if (!location) return
+            
+            // Get location type
+            const locationType = locationTypesById[location.type]
+            if (!locationType || !locationType.size) return
+            
+            // Apply size reduction for stash
+            const sizeReduction = location.type === 'stash' ? 0.5 : 1.0
+            
+            // Calculate new dimensions
+            let width = Math.floor(locationType.size[0] * zoomFactor * sizeReduction * globalSizeReduction)
+            let height = Math.floor(locationType.size[1] * zoomFactor * sizeReduction * globalSizeReduction)
+            
+            // Apply new size
+            markerIcon.style.width = `${width}px`
+            markerIcon.style.height = `${height}px`
+            markerIcon.style.marginLeft = `-${width/2}px`
+            markerIcon.style.marginTop = `-${height}px`
+            
+            // Update shadow if present
+            const markerShadow = markerIcon.nextElementSibling as HTMLElement
+            if (markerShadow && markerShadow.tagName.toLowerCase() === 'img') {
+              // Get shadow dimensions or use fallbacks
+              let shadowWidth = width * 1.25
+              let shadowHeight = height
+              
+              if (locationType.shadowSize) {
+                shadowWidth = Math.floor(locationType.shadowSize[0] * zoomFactor * sizeReduction * globalSizeReduction)
+                shadowHeight = Math.floor(locationType.shadowSize[1] * zoomFactor * sizeReduction * globalSizeReduction)
+              }
+              
+              markerShadow.style.width = `${shadowWidth}px`
+              markerShadow.style.height = `${shadowHeight}px`
+              markerShadow.style.marginLeft = `-${shadowWidth/2}px`
+              markerShadow.style.marginTop = `-${shadowHeight/2}px`
+            }
+          }
+        })
+        
+        // Update player marker size
+        if (playerMarker.value) {
+          const playerIcon = playerMarker.value.getElement() as HTMLElement
+          if (playerIcon) {
+            const playersType = locationTypesById['players' as keyof typeof locationTypesById]
+            if (playersType && playersType.size) {
+              // Calculate new dimensions
+              let width = Math.floor(playersType.size[0] * zoomFactor * globalSizeReduction)
+              let height = Math.floor(playersType.size[1] * zoomFactor * globalSizeReduction)
+              
+              // Apply new size
+              playerIcon.style.width = `${width}px`
+              playerIcon.style.height = `${height}px`
+              playerIcon.style.marginLeft = `-${width/2}px`
+              playerIcon.style.marginTop = `-${height}px`
+              
+              // Update shadow if present
+              const playerShadow = playerIcon.nextElementSibling as HTMLElement
+              if (playerShadow && playerShadow.tagName.toLowerCase() === 'img') {
+                // Get shadow dimensions or use fallbacks
+                let shadowWidth = width * 1.25
+                let shadowHeight = height
+                
+                if (playersType.shadowSize) {
+                  shadowWidth = Math.floor(playersType.shadowSize[0] * zoomFactor * globalSizeReduction)
+                  shadowHeight = Math.floor(playersType.shadowSize[1] * zoomFactor * globalSizeReduction)
+                }
+                
+                playerShadow.style.width = `${shadowWidth}px`
+                playerShadow.style.height = `${shadowHeight}px`
+                playerShadow.style.marginLeft = `-${shadowWidth/2}px`
+                playerShadow.style.marginTop = `-${shadowHeight/2}px`
+              }
+            }
+          }
+        }
+      })
     })
 
     mapInstance.on('zoomend', () => {
@@ -1340,6 +1429,10 @@ button {
 /* Style for animated markers */
 :deep(.leaflet-marker-icon-animated) {
   transform-origin: center bottom !important;
+  transition: width 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.0),
+              height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.0),
+              margin-left 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.0),
+              margin-top 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.0);
 }
 
 /* Override Leaflet's default zoom animation behavior */
