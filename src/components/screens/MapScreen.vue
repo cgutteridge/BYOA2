@@ -455,8 +455,10 @@ function initializeMap(): void {
       zoomControl: false,  // Disable the default zoom control
       zoomAnimation: true, // Explicitly enable zoom animation
       markerZoomAnimation: true, // Enable marker zoom animation
-      fadeAnimation: true // Enable fade animation
-    }).setView([coordinates.lat, coordinates.lng], zoom)
+      fadeAnimation: true, // Enable fade animation
+      maxZoom: currentMapTile.value.maxZoom || 19,
+      minZoom: currentMapTile.value.minZoom || 1
+    }).setView([coordinates.lat, coordinates.lng], constrainZoom(zoom))
     
     // Create a custom pane for destination markers that sits below regular markers
     mapInstance.createPane('destinationPane');
@@ -474,6 +476,16 @@ function initializeMap(): void {
       zoomStartLevel.value = mapInstance.getZoom()
       isZooming.value = true
       zoomProgress.value = 0
+      
+      // Make sure we don't exceed the zoom limits
+      const maxZoom = currentMapTile.value.maxZoom || 19
+      const minZoom = currentMapTile.value.minZoom || 1
+      
+      if (zoomStartLevel.value > maxZoom) {
+        mapInstance.setZoom(maxZoom)
+      } else if (zoomStartLevel.value < minZoom) {
+        mapInstance.setZoom(minZoom)
+      }
     })
     
     mapInstance.on('zoomanim', (e) => {
@@ -497,7 +509,16 @@ function initializeMap(): void {
     })
 
     mapInstance.on('zoomend', () => {
-      appStore.setMapZoom(mapInstance.getZoom())
+      // Store the current zoom level, but ensure it's within the allowed range
+      const currentZoom = mapInstance.getZoom()
+      const constrainedZoom = constrainZoom(currentZoom)
+      
+      // If the zoom level was constrained, set it on the map
+      if (currentZoom !== constrainedZoom) {
+        mapInstance.setZoom(constrainedZoom)
+      }
+      
+      appStore.setMapZoom(constrainedZoom)
       isZooming.value = false
 
       // Update scout range labels when zoom changes
@@ -663,7 +684,9 @@ watch(() => questStore.mapTileId, () => {
       
       // If we had a map position and zoom level, restore it
       if (currentPosition && map.value) {
-        map.value.setView([currentPosition.lat, currentPosition.lng], currentZoom || 16)
+        // Make sure zoom is within the allowed range for this tile set
+        const constrainedZoom = constrainZoom(currentZoom || 16)
+        map.value.setView([currentPosition.lat, currentPosition.lng], constrainedZoom)
       }
     }, 100)
   }
@@ -889,9 +912,13 @@ function updateScoutRangeLabels(coords: Coordinates, theMap: L.Map): void {
 function centerOnPlayer(): void {
   if (!map.value || !playerCoordinates.value) return
 
+  // Use a constrained zoom level that respects the current map tile limits
+  const defaultZoom = 16
+  const constrainedZoom = constrainZoom(defaultZoom)
+  
   map.value.setView(
       [playerCoordinates.value.lat, playerCoordinates.value.lng],
-      16,
+      constrainedZoom,
       {animate: true}
   )
 }
@@ -1351,6 +1378,15 @@ function updateScoutRangeLabelsForZoom(coords: Coordinates, zoomLevel: number): 
       iconAnchor: [labelWidth / 2, 0]
     }))
   }
+}
+
+// Helper function to constrain zoom to the current map tile limits
+function constrainZoom(zoom: number): number {
+  const tile = currentMapTile.value
+  const maxZoom = tile.maxZoom || 19
+  const minZoom = tile.minZoom || 1
+  
+  return Math.min(Math.max(zoom, minZoom), maxZoom)
 }
 </script>
 
