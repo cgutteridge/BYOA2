@@ -786,7 +786,7 @@ function updatePlayerMarker(coords: Coordinates): void {
     // Create new marker with the players icon
     playerMarker.value = L.marker([coords.lat, coords.lng], {
       icon: L.icon(iconProperties),
-      zIndexOffset: 1000 // Ensure player is above other markers
+      zIndexOffset: 0 // Use default z-index to match other markers
     }).addTo(theMap)
   } else {
     // Fallback to the original dot if players icon not found
@@ -797,7 +797,7 @@ function updatePlayerMarker(coords: Coordinates): void {
         iconSize: [20, 20],
         iconAnchor: [10, 10]
       }),
-      zIndexOffset: 1000 // Ensure player is above other markers
+      zIndexOffset: 0 // Use default z-index to match other markers
     }).addTo(theMap)
   }
 
