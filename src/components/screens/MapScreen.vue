@@ -74,6 +74,12 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     return
   }
   
+  // Apply size reduction for stash - 50% of the normal size regardless of scale setting
+  const sizeReduction = location.type === 'stash' ? 0.5 : 1.0
+  
+  // Apply an overall size reduction of 36% (0.6 * 0.6) to all icons
+  const globalSizeReduction = 0.36
+  
   const iconProperties: IconOptions = {
     iconUrl: '', // Default value, will be overridden below
     shadowUrl: '', // Default value, will be overridden below
@@ -84,61 +90,86 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     shadowAnchor: [10, 90],
   }
   
+  // Get current zoom level to scale the icon size
+  const currentZoom = mapInstance.getZoom()
+  // Base size for zoom level 16
+  const baseZoom = 16
+  
   // Use new scaled icons if the location type has scale=true
   if (locationType.scale) {
     iconProperties.iconUrl = `./newicons/${locationType.filename}`
     iconProperties.shadowUrl = `./newicons/shadows/${locationType.filename}`
     
-    // Use the size from the location type
+    // Calculate zoom factor - scale smoothly with zoom
+    const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
+    
+    // Use the size from the location type and apply zoom scaling
     if (locationType.size) {
-      iconProperties.iconSize = locationType.size
+      // Calculate scaled dimensions with size reduction for stash applied
+      const scaledWidth = Math.max(20, Math.floor(locationType.size[0] * zoomFactor * sizeReduction * globalSizeReduction))
+      const scaledHeight = Math.max(20, Math.floor(locationType.size[1] * zoomFactor * sizeReduction * globalSizeReduction))
+      
+      iconProperties.iconSize = [scaledWidth, scaledHeight]
       
       // Set popupAnchor based on the icon height
       // Position the popup above the icon with a small gap
-      iconProperties.popupAnchor = [0, -Math.round(locationType.size[1] * 0.2)];
+      iconProperties.popupAnchor = [0, -Math.round(scaledHeight * 0.2)]
     }
     
-    // Use the anchor from the location type
+    // Use the anchor from the location type, scaled with zoom
     if (locationType.anchor) {
-      iconProperties.iconAnchor = locationType.anchor
+      const scaledAnchorX = Math.max(10, Math.floor(locationType.anchor[0] * zoomFactor * sizeReduction * globalSizeReduction))
+      const scaledAnchorY = Math.max(10, Math.floor(locationType.anchor[1] * zoomFactor * sizeReduction * globalSizeReduction))
+      
+      iconProperties.iconAnchor = [scaledAnchorX, scaledAnchorY]
     }
     
-    // Use the shadowAnchor from the location type
+    // Use the shadowAnchor from the location type, scaled with zoom
     if (locationType.shadowAnchor) {
-      iconProperties.shadowAnchor = locationType.shadowAnchor
+      const scaledShadowAnchorX = Math.max(10, Math.floor(locationType.shadowAnchor[0] * zoomFactor * sizeReduction * globalSizeReduction))
+      const scaledShadowAnchorY = Math.max(10, Math.floor(locationType.shadowAnchor[1] * zoomFactor * sizeReduction * globalSizeReduction))
+      
+      iconProperties.shadowAnchor = [scaledShadowAnchorX, scaledShadowAnchorY]
     }
     
-    // Use the shadowSize from the location type
+    // Use the shadowSize from the location type, scaled with zoom
     if (locationType.shadowSize) {
-      iconProperties.shadowSize = locationType.shadowSize
+      const scaledShadowWidth = Math.max(20, Math.floor(locationType.shadowSize[0] * zoomFactor * sizeReduction * globalSizeReduction))
+      const scaledShadowHeight = Math.max(10, Math.floor(locationType.shadowSize[1] * zoomFactor * sizeReduction * globalSizeReduction))
+      
+      iconProperties.shadowSize = [scaledShadowWidth, scaledShadowHeight]
     }
     // If no shadowSize is defined but we have size, calculate it (fallback)
     else if (locationType.size) {
       // The shadow is approximately 20-25% wider than the original due to skew
-      const shadowWidth = Math.round(locationType.size[0] * 1.25);
-      iconProperties.shadowSize = [shadowWidth, locationType.size[1]];
+      const shadowWidth = Math.round(locationType.size[0] * 1.25 * zoomFactor * sizeReduction * globalSizeReduction);
+      const shadowHeight = Math.round(locationType.size[1] * zoomFactor * sizeReduction * globalSizeReduction);
+      
+      iconProperties.shadowSize = [shadowWidth, shadowHeight];
     }
   } else {
     // Use standard icons
     iconProperties.iconUrl = `./icons/${locationType.filename}`
     iconProperties.shadowUrl = './icons/shadow.png'
-  }
-  
-  // Special cases for non-scaled icons
-  if (!locationType.scale) {
+    
+    // Special cases for non-scaled icons
     if (location.type === 'stash') {
-      iconProperties.iconSize = [33, 41]
-      iconProperties.iconAnchor = [17, 41]
-      iconProperties.popupAnchor = [0, -15]
-      iconProperties.shadowSize = [80, 50]
-      iconProperties.shadowAnchor = [5, 45]
+      // Make stash 50% smaller (already applied through sizeReduction)
+      const baseWidth = 33;
+      const baseHeight = 41;
+      
+      iconProperties.iconSize = [Math.round(baseWidth * sizeReduction * globalSizeReduction), Math.round(baseHeight * sizeReduction * globalSizeReduction)]
+      iconProperties.iconAnchor = [Math.round(17 * sizeReduction * globalSizeReduction), Math.round(41 * sizeReduction * globalSizeReduction)]
+      iconProperties.popupAnchor = [0, -Math.round(15 * sizeReduction * globalSizeReduction)]
+      iconProperties.shadowSize = [Math.round(80 * sizeReduction * globalSizeReduction), Math.round(50 * sizeReduction * globalSizeReduction)]
+      iconProperties.shadowAnchor = [Math.round(5 * sizeReduction * globalSizeReduction), Math.round(45 * sizeReduction * globalSizeReduction)]
     }
-    if (location.type === 'shop') {
-      iconProperties.iconSize = [50, 61]
-      iconProperties.iconAnchor = [25, 61]
-      iconProperties.popupAnchor = [0, -22]
-      iconProperties.shadowSize = [120, 75]
-      iconProperties.shadowAnchor = [8, 67]
+    else if (location.type === 'shop') {
+      iconProperties.iconSize = [Math.round(50 * globalSizeReduction), Math.round(61 * globalSizeReduction)]
+      iconProperties.iconAnchor = [Math.round(25 * globalSizeReduction), Math.round(61 * globalSizeReduction)]
+      iconProperties.popupAnchor = [0, -Math.round(22 * globalSizeReduction)]
+      iconProperties.shadowSize = [Math.round(120 * globalSizeReduction), Math.round(75 * globalSizeReduction)]
+      iconProperties.shadowAnchor = [Math.round(8 * globalSizeReduction), Math.round(67 * globalSizeReduction)]
     }
   }
 
@@ -349,6 +380,9 @@ function initializeMap(): void {
       if (playerCoordinates.value && scoutCircle.value) {
         updateScoutRangeLabels(playerCoordinates.value, mapInstance)
       }
+      
+      // Regenerate location markers to apply correct scaling for the new zoom level
+      generateGameLocationMarkers()
     })
 
     // Simplify to just close any open popup when zoom starts
@@ -607,7 +641,7 @@ function updateScoutRangeLabels(coords: Coordinates, theMap: L.Map): void {
   // Calculate zoom factor - double size for each zoom level increase
   // At zoom 16 it will be the base size (18px)
   // Each zoom level doubles/halves the size
-  const zoomFactor = Math.pow(1.5, currentZoom - baseZoom);
+  const zoomFactor = Math.pow(2.0, currentZoom - baseZoom);
   const fontSize = Math.max(10, Math.min(72, Math.floor(baseFontSize * zoomFactor)));
   const labelWidth = Math.max(80, Math.min(300, Math.floor(140 * zoomFactor)));
   const labelHeight = Math.max(20, Math.min(80, Math.floor(30 * zoomFactor)));
@@ -733,7 +767,7 @@ function updateDestinationMarker(): void {
   const baseZoom = 16
 
   // Scale size based on zoom level
-  const zoomFactor = Math.pow(1.5, currentZoom - baseZoom)
+  const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
   const circleSize = Math.max(60, Math.min(300, Math.floor(baseSize * zoomFactor)))
   
   // Check if player has enough tokens to enter the end location

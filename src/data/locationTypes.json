@@ -33,19 +33,19 @@
     "scale": true,
     "size": [
       64,
-      55
+      63
     ],
     "anchor": [
       32,
-      55
+      63
     ],
     "shadowAnchor": [
       32,
-      37
+      43
     ],
     "shadowSize": [
-      99,
-      37
+      105,
+      43
     ]
   },
   {
@@ -55,19 +55,19 @@
     "scale": true,
     "size": [
       64,
-      43
+      60
     ],
     "anchor": [
       32,
-      43
+      60
     ],
     "shadowAnchor": [
       32,
-      29
+      41
     ],
     "shadowSize": [
-      89,
-      29
+      103,
+      41
     ]
   },
   {
@@ -83,7 +83,24 @@
   {
     "id": "mine",
     "title": "Mine",
-    "filename": "mine.png"
+    "filename": "mine.png",
+    "scale": true,
+    "size": [
+      64,
+      61
+    ],
+    "anchor": [
+      32,
+      61
+    ],
+    "shadowAnchor": [
+      32,
+      41
+    ],
+    "shadowSize": [
+      103,
+      41
+    ]
   },
   {
     "id": "market",
@@ -232,20 +249,20 @@
     "filename": "battlefield.png",
     "scale": true,
     "size": [
-      64,
-      47
+      59,
+      64
     ],
     "anchor": [
-      32,
-      47
+      29,
+      64
     ],
     "shadowAnchor": [
-      32,
-      32
+      29,
+      43
     ],
     "shadowSize": [
-      92,
-      32
+      102,
+      43
     ]
   },
   {
