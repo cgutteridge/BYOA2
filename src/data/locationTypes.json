@@ -577,19 +577,19 @@
     "filename": "statue.png",
     "scale": true,
     "size": [
-      37,
+      30,
       64
     ],
     "anchor": [
-      18,
+      15,
       64
     ],
     "shadowAnchor": [
-      18,
+      15,
       43
     ],
     "shadowSize": [
-      84,
+      77,
       43
     ]
   },
