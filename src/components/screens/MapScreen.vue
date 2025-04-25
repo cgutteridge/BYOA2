@@ -175,22 +175,15 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     iconAnchor: scaledType.anchor,
     shadowSize: scaledType.shadowSize,
     shadowAnchor: scaledType.shadowAnchor,
-    className: 'leaflet-marker-icon-animated', // Add animation class
+    className: `leaflet-marker-icon-scalable location-type-${location.type}`, // Use scalable class
   }
 
-  // Position the popup above the icon with a small gap
-  if (scaledType.size) {
-    iconProperties.popupAnchor = [0, -Math.round(scaledType.size[1] * 0.2)]
-  } else {
-    iconProperties.popupAnchor = [0, -30] // Default if size is not available
-  }
+  iconProperties.popupAnchor = [0, -30] // Default if size is not available
 
   const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
     icon: L.icon(iconProperties),
     zIndexOffset: 0, // Use default z-index
-    riseOnHover: true, // Rise above other markers on hover
-    riseOffset: 250, // Rise by this many pixels
-    interactive: true, // Enable interaction with marker 
+    interactive: true, // Enable interaction with marker
     keyboard: false, // Disable keyboard navigation
     bubblingMouseEvents: false // Prevent event bubbling for better performance
   }).addTo(mapInstance)
@@ -391,13 +384,13 @@ function initializeMap(): void {
       zoomAnimation: true, // Explicitly enable zoom animation
       markerZoomAnimation: true, // Enable Leaflet's built-in marker animation
       fadeAnimation: true, // Enable fade animation
-      zoomAnimationThreshold: 4, // Increase animation threshold for smoother transitions
+      zoomAnimationThreshold: 3, // Increase animation threshold for smoother transitions
       wheelDebounceTime: 40, // Debounce wheel events for smoother zooming
       inertia: true, // Enable inertia for panning
       inertiaDeceleration: 2000, // Inertia deceleration rate (px/s²)
-      maxZoom: 22,
+      maxZoom: currentMapTile.value.maxZoom || 19,
       minZoom: currentMapTile.value.minZoom || 1
-    }).setView([coordinates.lat, coordinates.lng], constrainZoom(zoom))
+    }).setView([coordinates.lat, coordinates.lng], zoom)
 
     // Create a custom pane for destination markers that sits below regular markers
     mapInstance.createPane('destinationPane');
@@ -409,136 +402,30 @@ function initializeMap(): void {
       appStore.setMapPosition({lat: center.lat, lng: center.lng})
     })
 
+    mapInstance.on('zoomend', () => {
+      appStore.setMapZoom(mapInstance.getZoom())
+    })
+
     // Listen for zoom animation events
     mapInstance.on('zoomstart', () => {
       closePopup()
       zoomStartLevel.value = mapInstance.getZoom()
       isZooming.value = true
       zoomProgress.value = 0
-
-      // Make sure we don't exceed the zoom limits
-      const maxZoom = currentMapTile.value.maxZoom || 19
-      const minZoom = currentMapTile.value.minZoom || 1
-
-      if (zoomStartLevel.value > maxZoom) {
-        mapInstance.setZoom(maxZoom)
-      } else if (zoomStartLevel.value < minZoom) {
-        mapInstance.setZoom(minZoom)
-      }
     })
 
     mapInstance.on('zoomanim', (e) => {
       // Get the target zoom level and calculate progress
       zoomTargetLevel.value = e.zoom
 
-      // Calculate interpolation factor between
+      // Calculate interpolation factor
       const totalZoomChange = zoomTargetLevel.value - zoomStartLevel.value
       if (totalZoomChange !== 0) {
         // e.zoom is the current interpolated zoom level
         zoomProgress.value = (e.zoom - zoomStartLevel.value) / totalZoomChange
       }
-
-      // Update marker sizes during zoom
-      requestAnimationFrame(() => {
-        // Calculate zoom factor for size scaling
-        const baseZoom = 16
-        const zoomFactor = Math.pow(2.0, e.zoom - baseZoom)
-
-        // Update location marker sizes
-        locationMarkers.value.forEach(marker => {
-          const markerIcon = marker.getElement() as HTMLElement
-          if (markerIcon) {
-            // Get location data from marker
-            // @ts-ignore - accessing custom property
-            const location = marker.locationData as GameLocation
-            if (!location) return
-
-            // Get location type
-            const locationType = locationTypesById[location.type]
-            if (!locationType || !locationType.size) return
-
-            // Apply size reduction for stash
-            const sizeReduction = location.type === 'stash' ? 0.5 : 1.0
-
-            // Scale the location type
-            const scaledType = scaleLocationType(locationType, zoomFactor, sizeReduction)
-
-            // Apply new size
-            markerIcon.style.width = `${scaledType.size[0]}px`
-            markerIcon.style.height = `${scaledType.size[1]}px`
-            markerIcon.style.marginLeft = `-${scaledType.size[0] / 2}px`
-            markerIcon.style.marginTop = `-${scaledType.size[1]}px`
-
-            // Update shadow if present
-            const markerShadow = markerIcon.nextElementSibling as HTMLElement
-
-            // Apply shadow size and position
-            markerShadow.style.width = `${scaledType.shadowSize[0]}px`
-            markerShadow.style.height = `${scaledType.shadowSize[1]}px`
-
-            // Get shadow anchor from scaled type
-            const shadowAnchorX = scaledType.shadowAnchor[0]
-            const shadowAnchorY = scaledType.shadowAnchor[1]
-
-            markerShadow.style.marginLeft = `-${shadowAnchorX}px`
-            markerShadow.style.marginTop = `-${shadowAnchorY}px`
-          }
-        })
-
-        // Update player marker size
-        if (playerMarker.value) {
-          const playerIcon = playerMarker.value.getElement() as HTMLElement
-          if (playerIcon) {
-            const playersType = locationTypesById['players' as keyof typeof locationTypesById]
-            if (playersType && playersType.size) {
-              // Scale the player location type
-              const scaledType = scaleLocationType(playersType, zoomFactor)
-
-              // Apply new size
-              playerIcon.style.width = `${scaledType.size[0]}px`
-              playerIcon.style.height = `${scaledType.size[1]}px`
-              playerIcon.style.marginLeft = `-${scaledType.size[0] / 2}px`
-              playerIcon.style.marginTop = `-${scaledType.size[1]}px`
-
-              // Update shadow if present
-              const playerShadow = playerIcon.nextElementSibling as HTMLElement
-
-              // Apply shadow size and position
-              playerShadow.style.width = `${scaledType.shadowSize[0]}px`
-              playerShadow.style.height = `${scaledType.shadowSize[1]}px`
-
-              // Get shadow anchor from scaled type
-              const shadowAnchorX = scaledType.shadowAnchor[0]
-              const shadowAnchorY = scaledType.shadowAnchor[1]
-
-              playerShadow.style.marginLeft = `-${shadowAnchorX}px`
-              playerShadow.style.marginTop = `-${shadowAnchorY}px`
-            }
-          }
-        }
-      })
     })
 
-    mapInstance.on('zoomend', () => {
-      // Store the current zoom level, but ensure it's within the allowed range
-      const currentZoom = mapInstance.getZoom()
-      const constrainedZoom = constrainZoom(currentZoom)
-
-      // If the zoom level was constrained, set it on the map
-      if (currentZoom !== constrainedZoom) {
-        mapInstance.setZoom(constrainedZoom)
-      }
-
-      appStore.setMapZoom(constrainedZoom)
-      isZooming.value = false
-
-      // Update scout range labels when zoom changes
-      if (playerCoordinates.value && scoutCircle.value) {
-        updateScoutRangeLabels(playerCoordinates.value, mapInstance)
-      }
-
-      // No need to regenerate markers after zoom - let Leaflet handle the animation
-    })
 
     // Handle map clicks for closing popups (and teleporting in debug mode)
     mapInstance.on('click', () => {
@@ -695,15 +582,14 @@ watch(() => questStore.mapTileId, () => {
 
       // If we had a map position and zoom level, restore it
       if (currentPosition && map.value) {
-        // Make sure zoom is within the allowed range for this tile set
-        const constrainedZoom = constrainZoom(currentZoom || 16)
-        map.value.setView([currentPosition.lat, currentPosition.lng], constrainedZoom)
+        map.value.setView([currentPosition.lat, currentPosition.lng], currentZoom || 16)
       }
     }, 100)
   }
 }, {immediate: false})
 
 function generateGameLocationMarkers(): void {
+  console.log('Generating location markers');
   if (!map.value) return;
 
   // Clear existing markers
@@ -736,6 +622,8 @@ function generateGameLocationMarkers(): void {
 }
 
 function updatePlayerMarker(coords: Coordinates): void {
+  console.log('Generating player markers');
+
   const theMap = map.value as L.Map
   if (!theMap) return
 
@@ -769,7 +657,7 @@ function updatePlayerMarker(coords: Coordinates): void {
     popupAnchor: [0, -30],
     shadowSize: scaledType.shadowSize,
     shadowAnchor: scaledType.shadowAnchor,
-    className: 'leaflet-marker-icon-animated',
+    className: `leaflet-marker-icon-scalable location-type-player`,
   }
 
   // Create new marker with the players icon
@@ -822,62 +710,49 @@ function updateScoutRangeLabels(coords: Coordinates, theMap: L.Map): void {
     lng: coords.lng
   }
 
-  // Get current zoom level to scale the font size
-  const currentZoom = theMap.getZoom();
-  // Base size for zoom level 16
-  const baseFontSize = 18;
-  const baseZoom = 16;
-
-  // Calculate zoom factor - double size for each zoom level increase
-  // At zoom 16 it will be the base size (18px)
-  // Each zoom level doubles/halves the size
-  const zoomFactor = Math.pow(2.0, currentZoom - baseZoom);
-  const fontSize = Math.max(10, Math.min(72, Math.floor(baseFontSize * zoomFactor)));
-  const labelWidth = Math.max(80, Math.min(300, Math.floor(140 * zoomFactor)));
-  const labelHeight = Math.max(20, Math.min(80, Math.floor(30 * zoomFactor)));
+  // Use fixed base sizes - CSS will handle the scaling
+  const baseFontSize = 18
+  const labelWidth = 140
+  const labelHeight = 30
 
   // Remove existing labels (important to prevent label duplication)
   if (scoutTopLabel.value) {
-    scoutTopLabel.value.remove();
-    scoutTopLabel.value = null;
+    scoutTopLabel.value.remove()
+    scoutTopLabel.value = null
   }
 
   if (scoutBottomLabel.value) {
-    scoutBottomLabel.value.remove();
-    scoutBottomLabel.value = null;
+    scoutBottomLabel.value.remove()
+    scoutBottomLabel.value = null
   }
 
-  // Create top scout range label with zoom-adjusted size
+  // Create top scout range label with base size (will be scaled with CSS)
   scoutTopLabel.value = L.marker([topPoint.lat, topPoint.lng], {
     icon: L.divIcon({
-      className: 'scout-range-label leaflet-marker-icon-animated',
-      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+      className: 'scout-range-label leaflet-marker-icon-scalable',
+      html: `<div class="scout-range-text" style="font-size: ${baseFontSize}px;">scout range</div>`,
       iconSize: [labelWidth, labelHeight],
       iconAnchor: [labelWidth / 2, labelHeight] // Bottom center of the icon
     })
-  }).addTo(theMap);
+  }).addTo(theMap)
 
-  // Create bottom scout range label with zoom-adjusted size
+  // Create bottom scout range label with base size (will be scaled with CSS)
   scoutBottomLabel.value = L.marker([bottomPoint.lat, bottomPoint.lng], {
     icon: L.divIcon({
-      className: 'scout-range-label leaflet-marker-icon-animated',
-      html: `<div class="scout-range-text" style="font-size: ${fontSize}px;">scout range</div>`,
+      className: 'scout-range-label leaflet-marker-icon-scalable',
+      html: `<div class="scout-range-text" style="font-size: ${baseFontSize}px;">scout range</div>`,
       iconSize: [labelWidth, labelHeight],
       iconAnchor: [labelWidth / 2, 0] // Top center of the icon
     })
-  }).addTo(theMap);
+  }).addTo(theMap)
 }
 
 function centerOnPlayer(): void {
   if (!map.value || !playerCoordinates.value) return
 
-  // Use a constrained zoom level that respects the current map tile limits
-  const defaultZoom = 16
-  const constrainedZoom = constrainZoom(defaultZoom)
-
   map.value.setView(
       [playerCoordinates.value.lat, playerCoordinates.value.lng],
-      constrainedZoom,
+      16,
       {animate: true}
   )
 }
@@ -990,7 +865,9 @@ function updateDestinationMarker(): void {
   // Create the destination marker with the SVG icon, specifying the destinationPane
   destinationMarker.value = L.marker([destinationCoordinates.value.lat, destinationCoordinates.value.lng], {
     icon: L.divIcon({
-      className: hasEnoughTokens ? 'destination-marker leaflet-marker-icon-animated accessible' : 'destination-marker leaflet-marker-icon-animated',
+      className: hasEnoughTokens
+          ? 'destination-marker accessible'
+          : 'destination-marker',
       html: svg,
       iconSize: [svgSize, svgSize],
       iconAnchor: [svgSize / 2, svgSize / 2]
@@ -1064,15 +941,6 @@ function toggleTeleportMode(): void {
     map.value.on('click', teleportClickHandler.value)
   }
 }
-
-// Helper function to constrain zoom to the current map tile limits
-function constrainZoom(zoom: number): number {
-  const tile = currentMapTile.value
-  const maxZoom = tile.maxZoom || 19
-  const minZoom = tile.minZoom || 1
-
-  return Math.min(Math.max(zoom, minZoom), maxZoom)
-}
 </script>
 
 <style scoped>
@@ -1138,24 +1006,7 @@ button {
   cursor: pointer;
 }
 
-:deep(.player-dot) {
-  width: 20px;
-  height: 20px;
-  background-color: #4285F4;
-  border-radius: 50%;
-  border: 3px solid white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-}
-
-:deep(.leaflet-control-center) {
-  font-size: 22px;
-  font-weight: bold;
-}
-
 /* Popup styles */
-:deep(.location-info-popup) {
-  max-width: 90vw !important;
-}
 
 :deep(.location-info-popup .leaflet-popup-content-wrapper) {
   background: rgba(30, 30, 30, 0.95);
@@ -1199,13 +1050,25 @@ button {
   }
 }
 
+
+/* Ensure the SVG scales correctly in the destination marker */
+:deep(.destination-marker svg) {
+  width: 100%;
+  height: 100%;
+}
+
+/* Transition styles for smooth marker size changes */
+
+
+/* Scout range label styles */
 :deep(.scout-range-text) {
   color: #4285F4;
   text-align: center;
   white-space: nowrap;
   font-weight: 600;
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8), -1px -1px 2px rgba(255, 255, 255, 0.8);
-  transition: font-size 0.25s ease-in-out, transform 0.25s ease-in-out;
+  transition: font-size 0.25s ease-in-out;
+  will-change: font-size;
 }
 
 /* Destination marker styles */
@@ -1238,73 +1101,5 @@ button {
     transform: scale(1);
     opacity: 1;
   }
-}
-
-/* Style for leaflet icons to ensure smooth transitions during zoom */
-:deep(.leaflet-marker-icon) {
-  /* No transform origin or transitions to prevent conflicts with our manual updates */
-}
-
-:deep(.leaflet-marker-shadow) {
-  /* No transform origin or transitions to prevent conflicts with our manual updates */
-}
-
-:deep(.leaflet-marker-icon img) {
-  width: 100%;
-  height: 100%;
-}
-
-/* Enable Leaflet's native zoom animations */
-:deep(.leaflet-zoom-animated) {
-  /* Don't set transform-origin to allow our manual scaling */
-}
-
-/* Fix for repainting issue */
-:deep(.leaflet-zoom-anim .leaflet-zoom-animated) {
-  will-change: transform;
-}
-
-/* Don't hide markers during zoom */
-:deep(.leaflet-zoom-anim .leaflet-zoom-hide) {
-  visibility: visible !important;
-}
-
-/* Remove transition timing that might conflict with our manual updates */
-:deep(.leaflet-zoom-anim .leaflet-marker-icon),
-:deep(.leaflet-zoom-anim .leaflet-marker-shadow) {
-  transition: none !important;
-}
-
-/* Ensure the SVG scales correctly in the destination marker */
-:deep(.destination-marker svg) {
-  width: 100%;
-  height: 100%;
-}
-
-/* Style for animated markers */
-:deep(.leaflet-marker-icon-animated) {
-  transform-origin: center bottom !important;
-  transition: width 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0),
-  height 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0),
-  margin-left 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0),
-  margin-top 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0);
-  will-change: width, height, margin-left, margin-top;
-  backface-visibility: hidden;
-}
-
-/* Style for marker shadows */
-:deep(.leaflet-marker-icon-animated + img) {
-  transition: width 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0),
-  height 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0),
-  margin-left 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0),
-  margin-top 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0);
-  will-change: width, height, margin-left, margin-top;
-  backface-visibility: hidden;
-}
-
-/* Override Leaflet's default zoom animation behavior */
-:deep(.leaflet-zoom-anim .leaflet-marker-icon),
-:deep(.leaflet-zoom-anim .leaflet-marker-shadow) {
-  transition: transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0) !important;
 }
 </style> 
