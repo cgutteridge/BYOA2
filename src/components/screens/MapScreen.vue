@@ -456,7 +456,7 @@ function initializeMap(): void {
       zoomAnimation: true, // Explicitly enable zoom animation
       markerZoomAnimation: true, // Enable marker zoom animation
       fadeAnimation: true, // Enable fade animation
-      maxZoom: currentMapTile.value.maxZoom || 19,
+      maxZoom: 22,
       minZoom: currentMapTile.value.minZoom || 1
     }).setView([coordinates.lat, coordinates.lng], constrainZoom(zoom))
     
@@ -545,13 +545,19 @@ function initializeMap(): void {
 
     // Get the current map tile options
     const tile = currentMapTile.value
+    const apiKey = tile.provider ? import.meta.env[tile.provider] : '';
+    
+    // Debug log for API key (will be removed in production)
+    console.log(`Using map tile provider: ${tile.provider || 'none'}, API Key available: ${apiKey ? 'Yes' : 'No'}`)
+    
     const tileUrl = tile.apiKeyRequired 
-      ? tile.url.replace('{apikey}', '090957d4bae841118cdb982b96895428') 
+      ? tile.url.replace('{apikey}', apiKey || '') 
       : tile.url
     
     L.tileLayer(tileUrl, {
       attribution: tile.attribution,
       maxZoom: tile.maxZoom,
+      maxNativeZoom: tile.maxNativeZoom,
       minZoom: tile.minZoom
     }).addTo(mapInstance);
 
