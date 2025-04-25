@@ -1,8 +1,14 @@
 <template>
   <div class="location-popup" :style="popupStyle">
-    <h2>{{ location.name }}
-      <template v-if="!location.scouted"> ({{ type.title }})</template>
-    </h2>
+    <div class="location-header">
+      <div class="location-icon" v-if="type">
+        <img :src="`./icons/${type.filename}`" :alt="type.title" />
+      </div>
+      <h2>
+        <template v-if="!location.scouted"> {{ type.title }} at</template>
+        {{ location.name }}
+      </h2>
+    </div>
     <div class="location-status-badges">
       <div class="distance-info" v-if="playerDistance !== null">
         <span>{{ Math.round(playerDistance) }}m away</span>
@@ -428,11 +434,34 @@ const badgeStyle = computed(() => ({
   border: 1px solid;
 }
 
+.location-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.location-icon {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.location-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
 .location-popup h2 {
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   font-size: 1.75rem;
   font-weight: 600;
+  flex-grow: 1;
 }
 
 .location-status-badges {
