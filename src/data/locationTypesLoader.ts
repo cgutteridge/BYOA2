@@ -4,7 +4,11 @@ import { GameLocationType, GameLocationTypeId, toGameLocationTypeId } from '../t
 // Parse the JSON data and apply the proper branded type to each ID
 export const locationTypes: GameLocationType[] = locationsData.map(location => ({
   ...location,
-  id: toGameLocationTypeId(location.id)
+  id: toGameLocationTypeId(location.id),
+  size: location.size as [number, number],
+  anchor: location.anchor as [number, number],
+  shadowAnchor: location.shadowAnchor as [number, number],
+  shadowSize: location.shadowSize as [number, number]
 }));
 
 export const locationTypesList: GameLocationTypeId[] = locationTypes.map(locationType => locationType.id);
