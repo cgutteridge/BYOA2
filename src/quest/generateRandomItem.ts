@@ -130,7 +130,7 @@ function getAvailableUpgrades(item: Item, remainingPoints: number, powerType: It
     availableUpgrades.push('result_restriction');
   }
 
-  
+
   if (item.target === 'random' && remainingPoints >= 1) {
     availableUpgrades.push('upgrade_to_pick');
   }

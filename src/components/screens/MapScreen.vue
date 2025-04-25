@@ -38,6 +38,7 @@ const scoutTopLabel = ref<L.Marker | null>(null)
 const scoutBottomLabel = ref<L.Marker | null>(null)
 const locationMarkers = ref<L.Marker[]>([])
 const routeLine = ref<L.Polyline | null>(null)
+const destinationMarker = ref<L.Marker | null>(null)
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])
 const teleportModeActive = ref<boolean>(false)
@@ -49,6 +50,10 @@ const locations = computed(() => locationStore.locations)
 const mapPosition = computed(() => appStore.mapPosition)
 const mapZoom = computed(() => appStore.mapZoom)
 const routeCoordinates = computed((): Coordinates[] => [...routeStore.routeCoordinates, playerCoordinates.value] as Coordinates[])
+const destinationCoordinates = computed((): Coordinates | null => {
+  // Use the endGameLocation from questStore as the destination
+  return questStore.endGameLocation?.coordinates || null;
+})
 
 function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L.Marker | undefined {
   if (!mapInstance) {
@@ -223,6 +228,12 @@ function cleanupMap(): void {
         routeLine.value = null
       }
 
+      // Remove destination marker
+      if (destinationMarker.value) {
+        destinationMarker.value.remove()
+        destinationMarker.value = null
+      }
+
       // Stop route tracking
       appStore.stopRouteTracking()
 
@@ -341,11 +352,16 @@ function initializeMap(): void {
       updatePlayerMarker(playerCoordinates.value)
     }
 
-    // Generate location markers
-    generateGameLocationMarkers()
+    // Create destination marker first if coordinates exist
+    if (destinationCoordinates.value) {
+      updateDestinationMarker()
+    }
 
     // Draw the route line if coordinates exist
     updateRouteLine()
+
+    // Generate location markers (last, so they appear on top)
+    generateGameLocationMarkers()
 
     // Start route tracking
     appStore.startRouteTracking()
@@ -615,10 +631,78 @@ function updateRouteLine(): void {
   }
 }
 
+// Function to update or create the destination marker
+function updateDestinationMarker(): void {
+  const theMap = map.value as L.Map
+  if (!theMap || !destinationCoordinates.value) return
+
+  // Remove existing destination marker
+  if (destinationMarker.value) {
+    destinationMarker.value.remove()
+    destinationMarker.value = null
+  }
+
+  // Get current zoom level to scale the circle size
+  const currentZoom = theMap.getZoom()
+  // Base size for zoom level 16
+  const baseSize = 240
+  const baseZoom = 16
+
+  // Scale size based on zoom level
+  const zoomFactor = Math.pow(1.5, currentZoom - baseZoom)
+  const circleSize = Math.max(60, Math.min(300, Math.floor(baseSize * zoomFactor)))
+  
+  // Use a vibrant color that stands out, with alpha transparency for the fade
+  const primaryColor = '#FF5500' // Bright orange color
+  
+  // Create SVG with radial gradient for fade effect
+  const svgSize = circleSize * 2
+  const svg = `
+    <svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="fade" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <stop offset="0%" stop-color="${primaryColor}" stop-opacity="1" />
+          <stop offset="50%" stop-color="${primaryColor}" stop-opacity="0.5" />
+          <stop offset="80%" stop-color="${primaryColor}" stop-opacity="0.2" />
+          <stop offset="100%" stop-color="${primaryColor}" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <circle cx="${svgSize/2}" cy="${svgSize/2}" r="${svgSize/2}" fill="url(#fade)" />stroke="white" stroke-width="3" />
+    </svg>
+  `
+
+  // Create the destination marker with the SVG icon
+  destinationMarker.value = L.marker([destinationCoordinates.value.lat, destinationCoordinates.value.lng], {
+    icon: L.divIcon({
+      className: 'destination-marker',
+      html: svg,
+      iconSize: [svgSize, svgSize],
+      iconAnchor: [svgSize/2, svgSize/2]
+    }),
+    zIndexOffset: -1000 // Ensure it's below other markers
+  }).addTo(theMap)
+}
+
 // Watch for route changes to update the line
 watch(routeCoordinates, () => {
   updateRouteLine()
 }, {deep: true})
+
+// Watch for zoom changes to update the destination marker size
+watch(mapZoom, () => {
+  updateDestinationMarker()
+})
+
+// Watch for destination coordinate changes
+watch(destinationCoordinates, () => {
+  // Recreate markers to ensure proper z-index ordering
+  if (map.value) {
+    // First update destination marker
+    updateDestinationMarker()
+    // Then regenerate location markers to ensure they're on top
+    generateGameLocationMarkers()
+  }
+}, { deep: true })
 
 // Function to toggle teleport mode for debug
 function toggleTeleportMode(): void {
@@ -790,5 +874,35 @@ button {
   font-weight: 600;
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8), -1px -1px 2px rgba(255, 255, 255, 0.8);
   transition: font-size 0.25s ease-in-out, transform 0.25s ease-in-out;
+}
+
+/* Destination marker styles */
+:deep(.destination-marker) {
+  background: transparent;
+  border: none;
+  pointer-events: none;
+  transition: all 0.25s ease-in-out;
+  z-index: -1 !important;
+}
+
+:deep(.destination-marker svg) {
+  filter: drop-shadow(0 0 8px rgba(255, 85, 0, 0.6));
+  animation: pulse 3s infinite ease-in-out;
+  z-index: -1 !important;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style> 
