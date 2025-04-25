@@ -88,11 +88,11 @@ export interface GameLocationType {
   title: string
   filename: string
   description?: string
+  size: [number, number]
+  anchor: [number, number]
+  shadowSize: [number, number]
+  shadowAnchor: [number, number]
   scale?: boolean
-  size?: [number, number]
-  anchor?: [number, number]
-  shadowAnchor?: [number, number]
-  shadowSize?: [number, number]
 }
 
 export type WeightedList<T> = {
