@@ -37,20 +37,8 @@ const EDGE_OFFSET = 300 // Minimum distance from screen edges when opening a pop
 // Computed properties for popup styling based on theme - keep these for reference when setting the class
 const popupBackgroundColor = computed(() => {
   return questStore.theme === 'dark' 
-    ? 'rgba(30, 30, 30, 0.95)' 
-    : 'rgba(255, 255, 255, 0.95)'
-})
-
-const popupTextColor = computed(() => {
-  return questStore.theme === 'dark'
-    ? '#ffffff'
-    : '#333333'
-})
-
-const popupShadow = computed(() => {
-  return questStore.theme === 'dark'
-    ? '0 3px 20px rgba(0, 0, 0, 0.7)'
-    : '0 3px 20px rgba(0, 0, 0, 0.3)'
+    ? 'rgba(30, 30, 30, 1)'
+    : 'rgba(255, 255, 255, 1)'
 })
 
 /**
