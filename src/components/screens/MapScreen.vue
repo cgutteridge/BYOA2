@@ -68,10 +68,19 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     throw new Error('No map instance provided for marker creation')
   }
 
-  const locationType = locationTypesById[location.type]
+  // Get the location type or use tower as fallback if the type doesn't exist
+  let locationType = locationTypesById[location.type]
+  
+  // If location type doesn't exist, log warning and use tower as fallback
   if (!locationType) {
-    console.error(`Location type is missing ${location.type}`)
-    return
+    console.warn(`Location type '${location.type}' not found. Using tower as fallback.`)
+    locationType = locationTypesById['tower' as keyof typeof locationTypesById]
+    
+    // If tower doesn't exist for some reason, we can't continue
+    if (!locationType) {
+      console.error(`Cannot create marker: both '${location.type}' and fallback 'tower' types are missing`)
+      return
+    }
   }
   
   // Apply size reduction for stash - 50% of the normal size regardless of scale setting
@@ -667,7 +676,7 @@ function updatePlayerMarker(coords: Coordinates): void {
     radius: questStore.scoutRange,
     color: '#4285F4',
     fillColor: '#4285F4',
-    fillOpacity: 0.1,
+    fillOpacity: 0,
     weight: 2,
     dashArray: '5, 10'
   }).addTo(theMap)

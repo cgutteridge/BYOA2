@@ -88,11 +88,6 @@
     ]
   },
   {
-    "id": "river",
-    "title": "River",
-    "filename": "river.png"
-  },
-  {
     "id": "mountain",
     "title": "Mountain",
     "filename": "mountain.png"
@@ -198,7 +193,24 @@
   {
     "id": "jungle",
     "title": "Jungle",
-    "filename": "jungle.png"
+    "filename": "jungle.png",
+    "scale": true,
+    "size": [
+      63,
+      64
+    ],
+    "anchor": [
+      31,
+      64
+    ],
+    "shadowAnchor": [
+      31,
+      43
+    ],
+    "shadowSize": [
+      105,
+      43
+    ]
   },
   {
     "id": "haunted_house",
@@ -230,12 +242,24 @@
   {
     "id": "graveyard",
     "title": "Graveyard",
-    "filename": "graveyard.png"
-  },
-  {
-    "id": "ancient_monument",
-    "title": "Ancient Monument",
-    "filename": "funny_looking_rock.png"
+    "filename": "graveyard.png",
+    "scale": true,
+    "size": [
+      64,
+      45
+    ],
+    "anchor": [
+      32,
+      45
+    ],
+    "shadowAnchor": [
+      32,
+      30
+    ],
+    "shadowSize": [
+      90,
+      30
+    ]
   },
   {
     "id": "fortress",
@@ -262,7 +286,24 @@
   {
     "id": "forest",
     "title": "Forest",
-    "filename": "forest.png"
+    "filename": "forest.png",
+    "scale": true,
+    "size": [
+      64,
+      53
+    ],
+    "anchor": [
+      32,
+      53
+    ],
+    "shadowAnchor": [
+      32,
+      36
+    ],
+    "shadowSize": [
+      97,
+      36
+    ]
   },
   {
     "id": "fey_tree",
@@ -304,7 +345,24 @@
   {
     "id": "castle",
     "title": "Castle",
-    "filename": "castle.png"
+    "filename": "castle.png",
+    "scale": true,
+    "size": [
+      64,
+      64
+    ],
+    "anchor": [
+      32,
+      64
+    ],
+    "shadowAnchor": [
+      32,
+      43
+    ],
+    "shadowSize": [
+      106,
+      43
+    ]
   },
   {
     "id": "camp",
@@ -313,19 +371,19 @@
     "scale": true,
     "size": [
       64,
-      48
+      45
     ],
     "anchor": [
       32,
-      48
+      45
     ],
     "shadowAnchor": [
       32,
-      32
+      30
     ],
     "shadowSize": [
-      93,
-      32
+      91,
+      30
     ]
   },
   {
