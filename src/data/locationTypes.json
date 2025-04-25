@@ -11,7 +11,8 @@
     "scale": true,
     "size": [39, 64],
     "anchor": [20, 64],
-    "shadowAnchor": [20, 64]
+    "shadowAnchor": [20, 64],
+    "shadowSize": [56, 64]
   },
   {
     "id": "temple",
@@ -20,7 +21,8 @@
     "scale": true,
     "size": [64, 55],
     "anchor": [32, 55],
-    "shadowAnchor": [32, 55]
+    "shadowAnchor": [32, 55],
+    "shadowSize": [79, 55]
   },
   {
     "id": "ruins",
@@ -29,7 +31,8 @@
     "scale": true,
     "size": [64, 43],
     "anchor": [32, 43],
-    "shadowAnchor": [32, 43]
+    "shadowAnchor": [32, 43],
+    "shadowSize": [76, 43]
   },
   {
     "id": "river",
@@ -53,7 +56,8 @@
     "scale": true,
     "size": [64, 53],
     "anchor": [32, 53],
-    "shadowAnchor": [32, 53]
+    "shadowAnchor": [32, 53],
+    "shadowSize": [78, 53]
   },
   {
     "id": "magical_activity",
@@ -142,7 +146,8 @@
     "scale": true,
     "size": [64, 48],
     "anchor": [32, 48],
-    "shadowAnchor": [32, 48]
+    "shadowAnchor": [32, 48],
+    "shadowSize": [77, 48]
   },
   {
     "id": "battlefield",
@@ -151,7 +156,8 @@
     "scale": true,
     "size": [64, 47],
     "anchor": [32, 47],
-    "shadowAnchor": [32, 47]
+    "shadowAnchor": [32, 47],
+    "shadowSize": [77, 47]
   },
   {
     "id": "stash",
@@ -170,7 +176,8 @@
     "scale": true,
     "size": [64, 49],
     "anchor": [32, 49],
-    "shadowAnchor": [32, 49]
+    "shadowAnchor": [32, 49],
+    "shadowSize": [77, 49]
   },
   {
     "id": "statue",
@@ -179,7 +186,8 @@
     "scale": true,
     "size": [37, 64],
     "anchor": [18, 64],
-    "shadowAnchor": [18, 64]
+    "shadowAnchor": [18, 64],
+    "shadowSize": [54, 64]
   },
   {
     "id": "players",
@@ -188,6 +196,7 @@
     "scale": true,
     "size": [46, 64],
     "anchor": [23, 64],
-    "shadowAnchor": [23, 64]
+    "shadowAnchor": [23, 64],
+    "shadowSize": [63, 64]
   }
 ] 

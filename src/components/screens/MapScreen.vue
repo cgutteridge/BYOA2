@@ -108,9 +108,12 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
       iconProperties.shadowAnchor = locationType.shadowAnchor
     }
     
-    // Use shadow size from location's size and the known shadow dimensions
-    // We know the shadow is wider due to the skew effect
-    if (locationType.size) {
+    // Use the shadowSize from the location type
+    if (locationType.shadowSize) {
+      iconProperties.shadowSize = locationType.shadowSize
+    }
+    // If no shadowSize is defined but we have size, calculate it (fallback)
+    else if (locationType.size) {
       // The shadow is approximately 20-25% wider than the original due to skew
       const shadowWidth = Math.round(locationType.size[0] * 1.25);
       iconProperties.shadowSize = [shadowWidth, locationType.size[1]];

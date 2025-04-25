@@ -92,6 +92,7 @@ export interface GameLocationType {
   size?: [number, number]
   anchor?: [number, number]
   shadowAnchor?: [number, number]
+  shadowSize?: [number, number]
 }
 
 export type WeightedList<T> = {

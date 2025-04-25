@@ -65,11 +65,14 @@ const shadowPath = path.join(shadowDir, `${iconName}.png`);
 // 1. Converting all pixels to black but preserving the alpha channel
 // 2. Skewing the image
 // 3. Adding blur and adjusting transparency
+// 4. Ensuring a fully transparent background
 const shadowCommand = `convert "${iconPath}" \\
   -fill black -colorize 100 \\
+  -background none \\
   -shear 15x0 \\
   -blur 0x4 \\
   -alpha set -channel A -evaluate multiply 0.5 +channel \\
+  -background none -flatten \\
   "${shadowPath}"`;
 
 console.log('Generating shadow image...');
