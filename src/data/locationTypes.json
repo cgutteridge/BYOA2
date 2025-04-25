@@ -550,28 +550,6 @@
     ]
   },
   {
-    "id": "chest",
-    "title": "Chest",
-    "filename": "chest.png",
-    "scale": true,
-    "size": [
-      64,
-      49
-    ],
-    "anchor": [
-      32,
-      49
-    ],
-    "shadowAnchor": [
-      32,
-      33
-    ],
-    "shadowSize": [
-      94,
-      33
-    ]
-  },
-  {
     "id": "statue",
     "title": "Statue",
     "filename": "statue.png",
