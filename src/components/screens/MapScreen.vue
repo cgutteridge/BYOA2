@@ -73,28 +73,70 @@ function createGameLocationMarker(location: GameLocation, mapInstance: L.Map): L
     console.error(`Location type is missing ${location.type}`)
     return
   }
+  
   const iconProperties: IconOptions = {
-    iconUrl: `./icons/${locationType.filename}`,
+    iconUrl: '', // Default value, will be overridden below
+    shadowUrl: '', // Default value, will be overridden below
     iconSize: [67, 83],
     iconAnchor: [34, 83],
     popupAnchor: [0, -30],
-    shadowUrl: './icons/shadow.png',
     shadowSize: [161, 100],
     shadowAnchor: [10, 90],
   }
-  if (location.type === 'stash' ) {
-    iconProperties.iconSize = [33, 41]
-    iconProperties.iconAnchor = [17, 41]
-    iconProperties.popupAnchor = [0, -15]
-    iconProperties.shadowSize = [80, 50]
-    iconProperties.shadowAnchor = [5, 45]
+  
+  // Use new scaled icons if the location type has scale=true
+  if (locationType.scale) {
+    iconProperties.iconUrl = `./newicons/${locationType.filename}`
+    iconProperties.shadowUrl = `./newicons/shadows/${locationType.filename}`
+    
+    // Use the size from the location type
+    if (locationType.size) {
+      iconProperties.iconSize = locationType.size
+      
+      // Set popupAnchor based on the icon height
+      // Position the popup above the icon with a small gap
+      iconProperties.popupAnchor = [0, -Math.round(locationType.size[1] * 0.2)];
+    }
+    
+    // Use the anchor from the location type
+    if (locationType.anchor) {
+      iconProperties.iconAnchor = locationType.anchor
+    }
+    
+    // Use the shadowAnchor from the location type
+    if (locationType.shadowAnchor) {
+      iconProperties.shadowAnchor = locationType.shadowAnchor
+    }
+    
+    // Use shadow size from location's size and the known shadow dimensions
+    // We know the shadow is wider due to the skew effect
+    if (locationType.size) {
+      // The shadow is approximately 20-25% wider than the original due to skew
+      const shadowWidth = Math.round(locationType.size[0] * 1.25);
+      iconProperties.shadowSize = [shadowWidth, locationType.size[1]];
+    }
+  } else {
+    // Use standard icons
+    iconProperties.iconUrl = `./icons/${locationType.filename}`
+    iconProperties.shadowUrl = './icons/shadow.png'
   }
-  if (location.type === 'shop') {
-    iconProperties.iconSize = [50, 61]
-    iconProperties.iconAnchor = [25, 61]
-    iconProperties.popupAnchor = [0, -22]
-    iconProperties.shadowSize = [120, 75]
-    iconProperties.shadowAnchor = [8, 67]
+  
+  // Special cases for non-scaled icons
+  if (!locationType.scale) {
+    if (location.type === 'stash') {
+      iconProperties.iconSize = [33, 41]
+      iconProperties.iconAnchor = [17, 41]
+      iconProperties.popupAnchor = [0, -15]
+      iconProperties.shadowSize = [80, 50]
+      iconProperties.shadowAnchor = [5, 45]
+    }
+    if (location.type === 'shop') {
+      iconProperties.iconSize = [50, 61]
+      iconProperties.iconAnchor = [25, 61]
+      iconProperties.popupAnchor = [0, -22]
+      iconProperties.shadowSize = [120, 75]
+      iconProperties.shadowAnchor = [8, 67]
+    }
   }
 
   const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {

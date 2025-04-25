@@ -7,17 +7,29 @@
   {
     "id": "tower",
     "title": "Tower",
-    "filename": "tower.png"
+    "filename": "tower.png",
+    "scale": true,
+    "size": [39, 64],
+    "anchor": [20, 64],
+    "shadowAnchor": [20, 64]
   },
   {
     "id": "temple",
     "title": "Temple",
-    "filename": "temple.png"
+    "filename": "temple.png",
+    "scale": true,
+    "size": [64, 55],
+    "anchor": [32, 55],
+    "shadowAnchor": [32, 55]
   },
   {
     "id": "ruins",
     "title": "Ruins",
-    "filename": "ruins.png"
+    "filename": "ruins.png",
+    "scale": true,
+    "size": [64, 43],
+    "anchor": [32, 43],
+    "shadowAnchor": [32, 43]
   },
   {
     "id": "river",
@@ -37,7 +49,11 @@
   {
     "id": "market",
     "title": "Market",
-    "filename": "market.png"
+    "filename": "market.png",
+    "scale": true,
+    "size": [64, 53],
+    "anchor": [32, 53],
+    "shadowAnchor": [32, 53]
   },
   {
     "id": "magical_activity",
@@ -122,12 +138,20 @@
   {
     "id": "camp",
     "title": "Camp",
-    "filename": "camp.png"
+    "filename": "camp.png",
+    "scale": true,
+    "size": [64, 48],
+    "anchor": [32, 48],
+    "shadowAnchor": [32, 48]
   },
   {
     "id": "battlefield",
     "title": "Battlefield",
-    "filename": "battlefield.png"
+    "filename": "battlefield.png",
+    "scale": true,
+    "size": [64, 47],
+    "anchor": [32, 47],
+    "shadowAnchor": [32, 47]
   },
   {
     "id": "stash",
@@ -138,5 +162,32 @@
     "id": "shop",
     "title": "Shop",
     "filename": "shop.png"
+  },
+  {
+    "id": "chest",
+    "title": "Chest",
+    "filename": "chest.png",
+    "scale": true,
+    "size": [64, 49],
+    "anchor": [32, 49],
+    "shadowAnchor": [32, 49]
+  },
+  {
+    "id": "statue",
+    "title": "Statue",
+    "filename": "statue.png",
+    "scale": true,
+    "size": [37, 64],
+    "anchor": [18, 64],
+    "shadowAnchor": [18, 64]
+  },
+  {
+    "id": "players",
+    "title": "Players",
+    "filename": "players.png",
+    "scale": true,
+    "size": [46, 64],
+    "anchor": [23, 64],
+    "shadowAnchor": [23, 64]
   }
 ] 
