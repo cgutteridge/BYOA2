@@ -11,7 +11,7 @@
     </div>
     <div class="location-status-badges">
       <div class="distance-info" v-if="playerDistance !== null">
-        <span>{{ Math.round(playerDistance) }}m away</span>
+        <span>{{ formattedDistance }}</span>
       </div>
       <div class="status-badge visited-badge" v-if="location.hasBeenVisited" :style="badgeStyle">
         Visited
@@ -161,6 +161,7 @@ import {useInventoryStore} from "@/stores/inventoryStore.ts"
 import {useLocationStore} from "@/stores/locationStore.ts"
 import {monsterTypes} from '../data/monsterTypes'
 import calculateDistance from '@/utils/calculateDistance.ts'
+import formatDistance from '@/utils/formatDistance.ts'
 import ItemCard from './ItemCard.vue'
 import ButtonInput from '@/components/forms/ButtonInput.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
@@ -212,6 +213,11 @@ const playerDistance = computed(() => {
       appStore.playerCoordinates,
       props.location.coordinates
   );
+});
+
+const formattedDistance = computed(() => {
+  if (playerDistance.value === null) return '';
+  return formatDistance(playerDistance.value);
 });
 
 // Check if player is within scout range

@@ -47,7 +47,9 @@
         </div>
         <div class="picker-item-content">
           <div class="picker-item-title">{{ option.name || option.title || option.label || option }}</div>
-          <div class="picker-item-subtitle" v-if="option.subtitle">{{ option.subtitle }}</div>
+          <div class="picker-item-subtitle" v-if="showSubtitle && getSubtitleForOption(option)">
+            {{ getSubtitleForOption(option) }}
+          </div>
         </div>
       </div>
       
@@ -61,6 +63,9 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useQuestStore } from '@/stores/questStore'
+import { useAppStore } from '@/stores/appStore'
+import calculateDistance from '@/utils/calculateDistance'
+import formatDistance from '@/utils/formatDistance'
 
 interface PickerOption {
   id?: string | number
@@ -87,10 +92,13 @@ const props = defineProps<{
   disabled?: boolean
   disabledOptions?: any[]
   forceMobile?: boolean // Add this prop for testing
+  showSubtitle?: boolean // Generic flag to show subtitle
+  subtitleFn?: (option: PickerOption) => string // Optional function to generate subtitle
 }>()
 
 const emit = defineEmits(['update:modelValue', 'selection-change'])
 const questStore = useQuestStore()
+const appStore = useAppStore()
 
 // Local state
 const searchText = ref('')
@@ -103,7 +111,7 @@ const isKeyboardOpen = ref(false)
 
 // Check if device is mobile
 function checkIfMobile(): boolean {
-  // Allow forcing mobile mode for testing on laptops
+  // Allow forcing mobile mode for testing
   if (props.forceMobile) {
     return true
   }
@@ -506,6 +514,33 @@ function clearSelection(event: MouseEvent): void {
       inputRef.value.focus()
     }
   })
+}
+
+// Get player coordinates for distance calculation
+const playerCoordinates = computed(() => appStore.playerCoordinates)
+
+// Function to get subtitle for an option
+function getSubtitleForOption(option: PickerOption): string {
+  // If a custom subtitle function is provided, use it
+  if (props.subtitleFn) {
+    return props.subtitleFn(option);
+  }
+  
+  // If option has a subtitle property, use that
+  if (option.subtitle) {
+    return option.subtitle;
+  }
+  
+  // For locations, show distance by default
+  if (option.coordinates && playerCoordinates.value) {
+    const distance = calculateDistance(
+      playerCoordinates.value,
+      option.coordinates
+    );
+    return formatDistance(distance);
+  }
+  
+  return '';
 }
 </script>
 

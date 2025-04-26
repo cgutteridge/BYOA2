@@ -44,6 +44,7 @@
                 placeholder="Search for a location..."
                 value-property="id"
                 display-property="name"
+                :show-subtitle="true"
                 @selection-change="updateStartLocation"
             />
           </div>
@@ -57,6 +58,7 @@
                 placeholder="Search for a location..."
                 value-property="id"
                 display-property="name"
+                :show-subtitle="true"
                 @selection-change="updateEndLocation"
             />
           </div>

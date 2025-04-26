@@ -4,6 +4,7 @@ import {GameLocation, GameLocationId, GameLocationTypeId} from '../types'
 import {GameLocationDifficulty} from '../types'
 import {useAppStore} from './appStore'
 import {fetchNearbyGameLocations} from "@/api/overpass.ts";
+import calculateDistance from '@/utils/calculateDistance.ts'
 
 export const useLocationStore = defineStore('locations', () => {
   const appStore = useAppStore()
@@ -12,6 +13,14 @@ export const useLocationStore = defineStore('locations', () => {
   const locations = ref<GameLocation[]>([])
 
   const setLocations = (newLocations: GameLocation[]) => {
+    // Sort locations by distance from player if player coordinates exist
+    if (appStore.playerCoordinates) {
+      newLocations.sort((a, b) => {
+        const distanceA = calculateDistance(appStore.playerCoordinates!, a.coordinates)
+        const distanceB = calculateDistance(appStore.playerCoordinates!, b.coordinates)
+        return distanceA - distanceB
+      })
+    }
     locations.value = newLocations
   }
 
