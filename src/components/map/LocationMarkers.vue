@@ -38,9 +38,15 @@ const EDGE_OFFSET = 300 // Minimum distance from screen edges when opening a pop
 
 // Computed properties for popup styling based on theme - keep these for reference when setting the class
 const popupBackgroundColor = computed(() => {
-  return questStore.theme === 'dark' 
-    ? 'rgba(30, 30, 30, 1)'
-    : 'rgba(255, 255, 255, 1)'
+  return questStore.getBackgroundColor('modal')
+})
+
+const popupTextColor = computed(() => {
+  return questStore.getTextColor('primary')
+})
+
+const popupBorderColor = computed(() => {
+  return questStore.getBorderColor('light')
 })
 
 /**
@@ -52,7 +58,7 @@ function scaleLocationType(
   sizeReduction: number = 1.0
 ): GameLocationType {
   // The global size reduction that applies to all icons
-  const globalSizeReduction = 0.36
+  const globalSizeReduction = 0.5
 
   // Combined scale factor for all calculations
   const combinedScale = scaleFactor * sizeReduction * globalSizeReduction
@@ -161,7 +167,7 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
 
   // Create popup for this location
   const popup = L.popup({
-    className: 'location-info-popup',
+    className: `location-info-popup location-info-popup--${questStore.theme}`,
     maxWidth: 500,
     minWidth: 320,
     closeButton: false,
@@ -196,13 +202,19 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
     setTimeout(() => {
       const popupWrapper = document.querySelector('.location-info-popup .leaflet-popup-content-wrapper') as HTMLElement
       const popupTip = document.querySelector('.location-info-popup .leaflet-popup-tip') as HTMLElement
+      const popupContent = document.querySelector('.location-info-popup .leaflet-popup-content') as HTMLElement
       
       if (popupWrapper) {
         popupWrapper.style.backgroundColor = popupBackgroundColor.value
+        popupWrapper.style.borderColor = popupBorderColor.value
       }
       
       if (popupTip) {
         popupTip.style.backgroundColor = popupBackgroundColor.value
+      }
+      
+      if (popupContent) {
+        popupContent.style.color = popupTextColor.value
       }
     }, 0)
 
@@ -365,6 +377,34 @@ watch(() => appStore.mapZoomFine, () => {
   })
 }, { immediate: false })
 
+// Watch for theme changes to update popup styles
+watch(() => questStore.theme, () => {
+  // Find all open popups and update their class names and styles
+  document.querySelectorAll('.location-info-popup').forEach(popup => {
+    // Update theme-specific class
+    popup.classList.remove('location-info-popup--light', 'location-info-popup--dark')
+    popup.classList.add(`location-info-popup--${questStore.theme}`)
+    
+    // Update styles
+    const wrapper = popup.querySelector('.leaflet-popup-content-wrapper') as HTMLElement
+    const tip = popup.querySelector('.leaflet-popup-tip') as HTMLElement
+    const content = popup.querySelector('.leaflet-popup-content') as HTMLElement
+    
+    if (wrapper) {
+      wrapper.style.backgroundColor = popupBackgroundColor.value
+      wrapper.style.borderColor = popupBorderColor.value
+    }
+    
+    if (tip) {
+      tip.style.backgroundColor = popupBackgroundColor.value
+    }
+    
+    if (content) {
+      content.style.color = popupTextColor.value
+    }
+  })
+})
+
 // Clean up markers before unmounting
 onBeforeUnmount(() => {
   cleanupMarkers()
@@ -373,5 +413,33 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+:deep(.location-info-popup) {
+  transition: all 0.3s ease;
+}
 
+:deep(.location-info-popup .leaflet-popup-content-wrapper) {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid v-bind(popupBorderColor);
+  overflow: hidden;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+:deep(.location-info-popup--dark .leaflet-popup-content-wrapper) {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+:deep(.location-info-popup--light .leaflet-popup-content-wrapper) {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+:deep(.location-info-popup .leaflet-popup-tip) {
+  transition: background-color 0.3s ease;
+}
+
+:deep(.location-info-popup .leaflet-popup-content) {
+  margin: 12px 16px;
+  transition: color 0.3s ease;
+  color: v-bind(popupTextColor);
+}
 </style>

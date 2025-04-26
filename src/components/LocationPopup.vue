@@ -431,7 +431,10 @@ const badgeStyle = computed(() => ({
   max-width: 90vw;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border: 1px solid;
+  border: 1px solid v-bind('questStore.getBorderColor("medium")');
+  background-color: v-bind('questStore.getBackgroundColor("card")');
+  color: v-bind('questStore.getTextColor("primary")');
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .location-header {
@@ -462,6 +465,7 @@ const badgeStyle = computed(() => ({
   font-size: 1.75rem;
   font-weight: 600;
   flex-grow: 1;
+  color: v-bind('questStore.getTextColor("primary")');
 }
 
 .location-status-badges {
@@ -475,7 +479,10 @@ const badgeStyle = computed(() => ({
   font-size: 0.85rem;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  border: 1px solid;
+  border: 1px solid v-bind('questStore.getBorderColor("light")');
+  background-color: v-bind('questStore.getBackgroundColor("secondary")');
+  color: v-bind('questStore.getTextColor("secondary")');
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .visited-badge {
@@ -486,6 +493,7 @@ const badgeStyle = computed(() => ({
   font-size: 0.9rem;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
+  color: v-bind('questStore.getTextColor("secondary")');
 }
 
 .action-buttons {
@@ -499,8 +507,11 @@ const badgeStyle = computed(() => ({
   padding: 1rem;
   margin-bottom: 1.5rem;
   border-radius: 8px;
-  border: 1px solid;
+  border: 1px solid v-bind('questStore.getBorderColor("light")');
+  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
+  color: v-bind('questStore.getTextColor("secondary")');
   font-weight: 500;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .location-details {
@@ -511,17 +522,21 @@ const badgeStyle = computed(() => ({
   margin: 1.5rem 0;
   padding: 1rem;
   border-radius: 8px;
-  border: 1px solid;
+  border: 1px solid v-bind('questStore.getBorderColor("light")');
+  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .gift-info h3, .prize-info h3 {
   margin-top: 0;
   margin-bottom: 1rem;
+  color: v-bind('questStore.getTextColor("primary")');
 }
 
 .monsters-heading {
   margin: 1.5rem 0 1rem;
   font-size: 1.25rem;
+  color: v-bind('questStore.getTextColor("primary")');
 }
 
 .all-defeated-message {
@@ -530,7 +545,10 @@ const badgeStyle = computed(() => ({
   margin: 1rem 0;
   font-style: italic;
   border-radius: 8px;
-  border: 1px solid;
+  border: 1px solid v-bind('questStore.getBorderColor("light")');
+  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
+  color: v-bind('questStore.getTextColor("secondary")');
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .defeated-enemies-info {
@@ -538,8 +556,11 @@ const badgeStyle = computed(() => ({
   padding: 0.75rem;
   margin: 0.5rem 0;
   border-radius: 8px;
-  border: 1px solid;
+  border: 1px solid v-bind('questStore.getBorderColor("light")');
+  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
+  color: v-bind('questStore.getTextColor("secondary")');
   font-weight: 500;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .monster-groups {
@@ -550,10 +571,11 @@ const badgeStyle = computed(() => ({
 
 .monster-card {
   border-radius: 8px;
-  border: 1px solid;
+  border: 1px solid v-bind('questStore.getBorderColor("medium")');
   overflow: hidden;
   display: flex;
   padding: 0;
+  transition: border-color 0.3s ease;
 }
 
 .monster-count {
@@ -565,6 +587,7 @@ const badgeStyle = computed(() => ({
   background-color: rgba(0, 0, 0, 0.3);
   padding: 1rem;
   min-width: 3rem;
+  color: #ffffff;
 }
 
 .monster-info {
@@ -576,21 +599,25 @@ const badgeStyle = computed(() => ({
   font-weight: bold;
   margin-bottom: 0.25rem;
   font-size: 1.1rem;
+  color: v-bind('questStore.theme === "dark" ? "#ffffff" : "#000000"');
 }
 
 .monster-subinfo {
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
+  color: v-bind('questStore.theme === "dark" ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.7)"');
 }
 
 .monster-xp {
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
   font-weight: 600;
+  color: v-bind('questStore.getTextColor("accent")');
 }
 
 .monster-details {
   font-size: 0.9rem;
+  color: v-bind('questStore.theme === "dark" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)"');
 }
 
 .monster-stat {
@@ -610,12 +637,13 @@ const badgeStyle = computed(() => ({
 }
 
 .debug-button {
-  border: 2px dashed rgba(200, 50, 50, 0.7);
-  background-color: rgba(200, 50, 50, 0.2);
-  color: rgba(255, 255, 255, 0.9);
+  border: 2px dashed v-bind('questStore.theme === "dark" ? "rgba(200, 50, 50, 0.7)" : "rgba(200, 50, 50, 0.5)"');
+  background-color: v-bind('questStore.theme === "dark" ? "rgba(200, 50, 50, 0.2)" : "rgba(200, 50, 50, 0.1)"');
+  color: v-bind('questStore.theme === "dark" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)"');
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .debug-button:hover {
-  background-color: rgba(200, 50, 50, 0.3);
+  background-color: v-bind('questStore.theme === "dark" ? "rgba(200, 50, 50, 0.3)" : "rgba(200, 50, 50, 0.2)"');
 }
 </style> 
