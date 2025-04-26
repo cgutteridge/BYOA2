@@ -46,9 +46,9 @@
           {{ option.count }}x
         </div>
         <div class="picker-item-content">
-          <div class="picker-item-title">{{ option.name || option.title || option.label || option }}</div>
-          <div class="picker-item-subtitle" v-if="showSubtitle && getSubtitleForOption(option)">
-            {{ getSubtitleForOption(option) }}
+          <div class="picker-item-title-row">
+            <span class="picker-item-title">{{ option.name || option.title || option.label || option }}</span>
+            <span v-if="showSubtitle && getSubtitleForOption(option)" class="picker-item-subtitle">{{ getSubtitleForOption(option) }}</span>
           </div>
         </div>
       </div>
@@ -659,18 +659,33 @@ function getSubtitleForOption(option: PickerOption): string {
   overflow: hidden;
 }
 
+.picker-item-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  width: 100%;
+}
+
 .picker-item-title {
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
 }
 
 .picker-item-subtitle {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: inherit;
+  opacity: 0.8;
+  flex-shrink: 0;
+  max-width: 35%;
 }
 
 .no-options {
