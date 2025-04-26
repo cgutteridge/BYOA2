@@ -1,6 +1,6 @@
 import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
 import { ItemPower } from './abstractItemPower'
-import { monsterTypes } from '../data/monsterTypes'
+import { monsterTypeById } from '../data/monsterTypesLoader'
 import { toMonsterTypeId } from '../types'
 import {useQuestStore} from "@/stores/questStore.ts";
 
@@ -46,13 +46,7 @@ export class StunPower extends ItemPower {
     }
     
     // Find the monster type to get its level
-    const monsterType = monsterTypes.find(m => m.id === monster.type);
-    
-    // Guard: check if we found the monster type
-    if (!monsterType) {
-      console.warn(`Could not find type information for monster ${monster.name}`);
-      return false;
-    }
+    const monsterType = monsterTypeById(monster.type);
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
     if (monsterType.level === 'boss') {
@@ -62,13 +56,7 @@ export class StunPower extends ItemPower {
     
     // Get the appropriate stunned monster for this level
     const stunnedMonsterTypeId = this.stunnedMonsterMap[monsterType.level];
-    const stunnedMonsterType = monsterTypes.find(m => m.id === stunnedMonsterTypeId);
-    
-    // Guard: check if we found the stunned monster type
-    if (!stunnedMonsterType) {
-      console.warn(`Could not find stunned monster type for level ${monsterType.level}`);
-      return false;
-    }
+    const stunnedMonsterType = monsterTypeById(stunnedMonsterTypeId);
     
     // Transform the monster into a stunned version
     const originalName = monster.name;

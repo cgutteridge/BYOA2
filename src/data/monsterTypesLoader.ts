@@ -1,11 +1,12 @@
-import { 
-  MonsterType, 
-  MonsterTypeId, 
-  toMonsterTypeId, 
-  MonsterLevel, 
-  Species, 
-  MonsterFlag 
-} from '../types';
+import {MonsterFlag, MonsterLevel, MonsterType, MonsterTypeId, Species, toMonsterTypeId} from '../types';
+// Import all monster type files
+import vampiresData from './monsters/vampires.json';
+import elvesData from './monsters/elves.json';
+import faerieData from './monsters/faerie.json';
+import pintsData from './monsters/pints.json';
+import spiritsData from './monsters/spirits.json';
+import nullifiedData from './monsters/nullified.json';
+import otherData from './monsters/other.json';
 
 // Type for the raw JSON data before applying branded types
 interface RawMonsterData {
@@ -31,15 +32,6 @@ interface RawMonsterData {
   };
 }
 
-// Import all monster type files
-import vampiresData from './monsters/vampires.json';
-import elvesData from './monsters/elves.json';
-import faerieData from './monsters/faerie.json';
-import pintsData from './monsters/pints.json';
-import spiritsData from './monsters/spirits.json';
-import nullifiedData from './monsters/nullified.json';
-import otherData from './monsters/other.json';
-
 // Combine all monster data with explicit type assertion
 const monstersData: RawMonsterData[] = [
   ...(vampiresData as RawMonsterData[]),
@@ -50,6 +42,32 @@ const monstersData: RawMonsterData[] = [
   ...(nullifiedData as RawMonsterData[]),
   ...(otherData as RawMonsterData[])
 ];
+
+const errorBeast:MonsterType = {
+  "id": toMonsterTypeId("error_beast"),
+  "title": "Error Beast (something went wrong)",
+  "drink": "Drink of your choice I guess",
+  "level": "grunt",
+  "species": "human",
+  "flags": [
+    "mortal"
+  ],
+  "xp": 20,
+  "booze": 3.0,
+  "soft": 0,
+  "style": {
+    "background": "#3333333",
+    "color": "#cccccc",
+    "borderColor": "#aaaaaa"
+  }
+}
+
+export const monsterTypeById = (id: MonsterTypeId): MonsterType => {
+  if(!monsterTypesById[id] ) {
+    return errorBeast ;
+  }
+  return monsterTypesById[id];
+}
 
 // Parse the JSON data and apply the proper branded type to each ID
 export const monsterTypes: MonsterType[] = monstersData.map(monster => {

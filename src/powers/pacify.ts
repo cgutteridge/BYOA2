@@ -1,6 +1,6 @@
 import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
 import { ItemPower } from './abstractItemPower'
-import { monsterTypes } from '../data/monsterTypes'
+import { monsterTypeById } from '../data/monsterTypesLoader'
 import { toMonsterTypeId } from '../types'
 import {useQuestStore} from "@/stores/questStore.ts";
 
@@ -45,13 +45,7 @@ export class PacifyPower extends ItemPower {
     }
     
     // Find the monster type to get its level
-    const monsterType = monsterTypes.find(m => m.id === monster.type);
-    
-    // Guard: check if we found the monster type
-    if (!monsterType) {
-      console.warn(`Could not find type information for monster ${monster.name}`);
-      return false;
-    }
+    const monsterType = monsterTypeById(monster.type);
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
     if (monsterType.level === 'boss') {
@@ -61,13 +55,7 @@ export class PacifyPower extends ItemPower {
     
     // Get the appropriate pacified monster for this level
     const pacifiedMonsterTypeId = this.pacifiedMonsterMap[monsterType.level];
-    const pacifiedMonsterType = monsterTypes.find(m => m.id === pacifiedMonsterTypeId);
-    
-    // Guard: check if we found the pacified monster type
-    if (!pacifiedMonsterType) {
-      console.warn(`Could not find pacified monster type for level ${monsterType.level}`);
-      return false;
-    }
+    const pacifiedMonsterType = monsterTypeById(pacifiedMonsterTypeId);
     
     // Transform the monster into a pacified version
     const originalName = monster.name;

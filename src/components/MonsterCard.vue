@@ -75,18 +75,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onUnmounted } from 'vue';
-import type { Monster } from '@/types';
-import { monsterTypes } from '@/data/monsterTypes';
-import { useQuestStore } from '@/stores/questStore';
+import { computed, ref, onUnmounted, type Ref } from 'vue';
 import { useAppStore } from '@/stores/appStore';
-import { useInventoryStore } from '@/stores/inventoryStore';
+import { useQuestStore } from '@/stores/questStore';
 import { useLocationStore } from '@/stores/locationStore';
+import { useInventoryStore } from '@/stores/inventoryStore';
+import { monsterTypeById } from '@/data/monsterTypesLoader';
 import { getMonsterXP, getMonsterBooze, getMonsterSoft, areAllMonstersDefeated } from '@/quest/monsterUtils';
 import formatNumber from '@/utils/formatNumber';
 import ItemCard from '@/components/ItemCard.vue';
-import pickOne from "@/utils/pickOne.ts";
-import {generateRandomItem} from "@/quest/generateRandomItem.ts";
+import { generateRandomItem } from '@/quest/generateRandomItem';
+import pickOne from '@/utils/pickOne';
+import type { Monster, MonsterTypeId } from '@/types';
 
 // Constants
 const MONSTER_DEFEAT_DELAY_MS = 1000;
@@ -125,43 +125,37 @@ onUnmounted(() => {
 });
 
 // Functions
-function getMonsterTitle(monsterId: string): string {
-  const monster = monsterTypes.find(m => m.id === monsterId);
-  return monster?.title || monsterId;
+function getMonsterTitle(monsterId: MonsterTypeId): string {
+  const monster = monsterTypeById(monsterId);
+  return monster.title;
 }
 
-function getMonsterDrink(monsterId: string): string {
-  const monster = monsterTypes.find(m => m.id === monsterId);
-  return monster?.drink || "Unknown";
+function getMonsterDrink(monsterId: MonsterTypeId): string {
+  const monster = monsterTypeById(monsterId);
+  return monster.drink;
 }
 
-function getMonsterSpecies(monsterId: string): string {
-  const monster = monsterTypes.find(m => m.id === monsterId);
-  if (!monster) return "Unknown";
+function getMonsterSpecies(monsterId: MonsterTypeId): string {
+  const monster = monsterTypeById(monsterId);
 
   // Capitalize first letter of species
   return monster.species.charAt(0).toUpperCase() + monster.species.slice(1);
 }
 
-function getMonsterLevel(monsterId: string): string {
-  const monster = monsterTypes.find(m => m.id === monsterId);
-  if (!monster) return "Unknown";
+function getMonsterLevel(monsterId: MonsterTypeId): string {
+  const monster = monsterTypeById(monsterId);
 
   // Capitalize first letter of level
   return monster.level.charAt(0).toUpperCase() + monster.level.slice(1);
 }
 
-function getMonsterFlags(monsterId: string): string[] {
-  const monster = monsterTypes.find(m => m.id === monsterId);
-  if (!monster || !monster.flags) return [];
-
+function getMonsterFlags(monsterId: MonsterTypeId): string[] {
+  const monster = monsterTypeById(monsterId);
   return monster.flags;
 }
 
-function getMonsterClasses(monsterId: string): Record<string, boolean> {
-  const monster = monsterTypes.find(m => m.id === monsterId);
-  if (!monster) return {};
-
+function getMonsterClasses(monsterId: MonsterTypeId): Record<string, boolean> {
+  const monster = monsterTypeById(monsterId);
   const classes: Record<string, boolean> = {};
 
   // Add additional classes from monster style
@@ -174,10 +168,9 @@ function getMonsterClasses(monsterId: string): Record<string, boolean> {
   return classes;
 }
 
-function getMonsterStyle(monsterId: string): Record<string, string> {
-  const monster = monsterTypes.find(m => m.id === monsterId);
-  if (!monster || !monster.style) return {};
-
+function getMonsterStyle(monsterId: MonsterTypeId): Record<string, string> {
+  const monster = monsterTypeById(monsterId);
+  
   const style: Record<string, string> = {
     backgroundColor: questStore.getBackgroundColor('card'),
     borderColor: questStore.getBorderColor('medium'),
@@ -185,22 +178,22 @@ function getMonsterStyle(monsterId: string): Record<string, string> {
   };
 
   // If monster has style.background, use it
-  if (monster.style.background) {
+  if (monster.style?.background) {
     style.background = monster.style.background;
   }
 
   // If monster has style.borderColor, use it
-  if (monster.style.borderColor) {
+  if (monster.style?.borderColor) {
     style.borderColor = monster.style.borderColor;
   }
 
   // If monster has style.color, use it
-  if (monster.style.color) {
+  if (monster.style?.color) {
     style.color = monster.style.color;
   }
 
   // If monster has style.boxShadow, use it
-  if (monster.style.boxShadow) {
+  if (monster.style?.boxShadow) {
     style.boxShadow = monster.style.boxShadow;
   }
 
@@ -290,7 +283,7 @@ function defeatMonster(): void {
 
   // Maybe add a minor loot drop?
   if (!props.monster.item && pickOne([true, false])) {
-    const monsterType = monsterTypes.find(m => m.id === props.monster.type);
+    const monsterType = monsterTypeById(props.monster.type);
     const item = generateRandomItem(pickOne([1,2]))
     item.maxLevel = monsterType?.level || "minion"
     props.monster.item = item
@@ -318,7 +311,7 @@ function reviveMonster(): void {
   if (monsterIndex === -1) return;
 
   // Set alive to true
-  questStore.currentGameLocation.monsters[monsterIndex].alive = true;
+  props.monster.alive = true;
 }
 
 // Claim an item from a defeated monster

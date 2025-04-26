@@ -1,6 +1,6 @@
 import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
 import { ItemPower } from './abstractItemPower'
-import { monsterTypes } from '../data/monsterTypes'
+import { monsterTypeById } from '../data/monsterTypesLoader'
 import { toMonsterTypeId } from '../types'
 import {useQuestStore} from "@/stores/questStore.ts";
 
@@ -45,13 +45,7 @@ export class VegetatePower extends ItemPower {
     }
     
     // Find the monster type to get its level
-    const monsterType = monsterTypes.find(m => m.id === monster.type);
-    
-    // Guard: check if we found the monster type
-    if (!monsterType) {
-      console.warn(`Could not find type information for monster ${monster.name}`);
-      return false;
-    }
+    const monsterType = monsterTypeById(monster.type);
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
     if (monsterType.level === 'boss') {
@@ -61,13 +55,7 @@ export class VegetatePower extends ItemPower {
     
     // Get the appropriate vegetated monster for this level
     const vegetatedMonsterTypeId = this.plantMonsterMap[monsterType.level];
-    const vegetatedMonsterType = monsterTypes.find(m => m.id === vegetatedMonsterTypeId);
-    
-    // Guard: check if we found the vegetated monster type
-    if (!vegetatedMonsterType) {
-      console.warn(`Could not find vegetated monster type for level ${monsterType.level}`);
-      return false;
-    }
+    const vegetatedMonsterType = monsterTypeById(vegetatedMonsterTypeId);
     
     // Transform the monster into a vegetated version
     const originalName = monster.name;

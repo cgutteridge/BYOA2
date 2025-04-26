@@ -4,9 +4,10 @@ import type {
     ItemPowerId, ItemTargetType,
     Monster,
     MonsterFlag,
-    MonsterLevel, MonsterType
+    MonsterLevel, MonsterType,
+    MonsterTypeId
 } from '../types'
-import {monsterTypes} from '../data/monsterTypes'
+import { monsterTypeById } from '../data/monsterTypesLoader'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {useAppStore} from "@/stores/appStore.ts";
 import {useInventoryStore} from "@/stores/inventoryStore.ts";
@@ -84,10 +85,8 @@ export abstract class ItemPower {
         }
 
         // Find the monster type definition
-        const monsterType = monsterTypes.find(mt => mt.id === monster.type);
-        if (!monsterType) {
-            return false;
-        }
+        const monsterType = monsterTypeById(monster.type);
+        
         return this.canTargetMonsterType(item, monsterType);
     }
 

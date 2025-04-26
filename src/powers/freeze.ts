@@ -1,7 +1,7 @@
 import type {Item, Monster, MonsterLevel, MonsterTypeId} from '../types'
 import {toMonsterTypeId} from '../types'
 import {ItemPower} from './abstractItemPower'
-import {monsterTypes} from '../data/monsterTypes'
+import {monsterTypeById} from '../data/monsterTypesLoader'
 import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
@@ -45,13 +45,7 @@ export class FreezePower extends ItemPower {
     }
     
     // Find the monster type to get its level
-    const monsterTypeInfo = monsterTypes.find(t => t.id === monster.type);
-    
-    // Guard: check if we found the monster type
-    if (!monsterTypeInfo) {
-      console.warn(`Could not find type information for monster ${monster.name}`);
-      return false;
-    }
+    const monsterTypeInfo = monsterTypeById(monster.type);
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
     if (monsterTypeInfo.level === 'boss') {
@@ -61,13 +55,7 @@ export class FreezePower extends ItemPower {
     
     // Get the appropriate ice monster for this level
     const iceMonsterTypeId = this.iceMonsterMap[monsterTypeInfo.level];
-    const iceMonsterType = monsterTypes.find(m => m.id === iceMonsterTypeId);
-    
-    // Guard: check if we found the ice monster type
-    if (!iceMonsterType) {
-      console.warn(`Could not find ice monster type for level ${monsterTypeInfo.level}`);
-      return false;
-    }
+    const iceMonsterType = monsterTypeById(iceMonsterTypeId);
 
     // Transform the monster to ice
     monster.type = iceMonsterTypeId;

@@ -1,6 +1,6 @@
-import type {Item, Monster, MonsterType} from '../types'
+import type {Item, Monster, MonsterType, MonsterTypeId} from '../types'
 import { ItemPower } from './abstractItemPower'
-import { monsterTypes } from '../data/monsterTypes'
+import { monsterTypes, monsterTypeById } from '../data/monsterTypesLoader'
 import { useQuestStore } from '@/stores/questStore.ts'
 import { generateRandomItem } from '@/quest/generateRandomItem'
 
@@ -73,8 +73,7 @@ export class GrowPower extends ItemPower {
     const questStore = useQuestStore();
 
     // Get the monster's type definition
-    const monsterTypeDef = monsterTypes.find(mt => mt.id === monster.type);
-    if (!monsterTypeDef) return false;
+    const monsterTypeDef = monsterTypeById(monster.type);
     
     // Find any monster type that has this as its lesser form
     const higherForm = monsterTypes.find(mt => mt.lesser === monsterTypeDef.id);

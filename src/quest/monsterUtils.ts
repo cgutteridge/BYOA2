@@ -1,6 +1,6 @@
 import type {Monster, MonsterType, MonsterTypeId} from '../types'
 import {useQuestStore} from '@/stores/questStore.ts';
-import {monsterTypes, monsterTypesById} from "@/data";
+import {monsterTypesById, monsterTypeById} from "@/data/monsterTypesLoader";
 
 
 /**
@@ -28,9 +28,8 @@ export function getUniqueMonsterTypes(monsters: Monster[]): MonsterType[] {
  * @param monsterTypeId The monster type ID
  * @returns Capitalized level name
  */
-export function getMonsterLevel(monsterTypeId: string): string {
-  const monsterType = monsterTypes.find(mt => mt.id === monsterTypeId)
-  if (!monsterType) return 'Unknown'
+export function getMonsterLevel(monsterTypeId: MonsterTypeId): string {
+  const monsterType = monsterTypeById(monsterTypeId)
   
   // Capitalize the level
   return monsterType.level.charAt(0).toUpperCase() + monsterType.level.slice(1)
@@ -41,9 +40,8 @@ export function getMonsterLevel(monsterTypeId: string): string {
  * @param monsterTypeId The monster type ID
  * @returns Capitalized species name
  */
-export function getMonsterSpecies(monsterTypeId: string): string {
-  const monsterType = monsterTypes.find(mt => mt.id === monsterTypeId)
-  if (!monsterType) return 'Unknown'
+export function getMonsterSpecies(monsterTypeId: MonsterTypeId): string {
+  const monsterType = monsterTypeById(monsterTypeId)
   
   // Capitalize the species
   return monsterType.species.charAt(0).toUpperCase() + monsterType.species.slice(1)

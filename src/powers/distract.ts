@@ -1,6 +1,6 @@
 import type { Item, MonsterTypeId, Monster, MonsterLevel } from '../types'
 import { ItemPower } from './abstractItemPower'
-import { monsterTypes } from '../data/monsterTypes'
+import { monsterTypeById } from '../data/monsterTypesLoader'
 import { toMonsterTypeId } from '../types'
 import {useQuestStore} from "@/stores/questStore.ts";
 
@@ -45,13 +45,7 @@ export class DistractPower extends ItemPower {
     }
     
     // Find the monster type to get its level
-    const monsterType = monsterTypes.find(m => m.id === monster.type);
-    
-    // Guard: check if we found the monster type
-    if (!monsterType) {
-      console.warn(`Could not find type information for monster ${monster.name}`);
-      return false;
-    }
+    const monsterType = monsterTypeById(monster.type);
     
     // Guard: check if monster is a boss (though we shouldn't be targeting them)
     if (monsterType.level === 'boss') {
@@ -61,13 +55,7 @@ export class DistractPower extends ItemPower {
     
     // Get the appropriate distracted monster for this level
     const distractedMonsterTypeId = this.distractedMonsterMap[monsterType.level];
-    const distractedMonsterType = monsterTypes.find(m => m.id === distractedMonsterTypeId);
-    
-    // Guard: check if we found the distracted monster type
-    if (!distractedMonsterType) {
-      console.warn(`Could not find distracted monster type for level ${monsterType.level}`);
-      return false;
-    }
+    const distractedMonsterType = monsterTypeById(distractedMonsterTypeId);
 
     const originalName = monster.name
     

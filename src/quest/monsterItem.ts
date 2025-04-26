@@ -1,21 +1,17 @@
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
-import {monsterTypes} from "@/data/monsterTypes.ts";
-import {Item} from "@/types";
+import {monsterTypeById} from "@/data/monsterTypesLoader.ts";
+import {Item, MonsterTypeId} from "@/types";
 
 /**
  * Generate an item for a monster unit based on its level
  * @returns An item appropriate for the unit's level
  * @param monsterType
  */
-export function monsterItem(monsterType: string): Item | undefined {
+export function monsterItem(monsterType: MonsterTypeId): Item | undefined {
     // Only generate an item with a 40% probability
 
     // Find the monster info to get its level
-    const monster = monsterTypes.find(m => m.id === monsterType);
-
-    if (!monster) {
-        return undefined;
-    }
+    const monster = monsterTypeById(monsterType);
 
     // Generate item based on monster level
     switch (monster.level) {

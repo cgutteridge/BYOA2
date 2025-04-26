@@ -1,6 +1,6 @@
 import type {Item, Monster, MonsterType} from '../types'
 import { ItemPower } from './abstractItemPower'
-import { monsterTypes } from '../data/monsterTypes'
+import { monsterTypes, monsterTypeById } from '../data/monsterTypesLoader'
 import { useQuestStore } from '@/stores/questStore.ts'
 
 /**
@@ -68,8 +68,7 @@ export class ShrinkPower extends ItemPower {
     const questStore = useQuestStore();
 
     // Get the monster's type definition
-    const monsterTypeDef = monsterTypes.find(mt => mt.id === monster.type);
-    if (!monsterTypeDef) return false;
+    const monsterTypeDef = monsterTypeById(monster.type);
     
     // Check if the monster has a lesser form defined
     if (!monsterTypeDef.lesser) return false;

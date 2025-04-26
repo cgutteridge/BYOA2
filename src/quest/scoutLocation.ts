@@ -1,7 +1,7 @@
-import type {GameLocation, Monster} from '../types'
+import type {GameLocation, Monster, MonsterTypeId} from '../types'
 import {ChatGPTAPI} from '../api/chatGPT.ts'
 import generateMonsters from './generateMonsters.ts'
-import {monsterTypes} from "@/data/monsterTypes.ts";
+import {monsterTypeById} from '@/data/monsterTypesLoader'
 import {useQuestStore} from '@/stores/questStore.ts';
 import {monsterItem} from "@/quest/monsterItem.ts";
 import {locationPrizeItem} from "@/quest/locationPrizeItem.ts";
@@ -11,6 +11,7 @@ import {generateVictoryItem} from "@/quest/itemUtils.ts";
 import {powerFactory} from "@/powers";
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
 import pickOne from "@/utils/pickOne.ts";
+import {toMonsterTypeId} from '@/types';
 
 /**
  * Scout a location, generating its description, monsters, and prize
@@ -87,8 +88,8 @@ export async function scoutLocation(
     // Generate items for elite and boss monsters
     monsters.forEach(monster => {
         if (monster.item !== undefined) {
-            const monsterType = monsterTypes.find(m => m.id === monster.type);
-            if (monsterType && (monsterType.level === 'elite' || monsterType.level === 'boss')) {
+            const monsterType = monsterTypeById(monster.type);
+            if (monsterType.level === 'elite' || monsterType.level === 'boss') {
                 monster.item = monsterItem(monster.type);
             } else {
                 monster.item = undefined;
@@ -196,13 +197,13 @@ export async function scoutLocation(
         
         // Prepare the monster data for the AI call
         const monsterGroups = Array.from(monstersByType.entries()).map(([type, monsters]) => {
-            const monsterType = monsterTypes.find(m => m.id === type);
+            const monsterType = monsterTypeById(toMonsterTypeId(type));
             return {
                 type: type,
-                title: monsterType?.title || type,
+                title: monsterType.title,
                 count: monsters.length,
-                level: monsterType?.level || 'unknown',
-                species: monsterType?.species || 'unknown'
+                level: monsterType.level,
+                species: monsterType.species
             };
         });
 
@@ -245,8 +246,8 @@ export function formatMonstersDescription(monsters: Monster[]): string {
     });
     
     return Array.from(monsterCounts.entries()).map(([type, count]) => {
-        const monsterType = monsterTypes.find(m => m.id === type);
-        const title = monsterType?.title || type;
+        const monsterType = monsterTypeById(toMonsterTypeId(type));
+        const title = monsterType.title;
         return `${count} ${title}`;
     }).join(', ');
 }
