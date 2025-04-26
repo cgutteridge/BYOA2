@@ -5,13 +5,14 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, onBeforeUnmount, ref, computed, Ref } from 'vue'
+import { inject, onMounted, onBeforeUnmount, ref, computed, Ref, watch } from 'vue'
 import L from 'leaflet'
 import type { Map as LeafletMap, Marker } from 'leaflet'
 import type { GameLocation, GameLocationType } from '@/types'
 import { toGameLocationTypeId } from '@/types'
 import { useLocationStore } from '@/stores/locationStore'
 import { useQuestStore } from '@/stores/questStore'
+import { useAppStore } from '@/stores/appStore'
 import { locationTypesById } from '@/data/locationTypes'
 import { createApp } from 'vue'
 import LocationPopup from '@/components/LocationPopup.vue'
@@ -23,6 +24,7 @@ const mountedPopupApps = inject<Ref<any[]>>('mountedPopupApps')
 // Stores
 const locationStore = useLocationStore()
 const questStore = useQuestStore()
+const appStore = useAppStore()
 
 // Markers array
 const locationMarkers = ref<Marker[]>([])
@@ -260,8 +262,6 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
   return marker
 }
 
-
-
 /**
  * Generate all game location markers
  */
@@ -310,8 +310,6 @@ function cleanupMarkers(): void {
   locationMarkers.value = []
 }
 
-
-
 // Initialize markers when the component is mounted and map is ready
 onMounted(() => {
   const initMarkers = () => {
@@ -325,11 +323,17 @@ onMounted(() => {
   initMarkers()
 })
 
+// Watch for fine zoom level changes at the end of zoom animations
+watch(() => appStore.mapZoomFine, () => {
+  if (mapInstance?.value) {
+    generateGameLocationMarkers()
+  }
+}, { immediate: false })
+
 // Clean up markers before unmounting
 onBeforeUnmount(() => {
   cleanupMarkers()
 })
-
 
 </script>
 

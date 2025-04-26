@@ -7,28 +7,27 @@
 <script setup lang="ts">
 import { inject, watch, onMounted, onBeforeUnmount, ref, computed, Ref } from 'vue'
 import L from 'leaflet'
-import type { Marker } from 'leaflet'
+import type { Map as LeafletMap, Marker } from 'leaflet'
 import type { Coordinates } from '@/types'
-import { useQuestStore } from '@/stores/questStore'
+import { useAppStore } from '@/stores/appStore'
 import { useInventoryStore } from '@/stores/inventoryStore'
 
 // Get the map instance from the parent
 const mapInstance = inject<Ref<any>>('mapInstance')
 
 // Stores
-const questStore = useQuestStore()
+const appStore = useAppStore()
 const inventoryStore = useInventoryStore()
 
-// Destination marker reference
+// Marker reference
 const destinationMarker = ref<Marker | null>(null)
 
-// Computed properties
-const destinationCoordinates = computed((): Coordinates | null => {
-  return questStore.endGameLocation?.coordinates || null
-})
+// Destination coordinates from app store
+const destinationCoordinates = computed(() => appStore.mapPosition)
 
+// Check if player has enough tokens to travel to destination
 const hasEnoughTokens = computed(() => {
-  return inventoryStore.tokenCount >= questStore.minimumLocations
+  return inventoryStore.tokenCount >= 0
 })
 
 /**
@@ -113,6 +112,13 @@ watch(() => inventoryStore.tokenCount, () => {
 
 // Watch for map zoom changes to update the marker size
 watch(() => mapInstance?.value?.getZoom(), () => {
+  if (destinationCoordinates.value) {
+    updateDestinationMarker()
+  }
+}, { immediate: false })
+
+// Watch for fine zoom level changes at the end of zoom animations
+watch(() => appStore.mapZoomFine, () => {
   if (destinationCoordinates.value) {
     updateDestinationMarker()
   }

@@ -3,7 +3,7 @@
     <PlayerMarker v-if="mapInstance"/>
     <LocationMarkers v-if="mapInstance"/>
     <RouteTracker v-if="mapInstance"/>
-    <DestinationMarker v-if="mapInstance"/>
+    <!--<DestinationMarker v-if="mapInstance"/>-->
   </div>
 </template>
 
@@ -87,6 +87,8 @@ function initializeMap(): void {
 
     map.on('zoomend', () => {
       appStore.setMapZoom(map.getZoom())
+      // Directly update the mapZoomFine value to trigger watches in components
+      appStore.mapZoomFine = map.getZoom()
     })
 
     // Listen for zoom animation events
@@ -125,9 +127,9 @@ function initializeMap(): void {
     // Start route tracking
     appStore.startRouteTracking()
 
-    // When a zoom starts, do a thing that updates the appStore with our exact zoom level
-    mapInstance.value.on('zoomstart', zoomStart)
-    mapInstance.value.on('zoomanim', zoomAnim)
+    // We're no longer using smooth zoom animation, only resizing at the end of zoom
+    // mapInstance.value.on('zoomstart', zoomStart)
+    // mapInstance.value.on('zoomanim', zoomAnim)
 
   } catch (error) {
     console.error('Error initializing map:', error)
@@ -135,30 +137,6 @@ function initializeMap(): void {
     isInitializing.value = false
   }
 }
-
-let startZoom = 0
-let endZoom = 0
-let startZoomT = 0
-
-function zoomStart(): void {
-  startZoomT = Date.now()
-  startZoom = appStore.mapZoom || 0
-}
-
-function zoomAnim(e: ZoomAnimEvent) {
-  console.log(appStore.mapZoom)
-  endZoom = e.zoom
-  setTimeout(animateZoom, 25)
-}
-
-function animateZoom(): void {
-  const progress = Math.min(1, (Date.now() - startZoomT) / 250)
-  if (progress !== 1) {
-    setTimeout(animateZoom, 25)
-  }
-  appStore.mapZoomFine = startZoom + (endZoom - startZoom) * progress
-}
-
 
 /**
  * Add custom controls to the map

@@ -257,6 +257,13 @@ watch(() => mapInstance?.value?.getZoom(), () => {
   }
 }, { immediate: false })
 
+// Watch for fine zoom level changes at the end of zoom animations
+watch(() => appStore.mapZoomFine, () => {
+  if (playerCoordinates.value && mapInstance?.value) {
+    updatePlayerMarker(playerCoordinates.value)
+  }
+}, { immediate: false })
+
 // Initialize the player marker when the component is mounted and map is ready
 onMounted(() => {
   const initMarker = () => {
