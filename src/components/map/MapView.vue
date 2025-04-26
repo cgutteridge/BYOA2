@@ -127,9 +127,11 @@ function initializeMap(): void {
     // Start route tracking
     appStore.startRouteTracking()
 
-    // We're no longer using smooth zoom animation, only resizing at the end of zoom
-    // mapInstance.value.on('zoomstart', zoomStart)
-    // mapInstance.value.on('zoomanim', zoomAnim)
+    // Add event handlers for smooth zoom animation
+    mapInstance.value.on('zoomanim', (e: ZoomAnimEvent) => {
+      // Update mapZoomFine directly during zoom animation
+      appStore.mapZoomFine = e.zoom
+    })
 
   } catch (error) {
     console.error('Error initializing map:', error)

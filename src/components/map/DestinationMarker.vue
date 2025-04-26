@@ -119,9 +119,44 @@ watch(() => mapInstance?.value?.getZoom(), () => {
 
 // Watch for fine zoom level changes at the end of zoom animations
 watch(() => appStore.mapZoomFine, () => {
-  if (destinationCoordinates.value) {
-    updateDestinationMarker()
-  }
+  if (!mapInstance?.value || !destinationCoordinates.value || !destinationMarker.value) return
+  
+  const currentZoom = appStore.mapZoomFine || mapInstance.value.getZoom()
+  const baseZoom = 16
+  
+  // Scale size based on zoom level
+  const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
+  const baseSize = 240
+  const circleSize = Math.max(60, Math.min(300, Math.floor(baseSize * zoomFactor)))
+  
+  // Create SVG with radial gradient for fade effect
+  const svgSize = circleSize * 2
+  const primaryColor = hasEnoughTokens.value ? '#22DD33' : '#FF5500' // Green or bright orange
+  
+  const svg = `
+    <svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="fade" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <stop offset="0%" stop-color="${primaryColor}" stop-opacity="1" />
+          <stop offset="50%" stop-color="${primaryColor}" stop-opacity="0.5" />
+          <stop offset="80%" stop-color="${primaryColor}" stop-opacity="0.2" />
+          <stop offset="100%" stop-color="${primaryColor}" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <circle cx="${svgSize / 2}" cy="${svgSize / 2}" r="${svgSize / 2}" fill="url(#fade)"  />
+    </svg>
+  `
+  
+  // Create updated icon
+  const icon = L.divIcon({
+    className: hasEnoughTokens.value ? 'destination-marker accessible' : 'destination-marker',
+    html: svg,
+    iconSize: [svgSize, svgSize],
+    iconAnchor: [svgSize / 2, svgSize / 2]
+  })
+  
+  // Update the marker's icon
+  destinationMarker.value.setIcon(icon)
 }, { immediate: false })
 
 // Initialize destination marker when the component is mounted and map is ready

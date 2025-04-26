@@ -259,9 +259,34 @@ watch(() => mapInstance?.value?.getZoom(), () => {
 
 // Watch for fine zoom level changes at the end of zoom animations
 watch(() => appStore.mapZoomFine, () => {
-  if (playerCoordinates.value && mapInstance?.value) {
-    updatePlayerMarker(playerCoordinates.value)
-  }
+  if (!mapInstance?.value || !playerCoordinates.value || !playerMarker.value) return
+  
+  const currentZoom = appStore.mapZoomFine || mapInstance.value.getZoom()
+  const baseZoom = 16
+  const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
+  
+  // Get the players icon from the location types
+  const playersType = locationTypesById['players' as keyof typeof locationTypesById]
+  
+  // Scale the player location type
+  const scaledType = scaleLocationType(playersType, zoomFactor)
+  
+  // Create updated icon
+  const icon = L.icon({
+    iconUrl: `./icons/${playersType.filename}`,
+    shadowUrl: `./icons/shadows/${playersType.filename}`,
+    iconSize: scaledType.size,
+    iconAnchor: scaledType.anchor,
+    popupAnchor: [0, -30],
+    shadowSize: scaledType.shadowSize,
+    shadowAnchor: scaledType.shadowAnchor,
+    className: `leaflet-marker-icon-scalable location-type-player`,
+  })
+  
+  // Update the marker's icon
+  playerMarker.value.setIcon(icon)
+  
+  // We don't need to update the scout circle or labels as they scale using CSS
 }, { immediate: false })
 
 // Initialize the player marker when the component is mounted and map is ready

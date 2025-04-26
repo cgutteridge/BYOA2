@@ -325,9 +325,44 @@ onMounted(() => {
 
 // Watch for fine zoom level changes at the end of zoom animations
 watch(() => appStore.mapZoomFine, () => {
-  if (mapInstance?.value) {
-    generateGameLocationMarkers()
-  }
+  if (!mapInstance?.value || locationMarkers.value.length === 0) return
+  
+  const currentZoom = appStore.mapZoomFine || mapInstance.value.getZoom()
+  const baseZoom = 16
+  const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
+  
+  // Update each marker's icon size without recreating them
+  locationMarkers.value.forEach(marker => {
+    // Get the location data stored in the marker
+    // @ts-ignore - accessing a custom property
+    const location = marker.locationData
+    if (!location) return
+    
+    // Get the location type
+    const locationType = locationTypesById[location.type]
+    if (!locationType) return
+    
+    // Apply size reduction for stash - 50% of the normal size
+    const sizeReduction = location.type === 'stash' ? 0.5 : 1.0
+    
+    // Scale the location type based on current zoom
+    const scaledType = scaleLocationType(locationType, zoomFactor, sizeReduction)
+    
+    // Create new icon with updated sizes
+    const icon = L.icon({
+      iconUrl: `./icons/${locationType.filename}`,
+      shadowUrl: `./icons/shadows/${locationType.filename}`,
+      iconSize: scaledType.size,
+      iconAnchor: scaledType.anchor,
+      shadowSize: scaledType.shadowSize,
+      shadowAnchor: scaledType.shadowAnchor,
+      className: `leaflet-marker-icon-scalable location-type-${location.type}`,
+      popupAnchor: [0, -30] as [number, number]
+    })
+    
+    // Update the marker's icon
+    marker.setIcon(icon)
+  })
 }, { immediate: false })
 
 // Clean up markers before unmounting
