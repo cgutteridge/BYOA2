@@ -186,12 +186,12 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
     
     const markerHtml = `
       <div class="location-marker-container">
+        <div class="scout-indicator"></div>
         <img 
           src="./icons/${locationType.filename}" 
           class="location-marker-image"
           style="width: ${iconSize}px; height: ${iconHeight}px;"
         />
-        <div class="scout-indicator"></div>
       </div>
     `
     
@@ -428,12 +428,12 @@ watch(() => appStore.mapZoomFine, () => {
       
       const markerHtml = `
         <div class="location-marker-container">
+          <div class="scout-indicator"></div>
           <img 
             src="./icons/${locationType.filename}" 
             class="location-marker-image"
             style="width: ${iconSize}px; height: ${iconHeight}px;"
           />
-          <div class="scout-indicator"></div>
         </div>
       `
       
@@ -516,12 +516,12 @@ watch(() => locations.value, (newLocations) => {
         
         const markerHtml = `
           <div class="location-marker-container">
+            <div class="scout-indicator"></div>
             <img 
               src="./icons/${locationType.filename}" 
               class="location-marker-image"
               style="width: ${iconSize}px; height: ${iconHeight}px;"
             />
-            <div class="scout-indicator"></div>
           </div>
         `
         
@@ -651,22 +651,29 @@ onBeforeUnmount(() => {
 :deep(.location-marker-image) {
   transform-origin: center bottom;
   transition: transform 0.15s ease-out;
+  position: relative;
+  z-index: 2;
 }
 
 :deep(.location-marker-icon:hover .location-marker-image) {
   transform: scale(1.1);
 }
+</style>
 
-:deep(.scouted-not-viewed .scout-indicator) {
+<!-- Global styles for map markers, not scoped -->
+<style>
+/* Scout indicator styles - using global CSS for better compatibility with dynamically created elements */
+.scout-indicator {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: 3px dashed #4285F4;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 4px solid #4285F4;
+  background-color: rgba(66, 133, 244, 0.3);
   border-radius: 50%;
-  z-index: 10;
-  box-shadow: 0 0 10px rgba(66, 133, 244, 0.6);
+  z-index: 1;
+  box-shadow: 0 0 10px rgba(66, 133, 244, 0.8);
   animation: pulse-scout 2s infinite ease-in-out;
   pointer-events: none;
 }
@@ -677,12 +684,22 @@ onBeforeUnmount(() => {
     opacity: 0.7;
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.1);
     opacity: 1;
   }
   100% {
     transform: scale(1);
     opacity: 0.7;
   }
+}
+
+/* Make sure the leaflet container can handle these animations properly */
+.leaflet-marker-icon {
+  transform-origin: center bottom;
+}
+
+/* Ensure scout indicators stand out */
+.scouted-not-viewed {
+  filter: brightness(1.1);
 }
 </style>
