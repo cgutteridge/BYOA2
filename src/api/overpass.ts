@@ -32,6 +32,7 @@ export async function fetchSecondaryGameLocations(coords:Coordinates, radius: nu
         defeatedEnemies:0,
         hasBeenVisited:false,
         scouted: false,
+        viewed: false,
       }))
   return locations;
 }
@@ -101,6 +102,7 @@ function parseAmenities(elements:OverpassElement[]) {
         },
         type: toGameLocationTypeId('location'), // Default type, will be randomized later
         scouted: false,
+        viewed: false,
         defeatedEnemies:0,
         hasBeenVisited:false,
       }))

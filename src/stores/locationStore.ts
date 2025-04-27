@@ -66,6 +66,18 @@ export const useLocationStore = defineStore('locations', () => {
     targetGameLocation.hasBeenVisited = visited
   }
 
+  // Get viewed flag for a specific location
+  const getViewed = (locationId: GameLocationId): boolean => {
+    const targetGameLocation = location(locationId)
+    return targetGameLocation.viewed
+  }
+
+  // Set viewed flag for a specific location
+  const setViewed = (locationId: GameLocationId, viewed: boolean): void => {
+    const targetGameLocation = location(locationId)
+    targetGameLocation.viewed = viewed
+  }
+
   const fetchNearbyGameLocationsFromAPI = async () => {
     if (!appStore.playerCoordinates) return
 
@@ -102,6 +114,8 @@ export const useLocationStore = defineStore('locations', () => {
     incrementDefeatedEnemiesCount,
     getHasBeenVisited,
     setHasBeenVisited,
+    getViewed,
+    setViewed,
     persist
   }
 }) 
