@@ -269,7 +269,13 @@ function addPopupToMarker(marker: Marker, location: GameLocation): void {
     keepInView: false
   })
 
+  // Track if this popup has been opened
+  let hasBeenOpened = false
+
   marker.on('popupopen', () => {
+    // Flag that this popup has been opened
+    hasBeenOpened = true
+    
     // Create the popup content with Vue
     const container = document.createElement('div')
     container.className = 'popup-vue-container'
@@ -360,6 +366,15 @@ function addPopupToMarker(marker: Marker, location: GameLocation): void {
     }, 50)
   })
 
+  // Handle popup close event
+  marker.on('popupclose', () => {
+    // Only mark as viewed if the popup was actually opened and shown to the user
+    if (hasBeenOpened && location.scouted && !location.viewed) {
+      // Update the location in the store
+      locationStore.setViewed(location.id, true)
+    }
+  })
+
   marker.bindPopup(popup)
 }
 
@@ -392,167 +407,16 @@ onMounted(() => {
 
 // Watch for zoom level changes to update marker size
 watch(() => appStore.mapZoomFine, () => {
-  if (!mapInstance?.value || locationMarkers.value.length === 0) return
-  
-  const currentZoom = appStore.mapZoomFine || mapInstance.value.getZoom()
-  const baseZoom = 16
-  const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
-  
-  // Update each marker with a new properly sized icon
-  locationMarkers.value.forEach(marker => {
-    // Get the location data stored in the marker
-    // @ts-ignore - accessing a custom property
-    const location = marker.locationData
-    if (!location) return
-    
-    // Get the location type
-    const locationType = locationTypesById[location.type]
-    if (!locationType) return
-    
-    // Apply size reduction for stash - 50% of the normal size
-    const sizeReduction = location.type === 'stash' ? 0.5 : 1.0
-    
-    // Scale the location type based on current zoom
-    const scaledType = scaleLocationType(locationType, zoomFactor, sizeReduction)
-    
-    // Define the base class for CSS styling
-    const markerBaseClass = 'leaflet-marker-icon-scalable'
-    const locationTypeClass = `location-type-${location.type}`
-    const scoutedClass = location.scouted && !location.viewed ? 'scouted-not-viewed' : ''
-    const combinedClasses = `${markerBaseClass} ${locationTypeClass} ${scoutedClass}`.trim()
-    
-    // For scouted but not viewed locations, update with HTML-based icon
-    if (location.scouted && !location.viewed) {
-      const iconSize = scaledType.size[0]
-      const iconHeight = scaledType.size[1]
-      
-      const markerHtml = `
-        <div class="location-marker-container">
-          <div class="scout-indicator"></div>
-          <img 
-            src="./icons/${locationType.filename}" 
-            class="location-marker-image"
-            style="width: ${iconSize}px; height: ${iconHeight}px;"
-          />
-        </div>
-      `
-      
-      // Create the updated icon
-      const icon = L.divIcon({
-        html: markerHtml,
-        className: combinedClasses,
-        iconSize: scaledType.size,
-        iconAnchor: scaledType.anchor
-      })
-      
-      // Update the marker's icon
-      marker.setIcon(icon)
-    } else {
-      // For regular locations, update with standard icon including shadow
-      const iconProperties = {
-        iconUrl: `./icons/${locationType.filename}`,
-        shadowUrl: `./icons/shadows/${locationType.filename}`,
-        iconSize: scaledType.size,
-        iconAnchor: scaledType.anchor,
-        shadowSize: scaledType.shadowSize,
-        shadowAnchor: scaledType.shadowAnchor,
-        className: combinedClasses,
-        popupAnchor: [0, -30] as [number, number]
-      }
-      
-      // Update the marker's icon
-      marker.setIcon(L.icon(iconProperties))
-    }
-  })
+  if (!mapInstance?.value) return
+  // Simply regenerate all markers when zoom changes
+  generateLocationMarkers()
 }, { immediate: false })
 
-// Watch for location changes to update markers when scouted or viewed status changes
-watch(() => locations.value, (newLocations) => {
-  if (!mapInstance?.value || locationMarkers.value.length === 0) return
-  
-  // Update each marker based on location changes
-  locationMarkers.value.forEach(marker => {
-    // Get the location data stored in the marker
-    // @ts-ignore - accessing a custom property
-    const markerLocation = marker.locationData
-    if (!markerLocation) return
-    
-    // Find the updated location data
-    const updatedLocation = newLocations.find(loc => loc.id === markerLocation.id)
-    if (!updatedLocation) return
-    
-    // Update the marker's location data
-    // @ts-ignore - updating a custom property
-    marker.locationData = updatedLocation
-    
-    // Check if scouted or viewed status has changed
-    if (markerLocation.scouted !== updatedLocation.scouted || 
-        markerLocation.viewed !== updatedLocation.viewed) {
-      // Get the location type
-      const locationType = locationTypesById[updatedLocation.type]
-      if (!locationType) return
-      
-      // Get current zoom level to scale the icon size
-      const currentZoom = mapInstance.value.getZoom()
-      const baseZoom = 16
-      const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
-      
-      // Apply size reduction for stash - 50% of the normal size
-      const sizeReduction = updatedLocation.type === 'stash' ? 0.5 : 1.0
-      
-      // Scale the location type based on zoom
-      const scaledType = scaleLocationType(locationType, zoomFactor, sizeReduction)
-      
-      // Define the base class for CSS styling
-      const markerBaseClass = 'leaflet-marker-icon-scalable'
-      const locationTypeClass = `location-type-${updatedLocation.type}`
-      const scoutedClass = updatedLocation.scouted && !updatedLocation.viewed ? 'scouted-not-viewed' : ''
-      const combinedClasses = `${markerBaseClass} ${locationTypeClass} ${scoutedClass}`.trim()
-      
-      // Update icon based on scouted/viewed status
-      if (updatedLocation.scouted && !updatedLocation.viewed) {
-        const iconSize = scaledType.size[0]
-        const iconHeight = scaledType.size[1]
-        
-        const markerHtml = `
-          <div class="location-marker-container">
-            <div class="scout-indicator"></div>
-            <img 
-              src="./icons/${locationType.filename}" 
-              class="location-marker-image"
-              style="width: ${iconSize}px; height: ${iconHeight}px;"
-            />
-          </div>
-        `
-        
-        // Create the updated icon
-        const icon = L.divIcon({
-          html: markerHtml,
-          className: combinedClasses,
-          iconSize: scaledType.size,
-          iconAnchor: scaledType.anchor
-        })
-        
-        // Update the marker's icon
-        marker.setIcon(icon)
-      } else {
-        // For regular locations, update with standard icon
-        const iconProperties = {
-          iconUrl: `./icons/${locationType.filename}`,
-          shadowUrl: `./icons/shadows/${locationType.filename}`,
-          iconSize: scaledType.size,
-          iconAnchor: scaledType.anchor,
-          shadowSize: scaledType.shadowSize,
-          shadowAnchor: scaledType.shadowAnchor,
-          className: combinedClasses,
-          popupAnchor: [0, -30] as [number, number]
-        }
-        
-        // Update the marker's icon
-        marker.setIcon(L.icon(iconProperties))
-      }
-    }
-  })
+// Watch for location changes to update markers
+watch(() => locations.value, () => {
+  if (!mapInstance?.value) return
+  // Regenerate all markers when locations change
+  generateLocationMarkers()
 }, { deep: true })
 
 // Watch for theme changes to update popup styles
