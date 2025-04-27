@@ -18,6 +18,7 @@ import { VictoryPower} from "@/powers/victory.ts";
 import { ScoutRangePower } from './scoutRange'
 import { LootboxPower } from './lootbox.ts'
 import { GrowPower } from './grow'
+import { TreasurePower } from './treasure'
 
 // Create instances of the power classes
 const banishPower = new BanishPower();
@@ -38,6 +39,7 @@ const victoryPower = new VictoryPower();
 const scoutRangePower = new ScoutRangePower();
 const lootboxPower = new LootboxPower();
 const growPower = new GrowPower();
+const treasurePower = new TreasurePower();
 
 // Register all power implementations
 const powerInstances: Record<ItemPowerId, ItemPower> = {
@@ -59,6 +61,7 @@ const powerInstances: Record<ItemPowerId, ItemPower> = {
   scoutRange: scoutRangePower,
   lootbox: lootboxPower,
   grow: growPower,
+  treasure: treasurePower,
 };
 
 export const allPowers : ItemPower[] = Object.values(powerInstances);

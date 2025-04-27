@@ -24,6 +24,11 @@ export function itemCanBeUsed(item: Item) {
 export function itemHasValidTargets(item: Item) {
   const questStore = useQuestStore()
   const power = powerFactory.getPower(item.power);
+
+  if(power.itemTargetType === 'special') {
+    // later might use a power property for getting bespoke answer to this for special powers
+    return true
+  }
   
   if (power.itemTargetType === 'locations') {
     // For locations, we just check if any potential locations exist

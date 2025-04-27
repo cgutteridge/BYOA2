@@ -32,6 +32,7 @@ export type ItemPowerId =
   | 'scoutRange'
   | 'lootbox'
   | 'grow'
+  | 'treasure'
 
 // Target modes - how the target is selected
 export type MonsterTargetMode = 'random' | 'pick' | 'random_type' | 'pick_type' | undefined

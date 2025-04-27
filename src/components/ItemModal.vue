@@ -24,7 +24,7 @@
             </div>
 
             <!-- Target selection -->
-          <template v-if="hasValidTargets">
+          <template v-if="hasValidTargets && power.itemTargetType!=='special'">
             <div class="item-inspect-modal__target-section" :style="sectionStyle">
               <h3 :style="sectionHeaderStyle">{{ isChoiceTarget ? 'Choose Target' : '❓ Possible Targets ❓' }}</h3>
 
@@ -108,7 +108,6 @@
             </div>
           </template>
           </div>
-          
           <div v-if="canBeUsed" class="item-inspect-modal__footer" :style="footerStyle">
             <button
               class="item-inspect-modal__use-btn"
@@ -130,7 +129,8 @@ import {GameLocation, Item, Monster, MonsterType, toMonsterTypeId} from '../type
 import {useAppStore} from '../stores/appStore'
 import {useQuestStore} from '../stores/questStore'
 import {
-  itemCanBeUsed, itemHasValidTargets,
+  itemCanBeUsed,
+  itemHasValidTargets,
   potentialTargetLocationsForItem,
   potentialTargetMonstersForItem,
   potentialTargetMonstersTypesForItem
@@ -138,7 +138,7 @@ import {
 import {monsterTypes, monsterTypesById} from '../data/monsterTypes.ts'
 import {powerFactory} from "@/powers";
 import pickOne from "@/utils/pickOne.ts";
-import { getMonsterLevel, getMonsterSpecies} from "@/quest/monsterUtils.ts";
+import {getMonsterLevel, getMonsterSpecies} from "@/quest/monsterUtils.ts";
 import ListInput from "@/components/forms/ListInput.vue";
 import StoryBlock from "@/components/StoryBlock.vue";
 import calculateDistance from "@/utils/calculateDistance.ts";
@@ -331,20 +331,9 @@ const canBeUsed = computed<boolean>(() => {
 })
 
 const hasValidTargets = computed<boolean>(() => {
-  // For locations with random targeting, check if there are potential targets
-  if (power.value.itemTargetType === 'locations' && item.value.target === 'random') {
-    const result = potentialTargetLocations.value.length > 0;
-    console.log("hasValidTargets for random location:", result, 
-      "potential targets:", potentialTargetLocations.value.length);
-    return result;
-  }
-  
+
   // For other items, use the standard check
-  const result = itemHasValidTargets(item.value);
-  console.log("computed hasValidTargets:", result, 
-    "power:", power.value?.displayName, 
-    "target:", item.value.target);
-  return result;
+  return itemHasValidTargets(item.value);
 })
 
 // true if all the pick elements have been completed
