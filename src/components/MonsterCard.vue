@@ -36,7 +36,6 @@
             :class="{
               'kill-btn': monster.alive && !isMonsterDying, 
               'cancel-btn': isMonsterDying,
-              'unkill-btn': !monster.alive 
             }"
             :style="getToggleButtonStyle()"
             @click="toggleMonsterStatus"
@@ -67,8 +66,6 @@
         variant="drop"
         :show-details="true"
         @action="claimItem"
-        @contextmenu.prevent="toggleMonsterStatus"
-        title="Right-click to revive monster"
       />
     </template>
   </div>
@@ -233,6 +230,7 @@ function viewItemDetails(): void {
 
 // Function to handle monster status toggling with delay
 function toggleMonsterStatus(): void {
+
   if (props.monster.alive) {
     // If already dying, cancel the countdown
     if (isMonsterDying.value) {
@@ -431,7 +429,6 @@ function claimItem(): void {
 .dying {
   position: relative;
   opacity: 0;
-  filter: grayscale(1);
   transition: opacity var(--transition-duration, 1s) ease-in,
               filter var(--transition-duration, 1s) ease-in;
 }

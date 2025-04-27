@@ -3,13 +3,6 @@
   border-radius: 12px;
 }
 
-/* Defeated monster style */
-.monster-card.defeated {
-  opacity: 0.5;
-  filter: grayscale(0.9);
-  background: linear-gradient(135deg, #111111 0%, #333333 100%) !important;
-}
-
 /* Monster level-based styles */
 .monster-boss {
   border-width: 4px;
