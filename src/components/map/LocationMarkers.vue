@@ -176,7 +176,7 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
   const locationTypeClass = `location-type-${location.type}`
 
   let scoutedClass = 'not-scouted'
-  let iconExtras: string = '<div class="not-scouted-indicator"><span>?</span></div>'
+  let iconExtras: string = '<div class="not-scouted-indicator">?</div>'
 
   if( location.scouted ) {
     if(!location.viewed ) {
@@ -485,31 +485,33 @@ onBeforeUnmount(() => {
   animation: pulse-scout 2s infinite ease-in-out;
   pointer-events: none;
 }
-.not-scouted {
-  filter: brightness(150%);
-}
-.not-scouted-indicator {
 
-  font-size: 200%;
+.not-scouted img {
+  filter: brightness(70%) saturate(50%);
+}
+
+.not-scouted-indicator {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-}
-.not-scouted-indicator span {
-  background-color: rgba(0, 0, 0, 0.5);
-  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
-  display: block;
-  border-radius: 50%;
-  font-weight: bold;
+  z-index: 2;
   color: red;
-  width: 2rem;
-  height: 2rem;
-  text-align: center;
-  padding: 0.1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.8 ) 25%,
+    rgba(0, 0, 0, 0 ) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  border-radius: 50%;
+  pointer-events: none;
 }
-
 
 @keyframes pulse-scout {
   0% {
