@@ -191,6 +191,13 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
 
   const iconSize = scaledType.size[0]
   const iconHeight = scaledType.size[1]
+  const fontSize = Math.max(Math.floor(iconSize / 2), 16) // Scale font size relative to icon size with minimum of 16px
+  
+  // Update iconExtras for not-scouted markers to use dynamic font size
+  if (scoutedClass === 'not-scouted') {
+    iconExtras = `<div class="not-scouted-indicator"><span style="font-size: ${fontSize}px;">?</span></div>`
+  }
+  
   const markerHtml = `
       <div class="location-marker-container">
         ${iconExtras}
@@ -373,10 +380,8 @@ function cleanupMarkers(): void {
 
 /* add a bounce so we don't do loads of updates if there are several changes in a row */
 watch(locationStore.locations, () => {
-  console.log('loactions changes')
   markersNeedUpdate.value = true
   setTimeout(() => {
-    console.log('dx')
     if (popupsOpen.value === 0 && markersNeedUpdate.value) {
       generateLocationMarkers()
     }
