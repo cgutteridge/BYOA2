@@ -1,4 +1,4 @@
-import type {GameLocation, Monster, MonsterTypeId} from '../types'
+import type {GameLocation, Monster } from '../types'
 import {ChatGPTAPI} from '../api/chatGPT.ts'
 import generateMonsters from './generateMonsters.ts'
 import {monsterTypeById} from '@/data/monsterTypesLoader'

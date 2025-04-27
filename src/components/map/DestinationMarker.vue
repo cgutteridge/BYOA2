@@ -7,8 +7,7 @@
 <script setup lang="ts">
 import { inject, watch, onMounted, onBeforeUnmount, ref, computed, Ref } from 'vue'
 import L from 'leaflet'
-import type { Map as LeafletMap, Marker } from 'leaflet'
-import type { Coordinates } from '@/types'
+import type {  Marker } from 'leaflet'
 import { useAppStore } from '@/stores/appStore'
 import { useInventoryStore } from '@/stores/inventoryStore'
 

@@ -17,7 +17,6 @@ import mapTiles from '@/data/mapTiles'
 import PlayerMarker from './PlayerMarker.vue'
 import LocationMarkers from './LocationMarkers.vue'
 import RouteTracker from './RouteTracker.vue'
-import DestinationMarker from './DestinationMarker.vue'
 
 // Stores
 const appStore = useAppStore()

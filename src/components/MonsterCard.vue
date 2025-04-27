@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onUnmounted, type Ref } from 'vue';
+import { computed, ref, onUnmounted } from 'vue';
 import { useAppStore } from '@/stores/appStore';
 import { useQuestStore } from '@/stores/questStore';
 import { useLocationStore } from '@/stores/locationStore';
