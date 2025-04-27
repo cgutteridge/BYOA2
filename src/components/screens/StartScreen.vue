@@ -246,47 +246,48 @@ function updateEndLocation(location: GameLocation | string | null) {
 }
 
 async function callStartQuest() {
-  if (canStartQuest.value) {
-    // console.log('Starting quest...')
-
-    // Make sure we have the full location objects
-    let startGameLocation = selectedStartLocation.value
-    let endGameLocation = selectedEndLocation.value
-
-    // If we only have IDs, find the full location objects
-    if (!startGameLocation && startLocationId.value) {
-      startGameLocation = locationStore.locations.find((p: GameLocation) => p.id === startLocationId.value) || null
-    }
-
-    if (!endGameLocation && endLocationId.value) {
-      endGameLocation = locationStore.locations.find((p: GameLocation) => p.id === endLocationId.value) || null
-    }
-
-    // Safety check
-    if (!startGameLocation || !endGameLocation) {
-      console.error('Cannot start quest: Missing locations')
-      return
-    }
-
-    // Map difficulty setting to numeric value
-    let difficultyValue = 1
-    if (selectedDifficulty.value === 'easy') difficultyValue = 0
-    if (selectedDifficulty.value === 'medium') difficultyValue = 1
-    if (selectedDifficulty.value === 'hard') difficultyValue = 2
-
-    // Start the quest but don't wait for it to all init
-    startQuest(
-        questTitle.value,
-        startGameLocation,
-        endGameLocation,
-        difficultyValue,
-        playerCount.value,
-        minimumLocations.value
-    ).then()
-
-    // Transition to intro
-    appStore.setScreen('intro')
+  if (!canStartQuest.value) {
+    return
   }
+  // console.log('Starting quest...')
+
+  // Make sure we have the full location objects
+  let startGameLocation = selectedStartLocation.value
+  let endGameLocation = selectedEndLocation.value
+
+  // If we only have IDs, find the full location objects
+  if (!startGameLocation && startLocationId.value) {
+    startGameLocation = locationStore.locations.find((p: GameLocation) => p.id === startLocationId.value) || null
+  }
+
+  if (!endGameLocation && endLocationId.value) {
+    endGameLocation = locationStore.locations.find((p: GameLocation) => p.id === endLocationId.value) || null
+  }
+
+  // Safety check
+  if (!startGameLocation || !endGameLocation) {
+    console.error('Cannot start quest: Missing locations')
+    return
+  }
+
+  // Map difficulty setting to numeric value
+  let difficultyValue = 1
+  if (selectedDifficulty.value === 'easy') difficultyValue = 0
+  if (selectedDifficulty.value === 'medium') difficultyValue = 1
+  if (selectedDifficulty.value === 'hard') difficultyValue = 2
+
+  // Start the quest but don't wait for it to all init
+  startQuest(
+      questTitle.value,
+      startGameLocation,
+      endGameLocation,
+      difficultyValue,
+      playerCount.value,
+      minimumLocations.value
+  ).then()
+
+  // Transition to intro
+  appStore.setScreen('intro')
 }
 
 // Load locations when the component is mounted
@@ -327,6 +328,7 @@ onMounted(() => {
   margin-bottom: 0.5rem;
   text-align: center;
 }
+
 .quest-form {
   margin-top: 2rem;
 }

@@ -68,8 +68,11 @@ export const useAppStore = defineStore('app', () => {
       // Stop route tracking when leaving map screen
       stopRouteTracking();
     }
-    
+
     screen.value = newScreen
+
+    // Scroll to top of the page when changing screens
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   const setGPSStatus = (newStatus: GPSStatus) => {
