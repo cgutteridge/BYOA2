@@ -138,7 +138,8 @@ function generateLocationMarkers(): void {
  */
 function createGameLocationMarker(location: GameLocation, mapInstance: any): Marker | undefined {
   if (!mapInstance) {
-    throw new Error('No map instance provided for marker creation')
+    // sometimes the map gets unloaded
+    return
   }
 
   // Get the location type or use tower as fallback if the type doesn't exist

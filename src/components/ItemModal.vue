@@ -32,9 +32,9 @@
                 <div class="target-list">
                   <ListInput
                     v-model="selectedTargetLocations"
-                    :options="potentialTargetLocations.map(location => ({
+                    :options="sortedPotentialTargetLocations.map(location => ({
                       id: location.id,
-                      name: location.name
+                      name: `${location.name} (${location.distance})`
                     }))"
                     :multiple="true"
                     :max-selections="power.maxTargets !== undefined ? power.maxTargets : (item.uses || 1)"
@@ -141,6 +141,14 @@ import pickOne from "@/utils/pickOne.ts";
 import { getMonsterLevel, getMonsterSpecies} from "@/quest/monsterUtils.ts";
 import ListInput from "@/components/forms/ListInput.vue";
 import StoryBlock from "@/components/StoryBlock.vue";
+import calculateDistance from "@/utils/calculateDistance.ts";
+import formatDistance from "@/utils/formatDistance.ts";
+
+// Define interface extending GameLocation with distance properties
+interface GameLocationWithDistance extends GameLocation {
+  distanceValue: number;
+  distance: string;
+}
 
 // Stores
 const appStore = useAppStore()
@@ -287,6 +295,30 @@ const potentialTargetLocations = computed<GameLocation[]>(() => {
   const result = potentialTargetLocationsForItem(item.value);
   console.log("computed potentialTargetLocations:", result.length, "power:", item.value.power, "target:", item.value.target);
   return result;
+})
+
+// New computed property for locations with distances
+const sortedPotentialTargetLocations = computed<GameLocationWithDistance[]>(() => {
+  const appStore = useAppStore();
+  
+  if (!appStore.playerCoordinates) {
+    return potentialTargetLocations.value.map(location => ({
+      ...location,
+      distanceValue: 0,
+      distance: 'Unknown'
+    }));
+  }
+  
+  return potentialTargetLocations.value
+    .map(location => {
+      const distance = calculateDistance(appStore.playerCoordinates!, location.coordinates);
+      return {
+        ...location,
+        distanceValue: distance,
+        distance: formatDistance(distance)
+      };
+    })
+    .sort((a, b) => a.distanceValue - b.distanceValue);
 })
 
 const canBeUsed = computed<boolean>(() => {

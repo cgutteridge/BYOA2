@@ -54,10 +54,30 @@ export class SpyPower extends ItemPower {
 
   // Override filterLocationTargetsForItem to ensure we get valid targets for both random and pick modes
   filterLocationTargetsForItem(item: Item, locations: GameLocation[]): GameLocation[] {
-    console.log(`filterLocationTargetsForItem: Filtering ${locations.length} locations`);
     // Filter locations to just the unscouted ones outside of scout range
     const filtered = locations.filter(location => this.canTargetLocation(item, location));
-    console.log(`filterLocationTargetsForItem: Found ${filtered.length} valid targets`);
+
+    // For random target mode, limit to 10 nearest locations
+    if (item.target === 'random') {
+      const appStore = useAppStore();
+      
+      if (appStore.playerCoordinates) {
+        // Add distance info to each location
+        const locationsWithDistance = filtered.map(location => {
+          const distance = calculateDistance(appStore.playerCoordinates!, location.coordinates);
+          return { location, distance };
+        });
+        
+        // Sort by distance (closest first) and take the first 10
+        const nearest = locationsWithDistance
+          .sort((a, b) => a.distance - b.distance)
+          .slice(0, 10)
+          .map(item => item.location);
+          
+        return nearest;
+      }
+    }
+    
     return filtered;
   }
 
