@@ -41,6 +41,12 @@
                     :always-show="true"
                     :disabled="item.target==='random'"
                   />
+                  <div v-if="item.target==='random' && potentialTargetLocations.length > 0" class="random-target-message" :style="sectionStyle">
+                    Will choose a random location from {{ potentialTargetLocations.length }} available targets outside scout range.
+                  </div>
+                  <div v-if="item.target==='random' && potentialTargetLocations.length === 0" class="no-targets-message" :style="noTargetsStyle">
+                    No locations available outside your scout range. Try moving to a new area.
+                  </div>
                 </div>
               </template>
 
@@ -79,7 +85,6 @@
               </p>
 
             </div>
-            SSS
             <!-- Results section (when power has results) -->
             <div v-if="power.hasResults && resultMonsterTypes.length > 0" class="item-inspect-modal__result-section" :style="sectionStyle">
               <h3 :style="sectionHeaderStyle">Select Result</h3>
@@ -106,12 +111,12 @@
           
           <div v-if="canBeUsed" class="item-inspect-modal__footer" :style="footerStyle">
             <button
-                :disabled="!formSatisfied"
               class="item-inspect-modal__use-btn"
-              :style="!formSatisfied ? disabledButtonStyle : useButtonStyle"
+              :disabled="!(hasValidTargets && formSatisfied)"
+              :style="!(hasValidTargets && formSatisfied) ? disabledButtonStyle : useButtonStyle"
               @click="useItem"
             >
-              Use Item
+              {{ hasValidTargets && formSatisfied ? 'Use Item' : 'No Valid Targets' }}
             </button>
           </div>
       </div>
@@ -266,22 +271,72 @@ const isChoiceTarget = computed<boolean>(() => {
   return item.value.target === 'pick_type' || item.value.target === 'pick'
 })
 
-const potentialTargetMonsterTypes = computed<MonsterType[]>(
-    () => potentialTargetMonstersTypesForItem(item.value, questStore.currentGameLocation)
-)
-const potentialTargetMonsters = computed<Monster[]>(
-    () => potentialTargetMonstersForItem(item.value, questStore.currentGameLocation)
-)
-const potentialTargetLocations = computed<GameLocation[]>(
-    () => potentialTargetLocationsForItem(item.value)
-)
-const canBeUsed = computed<boolean>(() => itemCanBeUsed(item.value))
+const potentialTargetMonsterTypes = computed<MonsterType[]>(() => {
+  const result = potentialTargetMonstersTypesForItem(item.value, questStore.currentGameLocation);
+  console.log("computed potentialTargetMonsterTypes:", result.length);
+  return result;
+})
 
-const hasValidTargets = computed<boolean>(() => itemHasValidTargets(item.value))
+const potentialTargetMonsters = computed<Monster[]>(() => {
+  const result = potentialTargetMonstersForItem(item.value, questStore.currentGameLocation);
+  console.log("computed potentialTargetMonsters:", result.length);
+  return result;
+})
+
+const potentialTargetLocations = computed<GameLocation[]>(() => {
+  const result = potentialTargetLocationsForItem(item.value);
+  console.log("computed potentialTargetLocations:", result.length, "power:", item.value.power, "target:", item.value.target);
+  return result;
+})
+
+const canBeUsed = computed<boolean>(() => {
+  const result = itemCanBeUsed(item.value);
+  console.log("computed canBeUsed:", result, 
+    "power:", power.value?.displayName, 
+    "target:", item.value.target, 
+    "potentialTargets:", potentialTargetLocations.value.length);
+  return result;
+})
+
+const hasValidTargets = computed<boolean>(() => {
+  // For locations with random targeting, check if there are potential targets
+  if (power.value.itemTargetType === 'locations' && item.value.target === 'random') {
+    const result = potentialTargetLocations.value.length > 0;
+    console.log("hasValidTargets for random location:", result, 
+      "potential targets:", potentialTargetLocations.value.length);
+    return result;
+  }
+  
+  // For other items, use the standard check
+  const result = itemHasValidTargets(item.value);
+  console.log("computed hasValidTargets:", result, 
+    "power:", power.value?.displayName, 
+    "target:", item.value.target);
+  return result;
+})
 
 // true if all the pick elements have been completed
 const formSatisfied = computed<boolean>(() => {
-  let ok = true
+  // Skip validation for random location items as long as there are potential targets
+  if (power.value.itemTargetType === 'locations' && item.value.target === 'random') {
+    const satisfied = potentialTargetLocations.value.length > 0;
+    console.log("Random location mode, formSatisfied =", satisfied, 
+      "potential targets:", potentialTargetLocations.value.length);
+    return satisfied;
+  }
+  
+  // For other targeting modes
+  let ok = true;
+  
+  // Special handling for location items with pick mode
+  if (power.value.itemTargetType === 'locations' && item.value.target === 'pick') {
+    if (selectedTargetLocations.value.length === 0) {
+      ok = false;
+      console.log("formSatisfied: false - pick location but no selections");
+    }
+  }
+  
+  // Handling for monster items
   if (power.value.itemTargetType === 'monsters') {
     if (item.value.target === 'pick_type' && selectedTargetMonsterTypes.value.length === 0) {
       ok = false;
@@ -290,13 +345,12 @@ const formSatisfied = computed<boolean>(() => {
       ok = false;
     }
   }
-  if (power.value.itemTargetType === 'locations' && selectedTargetLocations.value.length === 0) {
-    ok = false;
-  }
+  
   // Check if a result is required and selected
   if (power.value.hasResults && selectedResult.value === '') {
     ok = false;
   }
+  
   return ok
 })
 
@@ -367,7 +421,18 @@ function useItemSpecial() {
 }
 
 function useItemRandomLocation() {
+  console.log("Using random location item:", 
+    "potential targets:", potentialTargetLocations.value.length,
+    "formSatisfied:", formSatisfied.value);
+    
+  if (potentialTargetLocations.value.length === 0) {
+    const appStore = useAppStore();
+    appStore.addNotification('No valid locations found outside scout range. Try moving to a new area.');
+    return
+  }
+  
   const target = pickOne(potentialTargetLocations.value)
+  console.log("Selected random target:", target.name);
   power.value.useOnLocation(item.value, target)
 }
 
@@ -442,6 +507,16 @@ function getMonsterTitle(typeId: string): string {
 // Reset the selected result when target selections change
 watch([selectedTargetMonsters, selectedTargetMonsterTypes], () => {
   selectedResult.value = '';
+});
+
+// Watch for changes to potential targets to force re-evaluation of form state
+watch([potentialTargetLocations, potentialTargetMonsters, potentialTargetMonsterTypes], () => {
+  console.log("Targets changed, rechecking formSatisfied");
+});
+
+// Watch hasValidTargets to see if it updates
+watch(() => hasValidTargets.value, (newVal, oldVal) => {
+  console.log(`hasValidTargets changed: ${oldVal} -> ${newVal}`);
 });
 </script>
 

@@ -11,19 +11,25 @@ export function itemCanBeUsed(item: Item) {
   if (power.itemTargetType === 'none') {
     return false;
   }
+  
   if (power.itemTargetType === 'special') {
-    // for now special items are always possible to use. Might filter it with a function on the power later.
+    // Special items are always possible to use
     return power.canItemBeUsedWithoutTarget(item);
   }
-  return itemHasValidTargets(item)
+  
+  // Check if there are valid targets for this item
+  return itemHasValidTargets(item);
 }
 
 export function itemHasValidTargets(item: Item) {
   const questStore = useQuestStore()
   const power = powerFactory.getPower(item.power);
+  
   if (power.itemTargetType === 'locations') {
+    // For locations, we just check if any potential locations exist
     return potentialTargetLocationsForItem(item).length > 0
   }
+  
   if (power.itemTargetType === 'monsters') {
     if (item.target === 'pick' || item.target === 'random') {
       return potentialTargetMonstersForItem(item, questStore.currentGameLocation).length > 0
@@ -31,6 +37,7 @@ export function itemHasValidTargets(item: Item) {
       return potentialTargetMonstersTypesForItem(item, questStore.currentGameLocation).length > 0
     }
   }
+  
   return false;
 }
 
@@ -43,7 +50,7 @@ export function potentialTargetMonstersTypesForItem(item: Item, location: GameLo
     return [];
   }
   // this item targets individuals not types
-  if (item.target !== 'pick_type' && item.target === 'random_type') {
+  if (item.target !== 'pick_type' && item.target !== 'random_type') {
     return []
   }
   const aliveMonsters = (location.monsters ?? []).filter(monster => monster.alive)

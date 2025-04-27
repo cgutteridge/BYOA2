@@ -4,6 +4,7 @@ import {scoutLocation} from '@/quest/scoutLocation.ts'
 import {useQuestStore} from '@/stores/questStore.ts'
 import {useAppStore} from '@/stores/appStore.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
+import {useLocationStore} from '@/stores/locationStore.ts'
 
 /**
  * Spy power implementation
@@ -54,8 +55,11 @@ export class SpyPower extends ItemPower {
 
   // Override filterLocationTargetsForItem to ensure we get valid targets for both random and pick modes
   filterLocationTargetsForItem(item: Item, locations: GameLocation[]): GameLocation[] {
+    console.log(`filterLocationTargetsForItem: Filtering ${locations.length} locations`);
     // Filter locations to just the unscouted ones outside of scout range
-    return locations.filter(location => this.canTargetLocation(item, location));
+    const filtered = locations.filter(location => this.canTargetLocation(item, location));
+    console.log(`filterLocationTargetsForItem: Found ${filtered.length} valid targets`);
+    return filtered;
   }
 
   // Use the spy item on a location
