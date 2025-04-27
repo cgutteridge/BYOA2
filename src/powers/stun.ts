@@ -56,8 +56,7 @@ export class StunPower extends ItemPower {
     
     // Get the appropriate stunned monster for this level
     const stunnedMonsterTypeId = this.stunnedMonsterMap[monsterType.level];
-    const stunnedMonsterType = monsterTypeById(stunnedMonsterTypeId);
-    
+
     // Transform the monster into a stunned version
     const originalName = monster.name;
     

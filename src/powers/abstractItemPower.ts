@@ -5,9 +5,8 @@ import type {
     Monster,
     MonsterFlag,
     MonsterLevel, MonsterType,
-    MonsterTypeId
 } from '../types'
-import { monsterTypeById } from '../data/monsterTypesLoader'
+import {monsterTypeById, monsterTypes} from '../data/monsterTypesLoader'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {useAppStore} from "@/stores/appStore.ts";
 import {useInventoryStore} from "@/stores/inventoryStore.ts";
@@ -314,7 +313,7 @@ export abstract class ItemPower {
      * By default, returns all monster types
      */
     getPossibleResults(_item: Item, _monsterType: MonsterType): MonsterType[] {
-        return monsterTypes;
+            return monsterTypes;
     }
 
     generateRestrictionText( item:Item ) : string {

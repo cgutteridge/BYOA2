@@ -55,7 +55,6 @@ export class FreezePower extends ItemPower {
     
     // Get the appropriate ice monster for this level
     const iceMonsterTypeId = this.iceMonsterMap[monsterTypeInfo.level];
-    const iceMonsterType = monsterTypeById(iceMonsterTypeId);
 
     // Transform the monster to ice
     monster.type = iceMonsterTypeId;

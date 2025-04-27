@@ -55,8 +55,7 @@ export class PacifyPower extends ItemPower {
     
     // Get the appropriate pacified monster for this level
     const pacifiedMonsterTypeId = this.pacifiedMonsterMap[monsterType.level];
-    const pacifiedMonsterType = monsterTypeById(pacifiedMonsterTypeId);
-    
+
     // Transform the monster into a pacified version
     const originalName = monster.name;
     

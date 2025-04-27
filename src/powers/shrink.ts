@@ -1,6 +1,6 @@
 import type {Item, Monster, MonsterType} from '../types'
 import { ItemPower } from './abstractItemPower'
-import { monsterTypes, monsterTypeById } from '../data/monsterTypesLoader'
+import { monsterTypeById } from '../data/monsterTypesLoader'
 import { useQuestStore } from '@/stores/questStore.ts'
 
 /**

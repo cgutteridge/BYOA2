@@ -55,7 +55,6 @@ export class DistractPower extends ItemPower {
     
     // Get the appropriate distracted monster for this level
     const distractedMonsterTypeId = this.distractedMonsterMap[monsterType.level];
-    const distractedMonsterType = monsterTypeById(distractedMonsterTypeId);
 
     const originalName = monster.name
     

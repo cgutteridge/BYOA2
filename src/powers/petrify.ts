@@ -55,8 +55,7 @@ export class PetrifyPower extends ItemPower {
     
     // Get the appropriate petrified monster for this level
     const petrifiedMonsterTypeId = this.petrifiedMonsterMap[monsterType.level];
-    const petrifiedMonsterType = monsterTypeById(petrifiedMonsterTypeId);
-    
+
     // Transform the monster into a petrified version
     const originalName = monster.name;
     

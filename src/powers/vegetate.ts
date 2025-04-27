@@ -55,8 +55,7 @@ export class VegetatePower extends ItemPower {
     
     // Get the appropriate vegetated monster for this level
     const vegetatedMonsterTypeId = this.plantMonsterMap[monsterType.level];
-    const vegetatedMonsterType = monsterTypeById(vegetatedMonsterTypeId);
-    
+
     // Transform the monster into a vegetated version
     const originalName = monster.name;
     
