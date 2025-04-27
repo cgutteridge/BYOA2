@@ -4,7 +4,6 @@ import {scoutLocation} from '@/quest/scoutLocation.ts'
 import {useQuestStore} from '@/stores/questStore.ts'
 import {useAppStore} from '@/stores/appStore.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
-import {useLocationStore} from '@/stores/locationStore.ts'
 
 /**
  * Spy power implementation

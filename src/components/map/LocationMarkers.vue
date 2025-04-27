@@ -174,25 +174,30 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
   // Define the base class for CSS styling
   const markerBaseClass = 'leaflet-marker-icon-scalable'
   const locationTypeClass = `location-type-${location.type}`
-  const scoutedClass = location.scouted && !location.viewed ? 'scouted-not-viewed' : ''
-  const combinedClasses = `${markerBaseClass} ${locationTypeClass} ${scoutedClass}`.trim()
 
-  // For scouted but not viewed locations, use HTML with blue ring indicator
-  let iconExtras: string = ''
-  if (location.scouted && !location.viewed) {
-    iconExtras = '<div class="scout-indicator"></div>'
+  let scoutedClass = 'not-scouted'
+  let iconExtras: string = '<div class="not-scouted-indicator"><span>?</span></div>'
+
+  if( location.scouted ) {
+    if(!location.viewed ) {
+      scoutedClass = 'scouted-not-viewed'
+      iconExtras = '<div class="scout-indicator"></div>'
+    } else {
+      scoutedClass = 'scouted'
+      iconExtras = ''
+    }
   }
+  const combinedClasses = `${markerBaseClass} ${locationTypeClass} ${scoutedClass}`.trim()
 
   const iconSize = scaledType.size[0]
   const iconHeight = scaledType.size[1]
-
   const markerHtml = `
       <div class="location-marker-container">
         ${iconExtras}
         <img
           src="./icons/${locationType.filename}" 
           class="location-marker-image"
-          style="width: ${iconSize}px; height: ${iconHeight}px;"
+          style="width: ${iconSize+'px'}; height: ${iconHeight+'px'};"
         />
       </div>
     `
@@ -367,7 +372,7 @@ function cleanupMarkers(): void {
 }
 
 /* add a bounce so we don't do loads of updates if there are several changes in a row */
-watch(locationStore.locations, (a, b) => {
+watch(locationStore.locations, () => {
   console.log('loactions changes')
   markersNeedUpdate.value = true
   setTimeout(() => {
@@ -480,6 +485,31 @@ onBeforeUnmount(() => {
   animation: pulse-scout 2s infinite ease-in-out;
   pointer-events: none;
 }
+.not-scouted {
+  filter: brightness(150%);
+}
+.not-scouted-indicator {
+
+  font-size: 200%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.not-scouted-indicator span {
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+  display: block;
+  border-radius: 50%;
+  font-weight: bold;
+  color: red;
+  width: 2rem;
+  height: 2rem;
+  text-align: center;
+  padding: 0.1rem;
+}
+
 
 @keyframes pulse-scout {
   0% {
