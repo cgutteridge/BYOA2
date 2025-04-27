@@ -154,21 +154,21 @@
 
 <script setup lang="ts">
 import {computed} from 'vue'
-import type {GameLocation, GameLocationType, Monster, MonsterTypeId} from '../types'
-import {useAppStore} from "../stores/appStore"
-import {useQuestStore} from "../stores/questStore"
+import type {GameLocation, GameLocationType, Monster, MonsterTypeId} from '../../types'
+import {useAppStore} from "../../stores/appStore.ts"
+import {useQuestStore} from "../../stores/questStore.ts"
 import {useInventoryStore} from "@/stores/inventoryStore.ts"
 import {useLocationStore} from "@/stores/locationStore.ts"
-import {monsterTypes} from '../data/monsterTypes'
+import {monsterTypes} from '../../data/monsterTypes.ts'
 import calculateDistance from '@/utils/calculateDistance.ts'
 import formatDistance from '@/utils/formatDistance.ts'
-import ItemCard from './ItemCard.vue'
+import ItemCard from '../ItemCard.vue'
 import ButtonInput from '@/components/forms/ButtonInput.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {generateTokenItem} from "@/quest/itemUtils.ts";
-import {getMonsterXP} from "../quest/monsterUtils.ts";
+import {getMonsterXP} from "../../quest/monsterUtils.ts";
 import '@/styles/monsterAnimations.css'
 
 const props = defineProps<{

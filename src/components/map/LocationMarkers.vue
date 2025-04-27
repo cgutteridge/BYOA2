@@ -15,7 +15,7 @@ import { useQuestStore } from '@/stores/questStore'
 import { useAppStore } from '@/stores/appStore'
 import { locationTypesById } from '@/data/locationTypes'
 import { createApp } from 'vue'
-import LocationPopup from '@/components/LocationPopup.vue'
+import LocationPopup from '@/components/map/LocationPopup.vue'
 
 // Get the map instance from the parent
 const mapInstance = inject<Ref<any>>('mapInstance')
