@@ -8,7 +8,7 @@
 import { inject, onMounted, onBeforeUnmount, ref, computed, Ref, watch } from 'vue'
 import L from 'leaflet'
 import type { Map as LeafletMap, Marker } from 'leaflet'
-import type { GameLocation, GameLocationType } from '@/types'
+import type { GameLocation, GameLocationType, Coordinates } from '@/types'
 import { toGameLocationTypeId } from '@/types'
 import { useLocationStore } from '@/stores/locationStore'
 import { useQuestStore } from '@/stores/questStore'
@@ -105,6 +105,37 @@ function scaleLocationType(
 }
 
 /**
+ * Generate all game location markers
+ */
+function generateLocationMarkers(): void {
+  // Clean up existing markers
+  cleanupMarkers()
+  
+  // Generate markers for each location
+  locationStore.locations.forEach(location => {
+    // Skip special location types
+    if (location.type === 'players') {
+      return
+    }
+
+    // Skip empty stashes
+    if (location.type === 'stash' && location.scouted && location.giftItem === undefined) {
+      return
+    }
+
+    // Skip empty shops
+    if (location.type === 'shop' && location.scouted && location.wares === undefined) {
+      return
+    }
+
+    const marker = createGameLocationMarker(location, mapInstance?.value as LeafletMap)
+    if (marker) {
+      locationMarkers.value.push(marker)
+    }
+  })
+}
+
+/**
  * Create a marker for a game location
  */
 function createGameLocationMarker(location: GameLocation, mapInstance: any): Marker | undefined {
@@ -142,29 +173,88 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
   // Scale the location type based on zoom
   const scaledType = scaleLocationType(locationType, zoomFactor, sizeReduction)
 
-  const iconProperties = {
-    iconUrl: `./icons/${locationType.filename}`,
-    shadowUrl: `./icons/shadows/${locationType.filename}`,
-    iconSize: scaledType.size,
-    iconAnchor: scaledType.anchor,
-    shadowSize: scaledType.shadowSize,
-    shadowAnchor: scaledType.shadowAnchor,
-    className: `leaflet-marker-icon-scalable location-type-${location.type}`,
-    popupAnchor: [0, -30] as [number, number] // Default popup anchor
+  // Define the base class for CSS styling
+  const markerBaseClass = 'leaflet-marker-icon-scalable'
+  const locationTypeClass = `location-type-${location.type}`
+  const scoutedClass = location.scouted && !location.viewed ? 'scouted-not-viewed' : ''
+  const combinedClasses = `${markerBaseClass} ${locationTypeClass} ${scoutedClass}`.trim()
+
+  // For scouted but not viewed locations, use HTML with blue ring indicator
+  if (location.scouted && !location.viewed) {
+    const iconSize = scaledType.size[0]
+    const iconHeight = scaledType.size[1]
+    
+    const markerHtml = `
+      <div class="location-marker-container">
+        <img 
+          src="./icons/${locationType.filename}" 
+          class="location-marker-image"
+          style="width: ${iconSize}px; height: ${iconHeight}px;"
+        />
+        <div class="scout-indicator"></div>
+      </div>
+    `
+    
+    // Create the marker with divIcon
+    const icon = L.divIcon({
+      html: markerHtml,
+      className: combinedClasses,
+      iconSize: scaledType.size,
+      iconAnchor: scaledType.anchor
+    })
+    
+    // Create marker with no shadow for scouted-not-viewed locations
+    const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
+      icon: icon,
+      interactive: true,
+      keyboard: false,
+      bubblingMouseEvents: false
+    }).addTo(mapInstance)
+    
+    // Store location data directly in marker instance
+    // @ts-ignore - adding a custom property to the marker
+    marker.locationData = location
+    
+    // Create and bind popup
+    addPopupToMarker(marker, location)
+    
+    return marker
+  } else {
+    // For regular locations, use standard icon with shadow
+    const iconProperties = {
+      iconUrl: `./icons/${locationType.filename}`,
+      shadowUrl: `./icons/shadows/${locationType.filename}`,
+      iconSize: scaledType.size,
+      iconAnchor: scaledType.anchor,
+      shadowSize: scaledType.shadowSize,
+      shadowAnchor: scaledType.shadowAnchor,
+      className: combinedClasses,
+      popupAnchor: [0, -30] as [number, number]
+    }
+    
+    // Create the marker with standard icon
+    const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
+      icon: L.icon(iconProperties),
+      interactive: true,
+      keyboard: false,
+      bubblingMouseEvents: false
+    }).addTo(mapInstance)
+    
+    // Store location data directly in marker instance
+    // @ts-ignore - adding a custom property to the marker
+    marker.locationData = location
+    
+    // Create and bind popup
+    addPopupToMarker(marker, location)
+    
+    return marker
   }
+}
 
-  const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
-    icon: L.icon(iconProperties),
-    zIndexOffset: 0, // Use default z-index
-    interactive: true, // Enable interaction with marker
-    keyboard: false, // Disable keyboard navigation
-    bubblingMouseEvents: false // Prevent event bubbling for better performance
-  }).addTo(mapInstance)
-
-  // Store location data directly in marker instance
-  // @ts-ignore - adding a custom property to the marker
-  marker.locationData = location
-
+/**
+ * Add popup to a marker
+ */
+function addPopupToMarker(marker: Marker, location: GameLocation): void {
   // Create popup for this location
   const popup = L.popup({
     className: `location-info-popup location-info-popup--${questStore.theme}`,
@@ -220,17 +310,18 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
 
     // After the Vue component has rendered, update popup position to ensure proper positioning
     setTimeout(() => {
-      if (mapInstance && popup.isOpen()) {
+      if (mapInstance?.value && popup.isOpen()) {
         try {
           // Get map size
-          const mapSize = mapInstance.getSize()
+          const theMap = mapInstance.value
+          const mapSize = theMap.getSize()
 
           // We want the marker at position X,Y where:
           // Y is BOTTOM_OFFSET from bottom of screen
           // X follows our rules for horizontal positioning
 
           // Get current popup position in pixels
-          const markerPoint = mapInstance.latLngToContainerPoint(marker.getLatLng())
+          const markerPoint = theMap.latLngToContainerPoint(marker.getLatLng())
 
           // Calculate where we want it in pixels
           let targetX = markerPoint.x
@@ -255,13 +346,13 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
 
           // Convert that pixel offset to a change in the map center
           // We need to move the map in the opposite direction
-          const newCenter = mapInstance.containerPointToLatLng([
+          const newCenter = theMap.containerPointToLatLng([
             mapSize.x / 2 - deltaX,
             mapSize.y / 2 - deltaY
           ])
 
           // Pan the map to the new center
-          mapInstance.panTo(newCenter, { animate: true })
+          theMap.panTo(newCenter, { animate: true })
         } catch (e) {
           console.error('Error positioning map:', e)
         }
@@ -270,42 +361,6 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
   })
 
   marker.bindPopup(popup)
-  
-  return marker
-}
-
-/**
- * Generate all game location markers
- */
-function generateGameLocationMarkers(): void {
-  if (!mapInstance?.value) return
-
-  // Clear existing markers
-  locationMarkers.value.forEach(marker => marker.remove())
-  locationMarkers.value = []
-
-  // Create new markers
-  locations.value.forEach((location: GameLocation) => {
-    // Skip special location types
-    if (location.type === 'players') {
-      return
-    }
-
-    // Skip empty stashes
-    if (location.type === 'stash' && location.scouted && location.giftItem === undefined) {
-      return
-    }
-
-    // Skip empty shops
-    if (location.type === 'shop' && location.scouted && location.wares === undefined) {
-      return
-    }
-
-    const marker = createGameLocationMarker(location, mapInstance.value as LeafletMap)
-    if (marker) {
-      locationMarkers.value.push(marker)
-    }
-  })
 }
 
 /**
@@ -322,11 +377,11 @@ function cleanupMarkers(): void {
   locationMarkers.value = []
 }
 
-// Initialize markers when the component is mounted and map is ready
+// Initialize markers when the component is mounted
 onMounted(() => {
   const initMarkers = () => {
     if (mapInstance?.value) {
-      generateGameLocationMarkers()
+      generateLocationMarkers()
     } else {
       setTimeout(initMarkers, 100)
     }
@@ -335,7 +390,7 @@ onMounted(() => {
   initMarkers()
 })
 
-// Watch for fine zoom level changes at the end of zoom animations
+// Watch for zoom level changes to update marker size
 watch(() => appStore.mapZoomFine, () => {
   if (!mapInstance?.value || locationMarkers.value.length === 0) return
   
@@ -343,7 +398,7 @@ watch(() => appStore.mapZoomFine, () => {
   const baseZoom = 16
   const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
   
-  // Update each marker's icon size without recreating them
+  // Update each marker with a new properly sized icon
   locationMarkers.value.forEach(marker => {
     // Get the location data stored in the marker
     // @ts-ignore - accessing a custom property
@@ -360,22 +415,145 @@ watch(() => appStore.mapZoomFine, () => {
     // Scale the location type based on current zoom
     const scaledType = scaleLocationType(locationType, zoomFactor, sizeReduction)
     
-    // Create new icon with updated sizes
-    const icon = L.icon({
-      iconUrl: `./icons/${locationType.filename}`,
-      shadowUrl: `./icons/shadows/${locationType.filename}`,
-      iconSize: scaledType.size,
-      iconAnchor: scaledType.anchor,
-      shadowSize: scaledType.shadowSize,
-      shadowAnchor: scaledType.shadowAnchor,
-      className: `leaflet-marker-icon-scalable location-type-${location.type}`,
-      popupAnchor: [0, -30] as [number, number]
-    })
+    // Define the base class for CSS styling
+    const markerBaseClass = 'leaflet-marker-icon-scalable'
+    const locationTypeClass = `location-type-${location.type}`
+    const scoutedClass = location.scouted && !location.viewed ? 'scouted-not-viewed' : ''
+    const combinedClasses = `${markerBaseClass} ${locationTypeClass} ${scoutedClass}`.trim()
     
-    // Update the marker's icon
-    marker.setIcon(icon)
+    // For scouted but not viewed locations, update with HTML-based icon
+    if (location.scouted && !location.viewed) {
+      const iconSize = scaledType.size[0]
+      const iconHeight = scaledType.size[1]
+      
+      const markerHtml = `
+        <div class="location-marker-container">
+          <img 
+            src="./icons/${locationType.filename}" 
+            class="location-marker-image"
+            style="width: ${iconSize}px; height: ${iconHeight}px;"
+          />
+          <div class="scout-indicator"></div>
+        </div>
+      `
+      
+      // Create the updated icon
+      const icon = L.divIcon({
+        html: markerHtml,
+        className: combinedClasses,
+        iconSize: scaledType.size,
+        iconAnchor: scaledType.anchor
+      })
+      
+      // Update the marker's icon
+      marker.setIcon(icon)
+    } else {
+      // For regular locations, update with standard icon including shadow
+      const iconProperties = {
+        iconUrl: `./icons/${locationType.filename}`,
+        shadowUrl: `./icons/shadows/${locationType.filename}`,
+        iconSize: scaledType.size,
+        iconAnchor: scaledType.anchor,
+        shadowSize: scaledType.shadowSize,
+        shadowAnchor: scaledType.shadowAnchor,
+        className: combinedClasses,
+        popupAnchor: [0, -30] as [number, number]
+      }
+      
+      // Update the marker's icon
+      marker.setIcon(L.icon(iconProperties))
+    }
   })
 }, { immediate: false })
+
+// Watch for location changes to update markers when scouted or viewed status changes
+watch(() => locations.value, (newLocations) => {
+  if (!mapInstance?.value || locationMarkers.value.length === 0) return
+  
+  // Update each marker based on location changes
+  locationMarkers.value.forEach(marker => {
+    // Get the location data stored in the marker
+    // @ts-ignore - accessing a custom property
+    const markerLocation = marker.locationData
+    if (!markerLocation) return
+    
+    // Find the updated location data
+    const updatedLocation = newLocations.find(loc => loc.id === markerLocation.id)
+    if (!updatedLocation) return
+    
+    // Update the marker's location data
+    // @ts-ignore - updating a custom property
+    marker.locationData = updatedLocation
+    
+    // Check if scouted or viewed status has changed
+    if (markerLocation.scouted !== updatedLocation.scouted || 
+        markerLocation.viewed !== updatedLocation.viewed) {
+      // Get the location type
+      const locationType = locationTypesById[updatedLocation.type]
+      if (!locationType) return
+      
+      // Get current zoom level to scale the icon size
+      const currentZoom = mapInstance.value.getZoom()
+      const baseZoom = 16
+      const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
+      
+      // Apply size reduction for stash - 50% of the normal size
+      const sizeReduction = updatedLocation.type === 'stash' ? 0.5 : 1.0
+      
+      // Scale the location type based on zoom
+      const scaledType = scaleLocationType(locationType, zoomFactor, sizeReduction)
+      
+      // Define the base class for CSS styling
+      const markerBaseClass = 'leaflet-marker-icon-scalable'
+      const locationTypeClass = `location-type-${updatedLocation.type}`
+      const scoutedClass = updatedLocation.scouted && !updatedLocation.viewed ? 'scouted-not-viewed' : ''
+      const combinedClasses = `${markerBaseClass} ${locationTypeClass} ${scoutedClass}`.trim()
+      
+      // Update icon based on scouted/viewed status
+      if (updatedLocation.scouted && !updatedLocation.viewed) {
+        const iconSize = scaledType.size[0]
+        const iconHeight = scaledType.size[1]
+        
+        const markerHtml = `
+          <div class="location-marker-container">
+            <img 
+              src="./icons/${locationType.filename}" 
+              class="location-marker-image"
+              style="width: ${iconSize}px; height: ${iconHeight}px;"
+            />
+            <div class="scout-indicator"></div>
+          </div>
+        `
+        
+        // Create the updated icon
+        const icon = L.divIcon({
+          html: markerHtml,
+          className: combinedClasses,
+          iconSize: scaledType.size,
+          iconAnchor: scaledType.anchor
+        })
+        
+        // Update the marker's icon
+        marker.setIcon(icon)
+      } else {
+        // For regular locations, update with standard icon
+        const iconProperties = {
+          iconUrl: `./icons/${locationType.filename}`,
+          shadowUrl: `./icons/shadows/${locationType.filename}`,
+          iconSize: scaledType.size,
+          iconAnchor: scaledType.anchor,
+          shadowSize: scaledType.shadowSize,
+          shadowAnchor: scaledType.shadowAnchor,
+          className: combinedClasses,
+          popupAnchor: [0, -30] as [number, number]
+        }
+        
+        // Update the marker's icon
+        marker.setIcon(L.icon(iconProperties))
+      }
+    }
+  })
+}, { deep: true })
 
 // Watch for theme changes to update popup styles
 watch(() => questStore.theme, () => {
@@ -413,6 +591,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+/* Popup styles */
 :deep(.location-info-popup) {
   transition: all 0.3s ease;
 }
@@ -441,5 +620,69 @@ onBeforeUnmount(() => {
   margin: 12px 16px;
   transition: color 0.3s ease;
   color: v-bind(popupTextColor);
+}
+
+/* Custom marker styles for all locations */
+:deep(.location-marker-icon) {
+  background: transparent !important;
+  border: none !important;
+}
+
+:deep(.location-marker-container) {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:deep(.location-shadow-icon) {
+  background: transparent !important;
+  border: none !important;
+}
+
+:deep(.location-marker-shadow) {
+  opacity: 0.6;
+  filter: blur(2px);
+  transition: all 0.15s ease-out;
+}
+
+:deep(.location-marker-image) {
+  transform-origin: center bottom;
+  transition: transform 0.15s ease-out;
+}
+
+:deep(.location-marker-icon:hover .location-marker-image) {
+  transform: scale(1.1);
+}
+
+:deep(.scouted-not-viewed .scout-indicator) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 3px dashed #4285F4;
+  border-radius: 50%;
+  z-index: 10;
+  box-shadow: 0 0 10px rgba(66, 133, 244, 0.6);
+  animation: pulse-scout 2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes pulse-scout {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
 }
 </style>
