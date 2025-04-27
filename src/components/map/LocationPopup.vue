@@ -431,16 +431,8 @@ const badgeStyle = computed(() => ({
 
 <style scoped>
 .location-popup {
-  position: relative;
-  border-radius: 12px;
-  padding: 1.5rem;
   max-width: 90vw;
-  overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border: 1px solid v-bind('questStore.getBorderColor("medium")');
-  background-color: v-bind('questStore.getBackgroundColor("card")');
   color: v-bind('questStore.getTextColor("primary")');
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .location-header {

@@ -5,26 +5,23 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, onBeforeUnmount, ref, computed, Ref, watch } from 'vue'
+import {computed, createApp, inject, onBeforeUnmount, onMounted, Ref, ref, watch} from 'vue'
+import type {Map as LeafletMap, Marker} from 'leaflet'
 import L from 'leaflet'
-import type { Map as LeafletMap, Marker } from 'leaflet'
-import type { GameLocation, GameLocationType, Coordinates } from '@/types'
-import { toGameLocationTypeId } from '@/types'
-import { useLocationStore } from '@/stores/locationStore'
-import { useQuestStore } from '@/stores/questStore'
-import { useAppStore } from '@/stores/appStore'
-import { locationTypesById } from '@/data/locationTypes'
-import { createApp } from 'vue'
+import type {GameLocation, GameLocationType} from '@/types'
+import {toGameLocationTypeId} from '@/types'
+import {useLocationStore} from '@/stores/locationStore'
+import {useQuestStore} from '@/stores/questStore'
+import {locationTypesById} from '@/data/locationTypes'
 import LocationPopup from '@/components/map/LocationPopup.vue'
 
 // Get the map instance from the parent
-const mapInstance = inject<Ref<any>>('mapInstance')
+const mapInstance = inject<Ref<L.Map>>('mapInstance')
 const mountedPopupApps = inject<Ref<any[]>>('mountedPopupApps')
 
 // Stores
 const locationStore = useLocationStore()
 const questStore = useQuestStore()
-const appStore = useAppStore()
 
 // Markers array
 const locationMarkers = ref<Marker[]>([])
@@ -37,25 +34,23 @@ const BOTTOM_OFFSET = 20 // Distance from bottom of screen when opening a popup 
 const EDGE_OFFSET = 300 // Minimum distance from screen edges when opening a popup in pixels
 
 // Computed properties for popup styling based on theme - keep these for reference when setting the class
-const popupBackgroundColor = computed(() => {
-  return questStore.getBackgroundColor('modal')
-})
 
 const popupTextColor = computed(() => {
   return questStore.getTextColor('primary')
 })
 
-const popupBorderColor = computed(() => {
-  return questStore.getBorderColor('light')
-})
+// Tracking state
+const markersNeedUpdate = ref(false)
+
+const popupsOpen = ref(0)
 
 /**
  * Scale a location type by applying scale factor to all size and anchor properties
  */
 function scaleLocationType(
-  locationType: GameLocationType,
-  scaleFactor: number,
-  sizeReduction: number = 1.0
+    locationType: GameLocationType,
+    scaleFactor: number,
+    sizeReduction: number = 1.0
 ): GameLocationType {
   // The global size reduction that applies to all icons
   const globalSizeReduction = 0.5
@@ -90,7 +85,7 @@ function scaleLocationType(
   }
 
   // Create a new object to avoid mutating the original
-  const scaled: GameLocationType = { ...locationType }
+  const scaled: GameLocationType = {...locationType}
 
   // Work out how much we are actually scaling
   const actualScale = scaledWidth / locationType.size[0]
@@ -108,9 +103,15 @@ function scaleLocationType(
  * Generate all game location markers
  */
 function generateLocationMarkers(): void {
+
+  // Don't regenerate markers if any popups are open
+  if (popupsOpen.value > 0) return
+  markersNeedUpdate.value = false
+
+
   // Clean up existing markers
   cleanupMarkers()
-  
+
   // Generate markers for each location
   locationStore.locations.forEach(location => {
     // Skip special location types
@@ -128,10 +129,7 @@ function generateLocationMarkers(): void {
       return
     }
 
-    const marker = createGameLocationMarker(location, mapInstance?.value as LeafletMap)
-    if (marker) {
-      locationMarkers.value.push(marker)
-    }
+    createGameLocationMarker(location, mapInstance?.value as LeafletMap)
   })
 }
 
@@ -180,75 +178,64 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
   const combinedClasses = `${markerBaseClass} ${locationTypeClass} ${scoutedClass}`.trim()
 
   // For scouted but not viewed locations, use HTML with blue ring indicator
+  let iconExtras: string = ''
   if (location.scouted && !location.viewed) {
-    const iconSize = scaledType.size[0]
-    const iconHeight = scaledType.size[1]
-    
-    const markerHtml = `
+    iconExtras = '<div class="scout-indicator"></div>'
+  }
+
+  const iconSize = scaledType.size[0]
+  const iconHeight = scaledType.size[1]
+
+  const markerHtml = `
       <div class="location-marker-container">
-        <div class="scout-indicator"></div>
-        <img 
+        ${iconExtras}
+        <img
           src="./icons/${locationType.filename}" 
           class="location-marker-image"
           style="width: ${iconSize}px; height: ${iconHeight}px;"
         />
       </div>
     `
-    
-    // Create the marker with divIcon
-    const icon = L.divIcon({
-      html: markerHtml,
-      className: combinedClasses,
-      iconSize: scaledType.size,
-      iconAnchor: scaledType.anchor
-    })
-    
-    // Create marker with no shadow for scouted-not-viewed locations
-    const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
-      icon: icon,
-      interactive: true,
-      keyboard: false,
-      bubblingMouseEvents: false
-    }).addTo(mapInstance)
-    
-    // Store location data directly in marker instance
-    // @ts-ignore - adding a custom property to the marker
-    marker.locationData = location
-    
-    // Create and bind popup
-    addPopupToMarker(marker, location)
-    
-    return marker
-  } else {
-    // For regular locations, use standard icon with shadow
-    const iconProperties = {
-      iconUrl: `./icons/${locationType.filename}`,
-      shadowUrl: `./icons/shadows/${locationType.filename}`,
-      iconSize: scaledType.size,
-      iconAnchor: scaledType.anchor,
-      shadowSize: scaledType.shadowSize,
-      shadowAnchor: scaledType.shadowAnchor,
-      className: combinedClasses,
-      popupAnchor: [0, -30] as [number, number]
-    }
-    
-    // Create the marker with standard icon
-    const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
-      icon: L.icon(iconProperties),
-      interactive: true,
-      keyboard: false,
-      bubblingMouseEvents: false
-    }).addTo(mapInstance)
-    
-    // Store location data directly in marker instance
-    // @ts-ignore - adding a custom property to the marker
-    marker.locationData = location
-    
-    // Create and bind popup
-    addPopupToMarker(marker, location)
-    
-    return marker
-  }
+
+  // Create the marker with divIcon
+  const icon = L.divIcon({
+    html: markerHtml,
+    className: combinedClasses,
+    iconSize: scaledType.size,
+    iconAnchor: scaledType.anchor
+  })
+
+
+  // Create marker with no shadow for scouted-not-viewed locations
+  const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
+    icon: icon,
+    interactive: true,
+    keyboard: false,
+    bubblingMouseEvents: false
+  }).addTo(mapInstance)
+
+  const shadowIcon = L.icon({
+    iconUrl: `./icons/${locationType.filename}`,
+    shadowUrl: `./icons/shadows/${locationType.filename}`,
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+    shadowSize: scaledType.shadowSize,
+    shadowAnchor: scaledType.shadowAnchor,
+  })
+
+  const shadowMarker = L.marker([location.coordinates.lat, location.coordinates.lng], {
+    icon: shadowIcon,
+    interactive: true,
+    keyboard: false,
+    bubblingMouseEvents: false
+  }).addTo(mapInstance)
+
+  // Create and bind popup
+  addPopupToMarker(marker, location)
+  locationMarkers.value.push(marker)
+  locationMarkers.value.push(shadowMarker)
+  return marker
+
 }
 
 /**
@@ -260,6 +247,7 @@ function addPopupToMarker(marker: Marker, location: GameLocation): void {
     className: `location-info-popup location-info-popup--${questStore.theme}`,
     maxWidth: 500,
     minWidth: 320,
+    maxHeight: window.innerHeight * 0.7, // Max height is 70% of viewport height
     closeButton: false,
     autoClose: true,
     closeOnClick: true,
@@ -269,19 +257,15 @@ function addPopupToMarker(marker: Marker, location: GameLocation): void {
     keepInView: false
   })
 
-  // Track if this popup has been opened
-  let hasBeenOpened = false
+  marker.on('popupopen', (_e) => {
+    popupsOpen.value++
 
-  marker.on('popupopen', () => {
-    // Flag that this popup has been opened
-    hasBeenOpened = true
-    
     // Create the popup content with Vue
     const container = document.createElement('div')
     container.className = 'popup-vue-container'
 
     // Create a new Vue app with our component
-    const app = createApp(LocationPopup, { location })
+    const app = createApp(LocationPopup, {location})
 
     // Mount the app to our container
     app.mount(container)
@@ -293,26 +277,6 @@ function addPopupToMarker(marker: Marker, location: GameLocation): void {
 
     // First, set the content of the popup
     popup.setContent(container)
-    
-    // Manually apply the theme styles to the popup elements
-    setTimeout(() => {
-      const popupWrapper = document.querySelector('.location-info-popup .leaflet-popup-content-wrapper') as HTMLElement
-      const popupTip = document.querySelector('.location-info-popup .leaflet-popup-tip') as HTMLElement
-      const popupContent = document.querySelector('.location-info-popup .leaflet-popup-content') as HTMLElement
-      
-      if (popupWrapper) {
-        popupWrapper.style.backgroundColor = popupBackgroundColor.value
-        popupWrapper.style.borderColor = popupBorderColor.value
-      }
-      
-      if (popupTip) {
-        popupTip.style.backgroundColor = popupBackgroundColor.value
-      }
-      
-      if (popupContent) {
-        popupContent.style.color = popupTextColor.value
-      }
-    }, 0)
 
     // After the Vue component has rendered, update popup position to ensure proper positioning
     setTimeout(() => {
@@ -358,7 +322,7 @@ function addPopupToMarker(marker: Marker, location: GameLocation): void {
           ])
 
           // Pan the map to the new center
-          theMap.panTo(newCenter, { animate: true })
+          theMap.panTo(newCenter, {animate: true})
         } catch (e) {
           console.error('Error positioning map:', e)
         }
@@ -368,11 +332,21 @@ function addPopupToMarker(marker: Marker, location: GameLocation): void {
 
   // Handle popup close event
   marker.on('popupclose', () => {
+    popupsOpen.value--
     // Only mark as viewed if the popup was actually opened and shown to the user
-    if (hasBeenOpened && location.scouted && !location.viewed) {
+    if (location.scouted && !location.viewed) {
       // Update the location in the store
-      locationStore.setViewed(location.id, true)
+      location.viewed = true
+      markersNeedUpdate.value = true
     }
+
+    // Check if we need to regenerate markers after closing this popup
+    // Need a small timeout to ensure all popups are properly closed
+    setTimeout(() => {
+      if (popupsOpen.value === 0 && markersNeedUpdate.value) {
+        generateLocationMarkers()
+      }
+    }, 100)
   })
 
   marker.bindPopup(popup)
@@ -392,11 +366,26 @@ function cleanupMarkers(): void {
   locationMarkers.value = []
 }
 
+/* add a bounce so we don't do loads of updates if there are several changes in a row */
+watch(locationStore.locations, (a, b) => {
+  console.log('loactions changes')
+  markersNeedUpdate.value = true
+  setTimeout(() => {
+    console.log('dx')
+    if (popupsOpen.value === 0 && markersNeedUpdate.value) {
+      generateLocationMarkers()
+    }
+  }, 100)
+})
+
 // Initialize markers when the component is mounted
 onMounted(() => {
   const initMarkers = () => {
     if (mapInstance?.value) {
       generateLocationMarkers()
+      mapInstance.value.on('zoomend', () => {
+        generateLocationMarkers()
+      })
     } else {
       setTimeout(initMarkers, 100)
     }
@@ -405,47 +394,22 @@ onMounted(() => {
   initMarkers()
 })
 
-// Watch for zoom level changes to update marker size
-watch(() => appStore.mapZoomFine, () => {
-  if (!mapInstance?.value) return
-  // Simply regenerate all markers when zoom changes
-  generateLocationMarkers()
-}, { immediate: false })
 
 // Watch for location changes to update markers
 watch(() => locations.value, () => {
   if (!mapInstance?.value) return
-  // Regenerate all markers when locations change
-  generateLocationMarkers()
-}, { deep: true })
 
-// Watch for theme changes to update popup styles
-watch(() => questStore.theme, () => {
-  // Find all open popups and update their class names and styles
-  document.querySelectorAll('.location-info-popup').forEach(popup => {
-    // Update theme-specific class
-    popup.classList.remove('location-info-popup--light', 'location-info-popup--dark')
-    popup.classList.add(`location-info-popup--${questStore.theme}`)
-    
-    // Update styles
-    const wrapper = popup.querySelector('.leaflet-popup-content-wrapper') as HTMLElement
-    const tip = popup.querySelector('.leaflet-popup-tip') as HTMLElement
-    const content = popup.querySelector('.leaflet-popup-content') as HTMLElement
-    
-    if (wrapper) {
-      wrapper.style.backgroundColor = popupBackgroundColor.value
-      wrapper.style.borderColor = popupBorderColor.value
-    }
-    
-    if (tip) {
-      tip.style.backgroundColor = popupBackgroundColor.value
-    }
-    
-    if (content) {
-      content.style.color = popupTextColor.value
-    }
-  })
-})
+  // Check if any popups are open
+  const anyPopupsOpen = document.querySelector('.leaflet-popup') !== null
+
+  if (anyPopupsOpen) {
+    // Set flag to update markers when popups close
+    markersNeedUpdate.value = true
+  } else {
+    // Regenerate markers immediately if no popups are open
+    generateLocationMarkers()
+  }
+}, {deep: true})
 
 // Clean up markers before unmounting
 onBeforeUnmount(() => {
@@ -454,34 +418,10 @@ onBeforeUnmount(() => {
 
 </script>
 
-<style scoped>
-/* Popup styles */
-:deep(.location-info-popup) {
-  transition: all 0.3s ease;
-}
+<style inline>
 
-:deep(.location-info-popup .leaflet-popup-content-wrapper) {
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid v-bind(popupBorderColor);
-  overflow: hidden;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-:deep(.location-info-popup--dark .leaflet-popup-content-wrapper) {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-:deep(.location-info-popup--light .leaflet-popup-content-wrapper) {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-}
-
-:deep(.location-info-popup .leaflet-popup-tip) {
-  transition: background-color 0.3s ease;
-}
 
 :deep(.location-info-popup .leaflet-popup-content) {
-  margin: 12px 16px;
   transition: color 0.3s ease;
   color: v-bind(popupTextColor);
 }
@@ -534,7 +474,6 @@ onBeforeUnmount(() => {
   right: -8px;
   bottom: -8px;
   border: 4px solid #4285F4;
-  background-color: rgba(66, 133, 244, 0.3);
   border-radius: 50%;
   z-index: 1;
   box-shadow: 0 0 10px rgba(66, 133, 244, 0.8);
@@ -562,8 +501,16 @@ onBeforeUnmount(() => {
   transform-origin: center bottom;
 }
 
-/* Ensure scout indicators stand out */
-.scouted-not-viewed {
-  filter: brightness(1.1);
+.leaflet-popup-content {
+  word-wrap: break-word !important; /* Prevent text from overflowing horizontally */
+  max-width: 100% !important; /* Ensure content doesn't force popup to be wider */
+  margin: 10px 0;
+  padding: 0 10px;
 }
+
+.location-info-popup--dark .leaflet-popup-content-wrapper,
+.location-info-popup--dark .leaflet-popup-tip {
+  background-color: black !important;
+}
+
 </style>
