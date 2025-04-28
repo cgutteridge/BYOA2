@@ -283,15 +283,15 @@ onUnmounted(() => {
   }
 })
 
-watch(()=>appStore.mapPosition, () => (newPosition:Coordinates) => {
-  const mapCoords : Coordinates= mapInstance.value.getCenter()
-  if( mapCoords.lat === newPosition.lat && mapCoords.lng===newPosition.lng ) {
-    console.log('dull')
+watch(() => appStore.mapPosition, (newPosition) => {
+  if (!newPosition || !mapInstance.value) return
+  
+  const mapCoords = mapInstance.value.getCenter()
+  if (mapCoords.lat === newPosition.lat && mapCoords.lng === newPosition.lng) {
     return
   }
-  console.log( 'interesting...')
+  mapInstance.value.setView(newPosition, appStore.mapZoom)
 })
-
 
 // Watch for game mode changes
 watch(() => appStore.screen, (newMode) => {
