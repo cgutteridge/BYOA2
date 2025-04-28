@@ -172,7 +172,8 @@ import {getMonsterXP} from "../../quest/monsterUtils.ts";
 import '@/styles/monsterAnimations.css'
 
 const props = defineProps<{
-  location: GameLocation
+  location: GameLocation,
+  closeFn: ()=>void,
 }>()
 
 const appStore = useAppStore()
@@ -390,6 +391,10 @@ async function scoutLocationAction(event?: MouseEvent) {
   if (event) {
     event.stopPropagation()
   }
+  appStore.setMapZoom(18)
+  appStore.setMapPosition(props.location.coordinates)
+  props.closeFn()
+
   await scoutLocation(props.location)
 
   // Award XP for scouting a location through the UI (using logAndNotifyQuestEvent)

@@ -278,7 +278,7 @@ function addPopupToMarker(marker: Marker, location: GameLocation): void {
     container.className = 'popup-vue-container'
 
     // Create a new Vue app with our component
-    const app = createApp(LocationPopup, {location})
+    const app = createApp(LocationPopup, {location,closeFn:()=>{popup.close()}})
 
     // Mount the app to our container
     app.mount(container)
