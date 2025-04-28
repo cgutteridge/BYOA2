@@ -32,7 +32,6 @@ export const useAppStore = defineStore('app', () => {
   const focusGameLocationId = ref<GameLocationId | undefined>(undefined)
   const mapPosition = ref<Coordinates | null>(null)
   const mapZoom = ref<number | null>(null)
-  const mapZoomFine = ref<number | null>(null)
   const locationStore = useLocationStore()
   const routeStore = useRouteStore()
   const routeTrackingInterval = ref<number | null>(null)
@@ -243,7 +242,6 @@ export const useAppStore = defineStore('app', () => {
     playerCoordinates,
     mapPosition,
     mapZoom,
-    mapZoomFine,
     focusGameLocation,
     isInterfaceOpen,
     inventoryTab,

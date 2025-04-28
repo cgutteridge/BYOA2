@@ -167,7 +167,6 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import {locationTypesById} from "@/data/locationTypes.ts";
 import {scoutLocation} from "@/quest/scoutLocation.ts";
 import {generateTokenItem} from "@/quest/itemUtils.ts";
-import {getMonsterXP} from "../../quest/monsterUtils.ts";
 import '@/styles/monsterAnimations.css'
 
 const props = defineProps<{

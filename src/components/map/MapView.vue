@@ -3,7 +3,6 @@
     <PlayerMarker v-if="mapInstance"/>
     <LocationMarkers v-if="mapInstance"/>
     <RouteTracker v-if="mapInstance"/>
-    <!--<DestinationMarker v-if="mapInstance"/>-->
   </div>
 </template>
 
@@ -86,8 +85,6 @@ function initializeMap(): void {
 
     map.on('zoomend', () => {
       appStore.setMapZoom(map.getZoom())
-      // Directly update the mapZoomFine value to trigger watches in components
-      appStore.mapZoomFine = map.getZoom()
     })
 
     // Listen for zoom animation events
@@ -122,13 +119,6 @@ function initializeMap(): void {
 
     // Start route tracking
     appStore.startRouteTracking()
-
-    // Add event handlers for smooth zoom animation
-    mapInstance.value.on('zoomanim', (e: ZoomAnimEvent) => {
-      // Update mapZoomFine directly during zoom animation
-      appStore.mapZoomFine = e.zoom
-    })
-
   } catch (error) {
     console.error('Error initializing map:', error)
   } finally {

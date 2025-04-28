@@ -259,11 +259,11 @@ watch(() => mapInstance?.value?.getZoom(), () => {
   }
 }, { immediate: false })
 
-// Watch for fine zoom level changes at the end of zoom animations
-watch(() => appStore.mapZoomFine, () => {
+// Watch for zoom level changes at the end of zoom animations
+watch(() => appStore.mapZoom, () => {
   if (!mapInstance?.value || !playerCoordinates.value || !playerMarker.value) return
   
-  const currentZoom = appStore.mapZoomFine || mapInstance.value.getZoom()
+  const currentZoom = appStore.mapZoom || mapInstance.value.getZoom()
   const baseZoom = 16
   const zoomFactor = Math.pow(2.0, currentZoom - baseZoom)
   
@@ -271,7 +271,7 @@ watch(() => appStore.mapZoomFine, () => {
   const playersType = locationTypesById['players' as keyof typeof locationTypesById]
   
   // Scale the player location type
-  const scaledType = scaleLocationType(playersType, zoomFactor,2)
+  const scaledType = scaleLocationType(playersType, zoomFactor,1)
   
   // Create updated icon
   const icon = L.icon({
