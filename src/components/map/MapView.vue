@@ -17,6 +17,7 @@ import mapTiles from '@/data/mapTiles'
 import PlayerMarker from './PlayerMarker.vue'
 import LocationMarkers from './LocationMarkers.vue'
 import RouteTracker from './RouteTracker.vue'
+import {Coordinates} from "@/types";
 
 // Stores
 const appStore = useAppStore()
@@ -103,9 +104,6 @@ function initializeMap(): void {
     // Get the current map tile options
     const tile = currentMapTile.value
     const apiKey = tile.provider ? import.meta.env[tile.provider] : ''
-
-    // Debug log for API key (will be removed in production)
-    console.log(`Using map tile provider: ${tile.provider || 'none'}, API Key available: ${apiKey ? 'Yes' : 'No'}`)
 
     const tileUrl = tile.apiKeyRequired
         ? tile.url.replace('{apikey}', apiKey || '')
@@ -284,6 +282,16 @@ onUnmounted(() => {
     mapInstance.value = null
   }
 })
+
+watch(()=>appStore.mapPosition, () => (newPosition:Coordinates) => {
+  const mapCoords : Coordinates= mapInstance.value.getCenter()
+  if( mapCoords.lat === newPosition.lat && mapCoords.lng===newPosition.lng ) {
+    console.log('dull')
+    return
+  }
+  console.log( 'interesting...')
+})
+
 
 // Watch for game mode changes
 watch(() => appStore.screen, (newMode) => {

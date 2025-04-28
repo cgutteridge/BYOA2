@@ -53,6 +53,10 @@ export abstract class ItemPower {
     // Minimum monster level this power works on
     readonly minLevel: MonsterLevel = 'minion'
 
+    // action after item use. Normally just close the interface.
+    readonly afterUse = (_item:Item,_target?:GameLocation|Monster|MonsterType)=>{
+        useAppStore().closeInterface()
+    }
 
 
     /* FUNCTIONS FOR FILTERING TARGETS */

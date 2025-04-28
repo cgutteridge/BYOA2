@@ -1,4 +1,4 @@
-import type {GameLocation, Item} from '../types'
+import type {GameLocation, Item, Monster, MonsterType} from '../types'
 import {ItemPower} from './abstractItemPower'
 import {scoutLocation} from '@/quest/scoutLocation.ts'
 import {useQuestStore} from '@/stores/questStore.ts'
@@ -27,8 +27,18 @@ export class SpyPower extends ItemPower {
   // Item types for this power
   readonly itemArtifactNames = ["Eyeglass", "Looking Glass", "Lens", "Scope", "Mirror", "Spyglass", "Crystal Ball"];
 
+  readonly afterUse = (_item:Item,target?:GameLocation|Monster|MonsterType)=>{
+    const appStore = useAppStore()
+    appStore.closeInterface()
+    if( target ) {
+      console.log((target as GameLocation).coordinates)
+      appStore.setMapPosition((target as GameLocation).coordinates)
+    }
+  }
+
+
   generateEffectDescription(_item: Item): string {
-    return `Reveals any location without visiting it.`;
+    return `Reveals a location without visiting it.`;
   }
 
   // Override canTargetLocation to only allow un-scouted locations

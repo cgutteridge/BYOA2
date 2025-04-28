@@ -281,19 +281,16 @@ const isChoiceTarget = computed<boolean>(() => {
 
 const potentialTargetMonsterTypes = computed<MonsterType[]>(() => {
   const result = potentialTargetMonstersTypesForItem(item.value, questStore.currentGameLocation);
-  console.log("computed potentialTargetMonsterTypes:", result.length);
   return result;
 })
 
 const potentialTargetMonsters = computed<Monster[]>(() => {
   const result = potentialTargetMonstersForItem(item.value, questStore.currentGameLocation);
-  console.log("computed potentialTargetMonsters:", result.length);
   return result;
 })
 
 const potentialTargetLocations = computed<GameLocation[]>(() => {
   const result = potentialTargetLocationsForItem(item.value);
-  console.log("computed potentialTargetLocations:", result.length, "power:", item.value.power, "target:", item.value.target);
   return result;
 })
 
@@ -323,10 +320,6 @@ const sortedPotentialTargetLocations = computed<GameLocationWithDistance[]>(() =
 
 const canBeUsed = computed<boolean>(() => {
   const result = itemCanBeUsed(item.value);
-  console.log("computed canBeUsed:", result, 
-    "power:", power.value?.displayName, 
-    "target:", item.value.target, 
-    "potentialTargets:", potentialTargetLocations.value.length);
   return result;
 })
 
@@ -341,8 +334,6 @@ const formSatisfied = computed<boolean>(() => {
   // Skip validation for random location items as long as there are potential targets
   if (power.value.itemTargetType === 'locations' && item.value.target === 'random') {
     const satisfied = potentialTargetLocations.value.length > 0;
-    console.log("Random location mode, formSatisfied =", satisfied, 
-      "potential targets:", potentialTargetLocations.value.length);
     return satisfied;
   }
   
@@ -353,7 +344,6 @@ const formSatisfied = computed<boolean>(() => {
   if (power.value.itemTargetType === 'locations' && item.value.target === 'pick') {
     if (selectedTargetLocations.value.length === 0) {
       ok = false;
-      console.log("formSatisfied: false - pick location but no selections");
     }
   }
   
@@ -395,6 +385,7 @@ function close() {
 }
 
 function useItem(): void {
+  let lastTarget : Monster | GameLocation | MonsterType | undefined
   switch (power.value.itemTargetType) {
     case 'special':
       useItemSpecial();
@@ -402,10 +393,10 @@ function useItem(): void {
     case 'locations':
       switch (item.value.target) {
         case 'pick':
-          useItemPickLocation();
+          lastTarget = useItemPickLocation();
           break;
         case 'random':
-          useItemRandomLocation();
+          lastTarget = useItemRandomLocation();
           break;
         default:
           console.warn('Not sure how to use location item')
@@ -414,16 +405,16 @@ function useItem(): void {
     case 'monsters':
       switch (item.value.target) {
         case 'pick':
-          useItemPickMonster();
+          lastTarget = useItemPickMonster();
           break;
         case 'random':
-          useItemRandomMonster();
+          lastTarget = useItemRandomMonster();
           break;
         case 'pick_type':
-          useItemPickMonsterType();
+          lastTarget = useItemPickMonsterType();
           break;
         case 'random_type':
-          useItemRandomMonsterType();
+          lastTarget = useItemRandomMonsterType();
           break;
         default:
           console.warn('Not sure how to use monster item')
@@ -434,18 +425,16 @@ function useItem(): void {
   }
 
   close()
-  appStore.closeInterface()
+  console.log( {lastTarget})
+  power.value.afterUse( item.value, lastTarget );
 }
 
 function useItemSpecial() {
   power.value.useWithoutTarget(item.value)
 }
 
-function useItemRandomLocation() {
-  console.log("Using random location item:", 
-    "potential targets:", potentialTargetLocations.value.length,
-    "formSatisfied:", formSatisfied.value);
-    
+function useItemRandomLocation() : GameLocation | undefined {
+
   if (potentialTargetLocations.value.length === 0) {
     const appStore = useAppStore();
     appStore.addNotification('No valid locations found outside scout range. Try moving to a new area.');
@@ -453,8 +442,8 @@ function useItemRandomLocation() {
   }
   
   const target = pickOne(potentialTargetLocations.value)
-  console.log("Selected random target:", target.name);
   power.value.useOnLocation(item.value, target)
+  return target
 }
 
 function useItemPickLocation() {
@@ -463,6 +452,7 @@ function useItemPickLocation() {
   targets.forEach(location => {
     power.value.useOnLocation(item.value, location)
   })
+  return targets[targets.length - 1]
 }
 
 function useItemRandomMonster() {
@@ -475,9 +465,10 @@ function useItemRandomMonster() {
   } else {
     power.value.useOnMonster(item.value, target)
   }
+  return target
 }
 
-function useItemPickMonster() {
+function useItemPickMonster() : Monster | undefined {
   let targets: Monster[] = selectedTargetMonsters.value.map(
       monsterId => potentialTargetMonsters.value.find(monster => monster.id === monsterId) as Monster);
   targets.forEach(monster => {
@@ -490,9 +481,10 @@ function useItemPickMonster() {
       power.value.useOnMonster(item.value, monster)
     }
   })
+  return targets[targets.length - 1]
 }
 
-function useItemRandomMonsterType() {
+function useItemRandomMonsterType() : MonsterType | undefined {
   const target = pickOne(potentialTargetMonsterTypes.value)
   // Include the selected result if the power has results
   if (power.value.hasResults && selectedResult.value) {
@@ -502,9 +494,10 @@ function useItemRandomMonsterType() {
   } else {
     power.value.useOnMonsterType(item.value, target)
   }
+  return target
 }
 
-function useItemPickMonsterType() {
+function useItemPickMonsterType() : MonsterType | undefined {
   const targets: MonsterType[] = selectedTargetMonsterTypes.value.map(
       monsterTypeId => monsterTypesById[toMonsterTypeId(monsterTypeId)])
   targets.forEach(monsterType => {
@@ -517,6 +510,7 @@ function useItemPickMonsterType() {
       power.value.useOnMonsterType(item.value, monsterType)
     }
   })
+  return targets[targets.length - 1]
 }
 
 // Add this function to get monster title
@@ -530,15 +524,6 @@ watch([selectedTargetMonsters, selectedTargetMonsterTypes], () => {
   selectedResult.value = '';
 });
 
-// Watch for changes to potential targets to force re-evaluation of form state
-watch([potentialTargetLocations, potentialTargetMonsters, potentialTargetMonsterTypes], () => {
-  console.log("Targets changed, rechecking formSatisfied");
-});
-
-// Watch hasValidTargets to see if it updates
-watch(() => hasValidTargets.value, (newVal, oldVal) => {
-  console.log(`hasValidTargets changed: ${oldVal} -> ${newVal}`);
-});
 </script>
 
 <style scoped>

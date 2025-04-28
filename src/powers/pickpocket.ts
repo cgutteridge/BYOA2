@@ -26,7 +26,10 @@ export class PickpocketPower extends ItemPower {
   // Item types for this power
   readonly itemArtifactNames = ["Gloves", "Lockpick", "Hook", "Claw", "Hand", "Grasp", "Grip", "Thief's Tool"];
 
-  /**
+  // don't close the inventory after stealing something
+  readonly afterUse = (_item:Item)=>{}
+
+    /**
    * Override canTargetMonster to only allow targeting monsters with items
    */
   canTargetMonster(item: Item, monster: Monster): boolean {

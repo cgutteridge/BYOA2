@@ -23,6 +23,9 @@ export class TreasurePower extends ItemPower {
     // Item types for this power
     readonly itemArtifactNames = ["Book of Lore", "Treasure", "Gold", "Gems", "Jewels", "Coin", "Loot"]
 
+    // don't close the inventory after gaining treasure XP
+    readonly afterUse = (_item:Item)=>{ console.log(23)}
+
     /**
      * Use the treasure item without a target
      */
