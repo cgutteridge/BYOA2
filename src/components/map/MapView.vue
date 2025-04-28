@@ -142,7 +142,7 @@ function addMapControls(map: any): void {
     },
 
     onAdd: function () {
-      const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control')
+      const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control ')
       const link = L.DomUtil.create('a', 'leaflet-control-center', container)
       link.innerHTML = '⊕'
       link.href = '#'
@@ -329,5 +329,8 @@ defineExpose({
   width: 100%;
   height: 100%;
   z-index: 1;
+}
+:deep(.leaflet-control-center) {
+  font-size: 1.5rem;
 }
 </style> 
