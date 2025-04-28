@@ -34,14 +34,14 @@ const playerCoordinates = computed(() => appStore.playerCoordinates)
  */
 function scaleLocationType(
   locationType: GameLocationType,
-  scaleFactor: number,
-  sizeReduction: number = 1.0
+  zoomScale: number,
+  markerScale: number = 1.0
 ): GameLocationType {
   // The global size reduction that applies to all icons
-  const globalSizeReduction = 0.36
+  const globalScale = 0.36
 
   // Combined scale factor for all calculations
-  const combinedScale = scaleFactor * sizeReduction * globalSizeReduction
+  const combinedScale = zoomScale * markerScale * globalScale
 
   const minSize = 20
 
@@ -269,7 +269,7 @@ watch(() => appStore.mapZoomFine, () => {
   const playersType = locationTypesById['players' as keyof typeof locationTypesById]
   
   // Scale the player location type
-  const scaledType = scaleLocationType(playersType, zoomFactor)
+  const scaledType = scaleLocationType(playersType, zoomFactor,2)
   
   // Create updated icon
   const icon = L.icon({
@@ -277,7 +277,6 @@ watch(() => appStore.mapZoomFine, () => {
     shadowUrl: `./icons/shadows/${playersType.filename}`,
     iconSize: scaledType.size,
     iconAnchor: scaledType.anchor,
-    popupAnchor: [0, -30],
     shadowSize: scaledType.shadowSize,
     shadowAnchor: scaledType.shadowAnchor,
     className: `leaflet-marker-icon-scalable location-type-player`,
