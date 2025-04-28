@@ -113,9 +113,8 @@
                       getMonsterLevel(group.type)
                     }}{{ getMonsterTraits(group.type) }}
                   </div>
-                  <div class="monster-xp">{{ getMonsterXP(group.type) }} XP</div>
                   <div class="monster-details">
-                    <div class="monster-stat"><strong>Drink:</strong> {{ getMonsterDrink(group.type) }}</div>
+                    <div class="monster-stat"><strong>{{ getMonsterDrink(group.type) }}</strong></div>
                   </div>
                 </div>
               </div>
@@ -453,7 +452,7 @@ const badgeStyle = computed(() => ({
 }
 
 .location-header h2 {
-  text-align: center;
+  text-align: left;
   margin: 0;
   font-size: 1.75rem;
   font-weight: 600;
@@ -619,13 +618,6 @@ const badgeStyle = computed(() => ({
 .monster-subinfo {
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
-}
-
-.monster-xp {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: v-bind('questStore.getTextColor("accent")');
 }
 
 .monster-details {

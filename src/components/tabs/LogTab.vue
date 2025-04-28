@@ -1,6 +1,6 @@
 <template>
   <div class="log-tab">
-    <h2>Quest Log</h2>
+    <h2>Quest Chronicle</h2>
     
     <div class="log-introduction" v-if="Object.keys(groupedEntries).length === 0">
       <p>Your journey is tracked here. Major events, battles, and discoveries will be recorded.</p>
@@ -114,4 +114,6 @@ const formatTime = (timestamp: string): string => {
   font-weight: 600;
   margin-left: 0.5rem;
 }
+
+:deep(.story-block) { margin-bottom: 4rem;}
 </style> 

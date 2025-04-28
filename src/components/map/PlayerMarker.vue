@@ -130,12 +130,14 @@ function updatePlayerMarker(coords: Coordinates): void {
   playerMarker.value = L.marker([coords.lat, coords.lng], {
     icon: L.icon(iconProperties),
     zIndexOffset: 0,
-    riseOnHover: true,
-    riseOffset: 250,
-    interactive: true,
     keyboard: false,
     bubblingMouseEvents: false
   }).addTo(theMap)
+
+  // Add click handler to open interface on log tab
+  playerMarker.value.on('click', () => {
+    appStore.openInterface('log')
+  })
 
   // Create scout range circle
   scoutCircle.value = L.circle([coords.lat, coords.lng], {

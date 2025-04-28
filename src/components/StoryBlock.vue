@@ -24,13 +24,12 @@ const questStore = useQuestStore();
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, calc(-50% - 20px ));
   width: 105%;
-  height: 105%;
+  height: calc(100% + 0px);
   background: v-bind('questStore.theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.5)"');
   filter: blur(15px);
   z-index: 0;
-  border-radius: 2px;
 }
 
 .story-block {
