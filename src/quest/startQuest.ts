@@ -107,6 +107,7 @@ export async function startQuest(
     await scoutLocation(questStore.startGameLocation as GameLocation);
     questStore.setCurrentGameLocation(startGameLocation.id)
     startGameLocation.hasBeenVisited = true
+    startGameLocation.viewed = true
 
     await scoutLocation(questStore.endGameLocation as GameLocation);
 

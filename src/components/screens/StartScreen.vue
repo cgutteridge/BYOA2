@@ -45,6 +45,7 @@
                 value-property="id"
                 display-property="name"
                 :show-subtitle="true"
+                :subtitle-fn="formatLocationSubtitle"
                 @selection-change="updateStartLocation"
             />
           </div>
@@ -59,6 +60,7 @@
                 value-property="id"
                 display-property="name"
                 :show-subtitle="true"
+                :subtitle-fn="formatLocationSubtitle"
                 @selection-change="updateEndLocation"
             />
           </div>
@@ -127,6 +129,7 @@ import {GameLocation} from "@/types"
 import {useLocationStore} from "@/stores/locationStore"
 import {useQuestStore} from "@/stores/questStore"
 import {generateQuestTitle} from "@/quest/generateQuestTitle"
+import { formatLocationSubtitle } from '@/utils/formatLocation'
 
 const appStore = useAppStore()
 const locationStore = useLocationStore()

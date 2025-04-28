@@ -34,12 +34,15 @@
                     v-model="selectedTargetLocations"
                     :options="sortedPotentialTargetLocations.map(location => ({
                       id: location.id,
-                      name: `${location.name} (${location.distance})`
+                      name: location.name,
+                      coordinates: location.coordinates
                     }))"
                     :multiple="true"
                     :max-selections="power.maxTargets !== undefined ? power.maxTargets : (item.uses || 1)"
                     :always-show="true"
                     :disabled="item.target==='random'"
+                    :show-subtitle="true"
+                    :subtitle-fn="formatLocationSubtitle"
                   />
                   <div v-if="item.target==='random' && potentialTargetLocations.length > 0" class="random-target-message" :style="sectionStyle">
                     Will choose a random location from {{ potentialTargetLocations.length }} available targets outside scout range.
@@ -143,6 +146,7 @@ import ListInput from "@/components/forms/ListInput.vue";
 import StoryBlock from "@/components/StoryBlock.vue";
 import calculateDistance from "@/utils/calculateDistance.ts";
 import formatDistance from "@/utils/formatDistance.ts";
+import { formatLocationSubtitle } from '@/utils/formatLocation';
 
 // Define interface extending GameLocation with distance properties
 interface GameLocationWithDistance extends GameLocation {

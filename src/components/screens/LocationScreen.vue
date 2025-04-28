@@ -167,8 +167,9 @@ function leaveLocation() {
   // Add log entry before changing screen or unsetting location
   if (questStore.currentGameLocation) {
     logStore.addLogEntry(`Left ${questStore.currentGameLocation.name}.`);
+    appStore.setMapZoom(17)
+    appStore.setMapPosition(questStore.currentGameLocation?.coordinates)
   }
-
   appStore.setScreen('map')
   questStore.unsetCurrentGameLocation()
 }

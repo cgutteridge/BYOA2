@@ -31,7 +31,6 @@ export class SpyPower extends ItemPower {
     const appStore = useAppStore()
     appStore.closeInterface()
     if( target ) {
-      console.log((target as GameLocation).coordinates)
       appStore.setMapZoom(17)
       appStore.setMapPosition((target as GameLocation).coordinates)
     }
