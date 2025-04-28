@@ -18,13 +18,15 @@ const questStore = useQuestStore();
 .story-block-container {
   position: relative;
   margin-bottom: 1rem;
+  filter: drop-shadow(0.5rem 0.5rem 0.5rem rgba(0, 0, 0, 0.5));
+
 }
 
 .story-block {
   position: relative;
   background: black;
   padding: 2px;
-  
+
   /* Rip effect with fixed top and bottom heights */
   --rip-height: 40px;
   clip-path: polygon(
@@ -65,11 +67,13 @@ const questStore = useQuestStore();
     5% calc(100% - var(--rip-height) * 0.2), 
     0% calc(100% - var(--rip-height) * 0.1)
   );
+
 }
 
 .story-block-content {
   padding: 1.5rem;
   padding-bottom: 2rem;
+
   line-height: 1.5;
   font-style: italic;
   position: relative;
