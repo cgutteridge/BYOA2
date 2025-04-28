@@ -63,9 +63,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useQuestStore } from '@/stores/questStore'
-import { useAppStore } from '@/stores/appStore'
-import calculateDistance from '@/utils/calculateDistance'
-import formatDistance from '@/utils/formatDistance'
 
 interface PickerOption {
   id?: string | number
