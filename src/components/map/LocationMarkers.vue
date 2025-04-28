@@ -223,7 +223,6 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
     iconAnchor: scaledType.anchor
   })
 
-
   // Create marker with no shadow for scouted-not-viewed locations
   const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
     icon: icon,
@@ -248,12 +247,28 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
     bubblingMouseEvents: false
   }).addTo(mapInstance)
 
+  // Add place name label if zoomed to level 18 or more
+  if (currentZoom >= 18) {
+    const labelMarker = L.marker([location.coordinates.lat, location.coordinates.lng], {
+      icon: L.divIcon({
+        className: 'location-name-label',
+        html: `<div class="location-name-text" style="font-family: 'Brush Script MT', cursive; color: #8B4513; font-size: 32px; text-align: center; white-space: normal; overflow: visible; max-width: none; line-height: 1.2; text-shadow: 0 0 4px rgba(139, 69, 19, 0.3), 0 0 8px rgba(255, 255, 255, 0.2), 0 0 12px rgba(139, 69, 19, 0.2); transform: translateY(15px); position: relative; z-index: 1; background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0) 100%); padding: 4px 8px; border-radius: 4px;">${location.name}</div>`,
+        iconSize: [300, 50], // Increased width to accommodate longer names
+        iconAnchor: [150, 0] // Adjusted anchor to match new width
+      }),
+      interactive: false,
+      keyboard: false,
+      bubblingMouseEvents: false,
+      zIndexOffset: -1000 // Ensure it appears below the location marker
+    }).addTo(mapInstance)
+    locationMarkers.value.push(labelMarker)
+  }
+
   // Create and bind popup
   addPopupToMarker(marker, location)
   locationMarkers.value.push(marker)
   locationMarkers.value.push(shadowMarker)
   return marker
-
 }
 
 /**
@@ -436,7 +451,6 @@ onBeforeUnmount(() => {
 
 <style inline>
 
-
 :deep(.location-info-popup .leaflet-popup-content) {
   transition: color 0.3s ease;
   color: v-bind(popupTextColor);
@@ -477,6 +491,18 @@ onBeforeUnmount(() => {
 
 :deep(.location-marker-icon:hover .location-marker-image) {
   transform: scale(1.1);
+}
+
+/* Location name label styles */
+:deep(.location-name-label) {
+  background: transparent !important;
+  border: none !important;
+  pointer-events: none !important;
+}
+
+:deep(.location-name-text) {
+  pointer-events: none !important;
+  user-select: none !important;
 }
 </style>
 
