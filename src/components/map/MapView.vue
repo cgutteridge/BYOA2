@@ -17,14 +17,13 @@ import mapTiles from '@/data/mapTiles'
 import PlayerMarker from './PlayerMarker.vue'
 import LocationMarkers from './LocationMarkers.vue'
 import RouteTracker from './RouteTracker.vue'
-import {Coordinates} from "@/types";
 
 // Stores
 const appStore = useAppStore()
 const questStore = useQuestStore()
 
 // Map container and instance references
-const mapContainer = ref<HTMLElement | null>(null)
+const mapContainer = shallowRef<HTMLElement | null>(null)
 const mapInstance = shallowRef<any>(null)
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])

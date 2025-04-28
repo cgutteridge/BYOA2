@@ -309,14 +309,5 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Scout range label styles */
-:deep(.scout-range-text) {
-  color: #4285F4;
-  text-align: center;
-  white-space: nowrap;
-  font-weight: 600;
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8), -1px -1px 2px rgba(255, 255, 255, 0.8);
-  transition: font-size 0.25s ease-in-out;
-  will-change: font-size;
-}
+/* No styles needed here - moved to global map.css */
 </style> 
