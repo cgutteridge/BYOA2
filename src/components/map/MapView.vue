@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, onUnmounted, provide, ref, watch} from 'vue'
+import {computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, watch} from 'vue'
 import L, {ZoomAnimEvent} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import {useAppStore} from '@/stores/appStore'
@@ -25,7 +25,7 @@ const questStore = useQuestStore()
 
 // Map container and instance references
 const mapContainer = ref<HTMLElement | null>(null)
-const mapInstance = ref<any>(null)
+const mapInstance = shallowRef<any>(null)
 const isInitializing = ref<boolean>(false)
 const mountedPopupApps = ref<any[]>([])
 
