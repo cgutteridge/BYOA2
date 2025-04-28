@@ -24,6 +24,9 @@ export class ScoutRangePower extends ItemPower {
   // Item types for this power
   readonly itemArtifactNames = ["Telescope", "Spy Drone", "Winged Monkey", "Binoculars", "Periscope", "Eagle Eye"];
 
+  // don't close the inventory after generating something
+  readonly afterUse = (_item:Item)=>{}
+
   useWithoutTarget(item: Item): boolean {
     const extendSize = 20*item.uses
     const questStore = useQuestStore();
