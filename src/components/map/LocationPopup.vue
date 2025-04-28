@@ -436,15 +436,100 @@ const badgeStyle = computed(() => ({
 
 <style scoped>
 .location-popup {
-  max-width: 90vw;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
   color: v-bind('questStore.getTextColor("primary")');
 }
 
 .location-header {
   display: flex;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.location-header h2 {
+  text-align: center;
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: v-bind('questStore.getTextColor("primary")');
+  flex: 1;
+}
+
+.location-status-badges {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.location-details {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.monsters-heading {
+  text-align: center;
+  margin: 1rem 0;
+  font-size: 1.25rem;
+  color: v-bind('questStore.getTextColor("primary")');
+}
+
+.gift-info h3,
+.prize-info h3 {
+  text-align: center;
+  margin: 0 0 1rem 0;
+  color: v-bind('questStore.getTextColor("primary")');
+}
+
+.token-requirement-message {
+  text-align: center;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid v-bind('questStore.getBorderColor("light")');
+  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
+  color: v-bind('questStore.getTextColor("secondary")');
+  font-weight: 500;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.all-defeated-message {
+  text-align: center;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid v-bind('questStore.getBorderColor("light")');
+  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
+  color: v-bind('questStore.getTextColor("secondary")');
+  font-style: italic;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.defeated-enemies-info {
+  text-align: center;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  border: 1px solid v-bind('questStore.getBorderColor("light")');
+  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
+  color: v-bind('questStore.getTextColor("secondary")');
+  font-weight: 500;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .location-icon {
@@ -454,28 +539,13 @@ const badgeStyle = computed(() => ({
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-right: 1rem;
 }
 
 .location-icon img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-}
-
-.location-popup h2 {
-  margin-top: 0;
-  margin-bottom: 0;
-  font-size: 1.75rem;
-  font-weight: 600;
-  flex-grow: 1;
-  color: v-bind('questStore.getTextColor("primary")');
-}
-
-.location-status-badges {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
 }
 
 .status-badge {
@@ -499,28 +569,6 @@ const badgeStyle = computed(() => ({
   color: v-bind('questStore.getTextColor("secondary")');
 }
 
-.action-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.token-requirement-message {
-  text-align: center;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid v-bind('questStore.getBorderColor("light")');
-  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
-  color: v-bind('questStore.getTextColor("secondary")');
-  font-weight: 500;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-.location-details {
-  margin-top: 1rem;
-}
-
 .gift-info, .prize-info {
   margin: 1.5rem 0;
   padding: 1rem;
@@ -528,42 +576,6 @@ const badgeStyle = computed(() => ({
   border: 1px solid v-bind('questStore.getBorderColor("light")');
   background-color: v-bind('questStore.getBackgroundColor("tertiary")');
   transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.gift-info h3, .prize-info h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: v-bind('questStore.getTextColor("primary")');
-}
-
-.monsters-heading {
-  margin: 1.5rem 0 1rem;
-  font-size: 1.25rem;
-  color: v-bind('questStore.getTextColor("primary")');
-}
-
-.all-defeated-message {
-  text-align: center;
-  padding: 1rem;
-  margin: 1rem 0;
-  font-style: italic;
-  border-radius: 8px;
-  border: 1px solid v-bind('questStore.getBorderColor("light")');
-  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
-  color: v-bind('questStore.getTextColor("secondary")');
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-.defeated-enemies-info {
-  text-align: center;
-  padding: 0.75rem;
-  margin: 0.5rem 0;
-  border-radius: 8px;
-  border: 1px solid v-bind('questStore.getBorderColor("light")');
-  background-color: v-bind('questStore.getBackgroundColor("tertiary")');
-  color: v-bind('questStore.getTextColor("secondary")');
-  font-weight: 500;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .monster-groups {
