@@ -115,5 +115,4 @@ const formatTime = (timestamp: string): string => {
   margin-left: 0.5rem;
 }
 
-:deep(.story-block) { margin-bottom: 4rem;}
 </style> 
