@@ -328,8 +328,8 @@
     }
   },
   {
-    "id": "mimic_copy",
-    "title": "Mimic Copy",
+    "id": "mimic",
+    "title": "Mimic",
     "drink": "Half pint of your bartender's choice",
     "level": "minion",
     "species": "chameleonoid",
