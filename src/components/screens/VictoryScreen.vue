@@ -3,7 +3,7 @@
     <!-- Star effect container -->
     <div class="star-effect-container">
       <div v-for="i in 24" :key="i" class="particle" :style="getParticleStyle(i)">
-        {{ i % 4 === 0 ? '⭐' : i % 4 === 1 ? '✨' : i % 4 === 2 ? '🎉' : '🎊' }}
+        {{ powerIcons[i % powerIcons.length] }}
       </div>
     </div>
     
@@ -25,6 +25,28 @@ import { useQuestStore } from '@/stores/questStore'
 
 const appStore = useAppStore()
 const questStore = useQuestStore()
+
+// Array of power icons from the game
+const powerIcons = [
+  '🏆', // Victory
+  '⚔️', // Kill
+  '🪄', // Banish
+  '❄️', // Freeze
+  '🗿', // Petrify
+  '💧', // Pacify
+  '🥤', // Distract
+  '🥦', // Vegetate
+  '🍋', // Stun
+  '🎟️', // Token
+  '🔭', // ScoutRange
+  '🎁', // Lootbox
+  '📈', // Grow
+  '💰', // Treasure
+  '📏', // Shrink
+  '✂️', // Split
+  '🔄', // Transmute
+  '🧤', // Pickpocket
+]
 
 const startNewQuest = () => {
   questStore.endQuest()
