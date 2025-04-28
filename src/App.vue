@@ -373,18 +373,4 @@ button {
   cursor: pointer;
 }
 
-.debug-button {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #4a8;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.debug-button:hover {
-  background-color: #3a7;
-}
 </style>

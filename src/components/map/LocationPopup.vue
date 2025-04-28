@@ -634,14 +634,4 @@ const badgeStyle = computed(() => ({
   margin-bottom: 0;
 }
 
-.debug-button {
-  border: 2px dashed v-bind('questStore.theme === "dark" ? "rgba(200, 50, 50, 0.7)" : "rgba(200, 50, 50, 0.5)"');
-  background-color: v-bind('questStore.theme === "dark" ? "rgba(200, 50, 50, 0.2)" : "rgba(200, 50, 50, 0.1)"');
-  color: v-bind('questStore.theme === "dark" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)"');
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-.debug-button:hover {
-  background-color: v-bind('questStore.theme === "dark" ? "rgba(200, 50, 50, 0.3)" : "rgba(200, 50, 50, 0.2)"');
-}
-</style> 
+</style>
