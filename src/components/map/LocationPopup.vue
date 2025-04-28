@@ -107,7 +107,7 @@
                 <div class="monster-count">
                   <span>{{ group.monsters.length }}x</span>
                 </div>
-                <div class="monster-info">
+                <div class="monster-info" :style="{ color: monsterTypes.find(m => m.id === group.type)?.style?.color }">
                   <div class="monster-title">{{ getMonsterTitle(group) }}</div>
                   <div class="monster-subinfo">{{ getMonsterSpecies(group.type) }} {{
                       getMonsterLevel(group.type)
@@ -614,13 +614,11 @@ const badgeStyle = computed(() => ({
   font-weight: bold;
   margin-bottom: 0.25rem;
   font-size: 1.1rem;
-  color: v-bind('questStore.theme === "dark" ? "#ffffff" : "#000000"');
 }
 
 .monster-subinfo {
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
-  color: v-bind('questStore.theme === "dark" ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.7)"');
 }
 
 .monster-xp {
@@ -632,7 +630,6 @@ const badgeStyle = computed(() => ({
 
 .monster-details {
   font-size: 0.9rem;
-  color: v-bind('questStore.theme === "dark" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)"');
 }
 
 .monster-stat {
