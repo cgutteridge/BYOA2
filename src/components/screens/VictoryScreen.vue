@@ -1,5 +1,12 @@
 <template>
   <div class="victory-screen screen-container" :style="{ background: questStore.getGradient('primary') }">
+    <!-- Star effect container -->
+    <div class="star-effect-container">
+      <div v-for="i in 24" :key="i" class="particle" :style="getParticleStyle(i)">
+        {{ i % 4 === 0 ? '⭐' : i % 4 === 1 ? '✨' : i % 4 === 2 ? '🎉' : '🎊' }}
+      </div>
+    </div>
+    
     <div class="victory-content" :style="contentStyle">
       <h1>You Win!</h1>
       <p>Congratulations on completing your quest!</p>
@@ -28,6 +35,31 @@ const backToGame = () => {
   appStore.setScreen('map')
 }
 
+// Generate dynamic styles for particles
+function getParticleStyle(index: number): Record<string, string> {
+  // Determine if particle comes from left or right
+  const isLeft = index % 2 === 0
+  const startX = isLeft ? '0%' : '100%'
+  // Fixed angles: left side goes up and right (135-180 degrees), right side goes up and left (0-45 degrees)
+  const angle = isLeft ? 180 + (Math.random() * 90) : 90+Math.random() * 90
+  const distance = 800 + Math.random() * 600
+  const rotationAmount = 180 + Math.random() * 720
+  const rotationDirection = Math.random() > 0.5 ? 1 : -1
+  const delay = Math.random() * 0.7
+  const duration = 2.5 + Math.random() * 1.5
+  const size = 18 + Math.floor(Math.random() * 14)
+  
+  return {
+    animationDelay: `${delay}s`,
+    animationDuration: `${duration}s`,
+    fontSize: `${size}px`,
+    '--angle': `${angle}deg`,
+    '--distance': `${distance}px`,
+    '--rotation': `${rotationAmount * rotationDirection}deg`,
+    '--start-x': startX
+  }
+}
+
 // Theme-based styles
 const contentStyle = computed(() => ({
   backgroundColor: questStore.getBackgroundColor('card'),
@@ -51,6 +83,40 @@ const buttonStyle = (variant: 'primary' | 'secondary') => ({
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.star-effect-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  bottom: 0;
+  left: var(--start-x);
+  transform: translateX(-50%);
+  animation: victory-star-animation ease-out infinite;
+  z-index: 1;
+}
+
+@keyframes victory-star-animation {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) rotate(var(--angle)) translateY(0) rotate(0deg);
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) rotate(var(--angle)) translateY(var(--distance)) rotate(var(--rotation));
+    scale: 0.3;
+  }
 }
 
 .victory-content {
@@ -60,6 +126,8 @@ const buttonStyle = (variant: 'primary' | 'secondary') => ({
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
+  position: relative;
+  z-index: 2;
 }
 
 h1 {
