@@ -10,6 +10,7 @@
           <button
             @click="toggleTheme" 
             class="theme-toggle-button"
+            :style="{ color: questStore.getTextColor('primary') }"
           >
             {{ questStore.theme === 'dark' ? '☀️ Switch to Light Mode' : '🌙 Switch to Dark Mode' }}
           </button>
@@ -23,6 +24,7 @@
             @click="toggleDebugMode" 
             class="theme-toggle-button"
             :class="{ 'debug-active': questStore.isDebugMode }"
+            :style="{ color: questStore.getTextColor('primary') }"
           >
             {{ questStore.isDebugMode ? '🐞 Disable Debug Mode' : '🐞 Enable Debug Mode' }}
           </button>
@@ -36,7 +38,7 @@
     
     <div class="options-section">
       <h3>Game Controls</h3>
-      <button class="quit-button" @click="showQuitConfirmation = true">
+      <button class="quit-button" @click="showQuitConfirmation = true" :style="{ color: questStore.getTextColor('primary') }">
         Quit Game
       </button>
     </div>
