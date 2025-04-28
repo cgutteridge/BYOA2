@@ -9,7 +9,7 @@
     
     <div class="victory-content" :style="contentStyle">
       <h1>You Win!</h1>
-      <p>Congratulations on completing your quest!</p>
+      <p>Time for a side-quest to the kebab shop?</p>
       <div class="button-group">
         <button @click="backToGame" class="button" :style="buttonStyle('primary')">Back to Map</button>
         <button @click="startNewQuest" class="button" :style="buttonStyle('secondary')">Start New Quest</button>
@@ -64,7 +64,7 @@ function getParticleStyle(index: number): Record<string, string> {
   const startX = isLeft ? '0%' : '100%'
   // Fixed angles: left side goes up and right (135-180 degrees), right side goes up and left (0-45 degrees)
   const angle = isLeft ? 180 + (Math.random() * 90) : 90+Math.random() * 90
-  const distance = 800 + Math.random() * 600
+  const distance = 2000 + Math.random() * 600
   const rotationAmount = 180 + Math.random() * 720
   const rotationDirection = Math.random() > 0.5 ? 1 : -1
   const delay = Math.random() * 0.7
