@@ -1,8 +1,7 @@
-import type {GameLocation, Monster } from '../types'
+import type {GameLocation, Monster} from '../types'
 import {ChatGPTAPI} from '../api/chatGPT.ts'
 import generateMonsters from './generateMonsters.ts'
 import {monsterTypeById} from '@/data/monsterTypesLoader'
-import {useQuestStore} from '@/stores/questStore.ts';
 import {monsterItem} from "@/quest/monsterItem.ts";
 import {locationPrizeItem} from "@/quest/locationPrizeItem.ts";
 import {locationGiftItem} from "@/quest/locationGiftItem.ts";
@@ -12,6 +11,7 @@ import {powerFactory} from "@/powers";
 import {generateRandomItem} from "@/quest/generateRandomItem.ts";
 import pickOne from "@/utils/pickOne.ts";
 import {toMonsterTypeId} from '@/types';
+import {useQuestStore} from "@/stores/questStore.ts";
 
 /**
  * Scout a location, generating its description, monsters, and prize
@@ -60,16 +60,18 @@ export async function scoutLocation(
         return
     }
 
-    // Shop locations have wares to choose from
-    if (location.type === 'shop') {
+    // Shop locations have wares to choose from as do some game locations too
+    if (['shop', 'market', 'magic_shop'].includes(location.type)) {
         const spread = pickOne([[12, 2], [8, 3], [6, 4], [3, 8]])
         const wares = []
-        for(let i=0; i<spread[0]; i++ ) {
+        for (let i = 0; i < spread[0]; i++) {
             wares.push(generateRandomItem(spread[1]))
         }
         location.wares = wares
+    }
 
-        // Generate location description, name, and item details from AI
+    if (location.type === 'shop') {
+    // Generate shop description, name, and item details from AI
         const {
             locationName,
             locationDescription
@@ -80,7 +82,6 @@ export async function scoutLocation(
         location.description = locationDescription
         return
     }
-
 
     // Generate monsters for this location
     const monsters = generateMonsters(location)

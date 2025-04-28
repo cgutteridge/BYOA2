@@ -32,8 +32,8 @@
       />
     </div>
 
-    <div v-if="questStore.currentGameLocation?.wares" class="gift-info" :style="sectionStyle">
-      <h3>Wares:</h3>
+    <div v-if="questStore.currentGameLocation?.wares" class="gift-item-section" :style="sectionStyle">
+      <h3>Wares - pick one</h3>
       <div v-for="item in questStore.currentGameLocation.wares" style="margin-bottom: 0.5rem">
         <ItemCard
             :item="item"
@@ -285,6 +285,7 @@ function claimTokenItem() {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
+  margin-top: 0;
 }
 
 .combat-container {

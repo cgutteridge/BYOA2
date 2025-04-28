@@ -181,8 +181,13 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
 
   if( location.scouted ) {
     if(!location.viewed ) {
-      scoutedClass = 'scouted-not-viewed'
-      iconExtras = '<div class="scout-indicator"></div>'
+      if (!location.description) {
+        scoutedClass = 'scouting-in-progress'
+        iconExtras = '<div class="scouting-indicator">🔍</div>'
+      } else {
+        scoutedClass = 'scouted-not-viewed'
+        iconExtras = '<div class="scout-indicator"></div>'
+      }
     } else {
       scoutedClass = 'scouted'
       iconExtras = ''
@@ -551,4 +556,35 @@ onBeforeUnmount(() => {
   background-color: black !important;
 }
 
+/* Add new CSS for scouting animation */
+.scouting-indicator {
+  position: absolute;
+  top: -24px;
+  left: -24px;
+  right: -24px;
+  bottom: -24px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96px;
+  opacity: 0.4;
+  animation: pulse-scouting 1.5s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes pulse-scouting {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
 </style>
