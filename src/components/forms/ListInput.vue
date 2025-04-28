@@ -98,7 +98,6 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue', 'selection-change'])
 const questStore = useQuestStore()
-const appStore = useAppStore()
 
 // Local state
 const searchText = ref('')
@@ -516,9 +515,6 @@ function clearSelection(event: MouseEvent): void {
   })
 }
 
-// Get player coordinates for distance calculation
-const playerCoordinates = computed(() => appStore.playerCoordinates)
-
 // Function to get subtitle for an option
 function getSubtitleForOption(option: PickerOption): string {
   // If a custom subtitle function is provided, use it
@@ -529,15 +525,6 @@ function getSubtitleForOption(option: PickerOption): string {
   // If option has a subtitle property, use that
   if (option.subtitle) {
     return option.subtitle;
-  }
-  
-  // For locations, show distance by default
-  if (option.coordinates && playerCoordinates.value) {
-    const distance = calculateDistance(
-      playerCoordinates.value,
-      option.coordinates
-    );
-    return formatDistance(distance);
   }
   
   return '';
