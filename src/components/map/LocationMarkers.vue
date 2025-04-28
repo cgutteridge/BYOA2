@@ -15,6 +15,7 @@ import {useQuestStore} from '@/stores/questStore'
 import {locationTypesById} from '@/data/locationTypes'
 import LocationPopup from '@/components/map/LocationPopup.vue'
 import {useInventoryStore} from '@/stores/inventoryStore'
+import {useAppStore} from "@/stores/appStore.ts";
 
 // Get the map instance from the parent
 const mapInstance = inject<Ref<L.Map>>('mapInstance')
@@ -260,14 +261,16 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
     bubblingMouseEvents: false
   }).addTo(mapInstance)
 
-  // Add place name label if zoomed to level 18 or more
-  if (currentZoom >= 18) {
+  // Add place name label if zoomed to level 17 or more
+  if (currentZoom >= 17) {
+    let size = 300
+    if( currentZoom === 17 )  { size=150 }
     const labelMarker = L.marker([location.coordinates.lat, location.coordinates.lng], {
       icon: L.divIcon({
         className: 'location-name-label',
-        html: `<div class="location-name-text" style="font-family: 'Brush Script MT', cursive; color: #8B4513; font-size: 32px; text-align: center; white-space: normal; overflow: visible; max-width: none; line-height: 1.2; text-shadow: 0 0 4px rgba(139, 69, 19, 0.3), 0 0 8px rgba(255, 255, 255, 0.2), 0 0 12px rgba(139, 69, 19, 0.2); transform: translateY(15px); position: relative; z-index: 1; background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0) 100%); padding: 4px 8px; border-radius: 4px;">${location.name}</div>`,
-        iconSize: [300, 50], // Increased width to accommodate longer names
-        iconAnchor: [150, 0] // Adjusted anchor to match new width
+        html: `<div class="location-name-text location-name-text-${currentZoom}">${location.name}</div>`,
+        iconSize: [size, 50], // Increased width to accommodate longer names
+        iconAnchor: [size/2, 0] // Adjusted anchor to match new width
       }),
       interactive: false,
       keyboard: false,
@@ -379,6 +382,9 @@ function addPopupToMarker(marker: Marker, location: GameLocation): void {
   // Handle popup close event
   marker.on('popupclose', () => {
     popupsOpen.value--
+    if (popupsOpen.value === 0) {
+      useAppStore().setMapPosition(location.coordinates)
+    }
     // Only mark as viewed if the popup was actually opened and shown to the user
     if (location.scouted && !location.viewed) {
       // Update the location in the store
@@ -521,7 +527,35 @@ onBeforeUnmount(() => {
 
 <!-- Global styles for map markers, not scoped -->
 <style>
-/* Scout indicator styles - using global CSS for better compatibility with dynamically created elements */
+
+/* icon under label text */
+.location-name-label {
+  text-align: center;
+}
+
+.location-name-text {
+  font-family: 'Brush Script MT', cursive;
+  color: #8B4513;
+  font-size: 32px;
+  text-align: center;
+  display: inline-block;
+  white-space: normal;
+  overflow: visible;
+  line-height: 1;
+  text-shadow: 0 0 4px rgba(139, 69, 19, 0.3), 0 0 8px rgba(255, 255, 255, 0.2), 0 0 12px rgba(139, 69, 19, 0.2);
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0) 100%);
+}
+
+.location-name-text-17 {
+  font-size: 16px;
+}
+
+
+/* END OF icon under label text */
+
+
 .scout-indicator {
   position: absolute;
   top: -8px;
@@ -593,11 +627,11 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   background: radial-gradient(
-    circle,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.8 ) 25%,
-    rgba(0, 0, 0, 0 ) 50%,
-    rgba(0, 0, 0, 0) 100%
+      circle,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.8) 25%,
+      rgba(0, 0, 0, 0) 50%,
+      rgba(0, 0, 0, 0) 100%
   );
   border-radius: 50%;
   pointer-events: none;
