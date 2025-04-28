@@ -94,7 +94,7 @@
             <NumberInput
                 v-model="minimumLocations"
                 title="Minimum Locations"
-                :min="3"
+                :min="0"
             />
           </div>
         </div>

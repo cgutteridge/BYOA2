@@ -1,5 +1,7 @@
-import type {Item, Monster} from '../types'
+import type {Item} from '../types'
 import {ItemPower} from './abstractItemPower';
+import {useAppStore} from '@/stores/appStore';
+import {useQuestStore} from '@/stores/questStore';
 
 /**
  * Victory power implementation - quest completion item
@@ -22,8 +24,19 @@ export class VictoryPower extends ItemPower {
   // Item types for this power
   readonly itemArtifactNames = ["Trophy", "Crown", "Chalice", "Medal"];
 
-  applyEffect(_item: Item, _monster: Monster): boolean {
-    return false;
+  useWithoutTarget(_item: Item): boolean {
+    const appStore = useAppStore();
+    const questStore = useQuestStore();
+
+    // Log the victory
+    questStore.logAndNotifyQuestEvent(
+      `Quest Complete`
+    );
+
+    // Transition to victory screen
+    appStore.setScreen('victory');
+
+    return true;
   }
   
   generateEffectDescription(_item: Item): string {

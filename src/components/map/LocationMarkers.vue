@@ -14,6 +14,7 @@ import {useLocationStore} from '@/stores/locationStore'
 import {useQuestStore} from '@/stores/questStore'
 import {locationTypesById} from '@/data/locationTypes'
 import LocationPopup from '@/components/map/LocationPopup.vue'
+import {useInventoryStore} from '@/stores/inventoryStore'
 
 // Get the map instance from the parent
 const mapInstance = inject<Ref<L.Map>>('mapInstance')
@@ -22,12 +23,16 @@ const mountedPopupApps = inject<Ref<any[]>>('mountedPopupApps')
 // Stores
 const locationStore = useLocationStore()
 const questStore = useQuestStore()
+const inventoryStore = useInventoryStore()
 
 // Markers array
 const locationMarkers = ref<Marker[]>([])
 
 // Computed properties
 const locations = computed(() => locationStore.locations)
+const hasEnoughTokens = computed(() => {
+  return inventoryStore.tokenCount >= questStore.minimumLocations;
+});
 
 // Configuration constants
 const BOTTOM_OFFSET = 20 // Distance from bottom of screen when opening a popup in pixels
@@ -193,6 +198,14 @@ function createGameLocationMarker(location: GameLocation, mapInstance: any): Mar
       iconExtras = ''
     }
   }
+
+  // Add end location indicator if this is the end location
+  if (location.id === questStore.endGameLocationId) {
+    const tokenStatusClass = hasEnoughTokens.value ? 'end-location-green' : 'end-location-red'
+    scoutedClass += ` ${tokenStatusClass}`
+    iconExtras += '<div class="end-location-indicator"></div>'
+  }
+
   const combinedClasses = `${markerBaseClass} ${locationTypeClass} ${scoutedClass}`.trim()
 
   const iconSize = scaledType.size[0]
@@ -521,6 +534,46 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 10px rgba(66, 133, 244, 0.8);
   animation: pulse-scout 2s infinite ease-in-out;
   pointer-events: none;
+}
+
+/* End location indicator styles */
+.end-location-indicator {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  border: 4px solid;
+  border-radius: 50%;
+  z-index: 1;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  animation: pulse-end 2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.end-location-green .end-location-indicator {
+  border-color: #4CAF50;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+}
+
+.end-location-red .end-location-indicator {
+  border-color: #F44336;
+  box-shadow: 0 0 10px rgba(244, 67, 54, 0.8);
+}
+
+@keyframes pulse-end {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
 }
 
 .not-scouted img {

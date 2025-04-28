@@ -237,7 +237,7 @@ onUnmounted(() => {
 
       <!-- Interface ButtonInput (only show during gameplay) -->
       <button 
-        v-if="(appStore.screen === 'location' || appStore.screen === 'map')"
+        v-if="(appStore.screen === 'location' || appStore.screen === 'map' || appStore.screen === 'victory')"
         class="interface-button"
         :class="{ 'pulse-animation': showButtonPulse }"
         @click="toggleInterface"
