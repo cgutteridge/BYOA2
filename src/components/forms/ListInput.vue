@@ -98,7 +98,7 @@ const questStore = useQuestStore()
 
 // Local state
 const searchText = ref('')
-const showList = ref(props.alwaysShow || false)
+const showList = ref(false) // Initialize as false, we'll set it based on props and selection
 const containerRef = ref<HTMLElement | null>(null)
 const inputRef = ref<HTMLInputElement | null>(null)
 const listRef = ref<HTMLElement | null>(null)
@@ -358,6 +358,10 @@ function selectOption(option: PickerOption): void {
     emit('update:modelValue', currentValues)
     emit('selection-change', currentValues)
     
+    // Only hide the list if we're not in alwaysShow mode
+    if (!props.alwaysShow) {
+      showList.value = false
+    }
   } else {
     // Single selection - emit the whole object for complex types or the ID
     const valueProperty = props.valueProperty || 'id'
@@ -371,6 +375,10 @@ function selectOption(option: PickerOption): void {
       // Update search text to match selection for searchable pickers
       const displayProperty = props.displayProperty || 'name'
       searchText.value = typeof option === 'object' ? (option[displayProperty] || option.title || option.label || '') : String(option)
+    }
+    
+    // Only hide the list if we're not in alwaysShow mode
+    if (!props.alwaysShow) {
       showList.value = false
       
       // Reset position after selection
@@ -447,7 +455,7 @@ onUnmounted(() => {
   window.removeEventListener('orientationchange', handleResize)
 })
 
-// Watch for model changes and update search text
+// Watch for model changes and update search text and visibility
 watch(() => props.modelValue, (newValue) => {
   if (props.searchable && !Array.isArray(newValue)) {
     // Find the option
@@ -462,7 +470,15 @@ watch(() => props.modelValue, (newValue) => {
     if (option) {
       const displayProperty = props.displayProperty || 'name'
       searchText.value = option[displayProperty] || option.title || option.label || ''
+      // Only show list if alwaysShow is true and there's a selection
+      showList.value = props.alwaysShow && newValue !== null && newValue !== undefined
+    } else {
+      searchText.value = ''
+      showList.value = props.alwaysShow
     }
+  } else {
+    // For non-searchable inputs, only show list if alwaysShow is true
+    showList.value = props.alwaysShow
   }
 }, { immediate: true })
 

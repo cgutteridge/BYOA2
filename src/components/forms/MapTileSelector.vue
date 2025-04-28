@@ -6,7 +6,6 @@
       v-model="selectedMapTile"
       :searchable="true"
       placeholder="Search map styles..."
-      :alwaysShow="true"
     />
   </div>
 </template>
