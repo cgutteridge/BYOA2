@@ -1,12 +1,14 @@
 import type {
     GameLocation,
     Item,
-    ItemPowerId, ItemTargetType,
+    ItemPowerId,
+    ItemTargetType,
     Monster,
     MonsterFlag,
-    MonsterLevel, MonsterType,
+    MonsterLevel,
+    MonsterType,
 } from '../types'
-import {monsterTypeById, monsterTypes} from '../data/monsterTypesLoader'
+import {errorBeast, monsterTypeById, monsterTypes} from '../data/monsterTypesLoader'
 import {useQuestStore} from "@/stores/questStore.ts";
 import {useAppStore} from "@/stores/appStore.ts";
 import {useInventoryStore} from "@/stores/inventoryStore.ts";
@@ -63,7 +65,7 @@ export abstract class ItemPower {
 
     // Target selection methods
     filterMonsterTypeTargetsForItem(item: Item, monsterTypes : MonsterType[]): MonsterType[] {
-        return monsterTypes.filter(monsterType => this.canTargetMonsterType(item, monsterType));
+        return monsterTypes.filter(monsterType => this.canTargetMonsterType(item, monsterType ?? errorBeast));
     }
 
     /**
@@ -94,6 +96,9 @@ export abstract class ItemPower {
     }
 
      canTargetMonsterType(item: Item, monsterType: MonsterType) {
+         if (monsterType === undefined) {
+             return false
+         }
         // Check level restrictions based on maxLevel
         if (item.maxLevel) {
             const levelOrder: MonsterLevel[] = ['minion', 'grunt', 'elite', 'boss'];

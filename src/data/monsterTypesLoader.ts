@@ -43,7 +43,7 @@ const monstersData: RawMonsterData[] = [
   ...(otherData as RawMonsterData[])
 ];
 
-const errorBeast:MonsterType = {
+export const errorBeast:MonsterType = {
   "id": toMonsterTypeId("error_beast"),
   "title": "Error Beast (something went wrong)",
   "drink": "Drink of your choice I guess",
