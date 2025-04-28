@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import {computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, watch} from 'vue'
-import L, {ZoomAnimEvent} from 'leaflet'
+import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import {useAppStore} from '@/stores/appStore'
 import {useQuestStore} from '@/stores/questStore'
