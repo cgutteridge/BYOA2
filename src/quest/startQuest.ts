@@ -30,6 +30,19 @@ export async function startQuest(
 
     questStore.setStatus('init');
 
+    questStore.setTitle(title);
+    questStore.setStartGameLocationId(startGameLocation.id);
+    questStore.setEndGameLocationId(endGameLocation.id);
+    questStore.setPlayerCount(players);
+    questStore.setDifficulty(difficulty);
+    questStore.setMinimumLocations(minimumLocations);
+    questStore.setDescription('');
+    
+    questStore.setXP(0); // Initialize player XP to zero when starting a new quest
+    questStore.setBooze(0); // Initialize booze consumed to zero when starting a new quest
+    questStore.setSoft(0); // Initialize soft drinks consumed to zero when starting a new quest
+    questStore.setScoutRange(200)
+
     // Initialize quest details using ChatGPT
     try {
         const questData = await chatGPT.initializeQuest(
@@ -39,7 +52,6 @@ export async function startQuest(
             title
         )
 
-        questStore.setTitle(title);
         questStore.setDescription(questData.questDescription);
         questStore.setTokenTitle(questData.tokenTitle);
         questStore.setTokenDescription(questData.tokenDescription);
@@ -52,15 +64,6 @@ export async function startQuest(
         questStore.setTokenDescription('a magical shard that contains a piece of ancient knowledge');
     }
 
-    questStore.setStartGameLocationId(startGameLocation.id);
-    questStore.setEndGameLocationId(endGameLocation.id);
-    questStore.setPlayerCount(players);
-    questStore.setDifficulty(difficulty);
-    questStore.setMinimumLocations(minimumLocations);
-    questStore.setXP(0); // Initialize player XP to zero when starting a new quest
-    questStore.setBooze(0); // Initialize booze consumed to zero when starting a new quest
-    questStore.setSoft(0); // Initialize soft drinks consumed to zero when starting a new quest
-    questStore.setScoutRange(200)
 
     // Initialize locations
     locationStore.locations.forEach((location:GameLocation) => {
