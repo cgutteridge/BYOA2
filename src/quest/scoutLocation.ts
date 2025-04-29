@@ -1,4 +1,4 @@
-import type {GameLocation, Monster} from '../types'
+import type {GameLocation, Item, Monster} from '../types'
 import {ChatGPTAPI} from '../api/chatGPT.ts'
 import generateMonsters from './generateMonsters.ts'
 import {monsterTypeById} from '@/data/monsterTypesLoader'
@@ -26,7 +26,7 @@ export async function scoutLocation(
 
     // Mark the location as scouted
     location.scouted = true
-    
+
     // Initialize defeatedEnemies counter if not already set
     location.defeatedEnemies = 0
 
@@ -71,7 +71,7 @@ export async function scoutLocation(
     }
 
     if (location.type === 'shop') {
-    // Generate shop description, name, and item details from AI
+        // Generate shop description, name, and item details from AI
         const {
             locationName,
             locationDescription
@@ -120,15 +120,10 @@ export async function scoutLocation(
     const locationType = locationTypesById[location.type]
 
     let extraInstructions = ''
-    if(location.difficulty === 'start') {
+    if (location.difficulty === 'start') {
         extraInstructions = `this is the first location in the quest, where the quest begins.
          Please describe how this location triggers the whole quest. The quest is "${questStore.title}: ${questStore.description}"`
     }
-    if(location.difficulty === 'end') {
-        extraInstructions = `this is the last location in the quest, where the quest ends. The quest was "${questStore.title}: ${questStore.description}"`
-    }
-   
-    // console.log(location,extraInstructions)
 
     let giftItemEffect = ''
     if (location.giftItem) {
@@ -145,43 +140,60 @@ export async function scoutLocation(
             prizeItemEffect = prizeItemPower.generateEffectDescription(location.prizeItem)
         }
     }
+    if (location.difficulty === 'end') {
+        // Generate end location description, name, and item details from AI
+        const {
+            locationName,
+            locationDescription,
+            questItemDescription,
+        } = await chatGPT.generateEndGameLocationDescription(
+            location.name,
+            locationType.title,
+            monstersDescription,
+            questStore.title,
+            questStore.description,
+            questStore.tokenTitle,
+            questStore.tokenDescription,
+            questStore.minimumLocations
+        )
+        // Update the location with the new information
+        location.name = locationName;
+        location.description = locationDescription;
+        (location.prizeItem as Item).description = questItemDescription;
+    } else {
 
-    // Generate location description, name, and item details from AI
-    const {
-        name,
-        description,
-        prizeItemName,
-        prizeItemDescription,
-        giftItemName,
-        giftItemDescription
-    } = await chatGPT.generateGameLocationDescription(
-        location.name,
-        locationType.title,
-        monstersDescription,
-        prizeItemEffect,
-        extraInstructions,
-        giftItemEffect
-    )
+        // Generate location description, name, and item details from AI
+        const {
+            name,
+            description,
+            prizeItemName,
+            prizeItemDescription,
+            giftItemName,
+            giftItemDescription
+        } = await chatGPT.generateGameLocationDescription(
+            location.name,
+            locationType.title,
+            monstersDescription,
+            prizeItemEffect,
+            extraInstructions,
+            giftItemEffect
+        )
 
-    // Update the location with the new information
-    location.name = name;
-    location.description = description;
-    
-    // Update prize item with AI-generated name and description
-    if (location.prizeItem) {
-        // For victory items, keep the original name which is the quest title
-        if (location.difficulty === 'end') {
-            location.prizeItem.description = prizeItemDescription;
-        } else {
+        // Update the location with the new information
+        location.name = name;
+        location.description = description;
+
+        // Update prize item with AI-generated name and description
+        if (location.prizeItem) {
             location.prizeItem.name = prizeItemName;
             location.prizeItem.description = prizeItemDescription;
         }
-    }
-    
-    // Update gift item with AI-generated name and description (if available)
-    if (location.giftItem && giftItemName && giftItemDescription) {
-        location.giftItem.name = giftItemName;
-        location.giftItem.description = giftItemDescription;
+
+        // Update gift item with AI-generated name and description (if available)
+        if (location.giftItem && giftItemName && giftItemDescription) {
+            location.giftItem.name = giftItemName;
+            location.giftItem.description = giftItemDescription;
+        }
     }
 
     // Now generate names for each monster

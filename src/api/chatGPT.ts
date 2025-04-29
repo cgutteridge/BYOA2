@@ -10,12 +10,13 @@ export class ChatGPTAPI {
   private readonly proxyUrl = 'https://chris.totl.net/BYOA/proxy.php'
   private readonly MAX_RETRIES = 3
 
-  private readonly SYSTEM_ROLE : Message =     {
+  private readonly SYSTEM_ROLE : Message = {
     role: 'system',
     content: `You are a chaotic, sarcastic dungeon master narrating a ridiculous adventure. 
         Don't say things are quirky or funny, just show it. Be either deadpan or over the top.
-        Be wild, cheeky, and risque.  Be outrageous. Be anachronistic and maybe mix in real world, scifi
-         and any other themes. Your target audience is 18-35 year old nerds. Output JSON only. 
+        Be wild, cheeky, and risque. Pop culture references should be parody not just a rip off.
+        Be outrageous. Be anachronistic and maybe mix in modern, scifi
+        and any other different genres. Your target audience is 18-35 year old nerds. Output JSON only. 
         Do not include backticks in the JSON response. `
   }
 
@@ -29,7 +30,7 @@ export class ChatGPTAPI {
     
     for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
       try {
-        // console.log(`API attempt ${attempt}/${this.MAX_RETRIES}`)
+        //console.log(`API attempt ${attempt}/${this.MAX_RETRIES}`)
         
         const response = await fetch(this.proxyUrl, {
           method: 'POST',
@@ -53,7 +54,7 @@ export class ChatGPTAPI {
 
         const data = await response.json()
         const content = data.choices[0].message.content || ''
-        // console.log(content)
+        //console.log('------',messages,content)
         
         try {
           return JSON.parse(content) as T
@@ -207,18 +208,18 @@ export class ChatGPTAPI {
       {
         role: 'user',
         content: `
-          Generate names for monsters at the location "${locationName}".
+          Generate names for enemies at the location "${locationName}".
           GameLocation description: "${locationDescription}"
           
-          For each group, provide unique individual names for each monster.
+          For each group, provide unique individual names for each enemy.
           
-          The names should be creative, funny, and fit the monster's species and the location's atmosphere. 
-          Do not add the type of monster to the name. Do not write "Lord Vlad the Vampire" just "Lord Vlad".
+          The names should be creative, funny, and fit the enemy's species and the location's atmosphere. 
+          Do not add the type of enemy to the name. Do not write "Lord Vlad the Vampire" just "Lord Vlad".
           It is OK to add other qualifiers to the name to make it more interesting or funny.
           
           Respond in JSON format in a 2 dimensional array. The outer array is groups, and item is an array of 
-          strings, one for each monster in the group. eg:
-           [["a","b"],["c"]]
+          strings, one for each enemy in the group. One distinct per enemy name per JSON string. per  eg:
+           [["bill","ben the goth"],["cheeto man"]]
          
          Do not provide an outer object.
          
@@ -268,4 +269,61 @@ export class ChatGPTAPI {
 
     return this.sendMessage(messages)
   }
+
+
+  async generateEndGameLocationDescription(
+    locationName: string, 
+    locationType: string, 
+    enemies: string, 
+    questTitle: string,
+    questDescription: string,
+    tokenTitle: string,
+    tokenDescription: string,
+    tokenCount: number
+  ): Promise<{
+    locationName: string,
+    locationDescription: string,
+    questItemDescription: string,
+  }> {
+    const messages: Message[] = [
+      this.SYSTEM_ROLE,
+      {
+        role: 'user',
+        content: `
+        We are at the end of a long quest. The quest was to seek the "${questTitle}". 
+        
+        QUEST DETAILS:
+        ${questDescription} 
+      
+        The last location is the  ${locationType} at '${locationName}'. The players have collected 
+        the required ${tokenCount} of "${tokenTitle}" to access this location. 
+        
+        ${tokenTitle}: ${tokenDescription}
+
+         Generate a JSON object for the final location of the quest. 
+           
+         The players must defeat ${enemies} to win the goal of their quest; "
+        
+        You should re-title the location in an amusing way maybe riffing on the real name with the fantasy theme. 
+        
+        The description field in the JSON response is in the 2nd person and must describe ALL OF the location, 
+        the challenge, and the prize as the situation lies when the players arrive. The location and challenge should 
+        pull together the themes of the quest description, the item being quested for, the token items the players 
+        collected and the monsters they need to defeat here.
+        
+        In addition to the title and description of the location, please provide the flavour text
+        that the player will see as the detailed description of the "${questTitle}" when they receive it
+        after defeating all foes.
+
+        Respond in JSON format with the following fields: 
+        "locationName", "locationDescription", "questItemDescription"
+        `
+      }
+    ]
+
+    return this.sendMessage(messages)
+  }
+
+
+
 }
