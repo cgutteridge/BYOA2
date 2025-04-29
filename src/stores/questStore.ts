@@ -103,7 +103,7 @@ export const useQuestStore = defineStore('quest', () => {
   const minimumLocations = ref<number>(1) // Minimum number of locations required
   const tokenTitle = ref<string>('shard of truth') // Title for token
   const tokenDescription = ref<string>('a shard of truth') // Description for token
-  const scoutRange = ref<number>(200) // Scout range in meters
+  const scoutRange = ref<number>(0) // Scout range in meters
   const isDebugMode = ref<boolean>(false) // Debug mode state
   const mapTileId = ref<string>('stamenWatercolor') // Map tile preference, defaulting to stamen watercolor
   const persist = ref(['title', 'description', 'status', 'startGameLocationId',

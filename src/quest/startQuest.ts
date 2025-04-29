@@ -60,6 +60,7 @@ export async function startQuest(
     questStore.setXP(0); // Initialize player XP to zero when starting a new quest
     questStore.setBooze(0); // Initialize booze consumed to zero when starting a new quest
     questStore.setSoft(0); // Initialize soft drinks consumed to zero when starting a new quest
+    questStore.setScoutRange(200)
 
     // Initialize locations
     locationStore.locations.forEach((location:GameLocation) => {
@@ -103,7 +104,7 @@ export async function startQuest(
         const item = generateRandomItem(2);
         inventoryStore.addItem(item);
     }
-    
+
     await scoutLocation(questStore.startGameLocation as GameLocation);
     questStore.setCurrentGameLocation(startGameLocation.id)
     startGameLocation.hasBeenVisited = true
